@@ -1,0 +1,94 @@
+.App {
+    display: flex;
+    width: 100%;
+    height: 100%;
+
+    &__aside {
+        display: none;
+        width: 250px;
+        height: 100%;
+        border: 1px solid var(--color-gray-3);
+    }
+
+    &__main {
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+    }
+
+    &__header {
+        display: flex;
+        align-items: center;
+        padding: 0 var(--space-small-size);
+        width: 100%;
+        height: var(--container-regular-size);
+        border-bottom: 1px solid var(--color-gray-3);
+    }
+
+    &__title {
+        flex: 1;
+        display: inline-flex;
+        padding: 0 var(--space-regular-size);
+        cursor: default;
+
+        & > h1 {
+            margin: 0;
+            padding: 0;
+            font-size: var(--text-medium-size);
+            font-weight: 500;
+            line-height: var(--lineHeight-medium-size);
+        }
+
+        & > span {
+            display: inline-block;
+            align-self: center;
+            padding: 0;
+            margin: 2px var(--space-regular-size) 0 var(--space-regular-size);
+            width: var(--text-regular-size);
+            height: 1px;
+            background-color: var(--color-gray-4);
+            border: none;
+            outline: 0;
+        }
+
+        & > time {
+            font-size: var(--text-small-size);
+            font-weight: 400;
+            font-style: italic;
+            line-height: var(--lineHeight-medium-size);
+            color: var(--color-gray-5);
+        }
+    }
+
+    &__toolbar {
+        display: inline-flex;
+        align-items: center;
+        height: 100%;
+    }
+
+    &__publishBtn {
+        margin-left: var(--space-small-size);
+    }
+
+    &--aside {
+        &-opened {
+            .App__aside {
+                display: inline-flex;
+            }
+
+            .App__main {
+                width: calc(~"100% - 250px");
+            }
+        }
+
+        &-closed {
+            .App__aside {
+                display: none;
+            }
+
+            .App__main {
+                width: 100%;
+            }
+        }
+    }
+}

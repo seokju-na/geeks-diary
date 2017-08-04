@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+    <title>Geek's Diary</title>
+</head>
+<body>
+    <app-root></app-root>
+
+    <script>
+        // Monaco uses a custom amd loader that over-rides node's require.
+        // Keep a reference to node's require so we can restore it after executing the amd loader file.
+        const nodeRequire = global.require;
+    </script>
+    <script src="../../node_modules/monaco-editor/min/vs/loader.js"></script>
+    <script>
+        // Save Monaco's amd require and restore Node's require
+        const amdRequire = global.require;
+        global.require = nodeRequire;
+    </script>
+
+    <script>
+        // require node modules before loader.js comes in
+        const path = require('path');
+
+        function uriFromPath(_path) {
+            let pathName = path.resolve(_path).replace(/\\/g, '/');
+
+            if (pathName.length > 0 && pathName.charAt(0) !== '/') {
+                pathName = '/' + pathName;
+            }
+
+            return encodeURI('file://' + pathName);
+        }
+        amdRequire.config({
+            baseUrl: uriFromPath(path.join(__dirname, '../../node_modules/monaco-editor/min'))
+        });
+        // workaround monaco-css not understanding the environment
+        self.module = undefined;
+        // workaround monaco-typescript not understanding the environment
+        self.process.browser = true;
+        amdRequire(['vs/editor/editor.main'], function onEditorLibLoaded() {
+            global.monaco = this.monaco;
+
+            if (global.onEditorLibLoaded) {
+                global.onEditorLibLoaded();
+            }
+        });
+    </script>
+</body>
+</html>

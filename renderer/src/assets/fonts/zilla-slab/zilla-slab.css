@@ -1,0 +1,48 @@
+@font-face {
+    font-family: "Zilla Slab";
+    font-style: normal;
+    font-weight: 300;
+    src: local("Zilla Slab Light"), local("ZillaSlab-Light"), url(./ZillaSlab-Light.ttf);
+}
+
+@font-face {
+    font-family: "Zilla Slab";
+    font-style: italic;
+    font-weight: 300;
+    src: local("Zilla Slab Light Italic"), local("ZillaSlab-LightItalic"), url(./ZillaSlab-LightItalic.ttf);
+}
+
+@font-face {
+    font-family: "Zilla Slab";
+    font-style: normal;
+    font-weight: 400;
+    src: local("Zilla Slab Regular"), local("ZillaSlab-Regular"), url(./ZillaSlab-Regular.ttf);
+}
+
+@font-face {
+    font-family: "Zilla Slab";
+    font-style: normal;
+    font-weight: 500;
+    src: local("Zilla Slab SemiBold"), local("ZillaSlab-SemiBold"), url(./ZillaSlab-SemiBold.ttf);
+}
+
+@font-face {
+    font-family: "Zilla Slab";
+    font-style: italic;
+    font-weight: 500;
+    src: local("Zilla Slab SemiBold Italic"), local("ZillaSlab-SemiBoldItalic"), url(./ZillaSlab-SemiBoldItalic.ttf);
+}
+
+@font-face {
+    font-family: "Zilla Slab";
+    font-style: normal;
+    font-weight: 700;
+    src: local("Zilla Slab Bold"), local("ZillaSlab-Bold"), url(./ZillaSlab-Bold.ttf);
+}
+
+@font-face {
+    font-family: "Zilla Slab";
+    font-style: italic;
+    font-weight: 700;
+    src: local("Zilla Slab Bold Italic"), local("ZillaSlab-BoldItalic"), url(./ZillaSlab-BoldItalic.ttf);
+}

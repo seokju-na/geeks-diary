@@ -1,0 +1,28 @@
+:root {
+    --lineHeight-size: 1.25;
+
+    --text-small-size: 12px;
+    --text-regular-size: 14px;
+    --text-medium-size: 17px;
+    --text-big-size: 21px;
+    --text-extraBig-size: 24px;
+
+    --lineHeight-small-size: 15px;
+    --lineHeight-regular-size: 17.5px;
+    --lineHeight-medium-size: 20px;
+    --lineHeight-big-size: 23.5px;
+
+    --box-small-size: 24px;
+    --box-regular-size: 28px;
+    --box-medium-size: 32px;
+    --box-big-size: 36px;
+
+    --container-small-size: 32px;
+    --container-regular-size: 36px;
+    --container-medium-size: 42px;
+    --container-big-size: 50px;
+
+    --space-small-size: 4px;
+    --space-regular-size: 8px;
+    --space-big-size: 12px;
+}

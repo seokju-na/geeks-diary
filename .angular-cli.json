@@ -1,0 +1,49 @@
+{
+    "$schema": "./node_modules/@angular/cli/lib/config/schema.json",
+    "project": {
+        "name": "geeks-diary"
+    },
+    "apps": [
+        {
+            "root": "renderer/src",
+            "outDir": "renderer/build",
+            "assets": [
+                "assets"
+            ],
+            "index": "index.html",
+            "main": "bootstrap.ts",
+            "polyfills": "polyfills.ts",
+            "test": "test.ts",
+            "tsconfig": "tsconfig.app.json",
+            "testTsconfig": "tsconfig.spec.json",
+            "prefix": "app",
+            "styles": [
+                "styles.less"
+            ],
+            "scripts": [],
+            "environmentSource": "environments/environment.ts",
+            "environments": {
+                "dev": "environments/environment.ts",
+                "prod": "environments/environment.prod.ts"
+            }
+        }
+    ],
+    "lint": [
+        {
+            "project": "renderer/src/tsconfig.app.json"
+        },
+        {
+            "project": "renderer/src/tsconfig.spec.json"
+        }
+    ],
+    "test": {
+        "karma": {
+            "config": "renderer/karma.conf.js"
+        }
+    },
+    "defaults": {
+        "styleExt": "less",
+        "component": {
+        }
+    }
+}

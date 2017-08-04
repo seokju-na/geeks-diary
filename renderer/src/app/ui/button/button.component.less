@@ -1,0 +1,88 @@
+.Button {
+    margin: 0;
+    padding: 0;
+    height: var(--box-regular-size);
+    font-size: var(--text-regular-size);
+    font-weight: 400;
+    line-height: 1;
+    color: var(--color-greay-8);
+    border-radius: 2px;
+    border: 1px solid var(--color-gray-5);
+    background-color: var(--color-gray-3);
+    transition: all .2s ease;
+    cursor: pointer;
+    outline: 0;
+
+    &__content {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        height: 100%;
+        padding: 0 calc(~"var(--box-regular-size) / 2");
+
+        &[hidden] {
+            display: none;
+        }
+    }
+
+    &--type {
+        &-flat {
+            padding: 0 2px;
+            border: none;
+            color: var(--color-gray-7);
+            background: transparent;
+
+            .Button__content {
+                padding: 0 4px !important;
+            }
+
+            &:hover {
+                background-color: var(--color-gray-2);
+            }
+
+            &:active {
+                box-shadow: 0 0 5px 0 var(--color-gray-4) inset;
+            }
+        }
+
+        &-primary {
+            font-weight: 500;
+            color: var(--color-white);
+            background-color: var(--color-teal-5);
+            border: none;
+
+            &:active {
+                box-shadow: 0 0 5px 0 var(--color-teal-7) inset;
+            }
+        }
+    }
+
+    &--size {
+        &-small {
+            height: var(--box-small-size);
+            font-size: var(--text-small-size);
+
+            .Button__content {
+                padding: 0 calc(~"var(--box-small-size) / 2");
+            }
+        }
+
+        &-regular {
+            height: var(--box-regular-size);
+            font-size: var(--text-regular-size);
+
+            .Button__content {
+                padding: 0 calc(~"var(--box-regular-size) / 2");
+            }
+        }
+
+        &-big {
+            height: var(--box-big-size);
+            font-size: var(--text-big-size);
+
+            .Button__content {
+                padding: 0 calc(~"var(--box-big-size) / 2");
+            }
+        }
+    }
+}

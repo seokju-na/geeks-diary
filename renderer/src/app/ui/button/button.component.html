@@ -1,0 +1,8 @@
+<button (click)="click()" [ngClass]="cn.get()" [disabled]="disabled" class="Button">
+    <span [hidden]="loading" class="Button__content">
+        <ng-content></ng-content>
+    </span>
+    <!--
+    <app-spinner [show]="loading"></app-spinner>
+    -->
+</button>
