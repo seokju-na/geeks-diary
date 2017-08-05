@@ -8,9 +8,9 @@ switch (RUN_TARGET) {
         config = require('./config.prod');
         break;
     case 'development':
+    default:
         config = require('./config.dev');
         break;
-    default: throw new Error('Invalid run target.');
 }
 
 env.init(config);
