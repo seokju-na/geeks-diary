@@ -2,7 +2,6 @@ import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ButtonComponent } from './button/button.component';
 import { IconComponent } from './icon/icon.component';
-import { CalendarComponent } from './calendar/calendar.component';
 import { CalendarTable, calendarTableFactory } from './calendar/calendar-table';
 
 
@@ -12,8 +11,7 @@ import { CalendarTable, calendarTableFactory } from './calendar/calendar-table';
     ],
     declarations: [
         ButtonComponent,
-        IconComponent,
-        CalendarComponent
+        IconComponent
     ],
     providers: [
         {
@@ -26,8 +24,7 @@ import { CalendarTable, calendarTableFactory } from './calendar/calendar-table';
     ],
     exports: [
         ButtonComponent,
-        IconComponent,
-        CalendarComponent
+        IconComponent
     ]
 })
 export class UIModule {

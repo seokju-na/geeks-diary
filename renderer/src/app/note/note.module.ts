@@ -1,9 +1,11 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
+
 import { NoteStore } from './note-store.service';
 import { OrderNotePipe } from './order-note.pipe';
 import { NoteEditorComponent } from './editor/editor.component';
-import { FinderComponent } from './finder/finder.component';
+import { NoteFinderComponent } from './finder/finder.component';
+
 
 @NgModule({
     imports: [
@@ -12,14 +14,14 @@ import { FinderComponent } from './finder/finder.component';
     declarations: [
         OrderNotePipe,
         NoteEditorComponent,
-        FinderComponent
+        NoteFinderComponent
     ],
     providers: [
         NoteStore
     ],
     exports: [
         NoteEditorComponent,
-        FinderComponent
+        NoteFinderComponent
     ]
 })
 export class NoteModule {
