@@ -1,4 +1,4 @@
-<button (click)="click()" [ngClass]="cn.get()" [disabled]="disabled" class="Button">
+<button (click)="click()" [ngClass]="cn.get()"  [title]="buttonTitle" [disabled]="disabled" class="Button">
     <span [hidden]="loading" class="Button__content">
         <ng-content></ng-content>
     </span>

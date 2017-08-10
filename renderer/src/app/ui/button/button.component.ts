@@ -9,6 +9,7 @@ import { ClassName } from '../../utils/class-name'
 export class ButtonComponent implements OnInit, OnChanges {
     @Input() buttonType = 'normal';
     @Input() buttonSize = 'regular';
+    @Input() buttonTitle = '';
     @Input() loading = false;
     @Input() disabled = false;
     @Output() buttonClick = new EventEmitter();

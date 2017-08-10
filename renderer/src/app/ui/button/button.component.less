@@ -43,6 +43,19 @@
             &:active {
                 box-shadow: 0 0 5px 0 var(--color-gray-4) inset;
             }
+
+            &:disabled {
+                color: var(--color-gray-5);
+                cursor: default;
+
+                &:hover {
+                    background-color: transparent;
+                }
+
+                &:active {
+                    box-shadow: none;
+                }
+            }
         }
 
         &-primary {
