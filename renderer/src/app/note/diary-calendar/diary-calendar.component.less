@@ -1,0 +1,49 @@
+.DiaryCalendar {
+    width: 100%;
+    padding: 1px var(--space-small-size);
+
+    &__wday {
+        display: flex;
+        align-items: center;
+        margin: 0;
+        padding: 0;
+        width: 100%;
+        height: var(--box-small-size);
+
+        & > li {
+            flex: 1;
+            list-style: none;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+            font-size: var(--text-small-size);
+            font-weight: 500;
+            line-height: var(--lineHeight-small-size);
+            text-align: center;
+            cursor: default;
+
+            &::selection {
+                background-color: transparent;
+            }
+            &.red { color: var(--color-red-4); }
+            &.blue { color: var(--color-blue-4); }
+        }
+    }
+
+    &__row {
+        display: flex;
+        align-items: center;
+        width: 100%;
+        height: var(--box-medium-size);
+    }
+
+    &__cell {
+        flex: 1;
+        display: inline-flex;
+        justify-content: center;
+        align-items: center;
+        padding: 1px;
+        height: 100%;
+    }
+}

@@ -1,7 +1,24 @@
 <div aria-label="Note Finder" class="NoteFinder">
     <nav class="NoteFinder__calendarNav">
+        <app-button (buttonClick)="moveDateIndexTo(-1)" [buttonType]="'flat'">
+            <app-icon [iconName]="'angle-left'"></app-icon>
+        </app-button>
 
+        <h1 class="NoteFinder__calendarTitle">
+            {{ indexDate.format('YYYY.MM') }}
+        </h1>
+
+        <app-button (buttonClick)="moveDateIndexTo(1)"
+                    [disabled]="!canMoveDateIndex(1)"
+                    [buttonType]="'flat'">
+            <app-icon [iconName]="'angle-right'"
+                      [iconColor]="canMoveDateIndex(1) ? 'darkGray' : 'white'"></app-icon>
+        </app-button>
     </nav>
 
+    <app-diary-calendar [year]="indexDate.year()"
+                        [month]="indexDate.month()"
+                        class="NoteFinder__calendar"></app-diary-calendar>
 
+    <app-note-list class="NoteFinder__noteList"></app-note-list>
 </div>

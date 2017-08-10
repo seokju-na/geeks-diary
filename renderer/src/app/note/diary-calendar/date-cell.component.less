@@ -1,0 +1,36 @@
+.DateCell {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+    border-radius: 2px;
+    background-color: var(--color-gray-0);
+    text-decoration: none;
+    cursor: pointer;
+
+    & > time {
+        font-size: var(--text-small-size);
+        color: var(--color-gray-7);
+    }
+
+    &--is {
+        &-blank {
+            background-color: transparent !important;
+        }
+    }
+
+    &--amount {
+        &-low {
+            background-color: var(--color-teal-1);
+        }
+
+        &-medium {
+            background-color: var(--color-teal-3);
+        }
+
+        &-high {
+            background-color: var(--color-teal-5);
+        }
+    }
+}

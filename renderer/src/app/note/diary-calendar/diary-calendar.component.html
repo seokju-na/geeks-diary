@@ -1,0 +1,17 @@
+<div aria-label="Diary Calendar" class="DiaryCalendar">
+    <ul class="DiaryCalendar__wday">
+        <li class="red">S</li>
+        <li>M</li>
+        <li>T</li>
+        <li>W</li>
+        <li>T</li>
+        <li>F</li>
+        <li class="blue">S</li>
+    </ul>
+
+    <div *ngFor="let row of calendarTable.rows" class="DiaryCalendar__row">
+        <app-date-cell *ngFor="let cell of row.cells"
+                       [dateCell]="cell"
+                       class="DiaryCalendar__cell"></app-date-cell>
+    </div>
+</div>

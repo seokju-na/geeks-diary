@@ -1,10 +1,10 @@
-.NoteFinder {
+.NoteList {
     display: flex;
     flex-direction: column;
     width: 100%;
     height: 100%;
 
-    &__calendarNav {
+    &__header {
         display: flex;
         align-items: center;
         padding: 0 var(--space-small-size);
@@ -12,28 +12,32 @@
         height: var(--container-regular-size);
     }
 
-    &__calendarTitle {
+    &__title {
         flex: 1;
         margin: 0;
-        padding: 0;
-        text-align: center;
+        padding: 0 var(--space-regular-size);
         font-size: var(--text-regular-size);
         font-weight: 500;
-        line-height: var(--text-regular-size);
-        color: var(--color-gray-8);
+        line-height: var(--lineHeight-regular-size);
     }
 
-    &__calendar {
-        display: block;
-        padding-bottom: var(--space-regular-size);
-        width: 100%;
-        border-bottom: 1px solid var(--color-gray-3);
+    &__toolbar {
+        display: inline-flex;
+        align-items: center;
+        height: 100%;
     }
 
-    &__noteList {
+    &__body {
         flex: 1;
         display: block;
-        width: 100%;
+        margin: 0;
+        padding: 0;
         overflow-y: scroll;
+    }
+
+    &__item {
+        margin: 0;
+        padding: 0;
+        list-style: none;
     }
 }

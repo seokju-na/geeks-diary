@@ -1,0 +1,4 @@
+<a [ngClass]="cn.get()" class="DateCell">
+    <time aria-label="Calendar Date"
+          *ngIf="!dateCell.isBlank">{{ dateCell.time | date:'d' }}</time>
+</a>
