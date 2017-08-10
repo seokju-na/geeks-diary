@@ -1,8 +1,11 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
+
 import { ButtonComponent } from './button/button.component';
 import { IconComponent } from './icon/icon.component';
 import { CalendarTable, calendarTableFactory } from './calendar/calendar-table';
+import { ToolBarComponent } from './tool-bar/tool-bar.component';
+import { ToolBar, toolBarFactory } from './tool-bar/tool-bar'
 
 
 @NgModule({
@@ -11,7 +14,8 @@ import { CalendarTable, calendarTableFactory } from './calendar/calendar-table';
     ],
     declarations: [
         ButtonComponent,
-        IconComponent
+        IconComponent,
+        ToolBarComponent
     ],
     providers: [
         {
@@ -21,10 +25,18 @@ import { CalendarTable, calendarTableFactory } from './calendar/calendar-table';
             },
             deps: []
         },
+        {
+            provide: ToolBar,
+            useFactory() {
+                return toolBarFactory
+            },
+            deps: []
+        }
     ],
     exports: [
         ButtonComponent,
-        IconComponent
+        IconComponent,
+        ToolBarComponent
     ]
 })
 export class UIModule {

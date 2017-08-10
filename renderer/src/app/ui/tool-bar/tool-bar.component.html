@@ -1,0 +1,15 @@
+<ul [attr.aria-label]="toolBarTitle" role="toolbar" [ngClass]="cn.get()" class="ToolBar">
+    <li *ngFor="let toolItem of toolBar.items"
+        role="presentation"
+        [class.selected]="isItemSelected(toolItem)"
+        class="ToolBar__item">
+        <app-button (buttonClick)="clickToolItem(toolItem)"
+                    [buttonTitle]="toolItem.title"
+                    [buttonType]="'flat'"
+                    [buttonSize]="toolBarSize">
+            <app-icon [iconName]="toolItem.iconName"
+                      [iconColor]="'gray'"
+                      [iconSize]="toolBarSize"></app-icon>
+        </app-button>
+    </li>
+</ul>

@@ -1,0 +1,45 @@
+.ToolBar {
+    display: inline-flex;
+    align-items: center;
+    margin: 0;
+    padding: 0;
+
+    &__item {
+        list-style: none;
+        margin: 0;
+        padding: 0 2px;
+    }
+
+    &--size {
+        &-small {
+            height: var(--box-small-size);
+        }
+
+        &-regular {
+            height: var(--box-regular-size);
+        }
+
+        &-medium {
+            height: var(--box-medium-size);
+        }
+
+        &-big {
+            height: var(--box-big-size);
+        }
+    }
+
+    &--direction {
+        &-horizontal {
+            flex-direction: row;
+        }
+
+        &-vertical {
+            flex-direction: column;
+
+            .ToolBar__item {
+                padding-top: 2px;
+                padding-bottom: 2px;
+            }
+        }
+    }
+}
