@@ -1,40 +1,40 @@
 <div [ngClass]="cn.get()" class="App">
+    <nav class="App__activityBar">
+        <app-tool-bar [toolBarTitle]="'Activity view navigator'"
+                      [toolBarSize]="'big'"
+                      [toolItems]="activityViewNavigators"
+                      [toolBarDirection]="'vertical'"></app-tool-bar>
+
+        <app-tool-bar [toolBarTitle]="'Global actions'"
+                      [toolBarSize]="'big'"
+                      [toolItems]="globalActions"
+                      [toolBarDirection]="'vertical'"></app-tool-bar>
+    </nav>
+
     <app-aside class="App__aside">
-        <app-calendar></app-calendar>
+        <app-note-finder></app-note-finder>
     </app-aside>
 
-    <main class="App__main">
-        <header class="App__header">
-            <app-button (buttonClick)="toggleAside()" [buttonType]="'flat'">
-                <app-icon [iconName]="'navicon'" [iconColor]="'gray'"></app-icon>
-            </app-button>
-
-            <div class="App__title">
+    <main class="App__noteWorkspace">
+        <header class="App__noteHeader">
+            <div class="App__noteTitle">
                 <h1 aria-label="Note Title">Note Title</h1>
                 <span></span>
                 <time aria-label="Note Created" datetime="2017-08-04T06:54:18.456Z">July, 23</time>
             </div>
 
-            <div aria-label="Note Toolbar" class="App__toolbar">
-                <app-button [buttonType]="'flat'">
-                    <app-icon [iconName]="'eye'" [iconColor]="'gray'"></app-icon>
-                </app-button>
+            <app-tool-bar
+                    (toolBarClick)="handleNoteAction($event)"
+                    [toolBarTitle]="'Note actions'"
+                    [toolBarSize]="'regular'"
+                    [toolItems]="noteActions"></app-tool-bar>
 
-                <app-button [buttonType]="'flat'">
-                    <app-icon [iconName]="'trash'" [iconColor]="'gray'"></app-icon>
-                </app-button>
-
-                <app-button [buttonType]="'flat'">
-                    <app-icon [iconName]="'external-link'" [iconColor]="'gray'"></app-icon>
-                </app-button>
-
-                <app-button [buttonType]="'primary'" class="App__publishBtn">
-                    <span>Publish</span>
-                </app-button>
-            </div>
+            <app-button [buttonTitle]="'Publish note'" [buttonType]="'primary'" class="App__notePublishBtn">
+                <span>Publish</span>
+            </app-button>
         </header>
 
-        <section class="App__content">
+        <section class="App__content" style="padding: 16px;">
             <app-note-editor></app-note-editor>
         </section>
     </main>
