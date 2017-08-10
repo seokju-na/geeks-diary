@@ -42,7 +42,7 @@ export async function writeFile(filename: string, data: string): Promise<any> {
 }
 
 export async function isPathExists(pathname: string): Promise<boolean> {
-    const accessAsync: Promise<boolean> = new Promise((resolve, reject) => {
+    const accessAsync: Promise<boolean> = new Promise((resolve) => {
         fs.access(pathname, (err) => {
             if (err) {
                 resolve(false);
