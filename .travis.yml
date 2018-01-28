@@ -1,0 +1,29 @@
+sudo: required
+dist: trusty
+language: node_js
+node_js:
+    - "8"
+    - "node"
+
+matrix:
+    fast_finish: true
+
+install:
+    - npm install
+
+before_script:
+    - export DISPLAY=:99.0
+    - sh -e /etc/init.d/xvfb start
+    - sleep 3
+
+branches:
+    only:
+        - develop
+        - master
+
+script:
+    - npm run ci:travis
+
+cache:
+    directories:
+        - node_modules

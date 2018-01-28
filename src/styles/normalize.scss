@@ -1,0 +1,31 @@
+*, *:before, *:after {
+    box-sizing: border-box;
+}
+
+body, html {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    height: 100%;
+    background-color: var(--color-white);
+}
+
+body {
+    font-family: "Open Sans", sans-serif;
+    font-size: var(--text-regular-size);
+    font-weight: 400;
+    line-height: var(--lineHeight-regular-size);
+    color: var(--color-gray-9);
+}
+
+input, select, option, blockquote, textarea {
+    font-family: "Open Sans", sans-serif;
+}
+
+code {
+    font-family: Menlo, Monaco, "Courier New", monospace;
+}
+
+::selection {
+    background: var(--color-blue-1);
+}
