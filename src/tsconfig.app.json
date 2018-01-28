@@ -3,9 +3,17 @@
     "compilerOptions": {
         "outDir": "../out-tsc/app",
         "baseUrl": "./",
-        "types": []
+        "types": [
+            "node"
+        ]
     },
     "exclude": [
+        "main.electron.ts",
+        "electron/",
         "**/*.spec.ts"
-    ]
+    ],
+    "angularCompilerOptions": {
+        "genDir": "../aot",
+        "skipMetadataEmit": true
+    }
 }

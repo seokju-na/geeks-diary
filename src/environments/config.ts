@@ -5,7 +5,7 @@ export enum EnvironmentRunTarget {
 
 
 export abstract class EnvironmentConfig {
-    RUN_TARGET: EnvironmentRunTarget;
-    production: boolean;
-    enableAot: boolean;
+    abstract RUN_TARGET: EnvironmentRunTarget;
+    abstract production: boolean;
+    abstract enableAot: boolean;
 }

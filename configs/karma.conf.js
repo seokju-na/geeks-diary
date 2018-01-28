@@ -1,7 +1,7 @@
 const testWebpackConfig = require('./webpack.test');
 
 
-const CI = process.env.TRAVIS_CI || false;
+const CI = process.env.CI || false;
 
 
 module.exports = (config) => {
@@ -18,14 +18,14 @@ module.exports = (config) => {
             captureConsole: true
         },
         files: [
-            'tools/spec-bundle.js',
+            'test/spec-bundle.js',
             { pattern: 'src/assets/**/*', watched: false, included: false, served: true, nocache: false }
         ],
         proxies: {
             '/assets/': '/base/src/assets/'
         },
         preprocessors: {
-            'tools/spec-bundle.js': ['webpack', 'electron']
+            'test/spec-bundle.js': ['webpack', 'electron']
         },
         webpack: testWebpackConfig,
         webpackMiddleware: {
