@@ -1,7 +1,7 @@
 const testWebpackConfig = require('./webpack.test');
 
 
-const CI = process.env.TRAVIS_CI || false;
+const CI = process.env.CI || false;
 
 
 module.exports = (config) => {
