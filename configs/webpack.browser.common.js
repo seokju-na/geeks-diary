@@ -2,6 +2,7 @@ const { ContextReplacementPlugin, NoEmitOnErrorsPlugin, ProgressPlugin } = requi
 const { CommonsChunkPlugin } = require('webpack').optimize;
 const CopyWebpackPlugin = require('copy-webpack-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
+const Jarvis = require('webpack-jarvis');
 const helpers = require('./helpers');
 
 
@@ -27,25 +28,9 @@ const config = {
     module: {
         rules: [
             {
-                test: /\.ts$/,
-                include: [helpers.path.src('.')],
-                exclude: [...helpers.path.excludes()],
-                use: [
-                    {
-                        loader: 'awesome-typescript-loader',
-                        options: {
-                            configFileName: helpers.path.src('tsconfig.json')
-                        }
-                    },
-                    { loader: 'angular2-template-loader' }
-                ]
-            },
-            {
                 test: /\.html$/,
                 loader: 'html-loader',
-                query: {
-                    minimize: true
-                }
+                exclude: [helpers.path.src('index.html')]
             },
             {
                 test: /\.less$/,
@@ -71,7 +56,8 @@ const config = {
                             sourceMap: false
                         }
                     }
-                ]
+                ],
+                exclude: [helpers.path.src('styles')]
             },
             {
                 test: /\.(jpg|png|gif)$/,
@@ -109,6 +95,9 @@ const config = {
         ]),
         new HtmlWebpackPlugin({
             template: helpers.path.src('index.html')
+        }),
+        new Jarvis({
+            port: 1337
         })
     ],
     stats: {

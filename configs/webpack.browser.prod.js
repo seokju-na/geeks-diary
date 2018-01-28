@@ -1,7 +1,8 @@
 const { DefinePlugin, LoaderOptionsPlugin } = require('webpack');
 const webpackMerge = require('webpack-merge');
-const { UglifyJsPlugin } = require('webpack/lib/optimize');
-const { AotPlugin } = require('@ngtools/webpack');
+const { UglifyJsPlugin } = require('webpack').optimize;
+const { AngularCompilerPlugin } = require('@ngtools/webpack');
+const ExtractTextPlugin = require('extract-text-webpack-plugin');
 const OptimizeJsPlugin = require('optimize-js-plugin');
 const commonConfig = require('./webpack.browser.common');
 const helpers = require('./helpers');
@@ -9,11 +10,44 @@ const helpers = require('./helpers');
 
 const config = webpackMerge(commonConfig, {
     devtool: 'source-map',
+    resolve: {
+        extensions: ['.ts', '.ngfactory', '.js', '.json'],
+        modules: [helpers.path.nodeModules()]
+    },
     module: {
         rules: [
             {
-                test: /\.ts$/,
+                test: /(?:\.ngfactory\.js|\.ngstyle\.js|\.ts)$/,
                 loader: '@ngtools/webpack'
+            },
+            {
+                test: /\.less$/,
+                loader: ExtractTextPlugin.extract({
+                    fallback: 'style-loader',
+                    use: [
+                        {
+                            loader: 'css-loader',
+                            options: {
+                                sourceMap: false,
+                                importLoaders: 1
+                            }
+                        },
+                        {
+                            loader: 'postcss-loader',
+                            options: {
+                                postcss: {},
+                                ident: 'postcss'
+                            }
+                        },
+                        {
+                            loader: 'less-loader',
+                            options: {
+                                sourceMap: false
+                            }
+                        }
+                    ]
+                }),
+                include: [helpers.path.src('styles/styles.less')]
             }
         ]
     },
@@ -23,13 +57,16 @@ const config = webpackMerge(commonConfig, {
                 RUN_TARGET: JSON.stringify('production')
             }
         }),
-        new AotPlugin({
-            tsConfigPath: helpers.path.src('tsconfig.aot.json'),
-            entryModule: helpers.path.src('app/app.module#AppModule')
+        new AngularCompilerPlugin({
+            tsConfigPath: helpers.path.src('tsconfig.app.json'),
+            entryModule: helpers.path.src('app/app.module#AppModule'),
+            mainPath: helpers.path.src('main.browser.ts'),
+            sourceMap: true
         }),
         new OptimizeJsPlugin({
             sourceMap: false
         }),
+        new ExtractTextPlugin('[name].css'),
         new UglifyJsPlugin({
             beautify: false,
             output: {
