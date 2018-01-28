@@ -16,7 +16,7 @@ const config = {
                     {
                         loader: 'awesome-typescript-loader',
                         query: {
-                            configFileName: helpers.path.src('tsconfig.test.json')
+                            configFileName: helpers.path.src('tsconfig.spec.json')
                         }
                     },
                     'angular2-template-loader'
