@@ -29,10 +29,7 @@ const config = {
             },
             {
                 test: /\.html$/,
-                loader: 'html-loader',
-                query: {
-                    minimize: true
-                }
+                loader: 'html-loader'
             },
             {
                 test: /\.less$/,
