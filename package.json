@@ -35,6 +35,7 @@
         "@angular/compiler": "^5.2.2",
         "@angular/compiler-cli": "^5.2.2",
         "@angular/core": "^5.2.2",
+        "@angular/forms": "^5.2.2",
         "@angular/platform-browser": "^5.2.2",
         "@angular/platform-browser-dynamic": "^5.2.2",
         "@ngtools/webpack": "^1.9.6",
@@ -78,7 +79,6 @@
         "typeface-open-sans": "^0.0.54",
         "typescript": "^2.6.2",
         "webpack": "^3.10.0",
-        "webpack-jarvis": "^0.2.2",
         "webpack-merge": "^4.1.1",
         "zone.js": "^0.8.20"
     },

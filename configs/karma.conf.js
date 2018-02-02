@@ -15,7 +15,8 @@ module.exports = (config) => {
             require('karma-electron-launcher')
         ],
         client: {
-            captureConsole: true
+            captureConsole: true,
+            useIframe: false
         },
         files: [
             'test/spec-bundle.js',
@@ -29,7 +30,10 @@ module.exports = (config) => {
         },
         webpack: testWebpackConfig,
         webpackMiddleware: {
-            noInfo: true
+            noInfo: true,
+            stats: {
+                chunks: false
+            }
         },
         reporters: ['dots'],
         port: 9876,

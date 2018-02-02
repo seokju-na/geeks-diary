@@ -12,6 +12,8 @@ process.on('uncaughtException', (error) => {
     }
 });
 
+app.commandLine.appendSwitch('remote-debugging-port', '9229');
+
 app.once('ready', () => {
     appDelegate.run();
     console.log('START! 😸');
