@@ -5,11 +5,12 @@ const CI = process.env.CI || false;
 
 
 module.exports = (config) => {
-    config.set({
+    const options = {
         basePath: '../',
         frameworks: ['jasmine'],
         plugins: [
             require('karma-jasmine'),
+            require('karma-coverage'),
             require('karma-webpack'),
             require('karma-electron'),
             require('karma-electron-launcher')
@@ -35,12 +36,22 @@ module.exports = (config) => {
                 chunks: false
             }
         },
-        reporters: ['dots'],
+        reporters: CI ? ['dots', 'coverage'] : ['dots'],
         port: 9876,
         color: true,
         logLevel: config.LOG_INFO,
         autoWatch: !CI,
         browsers: ['Electron'],
         singleRun: CI
-    });
+    };
+
+    if (CI) {
+        options.coverageReporter = {
+            reporters: [
+                { type: 'lcovonly', subdir: '.' }
+            ]
+        };
+    }
+
+    config.set(options);
 };

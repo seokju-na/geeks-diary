@@ -2,6 +2,8 @@ const { ContextReplacementPlugin, DefinePlugin } = require('webpack');
 const helpers = require('./helpers');
 
 
+const CI = process.env.CI || false;
+
 const config = {
     devtool: 'inline-source-map',
     resolve: {
@@ -76,5 +78,21 @@ const config = {
     },
     target: 'electron-renderer'
 };
+
+
+if (CI) {
+    config.module.rules.push(
+        {
+            enforce: 'post',
+            test: /\.(js|ts)$/,
+            loader: 'istanbul-instrumenter-loader',
+            include: helpers.path.src('app'),
+            exclude: [
+                /\.(e2e|spec)\.ts$/,
+                /node_modules/
+            ]
+        }
+    );
+}
 
 module.exports = config;

@@ -2,5 +2,6 @@
 node_modules/
 src/assets/vendors/
 dist/
+coverage/
 packages/
 .DS_Store*
