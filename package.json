@@ -41,6 +41,7 @@
         "@angular/platform-browser": "^5.2.2",
         "@angular/platform-browser-dynamic": "^5.2.2",
         "@ngtools/webpack": "^1.9.6",
+        "@types/node": "^9.4.0",
         "@types/jasmine": "^2.8.6",
         "angular2-template-loader": "^0.6.2",
         "awesome-typescript-loader": "^3.4.1",
@@ -49,7 +50,7 @@
         "core-js": "^2.5.3",
         "css-loader": "^0.28.9",
         "devicon": "^2.0.0",
-        "electron": "^1.7.11",
+        "electron": "^1.7.12",
         "electron-builder": "^19.55.2",
         "electron-devtools-installer": "^2.2.3",
         "exports-loader": "^0.6.4",
@@ -96,8 +97,5 @@
     "engines": {
         "node": ">= 8.0.0",
         "npm": ">= 5"
-    },
-    "dependencies": {
-        "@types/node": "^9.4.0"
     }
 }
