@@ -1,0 +1,7 @@
+<ng-template>
+    <div [class.Autocomplete--visible]="showPanel"
+         [class.Autocomplete--hidden]="!showPanel"
+         class="Autocomplete" role="listbox" #panel>
+        <ng-content></ng-content>
+    </div>
+</ng-template>
