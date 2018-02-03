@@ -22,7 +22,9 @@ branches:
 
 script:
     - npm run ci:travis
+    - npm run ci:coverage
 
 cache:
+    yarn: true
     directories:
         - node_modules
