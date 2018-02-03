@@ -151,7 +151,7 @@ describe('app.shared.autocomplete', () => {
         tick();
         fixture.detectChanges();
 
-        expect(overlayContainerElement.querySelector('.Autocomplete')!.classList)
+        expect(overlayContainerElement.querySelector('.Autocomplete').classList)
             .toContain('Autocomplete--visible');
 
         typeInElement('x', inputElem);
@@ -159,7 +159,7 @@ describe('app.shared.autocomplete', () => {
         tick();
         fixture.detectChanges();
 
-        expect(overlayContainerElement.querySelector('.Autocomplete')!.classList)
+        expect(overlayContainerElement.querySelector('.Autocomplete').classList)
             .toContain('Autocomplete--hidden');
 
         fixture.componentInstance.trigger.closePanel();
@@ -173,7 +173,7 @@ describe('app.shared.autocomplete', () => {
         tick();
         fixture.detectChanges();
 
-        expect(overlayContainerElement.querySelector('.Autocomplete')!.classList)
+        expect(overlayContainerElement.querySelector('.Autocomplete').classList)
             .toContain('Autocomplete--visible');
     }));
 
@@ -254,7 +254,7 @@ describe('app.shared.autocomplete', () => {
 
 
 @Component({
-    template: `        
+    template: `
         <gd-form-field>
             <input gdFormFieldControl gdAutocomplete [autocomplete]="auto" [formControl]="stateCtrl">
             <gd-autocomplete [displayWith]="displayFn" #auto="gdAutocomplete">
@@ -300,6 +300,6 @@ class TestAutocompleteComponent implements OnDestroy {
     }
 
     displayFn(value: any): string {
-        return value!.name;
+        return value.name;
     }
 }
