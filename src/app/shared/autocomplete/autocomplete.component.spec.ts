@@ -300,6 +300,10 @@ class TestAutocompleteComponent implements OnDestroy {
     }
 
     displayFn(value: any): string {
-        return value.name;
+        if (value && value.name) {
+            return value.name
+        }
+
+        return '';
     }
 }
