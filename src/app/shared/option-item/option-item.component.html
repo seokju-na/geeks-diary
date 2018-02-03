@@ -1,0 +1,11 @@
+<a [id]="id" role="option"
+   [attr.aria-selected]="selected"
+   [attr.aria-disabled]="disabled"
+   [class.OptionItem--selected]="selected"
+   [class.OptionItem--active]="active"
+   [class.OptionItem--disabled]="disabled"
+   (click)="selectViaInteraction()"
+   (keydown)="handleKeydown($event)"
+   class="OptionItem">
+    <ng-content></ng-content>
+</a>

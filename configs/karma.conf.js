@@ -15,21 +15,25 @@ module.exports = (config) => {
             require('karma-electron-launcher')
         ],
         client: {
-            captureConsole: true
+            captureConsole: true,
+            useIframe: false
         },
         files: [
-            'test/spec-bundle.js',
+            'src/spec.js',
             { pattern: 'src/assets/**/*', watched: false, included: false, served: true, nocache: false }
         ],
         proxies: {
             '/assets/': '/base/src/assets/'
         },
         preprocessors: {
-            'test/spec-bundle.js': ['webpack', 'electron']
+            'src/spec.js': ['webpack', 'electron']
         },
         webpack: testWebpackConfig,
         webpackMiddleware: {
-            noInfo: true
+            noInfo: true,
+            stats: {
+                chunks: false
+            }
         },
         reporters: ['dots'],
         port: 9876,
