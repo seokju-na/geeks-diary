@@ -5,7 +5,7 @@ import { By } from '@angular/platform-browser';
 import { IconComponent } from './icon.component';
 
 
-describe('app.shared.IconComponent', () => {
+describe('app.shared.icon', () => {
     let fixture: ComponentFixture<IconTestAppComponent>;
     let component: IconTestAppComponent;
 

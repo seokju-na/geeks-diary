@@ -4,7 +4,7 @@ import { By } from '@angular/platform-browser';
 import { ButtonComponent } from './button.component';
 
 
-describe('app.shared.ButtonComponent', () => {
+describe('app.shared.button', () => {
     let fixture: ComponentFixture<ButtonComponent>;
     let component: ButtonComponent;
 

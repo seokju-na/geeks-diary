@@ -7,7 +7,7 @@ import { FormFieldErrorComponent } from './form-field-error.component';
 import { FormFieldComponent } from './form-field.component';
 
 
-describe('app.shared.formField.FormFieldComponent', () => {
+describe('app.shared.formField', () => {
     let fixture: ComponentFixture<HeroFormFieldComponent>;
     let component: HeroFormFieldComponent;
 

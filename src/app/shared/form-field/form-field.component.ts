@@ -20,7 +20,7 @@ export class FormFieldComponent implements AfterViewInit {
     @HostBinding('class.errorCaught') errorCaught = false;
 
     constructor(
-        private elementRef: ElementRef,
+        public elementRef: ElementRef,
         private changeDetectorRef: ChangeDetectorRef) {
     }
 
