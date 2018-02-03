@@ -5,7 +5,9 @@ class DebugElementMatcher {
     not: DebugElementMatcher;
 
     constructor(public debugElement, private denied = false) {
-        this.not = new DebugElementMatcher(this.debugElement, true);
+        if (!this.denied) {
+            this.not = new DebugElementMatcher(this.debugElement, true);
+        }
     }
 
     get nativeElem(): HTMLElement {
