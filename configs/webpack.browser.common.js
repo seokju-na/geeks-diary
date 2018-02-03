@@ -2,7 +2,8 @@ const { ContextReplacementPlugin, NoEmitOnErrorsPlugin, ProgressPlugin } = requi
 const { CommonsChunkPlugin } = require('webpack').optimize;
 const CopyWebpackPlugin = require('copy-webpack-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
-const Jarvis = require('webpack-jarvis');
+const MonacoLoadPlugin = require('../tools/monaco-load-plugin');
+const DefaultThemeGenerator = require('../tools/default-theme-generator');
 const helpers = require('./helpers');
 
 
@@ -58,14 +59,6 @@ const config = {
                     }
                 ],
                 exclude: [helpers.path.src('styles')]
-            },
-            {
-                test: /\.(jpg|png|gif)$/,
-                use: 'file-loader'
-            },
-            {
-                test: /\.(eot|woff2?|svg|ttf)([\?]?.*)$/,
-                use: 'file-loader'
             }
         ]
     },
@@ -94,11 +87,13 @@ const config = {
             }
         ]),
         new HtmlWebpackPlugin({
-            template: helpers.path.src('index.html')
+            template: helpers.path.src('index.html'),
+            minify: {
+                removeComments: true
+            }
         }),
-        new Jarvis({
-            port: 1337
-        })
+        new MonacoLoadPlugin(helpers.path.src('assets/load-monaco.html'), 'MONACO_EDITOR_LOAD_POSITION'),
+        new DefaultThemeGenerator(helpers.path.dist('default-theme.css'))
     ],
     stats: {
         assets: true,
