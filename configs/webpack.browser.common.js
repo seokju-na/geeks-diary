@@ -30,7 +30,7 @@ const config = {
         rules: [
             {
                 test: /\.html$/,
-                loader: 'html-loader',
+                loader: 'raw-loader',
                 exclude: [helpers.path.src('index.html')]
             },
             {
