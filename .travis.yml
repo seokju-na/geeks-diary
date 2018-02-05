@@ -2,27 +2,40 @@ sudo: required
 dist: trusty
 language: node_js
 node_js:
-    - "8"
+    - '8'
 
 matrix:
     fast_finish: true
 
-install:
-    - npm install
+before_install:
+    - yarn global add greenkeeper-lockfile@1
 
 before_script:
     - export DISPLAY=:99.0
     - sh -e /etc/init.d/xvfb start
     - sleep 3
+    - greenkeeper-lockfile-update
+
+install:
+    - npm install
+
+after_script:
+    - greenkeeper-lockfile-upload
 
 branches:
     only:
         - develop
         - master
+        - /^greenkeeper/.*$/
 
 script:
     - npm run ci:travis
 
 cache:
+    yarn: true
     directories:
         - node_modules
+
+env:
+    global:
+        secure: fyASDKNzuhpSDRNTd2eDQDJsjxQCn9vbSowclihtT0p0FWqs0UPzQPs/ruQyEzFEurPkQLVpDCdoqv6xDk9Z/UbdPeLTdtiMDEHofx61MGP7owJjMd5/jn4wEMnecFg9pbZwDlhdtIvMij9inQi/lZJ1ML1HE7NxdQCtIu10VaOYypmCzQmb0f3tNW0Fou6sczzF0GcXtDzfdRRH58DZQu52YlZ6UMNqAgPoyePi6YTselCTg5pTVfxtVA0fsYEKMO4ayoaBzM4FoyD6U9km8+4U0jecp/0NVDoKl8TMpQd/Y0GH8utcxuSDWH1EMSpeA7iRA2lIO/6aftsuJUDDyvbp1voq9EnB7jSeVY7zRDLwFXJafyncZz2Zlj0FxIeeMz/0l6TVxbzB6iGRMFW+8YttJo6ke91Miig77M/rAFD6Hw6G9El/rBA/k7JTLiTP0UQD/m0X3g/V1e8Xhn1t1+OImr1g9SRZEt8y6LSZZPeSncNi5Sf6VHnzVtXHaYPV0/xBeDVtu5WSS+ypwgNwbiPRN/aMIx4CLBICQeHt79tW/0lW21MBkKiU4J9nj6BxvreUlxRnpzeDo3kvcDIo33dmgr3d6ml+5CE6wxIL8FJyk8Tlah+zYswIEmODC08n9A1F5J1QLK2mzClLmtewH3ktVFyG/0OG219wP4cUdRQ=
