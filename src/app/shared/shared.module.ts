@@ -11,6 +11,7 @@ import { FormFieldHintComponent } from './form-field/form-field-hint.component';
 import { FormFieldComponent } from './form-field/form-field.component';
 import { IconComponent } from './icon/icon.component';
 import { OptionItemComponent } from './option-item/option-item.component';
+import { TextComponent } from './text/text.component';
 
 
 @NgModule({
@@ -33,7 +34,9 @@ import { OptionItemComponent } from './option-item/option-item.component';
         FormFieldErrorComponent,
         FormFieldHintComponent,
         // Option item
-        OptionItemComponent
+        OptionItemComponent,
+        // Text
+        TextComponent
     ],
     exports: [
         CommonModule,
@@ -51,7 +54,9 @@ import { OptionItemComponent } from './option-item/option-item.component';
         FormFieldErrorComponent,
         FormFieldHintComponent,
         // Option item
-        OptionItemComponent
+        OptionItemComponent,
+        // Text
+        TextComponent
     ]
 })
 export class SharedModule {

@@ -1,0 +1,48 @@
+&:host {
+    display: inline-flex;
+}
+
+
+.Text {
+    display: inline-flex;
+
+    &--size {
+        &-small {
+            font-size: var(--size-font-small);
+            line-height: var(--lineHeight-small-size);
+        }
+
+        &-regular {
+            font-size: var(--size-font-regular);
+            line-height: var(--size-lineHeight-regular);
+        }
+
+        &-medium {
+            font-size: var(--size-font-medium);
+            line-height: var(--size-lineHeight-medium);
+        }
+
+        &-medium {
+            font-size: var(--size-font-big);
+            line-height: var(--size-lineHeight-big);
+        }
+    }
+
+    &--weight {
+        &-light {
+            font-weight: 300;
+        }
+
+        &-regular {
+            font-weight: 400;
+        }
+
+        &-medium {
+            font-weight: 500;
+        }
+
+        &-bold {
+            font-weight: 700;
+        }
+    }
+}
