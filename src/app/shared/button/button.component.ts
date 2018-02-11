@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, Input, OnChanges, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component, EventEmitter, Input, OnChanges, OnInit, Output } from '@angular/core';
 import { BemBlock } from '../../../common/bem-class';
 
 
@@ -12,6 +12,7 @@ export class ButtonComponent implements OnInit, OnChanges {
     @Input() type = 'normal';
     @Input() size = 'regular';
     @Input() disabled = false;
+    @Output() click = new EventEmitter<Event>();
 
     className = new BemBlock('Button');
 
@@ -21,6 +22,10 @@ export class ButtonComponent implements OnInit, OnChanges {
 
     ngOnChanges(): void {
         this.parseClassName();
+    }
+
+    buttonClick(event: Event): void {
+        this.click.emit(event);
     }
 
     private parseClassName(): void {
