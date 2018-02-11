@@ -1,4 +1,3 @@
-import { OverlayModule } from '@angular/cdk/overlay';
 import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { ReactiveFormsModule } from '@angular/forms';
@@ -17,8 +16,7 @@ import { TextComponent } from './text/text.component';
 @NgModule({
     imports: [
         CommonModule,
-        ReactiveFormsModule,
-        OverlayModule
+        ReactiveFormsModule
     ],
     declarations: [
         // Autocomplete
