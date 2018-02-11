@@ -1,4 +1,5 @@
 const fs = require('fs');
+const util = require('util');
 const defaultTheme = require('../src/default-theme.json');
 
 
@@ -8,14 +9,15 @@ class DefaultThemeGenerator {
     }
 
     apply(compiler) {
-        compiler.plugin('emit', (compilation, callback) => {
-            fs.writeFile(this.fileName, this.parseThemeAsStylesheet(), 'utf8', (error) => {
-                if (error) {
-                    callback(error);
-                } else {
-                    callback(null);
-                }
-            });
+        compiler.plugin('emit', async (compilation, callback) => {
+            const writeFile = util.promisify(fs.writeFile);
+
+            try {
+                await writeFile(this.fileName, this.parseThemeAsStylesheet(), 'utf8');
+                callback();
+            } catch (error) {
+                callback(error);
+            }
         });
     }
 

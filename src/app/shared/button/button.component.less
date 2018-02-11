@@ -1,31 +1,105 @@
+&:host {
+    display: inline-flex;
+}
+
+
 .Button {
     display: inline-flex;
     align-items: center;
     justify-content: center;
+    line-height: 1;
     margin: 0;
     padding: 0;
     outline: 0;
+    border: none;
     cursor: pointer;
 
     &--type {
-        &-normal {}
+        &-normal {
+            background-color: var(--color-primary-depth-1);
+            border: 1px solid var(--color-primary-depth-3);
+            color: var(--color-primary-depth-7);
+
+            &:focus {
+                box-shadow: 0 0 2px 0 var(--color-primary-depth-5);
+            }
+
+            &:disabled {
+                cursor: default;
+                background-color: var(--color-primary-depth-4);
+                border: none;
+            }
+        }
 
         &-primary {}
 
         &-flat {
+            background-color: transparent;
 
+            &:hover {
+                background-color: var(--color-primary-depth-2);
+            }
+
+            &:focus {
+                box-shadow: 0 0 2px 0 var(--color-primary-depth-5);
+            }
+
+            .Button--activate {
+                box-shadow: 0 0 5px 0 var(--color-primary-depth-4) inset;
+            }
+
+            &:disabled {
+                color: var(--color-primary-depth-4);
+                box-shadow: none;
+                cursor: default;
+
+                &:hover {
+                    background-color: transparent;
+                }
+            }
         }
     }
 
     &--size {
         &-small {
+            height: var(--size-box-small);
+            padding: 0 calc(~"var(--size-box-small) / 2");
+            border-radius: 2px;
+
+            &.Button--type-flat {
+                padding: 0 var(--size-space-small);
+            }
         }
 
-        &-regular {}
+        &-regular {
+            height: var(--size-box-regular);
+            padding: 0 calc(~"var(--size-box-regular) / 2");
+            border-radius: 4px;
 
-        &-medium {}
+            &.Button--type-flat {
+                padding: 0 var(--size-space-regular);
+            }
+        }
 
-        &-big {}
+        &-medium {
+            height: var(--size-box-medium);
+            padding: 0 calc(~"var(--size-box-medium) / 2");
+            border-radius: 4px;
+
+            &.Button--type-flat {
+                padding: 0 var(--size-space-medium);
+            }
+        }
+
+        &-big {
+            height: var(--size-box-big);
+            padding: 0 calc(~"var(--size-box-big) / 2");
+            border-radius: 6px;
+
+            &.Button--type-flat {
+                padding: 0 var(--size-space-big);
+            }
+        }
     }
 }
 

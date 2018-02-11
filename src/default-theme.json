@@ -31,9 +31,9 @@
         "space": {
             "tiny": "2px",
             "small": "4px",
-            "regular": "10px",
-            "medium": "16px",
-            "big": "20px"
+            "regular": "8px",
+            "medium": "12px",
+            "big": "16px"
         },
         "box": {
             "small": "24px",
