@@ -113,7 +113,7 @@
         ],
         "component-selector": [
             true,
-            "element",
+            ["element", "attribute"],
             "gd",
             "kebab-case"
         ],
