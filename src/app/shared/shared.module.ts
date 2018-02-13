@@ -10,6 +10,7 @@ import { FormFieldHintComponent } from './form-field/form-field-hint.component';
 import { FormFieldComponent } from './form-field/form-field.component';
 import { IconComponent } from './icon/icon.component';
 import { OptionItemComponent } from './option-item/option-item.component';
+import { SpinnerComponent } from './spinner/spinner.component';
 import { TextComponent } from './text/text.component';
 
 
@@ -33,6 +34,8 @@ import { TextComponent } from './text/text.component';
         FormFieldHintComponent,
         // Option item
         OptionItemComponent,
+        // Spinner
+        SpinnerComponent,
         // Text
         TextComponent
     ],
@@ -53,6 +56,8 @@ import { TextComponent } from './text/text.component';
         FormFieldHintComponent,
         // Option item
         OptionItemComponent,
+        // Spinner
+        SpinnerComponent,
         // Text
         TextComponent
     ]
