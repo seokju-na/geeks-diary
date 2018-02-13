@@ -1,36 +1,43 @@
-import { ChangeDetectionStrategy, Component, EventEmitter, Input, OnChanges, OnInit, Output } from '@angular/core';
-import { BemBlock } from '../../../common/bem-class';
+import { coerceBooleanProperty } from '@angular/cdk/coercion';
+import { ChangeDetectionStrategy, Component, ElementRef, HostBinding, Input, OnInit, ViewEncapsulation } from '@angular/core';
 
 
 @Component({
-    selector: 'gd-button',
+    selector: 'button[gd-button], button[gd-flat-button]',
     templateUrl: './button.component.html',
     styleUrls: ['./button.component.less'],
-    changeDetection: ChangeDetectionStrategy.OnPush
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    encapsulation: ViewEncapsulation.None,
 })
-export class ButtonComponent implements OnInit, OnChanges {
-    @Input() type = 'normal';
-    @Input() size = 'regular';
-    @Input() disabled = false;
-    @Output() click = new EventEmitter<Event>();
+export class ButtonComponent implements OnInit {
+    @HostBinding('class.Button') private buttonClassName = true;
 
-    className = new BemBlock('Button');
+    @Input()
+    get showSpinner() { return this._showSpinner; }
+    set showSpinner(value: boolean) {
+        this._showSpinner = coerceBooleanProperty(value);
+
+        const host = this.elementRef.nativeElement;
+
+        if (this._showSpinner) {
+            host.classList.add('Button--showSpinner');
+        } else {
+            host.classList.remove('Button--showSpinner');
+        }
+    }
+
+    @Input() buttonType = 'normal';
+    @Input() size = 'regular';
+
+    private _showSpinner = false;
+
+    constructor(private elementRef: ElementRef) {
+    }
 
     ngOnInit(): void {
-        this.parseClassName();
-    }
+        const host = this.elementRef.nativeElement;
 
-    ngOnChanges(): void {
-        this.parseClassName();
-    }
-
-    buttonClick(event: Event): void {
-        this.click.emit(event);
-    }
-
-    private parseClassName(): void {
-        this.className
-            .setModifier('type', this.type)
-            .setModifier('size', this.size);
+        host.classList.add(`Button--type-${this.buttonType}`);
+        host.classList.add(`Button--size-${this.size}`);
     }
 }
