@@ -3,7 +3,7 @@ import { ChangeDetectionStrategy, Component, ElementRef, HostBinding, Input, OnI
 
 
 @Component({
-    selector: 'button[gd-button], button[gd-flat-button]',
+    selector: 'button[gd-button]',
     templateUrl: './button.component.html',
     styleUrls: ['./button.component.less'],
     changeDetection: ChangeDetectionStrategy.OnPush,
