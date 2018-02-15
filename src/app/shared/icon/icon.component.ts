@@ -1,11 +1,12 @@
-import { ChangeDetectionStrategy, Component, ElementRef, Input, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component, ElementRef, Input, OnInit, ViewEncapsulation } from '@angular/core';
 
 
 @Component({
     selector: 'i[gd-icon]',
     templateUrl: './icon.component.html',
     styleUrls: ['./icon.component.less'],
-    changeDetection: ChangeDetectionStrategy.OnPush
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    encapsulation: ViewEncapsulation.None,
 })
 export class IconComponent implements OnInit {
     @Input() name: string;
