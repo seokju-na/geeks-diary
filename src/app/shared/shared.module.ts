@@ -1,3 +1,6 @@
+import { A11yModule } from '@angular/cdk/a11y';
+import { OverlayModule } from '@angular/cdk/overlay';
+import { PortalModule } from '@angular/cdk/portal';
 import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { ReactiveFormsModule } from '@angular/forms';
@@ -12,12 +15,17 @@ import { IconComponent } from './icon/icon.component';
 import { OptionItemComponent } from './option-item/option-item.component';
 import { SpinnerComponent } from './spinner/spinner.component';
 import { TextComponent } from './text/text.component';
+import { TooltipComponent } from './tooltip/tooltip.component';
+import { TooltipDirective } from './tooltip/tooltip.directive';
 
 
 @NgModule({
     imports: [
         CommonModule,
-        ReactiveFormsModule
+        ReactiveFormsModule,
+        OverlayModule,
+        PortalModule,
+        A11yModule
     ],
     declarations: [
         // Autocomplete
@@ -37,7 +45,14 @@ import { TextComponent } from './text/text.component';
         // Spinner
         SpinnerComponent,
         // Text
-        TextComponent
+        TextComponent,
+        // Tooltip
+        TooltipComponent,
+        TooltipDirective
+    ],
+    entryComponents: [
+        // Tooltip
+        TooltipComponent
     ],
     exports: [
         CommonModule,
@@ -59,7 +74,9 @@ import { TextComponent } from './text/text.component';
         // Spinner
         SpinnerComponent,
         // Text
-        TextComponent
+        TextComponent,
+        // Tooltip
+        TooltipDirective
     ]
 })
 export class SharedModule {
