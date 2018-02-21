@@ -1,0 +1,39 @@
+&:host {
+    display: inline-flex;
+    cursor: inherit;
+    user-select: none;
+}
+
+
+.StackChip {
+    display: inline-flex;
+    align-items: center;
+    padding: var(--size-space-tiny);
+
+    & > img {
+        display: block;
+        width: 100%;
+    }
+
+    &--size {
+        &-small {
+            width: var(--size-lineHeight-small);
+            height: var(--size-lineHeight-small);
+        }
+
+        &-regular {
+            width: var(--size-lineHeight-regular);
+            height: var(--size-lineHeight-regular);
+        }
+
+        &-medium {
+            width: var(--size-lineHeight-medium);
+            height: var(--size-lineHeight-medium);
+        }
+
+        &-big {
+            width: var(--size-lineHeight-big);
+            height: var(--size-lineHeight-big);
+        }
+    }
+}

@@ -6,6 +6,7 @@ import { AppShellComponent } from './app-shell.component';
 import { CoreModule } from './core/core.module';
 import { NoteModule } from './note/note.module';
 import { SharedModule } from './shared/shared.module';
+import { StackModule } from './stack/stack.module';
 
 
 @NgModule({
@@ -15,6 +16,7 @@ import { SharedModule } from './shared/shared.module';
         SharedModule,
         CoreModule,
         NoteModule,
+        StackModule,
     ],
     declarations: [
         AppShellComponent,

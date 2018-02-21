@@ -1,0 +1,8 @@
+<div gdTooltip
+     [message]="stackItem.name"
+     [showDelay]="500"
+     [ngClass]="['StackChip--size-' + size]"
+     class="StackChip">
+    <img [attr.alt]="stackItem?.name"
+         [src]="getIconUrl()">
+</div>
