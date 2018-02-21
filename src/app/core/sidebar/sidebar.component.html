@@ -1,0 +1,31 @@
+<div [class.Sidebar--showPanel]="showPanel"
+     class="Sidebar">
+    <nav>
+        <ul role="tablist" class="Sidebar__tabs">
+            <li *ngFor="let outlet of outlets"
+                role="presentation"
+                gdTooltip
+                position="right"
+                [message]="outlet.description"
+                [showDelay]="500"
+                [class.Sidebar__tab--active]="isActiveOutlet(outlet)"
+                class="Sidebar__tab">
+                <button gd-button
+                        (click)="clickTab(outlet)"
+                        buttonType="flat"
+                        size="medium">
+                    <i gd-icon [name]="outlet.iconName" size="medium"></i>
+                </button>
+            </li>
+        </ul>
+    </nav>
+
+    <section role="tabpanel" class="Sidebar__panel">
+        <div *ngFor="let outlet of outlets"
+             class="Sidebar__container">
+            <ng-container
+                *ngComponentOutlet="outlet.component; injector: injector"
+                [class.show]="isActiveOutlet(outlet)"></ng-container>
+        </div>
+    </section>
+</div>

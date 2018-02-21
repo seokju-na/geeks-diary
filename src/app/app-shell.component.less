@@ -1,3 +1,16 @@
 .AppShell {
-    display: block;
+    display: flex;
+    width: 100%;
+    height: 100%;
+
+    &__aside {
+        display: inline-flex;
+        height: 100%;
+    }
+
+    &__main {
+        flex: 1;
+        display: inline-flex;
+        height: 100%;
+    }
 }
