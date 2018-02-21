@@ -7,6 +7,7 @@ import { ReactiveFormsModule } from '@angular/forms';
 import { AutocompleteTriggerDirective } from './autocomplete/autocomplete-trigger.directive';
 import { AutocompleteComponent } from './autocomplete/autocomplete.component';
 import { ButtonComponent } from './button/button.component';
+import { CalendarTableProvider } from './calendar/calendar-table';
 import { FormFieldControlDirective } from './form-field/form-field-control.directive';
 import { FormFieldErrorComponent } from './form-field/form-field-error.component';
 import { FormFieldHintComponent } from './form-field/form-field-hint.component';
@@ -25,7 +26,7 @@ import { TooltipDirective } from './tooltip/tooltip.directive';
         ReactiveFormsModule,
         OverlayModule,
         PortalModule,
-        A11yModule
+        A11yModule,
     ],
     declarations: [
         // Autocomplete
@@ -48,11 +49,14 @@ import { TooltipDirective } from './tooltip/tooltip.directive';
         TextComponent,
         // Tooltip
         TooltipComponent,
-        TooltipDirective
+        TooltipDirective,
     ],
     entryComponents: [
         // Tooltip
-        TooltipComponent
+        TooltipComponent,
+    ],
+    providers: [
+        CalendarTableProvider,
     ],
     exports: [
         CommonModule,
@@ -76,8 +80,8 @@ import { TooltipDirective } from './tooltip/tooltip.directive';
         // Text
         TextComponent,
         // Tooltip
-        TooltipDirective
-    ]
+        TooltipDirective,
+    ],
 })
 export class SharedModule {
 }
