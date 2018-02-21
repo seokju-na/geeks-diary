@@ -8,7 +8,7 @@ import {
     Overlay,
     OverlayConfig,
     OverlayRef,
-    PositionStrategy
+    PositionStrategy,
 } from '@angular/cdk/overlay';
 import { TemplatePortal } from '@angular/cdk/portal';
 import { DOCUMENT } from '@angular/common';
@@ -25,7 +25,7 @@ import {
     NgZone,
     OnDestroy,
     Optional,
-    ViewContainerRef
+    ViewContainerRef,
 } from '@angular/core';
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 import { Observable } from 'rxjs/Observable';
@@ -38,7 +38,10 @@ import { Subject } from 'rxjs/Subject';
 import { Subscription } from 'rxjs/Subscription';
 import { KeyCodes } from '../../../common/key-codes';
 import { FormFieldComponent } from '../form-field/form-field.component';
-import { OptionItemComponent, OptionItemSelectionChange } from '../option-item/option-item.component';
+import {
+    OptionItemComponent,
+    OptionItemSelectionChange,
+} from '../option-item/option-item.component';
 import { AutocompleteComponent } from './autocomplete.component';
 
 
@@ -48,13 +51,13 @@ const AUTOCOMPLETE_PANEL_HEIGHT = 256;
 export const AUTOCOMPLETE_TRIGGER_VALUE_ACCESSOR = {
     provide: NG_VALUE_ACCESSOR,
     useExisting: forwardRef(() => AutocompleteTriggerDirective),
-    multi: true
+    multi: true,
 };
 
 
 @Directive({
     selector: 'input[gdAutocomplete]',
-    providers: [AUTOCOMPLETE_TRIGGER_VALUE_ACCESSOR]
+    providers: [AUTOCOMPLETE_TRIGGER_VALUE_ACCESSOR],
 })
 export class AutocompleteTriggerDirective implements ControlValueAccessor, OnDestroy {
     @Input() autocomplete: AutocompleteComponent;
@@ -72,8 +75,9 @@ export class AutocompleteTriggerDirective implements ControlValueAccessor, OnDes
             return merge(...this.autocomplete.options.map(option => option.selectionChange));
         }
 
-        // If there are any subscribers before `ngAfterViewInit`, the `autocomplete` will be undefined.
-        // Return a stream that we'll replace with the real one once everything is in place.
+        // If there are any subscribers before `ngAfterViewInit`, the `autocomplete` will be
+        // undefined. Return a stream that we'll replace with the real one once everything is in
+        // place.
         return this.zone.onStable
             .asObservable()
             .pipe(take(1), switchMap(() => this.optionSelections));
@@ -106,7 +110,7 @@ export class AutocompleteTriggerDirective implements ControlValueAccessor, OnDes
             this.outsideClickStream,
             this.overlayRef
                 ? this.overlayRef.detachments().pipe(filter(() => this._panelOpen))
-                : of()
+                : of(),
         );
     }
 
@@ -137,8 +141,9 @@ export class AutocompleteTriggerDirective implements ControlValueAccessor, OnDes
                 this.closingActionsSubscription.unsubscribe();
             }
 
-            // Note that in some cases this can end up being called after the component is destroyed.
-            // Add a check to ensure that we don't try to run change detection on a destroyed view.
+            // Note that in some cases this can end up being called after the component is
+            // destroyed. Add a check to ensure that we don't try to run change detection on a
+            // destroyed view.
             if (!this.componentDestroyed) {
                 // We need to trigger change detection manually, because
                 // `fromEvent` doesn't seem to do it at the proper time.
@@ -230,7 +235,7 @@ export class AutocompleteTriggerDirective implements ControlValueAccessor, OnDes
         const config = new OverlayConfig({
             width,
             positionStrategy: this.getOverlayPosition(),
-            scrollStrategy: this.overlay.scrollStrategies.reposition()
+            scrollStrategy: this.overlay.scrollStrategies.reposition(),
         });
 
         if (!this.overlayRef) {
@@ -256,7 +261,7 @@ export class AutocompleteTriggerDirective implements ControlValueAccessor, OnDes
             { overlayX: 'start', overlayY: 'top' })
             .withFallbackPosition(
                 { originX: 'start', originY: 'top' },
-                { overlayX: 'start', overlayY: 'bottom' }
+                { overlayX: 'start', overlayY: 'bottom' },
             );
 
         return this.positionStrategy;
@@ -268,7 +273,7 @@ export class AutocompleteTriggerDirective implements ControlValueAccessor, OnDes
             tap(() => this.positionStrategy.recalculateLastPosition()),
             // Defer emitting to the stream until the next tick, because changing
             // bindings in here will cause "changed after checked" errors.
-            delay(0)
+            delay(0),
         );
 
         return merge(firstStable, optionChanges)
@@ -280,7 +285,7 @@ export class AutocompleteTriggerDirective implements ControlValueAccessor, OnDes
                     return this.panelClosingActions;
                 }),
                 // when the first closing event occurs...
-                take(1)
+                take(1),
             )
             .subscribe(event => this.setValueAndClose(event));
     }

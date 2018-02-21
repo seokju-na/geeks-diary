@@ -18,8 +18,8 @@ describe('app.shared.button', () => {
                 declarations: [
                     TestButtonComponent,
                     SpinnerComponent,
-                    ButtonComponent
-                ]
+                    ButtonComponent,
+                ],
             })
             .compileComponents();
     }));
@@ -60,7 +60,7 @@ describe('app.shared.button', () => {
 @Component({
     template: `
         <button gd-button [showSpinner]="someTaskPending">Normal content</button>
-    `
+    `,
 })
 class TestButtonComponent {
     someTaskPending = false;

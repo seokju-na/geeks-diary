@@ -3,7 +3,13 @@
  */
 import { animate, AnimationEvent, state, style, transition, trigger } from '@angular/animations';
 import { ConnectionPositionPair } from '@angular/cdk/overlay';
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, HostListener, ViewEncapsulation } from '@angular/core';
+import {
+    ChangeDetectionStrategy,
+    ChangeDetectorRef,
+    Component,
+    HostListener,
+    ViewEncapsulation,
+} from '@angular/core';
 import { Observable } from 'rxjs/Observable';
 import { Subject } from 'rxjs/Subject';
 import { TooltipPosition } from './tooltip.directive';
@@ -22,8 +28,10 @@ export type TooltipVisibility = 'initial' | 'visible' | 'hidden';
         trigger('state', [
             state('initial, void, hidden', style({ visibility: 'hidden' })),
             state('visible', style({ visibility: 'visible' })),
-            transition('* => visible', animate('150ms cubic-bezier(0.0, 0.0, 0.2, 1)')),
-            transition('* => hidden', animate('150ms cubic-bezier(0.4, 0.0, 1, 1)')),
+            transition('* => visible',
+                animate('150ms cubic-bezier(0.0, 0.0, 0.2, 1)')),
+            transition('* => hidden',
+                animate('150ms cubic-bezier(0.4, 0.0, 1, 1)')),
         ]),
     ],
 })

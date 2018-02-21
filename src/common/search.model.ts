@@ -9,7 +9,7 @@ type SearchScoringStrategy<T> = (item: T, query: string) => boolean;
 export class SearchModel<T> {
     private scoringStrategies: {
         score: number,
-        strategy: SearchScoringStrategy<T>
+        strategy: SearchScoringStrategy<T>,
     }[] = [];
 
     setScoringStrategy(score: number, strategy: SearchScoringStrategy<T>): this {

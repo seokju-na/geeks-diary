@@ -4,13 +4,26 @@
 import { AriaDescriber, FocusMonitor } from '@angular/cdk/a11y';
 import { coerceBooleanProperty } from '@angular/cdk/coercion';
 import {
-    ConnectedPositionStrategy, HorizontalConnectionPos, OriginConnectionPosition, Overlay, OverlayConnectionPosition,
-    OverlayRef, VerticalConnectionPos,
+    ConnectedPositionStrategy,
+    HorizontalConnectionPos,
+    OriginConnectionPosition,
+    Overlay,
+    OverlayConnectionPosition,
+    OverlayRef,
+    VerticalConnectionPos,
 } from '@angular/cdk/overlay';
 import { Platform } from '@angular/cdk/platform';
 import { ComponentPortal } from '@angular/cdk/portal';
 import { ScrollDispatcher } from '@angular/cdk/scrolling';
-import { Directive, ElementRef, HostListener, Input, NgZone, OnDestroy, ViewContainerRef } from '@angular/core';
+import {
+    Directive,
+    ElementRef,
+    HostListener,
+    Input,
+    NgZone,
+    OnDestroy,
+    ViewContainerRef,
+} from '@angular/core';
 import { filter, take, takeUntil } from 'rxjs/operators';
 import { Subject } from 'rxjs/Subject';
 import { KeyCodes } from '../../../common/key-codes';
@@ -37,6 +50,7 @@ export class TooltipDirective implements OnDestroy {
 
     @Input()
     get position(): TooltipPosition { return this._position; }
+
     set position(value: TooltipPosition) {
         if (value !== this._position) {
             this._position = value;
@@ -51,6 +65,7 @@ export class TooltipDirective implements OnDestroy {
     /** Disables the display of the tooltip. */
     @Input()
     get disabled(): boolean { return this._disabled; }
+
     set disabled(value) {
         this._disabled = coerceBooleanProperty(value);
 
@@ -62,6 +77,7 @@ export class TooltipDirective implements OnDestroy {
 
     @Input()
     get message() { return this._message; }
+
     set message(value: string) {
         this.ariaDescriber.removeDescription(this.elementRef.nativeElement, this._message);
 

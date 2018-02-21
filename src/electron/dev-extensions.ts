@@ -5,7 +5,7 @@ import { environment } from '../environments/environment';
 if (!environment.config.production) {
     const installExtension = require('electron-devtools-installer').default;
     const extensions = [
-        { name: 'Redux DevTools', id: 'lmhkpmbekcpmknklioeibfkpmmfibljd' }
+        { name: 'Redux DevTools', id: 'lmhkpmbekcpmknklioeibfkpmmfibljd' },
     ];
 
     app.once('ready', () => {

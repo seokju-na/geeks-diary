@@ -15,8 +15,8 @@ describe('app.shared.icon', () => {
                 imports: [CommonModule],
                 declarations: [
                     IconTestAppComponent,
-                    IconComponent
-                ]
+                    IconComponent,
+                ],
             })
             .compileComponents();
     }));
@@ -45,7 +45,7 @@ describe('app.shared.icon', () => {
 @Component({
     template: `
         <i gd-icon [name]="iconName"></i>
-    `
+    `,
 })
 class IconTestAppComponent {
     iconName = 'someIcon';

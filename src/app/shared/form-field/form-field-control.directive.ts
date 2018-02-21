@@ -5,12 +5,11 @@ import { combineLatest } from 'rxjs/operators';
 
 
 @Directive({
-    selector: 'input[gdFormFieldControl], select[gdFormFieldControl]'
+    selector: 'input[gdFormFieldControl], select[gdFormFieldControl]',
 })
 export class FormFieldControlDirective {
-    constructor(
-        @Self() public ngControl: NgControl,
-        @Optional() public parentForm: FormGroupDirective) {
+    constructor(@Self() public ngControl: NgControl,
+                @Optional() public parentForm: FormGroupDirective) {
     }
 
     get statusChanges(): Observable<any | null> {

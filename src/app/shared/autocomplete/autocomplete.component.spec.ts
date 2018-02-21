@@ -6,13 +6,26 @@
 import { OverlayContainer, OverlayModule } from '@angular/cdk/overlay';
 import { CommonModule } from '@angular/common';
 import { Component, NgZone, OnDestroy, QueryList, ViewChild, ViewChildren } from '@angular/core';
-import { async, ComponentFixture, fakeAsync, flush, inject, TestBed, tick } from '@angular/core/testing';
+import {
+    async,
+    ComponentFixture,
+    fakeAsync,
+    flush,
+    inject,
+    TestBed,
+    tick,
+} from '@angular/core/testing';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { By } from '@angular/platform-browser';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { Subscription } from 'rxjs/Subscription';
 import { KeyCodes } from '../../../common/key-codes';
-import { dispatchFakeEvent, dispatchKeyboardEvent, MockNgZone, typeInElement } from '../../../testing';
+import {
+    dispatchFakeEvent,
+    dispatchKeyboardEvent,
+    MockNgZone,
+    typeInElement,
+} from '../../../testing';
 import { FormFieldControlDirective } from '../form-field/form-field-control.directive';
 import { FormFieldComponent } from '../form-field/form-field.component';
 import { OptionItemComponent } from '../option-item/option-item.component';
@@ -36,7 +49,7 @@ describe('app.shared.autocomplete', () => {
                     CommonModule,
                     ReactiveFormsModule,
                     NoopAnimationsModule,
-                    OverlayModule
+                    OverlayModule,
                 ],
                 declarations: [
                     FormFieldComponent,
@@ -44,11 +57,11 @@ describe('app.shared.autocomplete', () => {
                     OptionItemComponent,
                     AutocompleteTriggerDirective,
                     AutocompleteComponent,
-                    TestAutocompleteComponent
+                    TestAutocompleteComponent,
                 ],
                 providers: [
-                    { provide: NgZone, useFactory: () => new MockNgZone() }
-                ]
+                    { provide: NgZone, useFactory: () => new MockNgZone() },
+                ],
             })
             .compileComponents();
     }));
@@ -263,7 +276,7 @@ describe('app.shared.autocomplete', () => {
                 </gd-option-item>
             </gd-autocomplete>
         </gd-form-field>
-    `
+    `,
 })
 class TestAutocompleteComponent implements OnDestroy {
     stateCtrl = new FormControl();
@@ -278,7 +291,7 @@ class TestAutocompleteComponent implements OnDestroy {
         { code: 'PA', name: 'Pennsylvania' },
         { code: 'TN', name: 'Tennessee' },
         { code: 'VA', name: 'Virginia' },
-        { code: 'WY', name: 'Wyoming' }
+        { code: 'WY', name: 'Wyoming' },
     ];
     filteredStates: any[] = [];
     valueChangeSubscription: Subscription;
@@ -301,7 +314,7 @@ class TestAutocompleteComponent implements OnDestroy {
 
     displayFn(value: any): string {
         if (value && value.name) {
-            return value.name
+            return value.name;
         }
 
         return '';

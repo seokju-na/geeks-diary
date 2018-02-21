@@ -29,7 +29,7 @@ export class Window extends EventEmitter {
         const filename = url.format({
             protocol: 'file',
             pathname: path.resolve(process.cwd(), 'dist', this.templateUrl),
-            slashes: true
+            slashes: true,
         });
 
         this.browserWindow.loadURL(filename);

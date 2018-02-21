@@ -1,5 +1,12 @@
 import { coerceBooleanProperty } from '@angular/cdk/coercion';
-import { ChangeDetectionStrategy, Component, ElementRef, HostBinding, Input, ViewEncapsulation } from '@angular/core';
+import {
+    ChangeDetectionStrategy,
+    Component,
+    ElementRef,
+    HostBinding,
+    Input,
+    ViewEncapsulation,
+} from '@angular/core';
 
 
 @Component({
@@ -15,6 +22,7 @@ export class SpinnerComponent {
 
     @Input()
     get show() { return this._show; }
+
     set show(value: boolean) {
         this._show = coerceBooleanProperty(value);
 
