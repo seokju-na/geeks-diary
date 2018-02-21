@@ -1,0 +1,79 @@
+.NoteCalendar {
+    & > nav {
+        display: flex;
+        align-self: center;
+        margin-bottom: var(--size-space-small);
+    }
+
+    &__title {
+        flex: 1;
+        display: inline-flex;
+        align-self: center;
+        justify-content: center;
+
+        & > h1 {
+            margin: 0;
+            padding-bottom: 2px;
+        }
+    }
+
+    &__navigateButton {
+    }
+
+    &__table {
+        display: block;
+        width: 100%;
+        user-select: none;
+        cursor: default;
+
+        & tbody {
+            display: flex;
+            flex-direction: column;
+            width: 100%;
+            border: 0;
+            outline: 0;
+        }
+
+        & tr {
+            display: flex;
+            width: 100%;
+            outline: 0;
+            border: 0;
+
+            & > td {
+                flex: 1;
+                display: inline-flex;
+                padding: var(--size-space-tiny);
+                border: 0;
+                outline: 0;
+            }
+        }
+    }
+
+    &__cell {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 100%;
+        height: var(--size-box-small);
+        text-decoration: none;
+        cursor: pointer;
+        border: 1px solid var(--color-gray-2);
+
+        & > label {
+            font-size: var(--size-font-small);
+        }
+
+        &--blank {
+            visibility: hidden;
+            cursor: default;
+            border: none;
+            background: transparent;
+        }
+
+        &--today {
+            border-color: #ff8787;
+            box-shadow: 0 0 2px 0 #fa5252;
+        }
+    }
+}
