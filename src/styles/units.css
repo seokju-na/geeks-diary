@@ -1,30 +1,22 @@
 :root {
-    --lineHeight-size: 1.25;
+    --size-font-small: 12px;
+    --size-font-regular: 14px;
+    --size-font-medium: 17px;
+    --size-font-big: 21px;
 
-    --text-small-size: 12px;
-    --text-regular-size: 14px;
-    --text-medium-size: 17px;
-    --text-big-size: 21px;
-    --text-extraBig-size: 24px;
+    --size-lineHeight-small: 15px;
+    --size-lineHeight-regular: 17.5px;
+    --size-lineHeight-medium: 20px;
+    --size-lineHeight-big: 23.5px;
 
-    --lineHeight-small-size: 15px;
-    --lineHeight-regular-size: 17.5px;
-    --lineHeight-medium-size: 20px;
-    --lineHeight-big-size: 23.5px;
+    --size-space-tiny: 2px;
+    --size-space-small: 4px;
+    --size-space-regular: 8px;
+    --size-space-medium: 12px;
+    --size-space-big: 16px;
 
-    --box-small-size: 24px;
-    --box-regular-size: 28px;
-    --box-medium-size: 32px;
-    --box-big-size: 36px;
-
-    --container-small-size: 32px;
-    --container-regular-size: 36px;
-    --container-medium-size: 42px;
-    --container-big-size: 50px;
-
-    --space-small-size: 4px;
-    --space-regular-size: 8px;
-    --space-big-size: 12px;
-
-    --padding-large: 40px;
+    --size-box-small: 24px;
+    --size-box-regular: 28px;
+    --size-box-medium: 34px;
+    --size-box-big: 42px;
 }
