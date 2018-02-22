@@ -13,11 +13,8 @@ export class StackChipComponent {
     @Input() stackItem: StackItem;
     @Input() size = 'regular';
 
-    @HostBinding('attr.ariaLabel')
+    @HostBinding('attr.aria-label')
     private get attrAriaLabel() { return this.stackItem.name; }
-
-    @HostBinding('attr.title')
-    private get attrTitle() { return this.stackItem.name; }
 
     constructor(private sanitizer: DomSanitizer) {
     }
