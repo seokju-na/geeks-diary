@@ -11,7 +11,7 @@ import {
 
 @Component({
     selector: `span[gd-text], label[gd-text], div[gd-text], h1[gd-text], h2[gd-text], h3[gd-text],
-    h4[gd-text], h5[gd-text], h6[gd-text]`,
+    h4[gd-text], h5[gd-text], h6[gd-text], time[gd-text]`,
     templateUrl: './text.component.html',
     styleUrls: ['./text.component.less'],
     changeDetection: ChangeDetectionStrategy.OnPush,
