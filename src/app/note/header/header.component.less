@@ -1,0 +1,71 @@
+.NoteHeader {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    height: 100%;
+
+    &__title {
+        display: inline-flex;
+        align-items: center;
+        padding: 0 var(--size-space-medium);
+        cursor: default;
+
+        & > h1 {
+            margin: 0;
+        }
+
+        & > hr {
+            display: inline-block;
+            width: var(--size-font-regular);
+            margin: 2px var(--size-space-regular) 0 var(--size-space-medium);
+            height: 1px;
+            background-color: var(--color-gray-4);
+            outline: 0;
+            border: none;
+        }
+
+        & > time {
+            margin-top: 1px;
+            font-style: italic;
+            color: var(--color-gray-5);
+        }
+    }
+
+    &__noteStatusLabel {
+        position: absolute;
+        display: inline-block;
+        left: 0;
+        top: 0;
+        width: 3px;
+        height: 100%;
+        background-color: var(--color-red-5);
+    }
+
+    &__actions {
+        display: inline-flex;
+        align-items: center;
+        padding: 0 var(--size-space-regular);
+    }
+
+    &__toolbar {
+        display: inline-flex;
+        align-items: center;
+        margin: 0;
+        padding: 0 var(--size-space-regular);
+    }
+
+    &__toolItem {
+        display: inline-block;
+        list-style: none;
+
+        & > button {
+            color: var(--color-gray-7);
+        }
+    }
+
+    &__publishButton {
+        padding: 0 var(--size-space-big);
+    }
+}
