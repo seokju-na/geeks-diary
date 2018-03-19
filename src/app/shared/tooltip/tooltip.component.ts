@@ -37,10 +37,10 @@ export type TooltipVisibility = 'initial' | 'visible' | 'hidden';
 })
 export class TooltipComponent {
     message: string;
+    visibility: TooltipVisibility = 'initial';
 
     private showTimeoutId: number;
     private hideTimeoutId: number;
-    private visibility: TooltipVisibility = 'initial';
 
     /** Whether interactions on the page should close the tooltip */
     private closeOnInteraction = false;
