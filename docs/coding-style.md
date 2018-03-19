@@ -1,6 +1,6 @@
 # Coding Style
 
-You can run npm run lint to show any style issues detected by ``tslint``.
+You can run ``npm run lint`` to show any style issues detected by ``tslint``.
 
 Mostly follow [Angular Style Guide](https://angular.io/guide/styleguide). 
 
