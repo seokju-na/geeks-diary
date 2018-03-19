@@ -1,0 +1,51 @@
+<div class="NoteFinder">
+    <header>
+        <h1 gd-text weight="medium">Notes</h1>
+        <button gd-button
+                buttonType="flat"
+                size="regular"
+                title="Add note"
+                class="NoteFinder__addNoteButton">
+            <i gd-icon name="plus" size="regular"></i>
+        </button>
+    </header>
+
+    <div class="NoteFinder__calendar">
+        <gd-note-calendar
+            (changeIndexDate)="updateIndexDate($event.distDate)"
+            [indexDate]="indexDate"></gd-note-calendar>
+    </div>
+
+    <section class="NoteFinder__content">
+        <div class="NoteFinder__filter">
+            <div class="NoteFinder__writtenAt">
+                <span gd-text size="small">Date selection: </span>
+                <h2 gd-text size="small" weight="bold">
+                    {{indexDate | date:'dd, MMM'}}
+                </h2>
+            </div>
+
+            <button gd-button
+                    buttonType="flat"
+                    size="small"
+                    class="NoteFinder__sortOrderButton">
+                <i gd-icon name="sort" size="small"></i>
+            </button>
+        </div>
+
+        <ul class="NoteFinder__noteList">
+            <li class="NoteFinder__noteItem">
+                <a gd-note-item [selected]="true"></a>
+            </li>
+            <li class="NoteFinder__noteItem">
+                <a gd-note-item status="added"></a>
+            </li>
+            <li class="NoteFinder__noteItem">
+                <a gd-note-item status="modified"></a>
+            </li>
+            <li class="NoteFinder__noteItem">
+                <a gd-note-item></a>
+            </li>
+        </ul>
+    </section>
+</div>

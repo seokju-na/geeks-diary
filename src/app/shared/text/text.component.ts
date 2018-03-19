@@ -1,30 +1,35 @@
-import { ChangeDetectionStrategy, Component, Input, OnChanges, OnInit } from '@angular/core';
-import { BemBlock } from '../../../common/bem-class';
+import {
+    ChangeDetectionStrategy,
+    Component,
+    ElementRef,
+    HostBinding,
+    Input,
+    OnInit,
+    ViewEncapsulation,
+} from '@angular/core';
 
 
 @Component({
-    selector: 'gd-text',
+    selector: `span[gd-text], label[gd-text], div[gd-text], h1[gd-text], h2[gd-text], h3[gd-text],
+    h4[gd-text], h5[gd-text], h6[gd-text], time[gd-text]`,
     templateUrl: './text.component.html',
     styleUrls: ['./text.component.less'],
-    changeDetection: ChangeDetectionStrategy.OnPush
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    encapsulation: ViewEncapsulation.None,
 })
-export class TextComponent implements OnInit, OnChanges {
+export class TextComponent implements OnInit {
+    @HostBinding('class.Text') private textClassName = true;
+
     @Input() size = 'regular';
     @Input() weight = 'regular';
 
-    className = new BemBlock('Text');
+    constructor(private elementRef: ElementRef) {
+    }
 
     ngOnInit(): void {
-        this.parseClassName();
-    }
+        const host = this.elementRef.nativeElement;
 
-    ngOnChanges(): void {
-        this.parseClassName();
-    }
-
-    private parseClassName(): void {
-        this.className
-            .setModifier('size', this.size)
-            .setModifier('weight', this.weight);
+        host.classList.add(`Text--size-${this.size}`);
+        host.classList.add(`Text--weight-${this.weight}`);
     }
 }

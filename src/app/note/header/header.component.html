@@ -1,0 +1,30 @@
+<div class="NoteHeader">
+    <label class="NoteHeader__noteStatusLabel"></label>
+
+    <div class="NoteHeader__title">
+        <h1 gd-text weight="bold">Note title</h1>
+        <hr>
+        <time gd-text size="small" datetime="2018-03-17 18:30">Mar 17, 2018</time>
+    </div>
+
+    <div class="NoteHeader__actions">
+        <ul role="toolbar" class="NoteHeader__toolbar">
+            <li *ngFor="let toolItem of toolItems"
+                role="presentation"
+                gdTooltip
+                [message]="toolItem.description"
+                [showDelay]="500"
+                class="NoteHeader__toolItem">
+                <button gd-button buttonType="flat">
+                    <i gd-icon [name]="toolItem.iconName"></i>
+                </button>
+            </li>
+        </ul>
+
+        <button gd-button
+                buttonType="primary"
+                class="NoteHeader__publishButton">
+            <span gd-text>Publish</span>
+        </button>
+    </div>
+</div>

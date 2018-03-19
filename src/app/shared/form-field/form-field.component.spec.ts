@@ -1,6 +1,12 @@
 import { Component, DebugElement } from '@angular/core';
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
-import { FormControl, FormGroup, FormGroupDirective, ReactiveFormsModule, Validators } from '@angular/forms';
+import {
+    FormControl,
+    FormGroup,
+    FormGroupDirective,
+    ReactiveFormsModule,
+    Validators,
+} from '@angular/forms';
 import { By } from '@angular/platform-browser';
 import { FormFieldControlDirective } from './form-field-control.directive';
 import { FormFieldErrorComponent } from './form-field-error.component';
@@ -18,14 +24,14 @@ describe('app.shared.formField', () => {
         TestBed
             .configureTestingModule({
                 imports: [
-                    ReactiveFormsModule
+                    ReactiveFormsModule,
                 ],
                 declarations: [
                     HeroFormFieldComponent,
                     FormFieldComponent,
                     FormFieldControlDirective,
-                    FormFieldErrorComponent
-                ]
+                    FormFieldErrorComponent,
+                ],
             })
             .compileComponents();
     }));
@@ -63,7 +69,7 @@ describe('app.shared.formField', () => {
 
         it('should error appeared when patch value from form object.', async(() => {
             component.heroRegisterForm.patchValue({
-                name: 'Not valid'
+                name: 'Not valid',
             });
             fixture.detectChanges();
 
@@ -99,19 +105,19 @@ describe('app.shared.formField', () => {
                 </gd-form-field-error>
             </gd-form-field>
         </form>
-    `
+    `,
 })
 class HeroFormFieldComponent {
     heroRegisterForm = new FormGroup({
         name: new FormControl('', [
             Validators.required,
             Validators.maxLength(10),
-            Validators.pattern(/^[\S]$/)])
+            Validators.pattern(/^[\S]$/)]),
     }, { updateOn: 'submit' });
 
     errorMessages = {
         nameRequired: 'Hero name required!',
         maxLength: 'Too long!',
-        invalidNameFormat: 'Invalid format!'
+        invalidNameFormat: 'Invalid format!',
     };
 }

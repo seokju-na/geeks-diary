@@ -10,11 +10,10 @@ export function dispatchFakeEvent(node: Node | Window, type: string, canBubble?:
     return dispatchEvent(node, createFakeEvent(type, canBubble));
 }
 
-export function dispatchKeyboardEvent(
-    node: Node,
-    type: string,
-    keyCode: number,
-    target?: Element): KeyboardEvent {
+export function dispatchKeyboardEvent(node: Node,
+                                      type: string,
+                                      keyCode: number,
+                                      target?: Element): KeyboardEvent {
 
     return dispatchEvent(node, createKeyboardEvent(type, keyCode, target)) as KeyboardEvent;
 }

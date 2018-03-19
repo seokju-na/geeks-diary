@@ -1,35 +1,32 @@
-import { ChangeDetectionStrategy, Component, Input, OnChanges, OnInit } from '@angular/core';
-import { BemBlock } from '../../../common/bem-class';
+import {
+    ChangeDetectionStrategy,
+    Component,
+    ElementRef,
+    Input,
+    OnInit,
+    ViewEncapsulation,
+} from '@angular/core';
 
 
 @Component({
-    selector: 'gd-icon',
+    selector: 'i[gd-icon]',
     templateUrl: './icon.component.html',
     styleUrls: ['./icon.component.less'],
-    changeDetection: ChangeDetectionStrategy.OnPush
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    encapsulation: ViewEncapsulation.None,
 })
-export class IconComponent implements OnInit, OnChanges {
+export class IconComponent implements OnInit {
     @Input() name: string;
     @Input() size = 'regular';
-    @Input() color: string;
-    iconClassName = '';
-    className = new BemBlock('Icon');
+
+    constructor(private elementRef: ElementRef) {
+    }
 
     ngOnInit(): void {
-        this.parseClassName();
-    }
+        const host = this.elementRef.nativeElement;
 
-    ngOnChanges(): void {
-        this.parseClassName();
-    }
-
-    private parseClassName() {
-        this.iconClassName = `la la-${this.name}`;
-
-        this.className.setModifier('size', this.size);
-
-        if (this.color) {
-            this.className.setModifier('color', this.color);
-        }
+        host.classList.add('la');
+        host.classList.add(`la-${this.name}`);
+        host.classList.add(`Icon--size-${this.size}`);
     }
 }

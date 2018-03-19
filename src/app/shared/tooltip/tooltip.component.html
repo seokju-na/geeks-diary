@@ -1,0 +1,5 @@
+<div class="Tooltip"
+     [style.transform-origin]="transformOrigin"
+     [@state]="visibility"
+     (@state.start)="animationStart()"
+     (@state.done)="animationDone($event)">{{message}}</div>

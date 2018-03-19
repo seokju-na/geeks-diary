@@ -3,7 +3,6 @@ const { CommonsChunkPlugin } = require('webpack').optimize;
 const CopyWebpackPlugin = require('copy-webpack-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const MonacoLoadPlugin = require('../tools/monaco-load-plugin');
-const DefaultThemeGenerator = require('../tools/default-theme-generator');
 const helpers = require('./helpers');
 
 
@@ -92,8 +91,7 @@ const config = {
                 removeComments: true
             }
         }),
-        new MonacoLoadPlugin(helpers.path.src('assets/load-monaco.html'), 'MONACO_EDITOR_LOAD_POSITION'),
-        new DefaultThemeGenerator(helpers.path.dist('default-theme.css'))
+        new MonacoLoadPlugin(helpers.path.src('assets/load-monaco.html'), 'MONACO_EDITOR_LOAD_POSITION')
     ],
     stats: {
         assets: true,

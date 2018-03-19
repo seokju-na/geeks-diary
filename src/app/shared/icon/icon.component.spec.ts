@@ -15,8 +15,8 @@ describe('app.shared.icon', () => {
                 imports: [CommonModule],
                 declarations: [
                     IconTestAppComponent,
-                    IconComponent
-                ]
+                    IconComponent,
+                ],
             })
             .compileComponents();
     }));
@@ -29,29 +29,24 @@ describe('app.shared.icon', () => {
 
     it('default icon size should be \'regular\'', () => {
         const icon = fixture.debugElement.query(By.directive(IconComponent));
-        const iconContent = icon.query(By.css('.Icon'));
 
         expect(icon.componentInstance.size).toEqual('regular');
-        expect(iconContent.nativeElement.classList.contains('Icon--size-regular')).toBeTruthy();
+        expect(icon.nativeElement.classList.contains('Icon--size-regular')).toBeTruthy();
     });
 
     it('should parse class name when icon name has been changed', () => {
         const icon = fixture.debugElement.query(By.directive(IconComponent));
-        const iconContent = icon.query(By.css('.Icon'));
 
-        component.iconName = 'SomeIcon';
-        fixture.detectChanges();
-
-        expect(iconContent.nativeElement.classList.contains('la-SomeIcon')).toBeTruthy();
+        expect(icon.nativeElement.classList.contains('la-someIcon')).toBeTruthy();
     });
 });
 
 
 @Component({
     template: `
-        <gd-icon [name]="iconName"></gd-icon>
-    `
+        <i gd-icon [name]="iconName"></i>
+    `,
 })
 class IconTestAppComponent {
-    iconName: string;
+    iconName = 'someIcon';
 }

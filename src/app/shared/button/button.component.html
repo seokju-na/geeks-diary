@@ -1,3 +1,2 @@
-<button (click)="buttonClick($event)" [disabled]="disabled" [ngClass]="className.toString()">
-    <ng-content></ng-content>
-</button>
+<gd-spinner [show]="showSpinner" class="Button__spinner"></gd-spinner>
+<ng-content *ngIf="!showSpinner"></ng-content>

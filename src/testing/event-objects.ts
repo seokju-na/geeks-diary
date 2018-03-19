@@ -1,8 +1,7 @@
-export function createKeyboardEvent(
-    type: string,
-    keyCode: number,
-    target?: Element,
-    key?: string): KeyboardEvent {
+export function createKeyboardEvent(type: string,
+                                    keyCode: number,
+                                    target?: Element,
+                                    key?: string): KeyboardEvent {
 
     const event = document.createEvent('KeyboardEvent') as any;
     const initEventFn = (event.initKeyEvent || event.initKeyboardEvent).bind(event);
@@ -12,7 +11,7 @@ export function createKeyboardEvent(
     Object.defineProperties(event, {
         keyCode: { get: () => keyCode },
         key: { get: () => key },
-        target: { get: () => target }
+        target: { get: () => target },
     });
 
     return event;

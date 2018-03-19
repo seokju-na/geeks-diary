@@ -15,8 +15,8 @@ describe('app.shared.optionItem', () => {
             .configureTestingModule({
                 declarations: [
                     OptionItemComponent,
-                    TestOptionItemComponent
-                ]
+                    TestOptionItemComponent,
+                ],
             })
             .compileComponents();
     }));
@@ -71,14 +71,14 @@ describe('app.shared.optionItem', () => {
         fixture.detectChanges();
 
         expect(optionItemComponent.selected).toBeTruthy();
-    })
+    });
 });
 
 
 @Component({
     template: `
         <gd-option-item></gd-option-item>
-    `
+    `,
 })
 class TestOptionItemComponent {
 }

@@ -5,5 +5,5 @@ export enum KeyCodes {
     ESCAPE = 27,
     SPACE = 32,
     UP_ARROW = 38,
-    DOWN_ARROW = 40
+    DOWN_ARROW = 40,
 }

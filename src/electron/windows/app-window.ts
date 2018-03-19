@@ -7,7 +7,7 @@ export class AppWindow extends Window {
             width: 1024,
             height: 960,
             minWidth: 700,
-            minHeight: 480
+            minHeight: 480,
         });
     }
 }

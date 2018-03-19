@@ -1,6 +1,13 @@
 import {
-    AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, ContentChild, ContentChildren, ElementRef,
-    HostBinding, QueryList
+    AfterViewInit,
+    ChangeDetectionStrategy,
+    ChangeDetectorRef,
+    Component,
+    ContentChild,
+    ContentChildren,
+    ElementRef,
+    HostBinding,
+    QueryList,
 } from '@angular/core';
 import { FormFieldControlDirective } from './form-field-control.directive';
 import { FormFieldErrorComponent } from './form-field-error.component';
@@ -11,7 +18,7 @@ import { FormFieldHintComponent } from './form-field-hint.component';
     selector: 'gd-form-field',
     templateUrl: './form-field.component.html',
     styleUrls: ['./form-field.component.less'],
-    changeDetection: ChangeDetectionStrategy.OnPush
+    changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class FormFieldComponent implements AfterViewInit {
     @ContentChild(FormFieldControlDirective) control: FormFieldControlDirective;
@@ -19,9 +26,8 @@ export class FormFieldComponent implements AfterViewInit {
     @ContentChild(FormFieldHintComponent) hint: FormFieldHintComponent;
     @HostBinding('class.errorCaught') errorCaught = false;
 
-    constructor(
-        public elementRef: ElementRef,
-        private changeDetectorRef: ChangeDetectorRef) {
+    constructor(public elementRef: ElementRef,
+                private changeDetectorRef: ChangeDetectorRef) {
     }
 
     ngAfterViewInit(): void {

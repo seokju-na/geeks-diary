@@ -1,7 +1,12 @@
 import { coerceBooleanProperty } from '@angular/cdk/coercion';
 import {
-    ChangeDetectionStrategy, ChangeDetectorRef,
-    Component, ElementRef, EventEmitter, Input, Output
+    ChangeDetectionStrategy,
+    ChangeDetectorRef,
+    Component,
+    ElementRef,
+    EventEmitter,
+    Input,
+    Output,
 } from '@angular/core';
 import { KeyCodes } from '../../../common/key-codes';
 
@@ -9,9 +14,8 @@ import { KeyCodes } from '../../../common/key-codes';
 let uniqueIdCounter = 0;
 
 export class OptionItemSelectionChange {
-    constructor(
-        public source: OptionItemComponent,
-        public isUserInput) {}
+    constructor(public source: OptionItemComponent,
+                public isUserInput) {}
 }
 
 
@@ -19,7 +23,7 @@ export class OptionItemSelectionChange {
     selector: 'gd-option-item',
     templateUrl: './option-item.component.html',
     styleUrls: ['./option-item.component.less'],
-    changeDetection: ChangeDetectionStrategy.OnPush
+    changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class OptionItemComponent {
     private _selected = false;
@@ -29,17 +33,18 @@ export class OptionItemComponent {
     readonly id = `OptionItem-${uniqueIdCounter++}`;
 
     @Input() value: any;
+
     @Input()
     get disabled() { return this._disabled; }
+
     set disabled(value: any) {
         this._disabled = coerceBooleanProperty(value);
     }
 
     @Output() selectionChange = new EventEmitter<OptionItemSelectionChange>();
 
-    constructor(
-        private elementRef: ElementRef,
-        private changeDetectorRef: ChangeDetectorRef) {}
+    constructor(private elementRef: ElementRef,
+                private changeDetectorRef: ChangeDetectorRef) {}
 
     get selected(): boolean {
         return this._selected;

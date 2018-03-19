@@ -1,0 +1,37 @@
+<div class="NoteCalendar">
+    <nav>
+        <button gd-button
+                (click)="decreaseMonth()"
+                buttonType="flat"
+                size="regular"
+                class="NoteCalendar__navigateButton">
+            <i gd-icon name="angle-left" size="regular"></i>
+        </button>
+        <div class="NoteCalendar__title">
+            <h1 gd-text
+                size="regular"
+                weight="medium">{{indexDate | date:'MMM yyyy'}}</h1>
+        </div>
+        <button gd-button
+                (click)="increaseMonth()"
+                buttonType="flat"
+                size="regular"
+                class="NoteCalendar__navigateButton">
+            <i gd-icon name="angle-right" size="regular"></i>
+        </button>
+    </nav>
+
+    <table class="NoteCalendar__table">
+        <tbody>
+        <tr *ngFor="let row of calendar.rows">
+            <td *ngFor="let cell of row.cells">
+                <a [class.NoteCalendar__cell--blank]="cell.isBlank()"
+                   [class.NoteCalendar__cell--today]="cell.isToday()"
+                   class="NoteCalendar__cell">
+                    <label *ngIf="!cell.isBlank()"></label>
+                </a>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+</div>

@@ -3,6 +3,13 @@
         "node_modules/codelyzer"
     ],
     "rules": {
+        "trailing-comma": [
+            true,
+            {
+                "multiline": "always",
+                "singleline": "never"
+            }
+        ],
         "arrow-return-shorthand": true,
         "callable-types": true,
         "class-name": true,
@@ -113,7 +120,10 @@
         ],
         "component-selector": [
             true,
-            "element",
+            [
+                "element",
+                "attribute"
+            ],
             "gd",
             "kebab-case"
         ],

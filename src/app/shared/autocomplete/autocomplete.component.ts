@@ -16,7 +16,7 @@ import {
     Output,
     QueryList,
     TemplateRef,
-    ViewChild
+    ViewChild,
 } from '@angular/core';
 import { OptionItemComponent } from '../option-item/option-item.component';
 
@@ -33,7 +33,7 @@ export class AutocompleteSelectedEvent {
     templateUrl: './autocomplete.component.html',
     styleUrls: ['./autocomplete.component.less'],
     changeDetection: ChangeDetectionStrategy.OnPush,
-    exportAs: 'gdAutocomplete'
+    exportAs: 'gdAutocomplete',
 })
 export class AutocompleteComponent implements AfterContentInit {
     _keyManager: ActiveDescendantKeyManager<OptionItemComponent>;
