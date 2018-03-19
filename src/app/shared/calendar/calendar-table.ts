@@ -95,7 +95,7 @@ export class CalendarTable {
 export type CalendarTableFactory = () => CalendarTable;
 export const CALENDAR_TABLE = new InjectionToken<CalendarTableFactory>('CalendarTable');
 
-function CALENDAR_TABLE_FACTORY(): CalendarTableFactory {
+export function CALENDAR_TABLE_FACTORY(): CalendarTableFactory {
     return () => new CalendarTable();
 }
 
