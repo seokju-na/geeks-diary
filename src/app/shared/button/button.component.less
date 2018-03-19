@@ -30,7 +30,14 @@
             }
         }
 
-        &-primary {}
+        &-primary {
+            background-color: var(--color-teal-4);
+            color: var(--color-white);
+
+            &:focus {
+                box-shadow: 0 0 2px 0 var(--color-teal-7);
+            }
+        }
 
         &-flat {
             background-color: transparent;
