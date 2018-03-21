@@ -52,14 +52,14 @@
     rxjs "^5.5.6"
 
 "@angular/animations@^5.2.2":
-  version "5.2.3"
-  resolved "https://registry.yarnpkg.com/@angular/animations/-/animations-5.2.3.tgz#e0eb8d55f807e799df128af9150c075c9ab82adf"
+  version "5.2.2"
+  resolved "https://registry.yarnpkg.com/@angular/animations/-/animations-5.2.9.tgz#220db9fb5a52a193db0023d721b23ddd25a75770"
   dependencies:
     tslib "^1.7.1"
 
-"@angular/cdk@^5.1.1":
-  version "5.1.1"
-  resolved "https://registry.yarnpkg.com/@angular/cdk/-/cdk-5.1.1.tgz#a278b44ec02145a4691aa466dde06a1ae8c0fe88"
+"@angular/cdk@^5.2.4":
+  version "5.2.4"
+  resolved "https://registry.yarnpkg.com/@angular/cdk/-/cdk-5.2.4.tgz#c0a429a8710d8fedb157f546e21cb49d4335f7f7"
   dependencies:
     tslib "^1.7.1"
 
@@ -194,6 +194,10 @@
   resolved "https://registry.yarnpkg.com/@schematics/angular/-/angular-0.1.17.tgz#084a7cbe2de6f94a856bd08d95c9d35ef8905e2b"
   dependencies:
     typescript "~2.6.2"
+
+"@types/codemirror@^0.0.55":
+  version "0.0.55"
+  resolved "https://registry.yarnpkg.com/@types/codemirror/-/codemirror-0.0.55.tgz#f4292b7a5f33b2aab509501c3db7e45d19a7c057"
 
 "@types/jasmine@^2.8.6":
   version "2.8.6"
@@ -1469,6 +1473,10 @@ codelyzer@^4.1.0:
     semver-dsl "^1.0.1"
     source-map "^0.5.6"
     sprintf-js "^1.0.3"
+
+codemirror@^5.35.0:
+  version "5.35.0"
+  resolved "https://registry.yarnpkg.com/codemirror/-/codemirror-5.35.0.tgz#280653d495455bc66aa87e6284292b02775ba878"
 
 collection-visit@^1.0.0:
   version "1.0.0"
