@@ -144,7 +144,6 @@ export class TooltipDirective implements OnDestroy {
         this.focusMonitor.stopMonitoring(this.elementRef.nativeElement);
     }
 
-    /** Shows the tooltip after the delay in ms, defaults to tooltip-delay-show or 0ms if no input */
     show(delay: number = this.showDelay): void {
         if (this.disabled || !this.message) { return; }
 
@@ -160,7 +159,6 @@ export class TooltipDirective implements OnDestroy {
         this._tooltipInstance.show(this._position, delay);
     }
 
-    /** Hides the tooltip after the delay in ms, defaults to tooltip-delay-hide or 0ms if no input */
     hide(delay: number = this.hideDelay): void {
         if (this._tooltipInstance) {
             this._tooltipInstance.hide(delay);
@@ -205,7 +203,8 @@ export class TooltipDirective implements OnDestroy {
             filter(() => !!this._tooltipInstance),
             takeUntil(this._destroyed),
         ).subscribe(change => {
-            if (change.scrollableViewProperties.isOverlayClipped && this._tooltipInstance.isVisible()) {
+            if (change.scrollableViewProperties.isOverlayClipped
+                && this._tooltipInstance.isVisible()) {
                 // After position changes occur and the overlay is clipped by
                 // a parent scrollable then close the tooltip.
                 this.ngZone.run(() => this.hide(0));
@@ -273,7 +272,10 @@ export class TooltipDirective implements OnDestroy {
     }
 
     /** Returns the overlay position and a fallback position based on the user's preference */
-    private getOverlayPosition(): { main: OverlayConnectionPosition, fallback: OverlayConnectionPosition } {
+    private getOverlayPosition(): {
+        main: OverlayConnectionPosition,
+        fallback: OverlayConnectionPosition,
+    } {
         let position: OverlayConnectionPosition;
 
         if (this.position === 'above') {
@@ -296,7 +298,6 @@ export class TooltipDirective implements OnDestroy {
         };
     }
 
-    /** Updates the tooltip message and repositions the overlay according to the new message length */
     private updateTooltipMessage() {
         // Must wait for the message to be painted to the tooltip so that the overlay can properly
         // calculate the correct positioning based on the size of the text.

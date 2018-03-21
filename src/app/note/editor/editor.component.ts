@@ -1,4 +1,6 @@
 import { Component } from '@angular/core';
+import { NoteEditorService } from './editor.service';
+import { NoteEditorSnippetRef } from './snippets/snippet-ref';
 
 
 @Component({
@@ -7,4 +9,10 @@ import { Component } from '@angular/core';
     styleUrls: ['./editor.component.less'],
 })
 export class NoteEditorComponent {
+    constructor(private editorService: NoteEditorService) {
+    }
+
+    get snippets(): NoteEditorSnippetRef[] {
+        return this.editorService.snippets;
+    }
 }
