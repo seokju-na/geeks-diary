@@ -14,7 +14,8 @@
         "lint": "npx tslint --project tsconfig.json",
         "test": "npm run lint && npx karma start configs/karma.conf.js",
         "package": "npx electron-builder -mwl",
-        "tools:copy-vendors": "tools/copy-vendors.sh"
+        "tools:copy-vendors": "tools/copy-vendors.sh",
+        "preinstall": "npm run tools:copy-vendors"
     },
     "repository": {
         "type": "git",
