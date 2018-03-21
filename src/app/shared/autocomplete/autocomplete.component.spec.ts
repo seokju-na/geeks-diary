@@ -269,7 +269,9 @@ describe('app.shared.autocomplete', () => {
 @Component({
     template: `
         <gd-form-field>
-            <input gdFormFieldControl gdAutocomplete [autocomplete]="auto" [formControl]="stateCtrl">
+            <input gdFormFieldControl gdAutocomplete
+                   [autocomplete]="auto" 
+                   [formControl]="stateCtrl">
             <gd-autocomplete [displayWith]="displayFn" #auto="gdAutocomplete">
                 <gd-option-item *ngFor="let state of filteredStates" [value]="state">
                     <span>{{state.code}} {{state.name}}</span>

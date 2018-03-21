@@ -82,7 +82,8 @@ describe('app.shared.formField', () => {
 
                 expect(errorMessage).not.toBeNull();
                 expect(errorMessage.componentInstance.errorName).toEqual('pattern');
-                expect(errorMessage.nativeElement.textContent).toContain(component.errorMessages.invalidNameFormat);
+                expect(errorMessage.nativeElement.textContent)
+                    .toContain(component.errorMessages.invalidNameFormat);
             });
         }));
     });
