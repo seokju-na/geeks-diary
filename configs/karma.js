@@ -6,7 +6,7 @@ const CI = process.env.CI || false;
 
 module.exports = (config) => {
     config.set({
-        basePath: '../',
+        basePath: './',
         frameworks: ['jasmine'],
         plugins: [
             require('karma-jasmine'),
@@ -35,6 +35,7 @@ module.exports = (config) => {
                 chunks: false
             }
         },
+        customContextFile: 'tools/karma-context-page.html',
         reporters: ['dots'],
         port: 9876,
         color: true,

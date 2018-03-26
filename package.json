@@ -12,7 +12,7 @@
         "clean:packages": "npx rimraf packages/",
         "ci:travis": "npm run test && npm run build:main && npm run build:renderer",
         "lint": "npx tslint --project tsconfig.json",
-        "test": "npm run lint && npx karma start configs/karma.conf.js",
+        "test": "npm run lint && npx karma start karma.conf.js",
         "package": "npx electron-builder -mwl",
         "tools:copy-vendors": "tools/copy-vendors.sh",
         "postinstall": "npm run tools:copy-vendors"
