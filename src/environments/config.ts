@@ -1,6 +1,7 @@
 export enum EnvironmentRunTarget {
     PRODUCTION = 'PRODUCTION',
     DEVELOPMENT = 'DEVELOPMENT',
+    TEST = 'TEST',
 }
 
 
