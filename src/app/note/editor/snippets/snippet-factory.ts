@@ -1,21 +1,13 @@
-import { Injectable, InjectionToken, Injector, Type } from '@angular/core';
+import { Injectable, Injector, Type } from '@angular/core';
+import {
+    NOTE_EDITOR_SNIPPET_CONFIG,
+    NOTE_EDITOR_SNIPPET_REF,
+    NoteEditorSnippet,
+    NoteEditorSnippetConfig,
+    NoteEditorSnippetRef,
+} from './snippet';
 import { NoteCodeEditorSnippetComponent } from './code-snippet.component';
-import { NoteEditorSnippet } from './snippet';
-import { NoteEditorSnippetRef } from './snippet-ref';
 import { NoteTextEditorSnippetComponent } from './text-snippet.component';
-
-
-export class NoteEditorSnippetConfig {
-    initialValue = '';
-    language?: string;
-}
-
-
-export const NOTE_EDITOR_SNIPPET_CONFIG =
-    new InjectionToken<NoteEditorSnippetConfig>('NoteEditorSnippetConfig');
-
-export const NOTE_EDITOR_SNIPPET_REF =
-    new InjectionToken<NoteEditorSnippetRef>('NoteEditorSnippetRef');
 
 
 function applyConfigDefaults(config?: NoteEditorSnippetConfig,

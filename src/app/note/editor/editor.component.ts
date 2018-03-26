@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { NoteEditorService } from './editor.service';
-import { NoteEditorSnippetRef } from './snippets/snippet-ref';
+import { NoteEditorSnippetRef } from './snippets/snippet';
 
 
 @Component({

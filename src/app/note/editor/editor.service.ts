@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { NoteEditorSnippetFactory } from './snippets/snippet-factory';
-import { NoteEditorSnippetRef } from './snippets/snippet-ref';
+import { NoteEditorSnippetRef } from './snippets/snippet';
 
 
 @Injectable()

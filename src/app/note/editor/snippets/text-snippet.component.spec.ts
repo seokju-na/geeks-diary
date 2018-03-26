@@ -1,9 +1,14 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { KeyCodes } from '../../../../common/key-codes';
 import { dispatchKeyboardEvent } from '../../../../testing';
-import { NOTE_EDITOR_SNIPPET_REF, NoteEditorSnippetConfig } from './snippet-factory';
-import { NOTE_EDITOR_SNIPPET_CONFIG } from './snippet-factory';
-import { NoteEditorSnippetEvent, NoteEditorSnippetEventNames, NoteEditorSnippetRef } from './snippet-ref';
+import {
+    NOTE_EDITOR_SNIPPET_CONFIG,
+    NOTE_EDITOR_SNIPPET_REF,
+    NoteEditorSnippetConfig,
+    NoteEditorSnippetEvent,
+    NoteEditorSnippetEventNames,
+    NoteEditorSnippetRef,
+} from './snippet';
 import { NoteTextEditorSnippetComponent } from './text-snippet.component';
 
 
