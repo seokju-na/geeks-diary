@@ -57,7 +57,9 @@ class Datetime {
     }
 
     getDaysInMonth(year: number, month: number): number {
-        return [31, (this.isLeapYear(year) ? 29 : 28), 31, 30, 31, 30, 31, 31, 30, 31, 30, 31][month];
+        const febMonth = this.isLeapYear(year) ? 29 : 28;
+
+        return [31, febMonth, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31][month];
     }
 
     getFirstDateOfMonth(year: number, month: number): Date {

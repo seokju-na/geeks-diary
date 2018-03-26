@@ -63,7 +63,8 @@ describe('app.shared.formField', () => {
 
                 expect(errorMessage).not.toBeNull();
                 expect(errorMessage.componentInstance.errorName).toEqual('maxlength');
-                expect(errorMessage.nativeElement.textContent).toContain(component.errorMessages.maxLength);
+                expect(errorMessage.nativeElement.textContent)
+                    .toContain(component.errorMessages.maxLength);
             });
         }));
 
