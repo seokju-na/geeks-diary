@@ -2,10 +2,15 @@ import { Injectable } from '@angular/core';
 import * as path from 'path';
 import { BehaviorSubject } from 'rxjs/BehaviorSubject';
 import { Observable } from 'rxjs/Observable';
-import { ErrorObservable } from 'rxjs/observable/ErrorObservable';
-import { debounceTime, distinctUntilChanged, map, switchMap, tap } from 'rxjs/operators';
-import { readFileAsObservable } from '../../common/fs-helpers';
+import {
+    debounceTime,
+    distinctUntilChanged,
+    map,
+    switchMap,
+} from 'rxjs/operators';
 import { SearchModel } from '../../common/search.model';
+import { environment } from '../../environments/environment';
+import { FsService } from '../core/fs.service';
 
 
 interface DevIconMap {
@@ -21,12 +26,12 @@ export class StackItem {
     // FIXME LATER
     // Might get an error here, when build electron app.
     // Should search more information about electron path policy.
-    static iconStorePath = 'dist/assets/vendors/devicon/';
+    static iconStorePath = path.resolve(
+        environment.config.basePath, 'assets/vendors/devicon/');
 
     readonly name: string;
     readonly iconFilePath: string;
-
-    private tags: string[];
+    readonly tags: string[];
 
     static getIconFilePath(name: string, svgFiles: string[]): string {
         let iconName;
@@ -72,13 +77,20 @@ export class StackItem {
 
 @Injectable()
 export class StackViewer {
-    private _stacks = new BehaviorSubject<StackItem[]>([]);
+    static iconMapFilePath = path.resolve(StackItem.iconStorePath, 'devicon.json');
 
-    constructor() {
-        this.loadStacks();
+    private _stacks = new BehaviorSubject<StackItem[]>([]);
+    private hasStackLoaded = false;
+
+    constructor(private fsService: FsService) {
     }
 
     stacks(): Observable<StackItem[]> {
+        if (!this.hasStackLoaded) {
+            this.loadStacks();
+            this.hasStackLoaded = true;
+        }
+
         return this._stacks.asObservable();
     }
 
@@ -102,23 +114,14 @@ export class StackViewer {
     }
 
     private loadStacks(): void {
-        const iconMapFilePath = path.resolve(StackItem.iconStorePath, 'devicon.json');
+        const parseFileData = map((buffer: Buffer) =>
+            JSON.parse(buffer.toString('utf8')));
 
-        // TODO : Handle exception clearly.
-        readFileAsObservable(iconMapFilePath, 'utf8').pipe(
-            map((buffer: Buffer) => {
-                const strData = buffer.toString('utf8');
-
-                try {
-                    return JSON.parse(strData);
-                } catch (err) {
-                    return ErrorObservable.create(err);
-                }
-            }),
-            tap((iconMap: DevIconMap[]) => {
-                const stacks = iconMap.map(i => new StackItem(i));
-                this._stacks.next(stacks);
-            }),
-        ).subscribe();
+        this.fsService
+            .readFile(StackViewer.iconMapFilePath, 'utf8')
+            .pipe(parseFileData)
+            .subscribe((icons: DevIconMap[]) => {
+                this._stacks.next(icons.map(icon => new StackItem(icon)));
+            });
     }
 }
