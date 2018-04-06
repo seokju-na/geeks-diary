@@ -9,4 +9,5 @@ export abstract class EnvironmentConfig {
     abstract RUN_TARGET: EnvironmentRunTarget;
     abstract production: boolean;
     abstract enableAot: boolean;
+    abstract basePath: string;
 }

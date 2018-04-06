@@ -11,6 +11,15 @@ require('zone.js/dist/async-test');
 require('zone.js/dist/fake-async-test');
 
 
+const fs = require('fs');
+
+try {
+    fs.accessSync('temp/');
+} catch (err) {
+    fs.mkdirSync('temp/');
+}
+
+
 const testing = require('@angular/core/testing');
 const browser = require('@angular/platform-browser-dynamic/testing');
 
