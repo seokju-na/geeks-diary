@@ -10,6 +10,7 @@ module.exports = (config) => {
         frameworks: ['jasmine'],
         plugins: [
             require('karma-jasmine'),
+            require('karma-sourcemap-loader'),
             require('karma-webpack'),
             require('karma-electron'),
             require('karma-electron-launcher')
@@ -26,14 +27,12 @@ module.exports = (config) => {
             '/assets/': '/base/src/assets/'
         },
         preprocessors: {
-            'src/spec.js': ['webpack', 'electron']
+            'src/spec.js': ['webpack', 'sourcemap', 'electron']
         },
         webpack: testWebpackConfig,
         webpackMiddleware: {
             noInfo: true,
-            stats: {
-                chunks: false
-            }
+            stats: 'errors-only'
         },
         customContextFile: 'tools/karma-context-page.html',
         reporters: ['dots'],
