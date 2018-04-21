@@ -1,4 +1,9 @@
-import { Component, Injector, Input, Type } from '@angular/core';
+import { Component, Injector, Input, OnInit, Type } from '@angular/core';
+import { select, Store } from '@ngrx/store';
+import { Observable } from 'rxjs/Observable';
+import { share } from 'rxjs/operators';
+import { AppState } from '../../app-reducers';
+import { ToggleSidebarAction } from '../actions';
 
 
 export interface SidebarOutlet {
@@ -14,31 +19,28 @@ export interface SidebarOutlet {
     templateUrl: './sidebar.component.html',
     styleUrls: ['./sidebar.component.less'],
 })
-export class SidebarComponent {
+export class SidebarComponent implements OnInit {
     @Input() outlets: SidebarOutlet[];
 
-    activeOutletName: string | null = null;
+    showPanel: Observable<boolean>;
+    activeOutletName: Observable<string | null>;
 
-    constructor(public injector: Injector) {
+    constructor(public injector: Injector,
+                private store: Store<AppState>) {
     }
 
-    get showPanel(): boolean {
-        return this.activeOutletName !== null;
+    ngOnInit(): void {
+        this.showPanel = this.store.pipe(
+            select(state => state.layout.showSidebar),
+        );
+
+        this.activeOutletName = this.store.pipe(
+            select(state => state.layout.activeSidebarOutletName),
+            share(),
+        );
     }
 
     clickTab(outlet: SidebarOutlet): void {
-        if (this.activeOutletName) {
-            this.activeOutletName = null;
-        } else {
-            this.activeOutletName = outlet.name;
-        }
-    }
-
-    isActiveOutlet(outlet: SidebarOutlet): boolean {
-        if (this.activeOutletName) {
-            return this.activeOutletName === outlet.name;
-        }
-
-        return false;
+        this.store.dispatch(new ToggleSidebarAction(outlet.name));
     }
 }

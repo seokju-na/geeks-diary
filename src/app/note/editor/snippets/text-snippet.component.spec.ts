@@ -1,6 +1,6 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { KeyCodes } from '../../../../common/key-codes';
-import { dispatchKeyboardEvent } from '../../../../testing';
+import { dispatchKeyboardEvent } from '../../../../testing/fake-event';
 import {
     NOTE_EDITOR_SNIPPET_CONFIG,
     NOTE_EDITOR_SNIPPET_REF,
@@ -21,7 +21,10 @@ describe('app.note.editor.snippet.NoteTextEditorSnippetComponent', () => {
 
     beforeEach(() => {
         ref = new NoteEditorSnippetRef();
-        config = { initialValue: 'initial value' };
+        config = {
+            initialValue: 'initial value',
+            isNewSnippet: false,
+        };
     });
 
     beforeEach(async(() => {

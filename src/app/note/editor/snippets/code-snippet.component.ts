@@ -3,11 +3,12 @@ import {
     Component,
     ElementRef,
     Injector,
+    OnInit,
     ViewChild,
     ViewEncapsulation,
 } from '@angular/core';
-import * as monaco from 'monaco-editor/esm/vs/editor/editor.main';
-import { afterLoadMonaco } from '../../../utils/after-load-monaco';
+import { FormControl, FormGroup, Validators } from '@angular/forms';
+import { MonacoService } from '../../../core/monaco.service';
 import { NoteEditorSnippet } from './snippet';
 
 
@@ -18,20 +19,63 @@ import { NoteEditorSnippet } from './snippet';
     encapsulation: ViewEncapsulation.None,
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class NoteCodeEditorSnippetComponent extends NoteEditorSnippet {
+export class NoteCodeEditorSnippetComponent extends NoteEditorSnippet implements OnInit {
     @ViewChild('content') contentEl: ElementRef;
+    firstSetting = false;
+    mode: 'edit' | 'setting' = 'edit';
+    settingForm = new FormGroup({
+        language: new FormControl('', [Validators.required]),
+        fileName: new FormControl(''),
+    });
     _editor: monaco.editor.IStandaloneCodeEditor;
-    private monaco: monaco;
 
-    constructor(private injector: Injector) {
+    constructor(
+        private injector: Injector,
+        private monacoService: MonacoService,
+    ) {
+
         super(injector);
     }
 
+    ngOnInit(): void {
+        if (this._config.isNewSnippet) {
+            this.firstSetting = true;
+            this.mode = 'setting';
+        }
+    }
+
     init(): void {
-        afterLoadMonaco().subscribe((monacoInstance: monaco) => {
-            this.monaco = monacoInstance;
-            this.createEditor();
+        this._editor = this.monacoService.createEditor(
+            this.contentEl.nativeElement, this.getEditorOptions());
+
+        this._editor.onDidFocusEditor(() => {
+            this.handleFocus(true);
         });
+
+        this._editor.onDidBlurEditor(() => {
+            this.handleFocus(false);
+        });
+
+        this._editor.onDidChangeModelContent(() => {
+            // const value = this._editor.getModel().getValue();
+            // this.emitEvent();
+            this.layoutHeight();
+        });
+
+        this._editor.onKeyDown((event: monaco.IKeyboardEvent) => {
+            this.handleKeyDown(event.browserEvent);
+        });
+
+        this._editor.createContextKey('alwaysTrue', true);
+
+        const keyMod = this.monacoService.KeyMod;
+        const keyCode = this.monacoService.KeyCode;
+
+        /* tslint:disable */
+        this._editor.addCommand(keyMod.CtrlCmd | keyCode.KEY_F, () => {}, 'alwaysTrue');
+        /* tslint:enable */
+
+        this.layoutHeight();
     }
 
     destroy(): void {
@@ -91,7 +135,7 @@ export class NoteCodeEditorSnippetComponent extends NoteEditorSnippet {
     getEditorOptions(): monaco.editor.IEditorConstructionOptions {
         return {
             value: this._config.initialValue,
-            language: this._config.language,
+            language: this._config.language ? this._config.language : null,
             codeLens: false,
             fontSize: 14,
             lineHeight: 21,
@@ -109,38 +153,7 @@ export class NoteCodeEditorSnippetComponent extends NoteEditorSnippet {
         };
     }
 
-    private createEditor(): void {
-        this._editor = this.monaco.editor.create(
-            this.contentEl.nativeElement, this.getEditorOptions());
-
-        this._editor.onDidFocusEditor(() => {
-            this.handleFocus(true);
-        });
-
-        this._editor.onDidBlurEditor(() => {
-            this.handleFocus(false);
-        });
-
-        this._editor.onDidChangeModelContent(() => {
-            // const value = this._editor.getModel().getValue();
-            // this.emitEvent();
-            this.layoutHeight();
-        });
-
-        this._editor.onKeyDown((event: monaco.IKeyboardEvent) => {
-            this.handleKeyDown(event.browserEvent);
-        });
-
-        this._editor.createContextKey('alwaysTrue', true);
-
-        const keyMod = this.monaco.KeyMod;
-        const keyCode = this.monaco.KeyCode;
-
-        /* tslint:disable */
-        this._editor.addCommand(keyMod.CtrlCmd | keyCode.KEY_F, () => {}, 'alwaysTrue');
-        /* tslint:enable */
-
-        this.layoutHeight();
+    submitSetting(): void {
     }
 
     private layoutHeight(): void {

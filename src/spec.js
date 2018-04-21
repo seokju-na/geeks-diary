@@ -37,16 +37,17 @@ testing.TestBed.initTestEnvironment(
  * any file that ends with spec.ts and get its path. By passing in true
  * we say do this recursively
  */
-const testContext = require.context('./app', true, /\.spec\.ts/);
 
-/*
- * get all the files, for each file, call the context function
- * that will require the file and load it up here. Context will
- * loop and require those spec files here
- */
-function requireAll(requireContext) {
-    return requireContext.keys().map(requireContext);
+if (window.MONACO) {
+    runTest();
+} else {
+    window.REGISTER_MONACO_INIT_CALLBACK(() => {
+        runTest();
+    });
 }
 
-// requires and returns all modules that match
-requireAll(testContext);
+
+function runTest() {
+    const testContext = require.context('./app', true, /\.spec\.ts/);
+    testContext.keys().map(testContext);
+}

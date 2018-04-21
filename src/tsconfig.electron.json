@@ -2,13 +2,7 @@
     "extends": "../tsconfig.json",
     "compilerOptions": {
         "outDir": "../out-tsc/electron",
-        "baseUrl": "./",
-        "paths": {
-            "electron": ["electron/"],
-            "common": ["common/"],
-            "assets": ["assets/"],
-            "environments": ["environments/"]
-        }
+        "baseUrl": "./"
     },
     "exclude": [
         "main.browser.ts",

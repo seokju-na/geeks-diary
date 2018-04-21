@@ -16,7 +16,8 @@
         ]
     },
     "exclude": [
-        "src/assets/",
+        "dist/",
+        "build/",
         "node_modules/"
     ]
 }

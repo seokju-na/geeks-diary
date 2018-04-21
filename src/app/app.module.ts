@@ -1,7 +1,9 @@
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-
+import { StoreModule } from '@ngrx/store';
+import { StoreDevtoolsModule } from '@ngrx/store-devtools';
+import { appMetaReducers, appReducers } from './app-reducers';
 import { AppShellComponent } from './app-shell.component';
 import { CoreModule } from './core/core.module';
 import { NoteModule } from './note/note.module';
@@ -15,6 +17,10 @@ import { StackModule } from './stack/stack.module';
         BrowserAnimationsModule,
         SharedModule,
         CoreModule,
+        StoreModule.forRoot(appReducers, {
+            metaReducers: appMetaReducers,
+        }),
+        StoreDevtoolsModule.instrument(),
         NoteModule,
         StackModule,
     ],

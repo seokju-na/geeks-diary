@@ -1,4 +1,5 @@
 import { Injectable, Injector, Type } from '@angular/core';
+import { NoteCodeEditorSnippetComponent } from './code-snippet.component';
 import {
     NOTE_EDITOR_SNIPPET_CONFIG,
     NOTE_EDITOR_SNIPPET_REF,
@@ -6,7 +7,6 @@ import {
     NoteEditorSnippetConfig,
     NoteEditorSnippetRef,
 } from './snippet';
-import { NoteCodeEditorSnippetComponent } from './code-snippet.component';
 import { NoteTextEditorSnippetComponent } from './text-snippet.component';
 
 

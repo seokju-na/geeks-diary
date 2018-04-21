@@ -1,4 +1,51 @@
 .NoteCodeEditorSnippet {
-    width: 1000px;
-    height: 800px;
+    &__header {
+        display: flex;
+        align-items: center;
+        padding: 0 var(--size-space-regular);
+        width: 100%;
+        height: var(--size-box-medium);
+        border-top-left-radius: 5px;
+        border-top-right-radius: 5px;
+        background-color: var(--color-gray-3);
+    }
+
+    &__stackIcon {
+    }
+
+    &__settingForm {
+        display: flex;
+        align-items: center;
+        padding: 0 var(--size-space-small);
+
+        input {
+            height: var(--size-box-small);
+        }
+    }
+
+    &__contentWrapper {
+        border-left: 1px solid;
+        border-bottom: 1px solid;
+        border-right: 1px solid;
+        border-bottom-left-radius: 5px;
+        border-bottom-right-radius: 5px;
+        border-color: var(--color-gray-3);
+        padding: var(--size-space-regular) 0 var(--size-space-small) 0;
+    }
+
+    & .monaco-editor {
+        background-color: transparent !important;
+
+        & .margin {
+            background-color: transparent !important;
+        }
+    }
+
+    & .monaco-scrollable-element {
+        border-radius: 5px;
+    }
+
+    & .mtk1 {
+        color: var(--color-gray-9);
+    }
 }

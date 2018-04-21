@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { flush } from '@angular/core/testing';
 import { Observable } from 'rxjs/Observable';
 import { Subject } from 'rxjs/Subject';
-import { FsService } from '../app/core/fs.service';
+import { FsService } from '../../app/core/fs.service';
 
 
 class FsStub<R> {
@@ -50,6 +50,10 @@ export class MockFsService extends FsService {
         }
 
         return new FsStub<R>(stubName, this.stubMap.get(stubName), this);
+    }
+
+    spyOn(method: keyof this): jasmine.Spy {
+        return spyOn(this, method);
     }
 
     verify(): void {

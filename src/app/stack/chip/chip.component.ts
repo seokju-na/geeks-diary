@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, HostBinding, Input } from '@angular/core';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
-import { StackItem } from '../stack-viewer';
+import { Stack } from '../models';
 
 
 @Component({
@@ -10,17 +10,16 @@ import { StackItem } from '../stack-viewer';
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class StackChipComponent {
-    @Input() stackItem: StackItem;
+    @Input() stack: Stack;
     @Input() size = 'regular';
 
     @HostBinding('attr.aria-label')
-    private get attrAriaLabel() { return this.stackItem.name; }
+    private get attrAriaLabel() { return this.stack.name; }
 
     constructor(private sanitizer: DomSanitizer) {
     }
 
     getIconUrl(): SafeResourceUrl {
-        return this.sanitizer.bypassSecurityTrustResourceUrl(
-            this.stackItem.iconFilePath);
+        return this.sanitizer.bypassSecurityTrustResourceUrl(this.stack.iconFilePath);
     }
 }

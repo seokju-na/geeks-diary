@@ -1,19 +1,10 @@
 import { Injectable } from '@angular/core';
-import * as path from 'path';
-import { BehaviorSubject } from 'rxjs/BehaviorSubject';
-import { Observable } from 'rxjs/Observable';
-import {
-    debounceTime,
-    distinctUntilChanged,
-    map,
-    switchMap,
-} from 'rxjs/operators';
-import { SearchModel } from '../../common/search.model';
-import { environment } from '../../environments/environment';
-import { FsService } from '../core/fs.service';
+import * as iconMapJson from '../../assets/vendors/devicon/devicon.json';
+import { MonacoService } from '../core/monaco.service';
+import { Stack, stackDefinitions, StackIcon } from './models';
 
 
-interface DevIconMap {
+export interface StackIconMap {
     name: string;
     tags: string[];
     versions: {
@@ -22,106 +13,48 @@ interface DevIconMap {
 }
 
 
-export class StackItem {
-    // FIXME LATER
-    // Might get an error here, when build electron app.
-    // Should search more information about electron path policy.
-    static iconStorePath = path.resolve(
-        environment.config.basePath, 'assets/vendors/devicon/');
-
-    readonly name: string;
-    readonly iconFilePath: string;
-    readonly tags: string[];
-
-    static getIconFilePath(name: string, svgFiles: string[]): string {
-        let iconName;
-        const iconTypesOrderByPriority = [
-            'original',
-            'plain',
-            'line',
-            'original-wordmark',
-            'plain-wordmark',
-            'line-wordmark',
-        ];
-
-        for (const type of iconTypesOrderByPriority) {
-            if (svgFiles.includes(type)) {
-                iconName = `${name}-${type}`;
-                break;
-            }
-        }
-
-        return path.resolve(StackItem.iconStorePath, name, `${iconName}.svg`);
-    }
-
-    constructor(iconMap: DevIconMap) {
-        this.name = iconMap.name;
-        this.tags = iconMap.tags;
-        this.iconFilePath = StackItem.getIconFilePath(this.name, iconMap.versions.svg);
-    }
-
-    isTagMatches(query: string): boolean {
-        let matches = false;
-
-        for (const tag of this.tags) {
-            if (tag.match(query) !== null) {
-                matches = true;
-                break;
-            }
-        }
-
-        return matches;
-    }
-}
-
-
 @Injectable()
 export class StackViewer {
-    static iconMapFilePath = path.resolve(StackItem.iconStorePath, 'devicon.json');
+    readonly stacks: Stack[];
 
-    private _stacks = new BehaviorSubject<StackItem[]>([]);
-    private hasStackLoaded = false;
-
-    constructor(private fsService: FsService) {
+    constructor(private monacoService: MonacoService) {
+        this.stacks = this.makeStacks();
     }
 
-    stacks(): Observable<StackItem[]> {
-        if (!this.hasStackLoaded) {
-            this.loadStacks();
-            this.hasStackLoaded = true;
-        }
+    private makeStacks(): Stack[] {
+        const stacks: Stack[] = [];
+        const iconMaps: StackIconMap[] = (<any>iconMapJson).map(item => Object.assign({}, item));
+        const languages = this.monacoService.getLanguages();
 
-        return this._stacks.asObservable();
-    }
+        languages.forEach((language) => {
+            let iconMap: StackIconMap;
+            let icon: StackIcon;
+            let color: string;
+            const definition = stackDefinitions.find(def => def.languageName === language.id);
 
-    search(queries: Observable<string>): Observable<StackItem[]> {
-        return queries.pipe(
-            distinctUntilChanged(),
-            debounceTime(50),
-            switchMap(
-                () => this.stacks(),
-                (query, stacks) => ({ stacks, query }),
-            ),
-            map(({ stacks, query }) => this.rawSearch(stacks, query)),
-        );
-    }
+            if (definition && definition.iconName) {
+                iconMap = iconMaps.find(item => item.name === definition.iconName);
+                icon = {
+                    tags: iconMap.tags,
+                    versions: iconMap.versions.svg,
+                };
+            }
 
-    private rawSearch(stacks: StackItem[], query: string): StackItem[] {
-        return new SearchModel<StackItem>()
-            .setScoringStrategy(2, (stack, q) => stack.name.match(q) !== null)
-            .setScoringStrategy(1, (stack, q) => stack.isTagMatches(q))
-            .search(stacks, query);
-    }
+            if (definition && definition.color) {
+                color = definition.color;
+            }
 
-    private loadStacks(): void {
-        const parseFileData = map((buffer: Buffer) =>
-            JSON.parse(buffer.toString('utf8')));
+            stacks.push(new Stack(language.id, icon, language, color));
 
-        this.fsService
-            .readFile(StackViewer.iconMapFilePath, 'utf8')
-            .pipe(parseFileData)
-            .subscribe((icons: DevIconMap[]) => {
-                this._stacks.next(icons.map(icon => new StackItem(icon)));
-            });
+            if (iconMap) {
+                const indexOfIconMap = iconMaps.findIndex(item => item.name === iconMap.name);
+
+                if (indexOfIconMap !== -1) {
+                    iconMaps.splice(indexOfIconMap, 1);
+                }
+            }
+        });
+
+        return stacks;
     }
 }

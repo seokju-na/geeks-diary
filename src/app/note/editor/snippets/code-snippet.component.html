@@ -1,1 +1,44 @@
-<div #content class="NoteCodeEditorSnippet"></div>
+<div class="NoteCodeEditorSnippet">
+    <header [ngSwitch]="mode"
+            class="NoteCodeEditorSnippet__header">
+        <div *ngSwitchCase="'edit'"
+             class="NoteCodeEditorSnippet__stackIcon">
+        </div>
+
+        <form *ngSwitchCase="'setting'"
+              (ngSubmit)="submitSetting()"
+              [formGroup]="settingForm"
+              class="NoteCodeEditorSnippet__settingForm">
+            <gd-form-field>
+                <input gdFormFieldControl
+                       gdAutocomplete
+                       [autocomplete]="auto"
+                       formControlName="language"
+                       name="language">
+
+                <gd-autocomplete #auto="gdAutocomplete">
+                    <gd-option-item value="ho">ho!</gd-option-item>
+                </gd-autocomplete>
+
+                <gd-form-field-error errorName="required">
+                    Code language required!
+                </gd-form-field-error>
+            </gd-form-field>
+
+            <button gd-button size="small" aria-label="save-button">
+                <span gd-text>Save</span>
+            </button>
+            <button *ngIf="!firstSetting"
+                    gd-button
+                    size="small"
+                    aria-label="cancel-button"
+                    type="button">
+                <span gd-text>Cancel</span>
+            </button>
+        </form>
+    </header>
+
+    <div class="NoteCodeEditorSnippet__contentWrapper">
+        <div #content class="NoteCodeEditorSnippet__content"></div>
+    </div>
+</div>

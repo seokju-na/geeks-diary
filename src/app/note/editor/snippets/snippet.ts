@@ -2,7 +2,6 @@ import {
     AfterViewInit,
     ElementRef,
     HostBinding,
-    HostListener,
     InjectionToken,
     Injector,
     OnDestroy,
@@ -67,6 +66,7 @@ export class NoteEditorSnippetRef {
 export class NoteEditorSnippetConfig {
     initialValue = '';
     language?: string;
+    isNewSnippet = false;
 }
 
 
@@ -164,8 +164,10 @@ export abstract class NoteEditorSnippet implements OnDestroy, AfterViewInit {
         this._ref._events.next(new NoteEditorSnippetEvent(name, this._ref));
     }
 
-    @HostListener('click')
-    private focusViaHostElementClick(): void {
-        this.focus();
-    }
+    /*
+     @HostListener('click')
+     private focusViaHostElementClick(): void {
+     this.focus();
+     }
+     */
 }
