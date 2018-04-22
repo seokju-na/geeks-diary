@@ -3,45 +3,30 @@ import {
     Component,
     ElementRef,
     Injector,
-    OnInit,
     ViewChild,
     ViewEncapsulation,
 } from '@angular/core';
-import { FormControl, FormGroup, Validators } from '@angular/forms';
-import { MonacoService } from '../../../core/monaco.service';
-import { NoteEditorSnippet } from './snippet';
+import { MonacoService } from '../../core/monaco.service';
+import { EditorSnippet } from './snippet';
 
 
 @Component({
-    selector: 'gd-note-editor-code-snippet',
+    selector: 'gd-editor-code-snippet',
     templateUrl: './code-snippet.component.html',
     styleUrls: ['./code-snippet.component.less'],
-    encapsulation: ViewEncapsulation.None,
     changeDetection: ChangeDetectionStrategy.OnPush,
+    encapsulation: ViewEncapsulation.None,
 })
-export class NoteCodeEditorSnippetComponent extends NoteEditorSnippet implements OnInit {
+export class EditorCodeSnippetComponent extends EditorSnippet {
     @ViewChild('content') contentEl: ElementRef;
-    firstSetting = false;
-    mode: 'edit' | 'setting' = 'edit';
-    settingForm = new FormGroup({
-        language: new FormControl('', [Validators.required]),
-        fileName: new FormControl(''),
-    });
     _editor: monaco.editor.IStandaloneCodeEditor;
 
     constructor(
-        private injector: Injector,
+        injector: Injector,
         private monacoService: MonacoService,
     ) {
 
         super(injector);
-    }
-
-    ngOnInit(): void {
-        if (this._config.isNewSnippet) {
-            this.firstSetting = true;
-            this.mode = 'setting';
-        }
     }
 
     init(): void {

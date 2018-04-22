@@ -15,8 +15,10 @@ export class IntegerIdDummyFactory implements DummyFactory<number> {
 export class StringIdDummyFactory implements DummyFactory<string> {
     private id = 0;
 
+    constructor(readonly namespace = 'id') {}
+
     create(): string {
-        return `id-${this.id++}`;
+        return `${this.namespace}-${this.id++}`;
     }
 }
 

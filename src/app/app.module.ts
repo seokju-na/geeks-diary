@@ -6,6 +6,7 @@ import { StoreDevtoolsModule } from '@ngrx/store-devtools';
 import { appMetaReducers, appReducers } from './app-reducers';
 import { AppShellComponent } from './app-shell.component';
 import { CoreModule } from './core/core.module';
+import { EditorModule } from './editor/editor.module';
 import { NoteModule } from './note/note.module';
 import { SharedModule } from './shared/shared.module';
 import { StackModule } from './stack/stack.module';
@@ -21,6 +22,7 @@ import { StackModule } from './stack/stack.module';
             metaReducers: appMetaReducers,
         }),
         StoreDevtoolsModule.instrument(),
+        EditorModule,
         NoteModule,
         StackModule,
     ],

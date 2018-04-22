@@ -1,36 +1,31 @@
 import {
     ChangeDetectionStrategy,
     Component,
-    ElementRef,
-    Injector,
+    ElementRef, Injector,
     ViewChild,
     ViewEncapsulation,
 } from '@angular/core';
 import * as CodeMirror from 'codemirror';
 import 'codemirror/mode/markdown/markdown';
-import { NoteEditorSnippet } from './snippet';
+import { EditorSnippet } from './snippet';
 
 
-/**
- * Use `CodeMirror` as editor.
- * Editor for markdown text.
- */
 @Component({
-    selector: 'gd-note-editor-text-snippet',
+    selector: 'gd-editor-text-snippet',
     templateUrl: './text-snippet.component.html',
     styleUrls: ['./text-snippet.component.less'],
-    encapsulation: ViewEncapsulation.None,
     changeDetection: ChangeDetectionStrategy.OnPush,
+    encapsulation: ViewEncapsulation.None,
 })
-export class NoteTextEditorSnippetComponent extends NoteEditorSnippet {
+export class EditorTextSnippetComponent extends EditorSnippet {
     @ViewChild('content') contentEl: ElementRef;
-    _editor: CodeMirror.Editor; // Define as public to be useful in testing.
+    _editor: CodeMirror.Editor;
 
     private keyDownEventListener: any;
     private focusEventListener: any;
     private blurEventListener: any;
 
-    constructor(private injector: Injector) {
+    constructor(injector: Injector) {
         super(injector);
     }
 
