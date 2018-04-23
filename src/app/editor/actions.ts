@@ -1,5 +1,5 @@
 import { Action } from '@ngrx/store';
-import { NoteContent, NoteSimple } from '../note/models';
+import { NoteContent, NoteContentSnippet, NoteSimple } from '../note/models';
 import { EditorViewModes } from './models';
 
 
@@ -13,6 +13,7 @@ export enum EditorActionTypes {
     REMOVE_SNIPPET = '[Editor] Remove snippet',
     SNIPPET_VALUE_CHANGED = '[Editor] Snippet value changed',
     SNIPPET_CONFIG_CAHNGED = '[Editor] Snippet config changed',
+    UPDATE_SNIPPET_CONTENT = '[Editor] Update snippet content',
     CHANGE_VIEW_MODE = '[Editor] Change editor view mode',
 }
 
@@ -73,6 +74,14 @@ export class ChangeEditorViewModeAction implements Action {
 }
 
 
+export class UpdateSnippetContentAction implements Action {
+    readonly type = EditorActionTypes.UPDATE_SNIPPET_CONTENT;
+
+    constructor(readonly payload: { content: Partial<NoteContentSnippet> }) {
+    }
+}
+
+
 export type EditorActions =
     InitEditorAction
     | DidSnippetFocusAction
@@ -80,4 +89,5 @@ export type EditorActions =
     | MoveFocusToPreviousSnippetAction
     | MoveFocusToNextSnippetAction
     | RemoveSnippetAction
-    | ChangeEditorViewModeAction;
+    | ChangeEditorViewModeAction
+    | UpdateSnippetContentAction;
