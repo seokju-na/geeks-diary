@@ -254,10 +254,10 @@ describe('app.shared.autocomplete', () => {
             typeInElement('New', inputElem);
             fixture.detectChanges();
 
-            dispatchKeyboardEvent(inputElem, 'keydow', KeyCodes.SPACE);
+            dispatchKeyboardEvent(inputElem, 'keydown', KeyCodes.SPACE);
             fixture.detectChanges();
 
-            dispatchKeyboardEvent(inputElem, 'keydow', KeyCodes.SPACE);
+            dispatchKeyboardEvent(inputElem, 'keydown', KeyCodes.SPACE);
             fixture.detectChanges();
 
             expect(inputElem.value).not.toContain('New York');
