@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs/Observable';
 import {
+    accessAsObservable,
     ensureDirAsObservable,
     mkdirAsObservable,
     readdirAsObservable,
@@ -11,6 +12,10 @@ import {
 
 @Injectable()
 export class FsService {
+    access(path: string): Observable<void> {
+        return accessAsObservable(path);
+    }
+
     readFile(fileName: string, encoding = 'utf8'): Observable<Buffer> {
         return readFileAsObservable(fileName, encoding);
     }

@@ -1,4 +1,4 @@
-import { LayoutActions, LayoutActionTypes } from './actions';
+import { LayoutActions, LayoutActionTypes, UserDataActions, UserDataActionTypes } from './actions';
 
 
 export interface LayoutState {
@@ -7,10 +7,22 @@ export interface LayoutState {
 }
 
 
+export interface UserDataState {
+    lastOpenedNoteId: string | null;
+}
+
+
 export function createInitialLayoutState(): LayoutState {
     return {
         activeSidebarOutletName: null,
         showSidebar: false,
+    };
+}
+
+
+export function createInitialUserDataState(): UserDataState {
+    return {
+        lastOpenedNoteId: null,
     };
 }
 
@@ -30,6 +42,21 @@ export function layoutReducer(
                     ? action.activeOutletName : null,
                 showSidebar,
             };
+
+        default:
+            return state;
+    }
+}
+
+
+export function userDataReducer(
+    state = createInitialUserDataState(),
+    action: UserDataActions,
+): UserDataState {
+
+    switch (action.type) {
+        case UserDataActionTypes.LOAD_COMPLETE:
+            return { ...action.payload.userData };
 
         default:
             return state;

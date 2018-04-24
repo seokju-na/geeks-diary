@@ -46,7 +46,7 @@ export class MockFsService extends FsService {
         const stubName = this.getStubName(matchObj);
 
         if (!this.stubMap.has(stubName)) {
-            throw new Error('Cannot find matched stub.');
+            throw new Error(`Cannot find matched stub: ${stubName}`);
         }
 
         return new FsStub<R>(stubName, this.stubMap.get(stubName), this);
@@ -64,6 +64,13 @@ export class MockFsService extends FsService {
 
         this.stubMap.clear();
         this.stubMap = null;
+    }
+
+    access(path: string): Observable<void> {
+        return this.createStubItem<void>(
+            'access',
+            [path],
+        );
     }
 
     readFile(fileName: string, encoding = 'utf8'): Observable<Buffer> {
