@@ -8,6 +8,8 @@ import { AutocompleteTriggerDirective } from './autocomplete/autocomplete-trigge
 import { AutocompleteComponent } from './autocomplete/autocomplete.component';
 import { ButtonComponent } from './button/button.component';
 import { CalendarTableProvider } from './calendar/calendar-table';
+import { Dialog } from './dialog/dialog';
+import { DialogContainerComponent } from './dialog/dialog-container.component';
 import { FormFieldControlDirective } from './form-field/form-field-control.directive';
 import { FormFieldErrorComponent } from './form-field/form-field-error.component';
 import { FormFieldHintComponent } from './form-field/form-field-hint.component';
@@ -37,6 +39,8 @@ import { TooltipDirective } from './tooltip/tooltip.directive';
         ButtonComponent,
         // Icon
         IconComponent,
+        // Dialog
+        DialogContainerComponent,
         // Form field
         FormFieldComponent,
         FormFieldControlDirective,
@@ -53,11 +57,14 @@ import { TooltipDirective } from './tooltip/tooltip.directive';
         TooltipDirective,
     ],
     entryComponents: [
+        // Dialog
+        DialogContainerComponent,
         // Tooltip
         TooltipComponent,
     ],
     providers: [
         CalendarTableProvider,
+        Dialog,
     ],
     exports: [
         CommonModule,
@@ -69,6 +76,8 @@ import { TooltipDirective } from './tooltip/tooltip.directive';
         ButtonComponent,
         // Icon
         IconComponent,
+        // Dialog
+        DialogContainerComponent,
         // Form field
         FormFieldComponent,
         FormFieldControlDirective,
