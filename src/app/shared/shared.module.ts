@@ -16,6 +16,7 @@ import { FormFieldHintComponent } from './form-field/form-field-hint.component';
 import { FormFieldComponent } from './form-field/form-field.component';
 import { IconComponent } from './icon/icon.component';
 import { OptionItemComponent } from './option-item/option-item.component';
+import { ProgressBarComponent } from './progress-bar/progress-bar.component';
 import { SpinnerComponent } from './spinner/spinner.component';
 import { TextComponent } from './text/text.component';
 import { TooltipComponent } from './tooltip/tooltip.component';
@@ -48,6 +49,8 @@ import { TooltipDirective } from './tooltip/tooltip.directive';
         FormFieldHintComponent,
         // Option item
         OptionItemComponent,
+        // Progress bar
+        ProgressBarComponent,
         // Spinner
         SpinnerComponent,
         // Text
@@ -85,6 +88,8 @@ import { TooltipDirective } from './tooltip/tooltip.directive';
         FormFieldHintComponent,
         // Option item
         OptionItemComponent,
+        // Progress bar
+        ProgressBarComponent,
         // Spinner
         SpinnerComponent,
         // Text
