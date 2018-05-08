@@ -45,7 +45,7 @@ import {
 import { AutocompleteComponent } from './autocomplete.component';
 
 
-const AUTOCOMPLETE_OPTION_HEIGHT = 48;
+const AUTOCOMPLETE_OPTION_HEIGHT = 28;
 const AUTOCOMPLETE_PANEL_HEIGHT = 256;
 
 export const AUTOCOMPLETE_TRIGGER_VALUE_ACCESSOR = {
@@ -83,7 +83,7 @@ export class AutocompleteTriggerDirective implements ControlValueAccessor, OnDes
             .pipe(take(1), switchMap(() => this.optionSelections));
     });
 
-    @HostBinding('attr.role') readonly roletAttr = 'combobox';
+    @HostBinding('attr.role') readonly roleAttr = 'combobox';
     @HostBinding('attr.autocomplete') readonly autocompleteAttr = 'off';
 
     _onChange: (value: any) => void = () => {};
