@@ -1,16 +1,23 @@
 import { ActionReducer, ActionReducerMap, MetaReducer } from '@ngrx/store';
 import { EnvironmentRunTarget } from '../environments/config';
 import { environment } from '../environments/environment';
-import { layoutReducer, LayoutState } from './core/reducers';
+import {
+    layoutReducer,
+    LayoutState,
+    userDataReducer,
+    UserDataState,
+} from './core/reducers';
 
 
 export interface AppState {
     layout: LayoutState;
+    userData: UserDataState;
 }
 
 
 export const appReducers: ActionReducerMap<AppState> = {
     layout: layoutReducer,
+    userData: userDataReducer,
 };
 
 

@@ -2,13 +2,17 @@ import { fakeAsync, flush, inject, TestBed } from '@angular/core/testing';
 import { Actions } from '@ngrx/effects';
 import { Subject } from 'rxjs/Subject';
 import { MockActions, MockFsService } from '../../testing/mock';
-import { LoadUserDataAction, LoadUserDataCompleteAction, UserDataActions } from './actions';
+import {
+    LoadUserDataAction,
+    LoadUserDataCompleteAction,
+    UserDataActions,
+} from './actions';
 import { UserDataEffects } from './effects';
 import { FsService } from './fs.service';
 import { createInitialUserDataState, UserDataState } from './reducers';
 
 
-describe('app.core.effects', () => {
+describe('app.core.effects.UserDataEffects', () => {
     let userDataEffects: UserDataEffects;
 
     let mockFsService: MockFsService;
