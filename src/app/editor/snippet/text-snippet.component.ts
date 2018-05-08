@@ -18,6 +18,7 @@ import { EditorSnippet } from './snippet';
     encapsulation: ViewEncapsulation.None,
 })
 export class EditorTextSnippetComponent extends EditorSnippet {
+    @ViewChild('wrapper') wrapperEl: ElementRef;
     @ViewChild('content') contentEl: ElementRef;
     _editor: CodeMirror.Editor;
 
@@ -68,6 +69,10 @@ export class EditorTextSnippetComponent extends EditorSnippet {
     }
 
     hasFocusOnEditor(): boolean {
+        if (!this._editor) {
+            return false;
+        }
+
         return this._editor.hasFocus();
     }
 
@@ -102,7 +107,19 @@ export class EditorTextSnippetComponent extends EditorSnippet {
             lineWrapping: true,
             lineNumbers: false,
             scrollbarStyle: 'null',
-            autofocus: true,
+            autofocus: false,
         };
+    }
+
+    protected handleFocus(focused: boolean) {
+        super.handleFocus(focused);
+
+        const className = 'EditorTextSnippet--focused';
+
+        if (focused) {
+            this.wrapperEl.nativeElement.classList.add(className);
+        } else {
+            this.wrapperEl.nativeElement.classList.remove(className);
+        }
     }
 }
