@@ -4,7 +4,6 @@ import { UserDataState } from './reducers';
 
 export enum LayoutActionTypes {
     TOGGLE_SIDEBAR = '[Layout] Toggle sidebar',
-    CLOSE_SIDEBAR = '[Layout] Close sidebar',
 }
 
 
@@ -17,7 +16,7 @@ export enum UserDataActionTypes {
 export class ToggleSidebarAction implements Action {
     readonly type = LayoutActionTypes.TOGGLE_SIDEBAR;
 
-    constructor(readonly activeOutletName: string) {
+    constructor(readonly payload: { outletName: string }) {
     }
 }
 

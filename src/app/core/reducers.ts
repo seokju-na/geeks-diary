@@ -1,4 +1,10 @@
-import { LayoutActions, LayoutActionTypes, UserDataActions, UserDataActionTypes } from './actions';
+import {
+    LayoutActions,
+    LayoutActionTypes,
+    UserDataActions,
+    UserDataActionTypes,
+} from './actions';
+import { UserData } from './models';
 
 
 export interface LayoutState {
@@ -7,8 +13,7 @@ export interface LayoutState {
 }
 
 
-export interface UserDataState {
-    lastOpenedNoteId: string | null;
+export interface UserDataState extends UserData {
 }
 
 
@@ -34,12 +39,14 @@ export function layoutReducer(
 
     switch (action.type) {
         case LayoutActionTypes.TOGGLE_SIDEBAR:
-            const showSidebar = !state.showSidebar;
+            const showSidebar = state.showSidebar === false
+                || state.activeSidebarOutletName !== action.payload.outletName;
 
             return {
                 ...state,
                 activeSidebarOutletName: showSidebar
-                    ? action.activeOutletName : null,
+                    ? action.payload.outletName
+                    : null,
                 showSidebar,
             };
 

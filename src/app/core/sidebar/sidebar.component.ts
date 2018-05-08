@@ -41,6 +41,6 @@ export class SidebarComponent implements OnInit {
     }
 
     clickTab(outlet: SidebarOutlet): void {
-        this.store.dispatch(new ToggleSidebarAction(outlet.name));
+        this.store.dispatch(new ToggleSidebarAction({ outletName: outlet.name }));
     }
 }
