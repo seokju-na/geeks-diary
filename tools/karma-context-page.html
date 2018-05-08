@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title></title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
+</head>
+<body>
+
+    <script>
+        // Monaco uses a custom amd loader that over-rides node's require.
+        // Keep a reference to node's require so we can restore it after executing the amd loader file.
+        const nodeRequire = global.require;
+    </script>
+    <script src="base/src/assets/vendors/monaco-editor/vs/loader.js"></script>
+    <script>
+        // Save Monaco's amd require and restore Node's require
+        const amdRequire = global.require;
+        global.require = nodeRequire;
+    </script>
+    <script>
+        const path = require('path');
+
+        // require node modules before loader.js comes in
+        amdRequire.config({
+            baseUrl: path.resolve(process.cwd(), 'src/assets/vendors/monaco-editor/')
+        });
+
+        let monacoInitCallbacks = [];
+
+        // workaround monaco-css not understanding the environment
+        const globalModule = self.module;
+
+        self.module = undefined;
+        // workaround monaco-typescript not understanding the environment
+        self.process.browser = true;
+        amdRequire(['vs/editor/editor.main'], function() {
+            window.MONACO = monaco;
+            self.module = globalModule;
+            monacoInitCallbacks.forEach(c => c());
+        });
+
+        window.REGISTER_MONACO_INIT_CALLBACK = (callback) => {
+            monacoInitCallbacks.push(callback);
+        };
+    </script>
+
+
+    <script src="context.js"></script>
+    <script type="text/javascript">
+        // Configure our Karma and set up bindings
+        %CLIENT_CONFIG%
+        window.__karma__.setupContext(window);
+
+        // All served files with the latest timestamps
+        %MAPPINGS%
+    </script>
+    <!-- Dynamically replaced with <script> tags -->
+    %SCRIPTS%
+    <script type="text/javascript">
+        window.__karma__.loaded();
+    </script>
+</body>
+</html>

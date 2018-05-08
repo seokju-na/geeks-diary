@@ -31,7 +31,7 @@ const config = {
                 loader: 'awesome-typescript-loader',
                 exclude: [...helpers.path.excludes()],
                 options: {
-                    configFileName: helpers.path.root('tsconfig.json')
+                    configFileName: helpers.path.src('tsconfig.electron.json')
                 }
             },
             {

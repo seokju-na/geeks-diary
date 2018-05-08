@@ -2,6 +2,7 @@ import { EnvironmentConfig } from './config';
 import { isRendererProcess } from '../common/is-renderer-process';
 import { EnvironmentProductionConfig } from './config.prod';
 import { EnvironmentDevelopmentConfig } from './config.dev';
+import { EnvironmentTestConfig } from './config.test';
 
 
 let app;
@@ -34,6 +35,9 @@ export let environment: Environment;
 switch (process.env.RUN_TARGET) {
     case 'production':
         environment = new Environment(new EnvironmentProductionConfig());
+        break;
+    case 'test':
+        environment = new Environment(new EnvironmentTestConfig());
         break;
     case 'development':
     default:

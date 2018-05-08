@@ -23,9 +23,9 @@ import { KeyCodes } from '../../../common/key-codes';
 import {
     dispatchFakeEvent,
     dispatchKeyboardEvent,
-    MockNgZone,
     typeInElement,
-} from '../../../testing';
+} from '../../../testing/fake-event';
+import { MockNgZone } from '../../../testing/mock';
 import { FormFieldControlDirective } from '../form-field/form-field-control.directive';
 import { FormFieldComponent } from '../form-field/form-field.component';
 import { OptionItemComponent } from '../option-item/option-item.component';
@@ -254,10 +254,10 @@ describe('app.shared.autocomplete', () => {
             typeInElement('New', inputElem);
             fixture.detectChanges();
 
-            dispatchKeyboardEvent(inputElem, 'keydow', KeyCodes.SPACE);
+            dispatchKeyboardEvent(inputElem, 'keydown', KeyCodes.SPACE);
             fixture.detectChanges();
 
-            dispatchKeyboardEvent(inputElem, 'keydow', KeyCodes.SPACE);
+            dispatchKeyboardEvent(inputElem, 'keydown', KeyCodes.SPACE);
             fixture.detectChanges();
 
             expect(inputElem.value).not.toContain('New York');
@@ -270,7 +270,7 @@ describe('app.shared.autocomplete', () => {
     template: `
         <gd-form-field>
             <input gdFormFieldControl gdAutocomplete
-                   [autocomplete]="auto" 
+                   [autocomplete]="auto"
                    [formControl]="stateCtrl">
             <gd-autocomplete [displayWith]="displayFn" #auto="gdAutocomplete">
                 <gd-option-item *ngFor="let state of filteredStates" [value]="state">

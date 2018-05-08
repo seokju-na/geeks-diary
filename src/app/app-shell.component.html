@@ -1,9 +1,19 @@
-<div class="AppShell">
+<div [class.AppShell--asideOpened]="sidebarOpened | async"
+     class="AppShell">
+
     <aside class="AppShell__aside">
         <gd-sidebar [outlets]="sidebarOutlets"></gd-sidebar>
     </aside>
 
     <main class="AppShell__main">
-        <gd-note-workspace></gd-note-workspace>
+        <div class="AppShell__noteWorkspace">
+            <header>
+                <gd-note-header></gd-note-header>
+            </header>
+
+            <section>
+                <gd-editor></gd-editor>
+            </section>
+        </div>
     </main>
 </div>

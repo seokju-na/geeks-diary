@@ -3,11 +3,13 @@ import { datetime, DateUnits } from '../../../common/datetime';
 
 
 export class CalendarTableCell {
+    readonly id: string | null = null;
     date: Date | null = null;
 
     constructor(date?: Date) {
         if (date) {
             this.date = datetime.copy(date);
+            this.id = datetime.shortFormat(this.date);
         }
     }
 

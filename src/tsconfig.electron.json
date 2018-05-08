@@ -1,0 +1,14 @@
+{
+    "extends": "../tsconfig.json",
+    "compilerOptions": {
+        "outDir": "../out-tsc/electron",
+        "baseUrl": "./"
+    },
+    "exclude": [
+        "main.browser.ts",
+        "polyfills.browser.ts",
+        "app/",
+        "testing/",
+        "**/*.spec.ts"
+    ]
+}

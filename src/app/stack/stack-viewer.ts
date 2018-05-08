@@ -1,14 +1,13 @@
 import { Injectable } from '@angular/core';
-import * as path from 'path';
-import { BehaviorSubject } from 'rxjs/BehaviorSubject';
 import { Observable } from 'rxjs/Observable';
-import { ErrorObservable } from 'rxjs/observable/ErrorObservable';
-import { debounceTime, distinctUntilChanged, map, switchMap, tap } from 'rxjs/operators';
-import { readFileAsObservable } from '../../common/fs-helpers';
+import { map, startWith } from 'rxjs/operators';
+import * as iconMapJson from '../../assets/vendors/devicon/devicon.json';
 import { SearchModel } from '../../common/search.model';
+import { MonacoService } from '../core/monaco.service';
+import { Stack, stackDefinitions, StackIcon } from './models';
 
 
-interface DevIconMap {
+export interface StackIconMap {
     name: string;
     tags: string[];
     versions: {
@@ -17,108 +16,67 @@ interface DevIconMap {
 }
 
 
-export class StackItem {
-    // FIXME LATER
-    // Might get an error here, when build electron app.
-    // Should search more information about electron path policy.
-    static iconStorePath = 'dist/assets/vendors/devicon/';
-
-    readonly name: string;
-    readonly iconFilePath: string;
-
-    private tags: string[];
-
-    static getIconFilePath(name: string, svgFiles: string[]): string {
-        let iconName;
-        const iconTypesOrderByPriority = [
-            'original',
-            'plain',
-            'line',
-            'original-wordmark',
-            'plain-wordmark',
-            'line-wordmark',
-        ];
-
-        for (const type of iconTypesOrderByPriority) {
-            if (svgFiles.includes(type)) {
-                iconName = `${name}-${type}`;
-                break;
-            }
-        }
-
-        return path.resolve(StackItem.iconStorePath, name, `${iconName}.svg`);
-    }
-
-    constructor(iconMap: DevIconMap) {
-        this.name = iconMap.name;
-        this.tags = iconMap.tags;
-        this.iconFilePath = StackItem.getIconFilePath(this.name, iconMap.versions.svg);
-    }
-
-    isTagMatches(query: string): boolean {
-        let matches = false;
-
-        for (const tag of this.tags) {
-            if (tag.match(query) !== null) {
-                matches = true;
-                break;
-            }
-        }
-
-        return matches;
-    }
-}
-
-
 @Injectable()
 export class StackViewer {
-    private _stacks = new BehaviorSubject<StackItem[]>([]);
+    _stacks: Stack[];
 
-    constructor() {
-        this.loadStacks();
+    constructor(private monacoService: MonacoService) {
+        this._stacks = this.makeStacks();
     }
 
-    stacks(): Observable<StackItem[]> {
-        return this._stacks.asObservable();
+    getStack(name: string): Stack | null {
+        return this._stacks.find(stack => stack.name === name) || null;
     }
 
-    search(queries: Observable<string>): Observable<StackItem[]> {
+    search(query: string): Stack[] {
+        return new SearchModel<Stack>()
+            .setScoringStrategy(3, (stack, queryStr) =>
+                stack.name.toLowerCase().indexOf(queryStr.toLowerCase()) === 0)
+            .search(this._stacks, query);
+    }
+
+    searchAsObservable(queries: Observable<string>): Observable<Stack[]> {
         return queries.pipe(
-            distinctUntilChanged(),
-            debounceTime(50),
-            switchMap(
-                () => this.stacks(),
-                (query, stacks) => ({ stacks, query }),
-            ),
-            map(({ stacks, query }) => this.rawSearch(stacks, query)),
+            startWith(''),
+            map(query => this.search(query)),
         );
     }
 
-    private rawSearch(stacks: StackItem[], query: string): StackItem[] {
-        return new SearchModel<StackItem>()
-            .setScoringStrategy(2, (stack, q) => stack.name.match(q) !== null)
-            .setScoringStrategy(1, (stack, q) => stack.isTagMatches(q))
-            .search(stacks, query);
-    }
+    private makeStacks(): Stack[] {
+        const stacks: Stack[] = [];
+        const iconMaps: StackIconMap[] = (<any>iconMapJson).map(item => Object.assign({}, item));
+        const languages = this.monacoService.getLanguages();
 
-    private loadStacks(): void {
-        const iconMapFilePath = path.resolve(StackItem.iconStorePath, 'devicon.json');
+        languages.forEach((language) => {
+            let iconMap: StackIconMap;
+            let icon: StackIcon;
+            let color: string;
+            const definition = stackDefinitions.find(def => def.languageName === language.id);
 
-        // TODO : Handle exception clearly.
-        readFileAsObservable(iconMapFilePath, 'utf8').pipe(
-            map((buffer: Buffer) => {
-                const strData = buffer.toString('utf8');
+            if (definition && definition.iconName) {
+                iconMap = iconMaps.find(item => item.name === definition.iconName);
+                icon = {
+                    iconName: iconMap.name,
+                    tags: iconMap.tags,
+                    versions: iconMap.versions.svg,
+                };
+            }
 
-                try {
-                    return JSON.parse(strData);
-                } catch (err) {
-                    return ErrorObservable.create(err);
+            if (definition && definition.color) {
+                color = definition.color;
+            }
+
+            stacks.push(new Stack(language.id, icon, language, color));
+
+            if (iconMap) {
+                const indexOfIconMap = iconMaps.findIndex(item => item.name === iconMap.name);
+
+                if (indexOfIconMap !== -1) {
+                    iconMaps.splice(indexOfIconMap, 1);
                 }
-            }),
-            tap((iconMap: DevIconMap[]) => {
-                const stacks = iconMap.map(i => new StackItem(i));
-                this._stacks.next(stacks);
-            }),
-        ).subscribe();
+            }
+        });
+
+        return stacks;
     }
 }

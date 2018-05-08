@@ -2,5 +2,7 @@
 node_modules/
 src/assets/vendors/
 dist/
-packages/
+temp/
+build/
+*.log
 .DS_Store*

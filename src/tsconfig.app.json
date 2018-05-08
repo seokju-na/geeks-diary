@@ -2,16 +2,14 @@
     "extends": "../tsconfig.json",
     "compilerOptions": {
         "outDir": "../out-tsc/app",
-        "baseUrl": "./",
-        "types": [
-            "node"
-        ]
+        "baseUrl": "./"
     },
     "exclude": [
         "main.electron.ts",
         "electron/",
         "testing/",
-        "**/*.spec.ts"
+        "**/*.spec.ts",
+        "**/dummies.ts"
     ],
     "angularCompilerOptions": {
         "genDir": "../aot",

@@ -1,4 +1,4 @@
-<div [class.Sidebar--showPanel]="showPanel"
+<div [class.Sidebar--showPanel]="showPanel | async"
      class="Sidebar">
     <nav>
         <ul role="tablist" class="Sidebar__tabs">
@@ -8,7 +8,7 @@
                 position="right"
                 [message]="outlet.description"
                 [showDelay]="500"
-                [class.Sidebar__tab--active]="isActiveOutlet(outlet)"
+                [class.Sidebar__tab--active]="(activeOutletName | async) === outlet.name"
                 class="Sidebar__tab">
                 <button gd-button
                         (click)="clickTab(outlet)"
@@ -25,7 +25,7 @@
              class="Sidebar__container">
             <ng-container
                 *ngComponentOutlet="outlet.component; injector: injector"
-                [class.show]="isActiveOutlet(outlet)"></ng-container>
+                [class.show]="(activeOutletName | async) === outlet.name"></ng-container>
         </div>
     </section>
 </div>

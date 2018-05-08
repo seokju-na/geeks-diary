@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
-import { Observable } from 'rxjs/Observable';
-import { of } from 'rxjs/observable/of';
-import { StackItem, StackViewer } from '../../stack/stack-viewer';
+import { Stack } from '../../stack/models';
+import { StackViewer } from '../../stack/stack-viewer';
+import { NoteMetadata } from '../models';
 
 
 @Component({
@@ -11,14 +11,31 @@ import { StackItem, StackViewer } from '../../stack/stack-viewer';
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class NoteItemComponent {
-    // FIXME LATER : Should pass note item model.
+    @Input()
+    get note() {
+        return this._note;
+    }
+    set note(note: any) {
+        if (!note) {
+            return;
+        }
+
+        this._note = note;
+        this.getStacks();
+    }
+
     @Input() status = 'none';
     @Input() selected = false;
+
+    stacks: Stack[] = [];
+    private _note: NoteMetadata;
 
     constructor(private stackViewer: StackViewer) {
     }
 
-    getStackItemDummies(): Observable<StackItem[]> {
-        return this.stackViewer.search(of('java'));
+    private getStacks(): void {
+        this.stacks = this._note.stacks
+            .map(name => this.stackViewer.getStack(name))
+            .filter(stack => stack !== null);
     }
 }

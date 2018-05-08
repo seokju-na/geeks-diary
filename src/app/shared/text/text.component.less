@@ -7,9 +7,14 @@
     display: inline-flex;
 
     &--size {
+        &-tiny {
+            font-size: var(--size-font-tiny);
+            line-height: var(--size-lineHeight-tiny);
+        }
+
         &-small {
             font-size: var(--size-font-small);
-            line-height: var(--lineHeight-small-size);
+            line-height: var(--size-lineHeight-small);
         }
 
         &-regular {
@@ -22,7 +27,7 @@
             line-height: var(--size-lineHeight-medium);
         }
 
-        &-medium {
+        &-big {
             font-size: var(--size-font-big);
             line-height: var(--size-lineHeight-big);
         }

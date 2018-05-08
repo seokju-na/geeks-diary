@@ -1,9 +1,11 @@
 :root {
+    --size-font-tiny: 10px;
     --size-font-small: 12px;
     --size-font-regular: 14px;
     --size-font-medium: 17px;
     --size-font-big: 21px;
 
+    --size-lineHeight-tiny: 12px;
     --size-lineHeight-small: 15px;
     --size-lineHeight-regular: 17.5px;
     --size-lineHeight-medium: 20px;
@@ -19,4 +21,8 @@
     --size-box-regular: 28px;
     --size-box-medium: 34px;
     --size-box-big: 42px;
+
+    --layout-sidebar-nav: 52px;
+    --layout-sidebar-panel: 250px;
+    --layout-sidebar-full: 302px;
 }

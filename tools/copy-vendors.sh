@@ -26,6 +26,6 @@ cp node_modules/monaco-editor/monaco.d.ts src/assets/vendors/monaco-editor/monac
 
 # Copy devicon
 mkdir -p src/assets/vendors/devicon/
-cp -R node_modules/devicon/icons/ src/assets/vendors/devicon/
-cp node_modules/devicon/devicon.json src/assets/vendors/devicon/devicon.json
-cp node_modules/devicon/devicon.min.css src/assets/vendors/devicon/devicon.min.css
+cp -R node_modules/devicon-2.2/icons/ src/assets/vendors/devicon/
+cp node_modules/devicon-2.2/devicon.json src/assets/vendors/devicon/devicon.json
+cp node_modules/devicon-2.2/devicon.min.css src/assets/vendors/devicon/devicon.min.css

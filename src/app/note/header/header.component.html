@@ -1,10 +1,15 @@
 <div class="NoteHeader">
-    <label class="NoteHeader__noteStatusLabel"></label>
+    <div class="NoteHeader__noteDisplay">
+        <label class="NoteHeader__noteStatusLabel"></label>
 
-    <div class="NoteHeader__title">
-        <h1 gd-text weight="bold">Note title</h1>
-        <hr>
-        <time gd-text size="small" datetime="2018-03-17 18:30">Mar 17, 2018</time>
+        <div *ngIf="selectedNote | async as note"
+             class="NoteHeader__title">
+            <h1 gd-text weight="bold">{{note.title}}</h1>
+            <hr>
+            <time gd-text size="small" [attr.datetime]="note.createdDatetime | date">
+                {{note.createdDatetime | date:'MMM d, y'}}
+            </time>
+        </div>
     </div>
 
     <div class="NoteHeader__actions">

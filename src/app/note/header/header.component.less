@@ -1,10 +1,17 @@
 .NoteHeader {
-    position: relative;
     display: flex;
     align-items: center;
     justify-content: space-between;
     width: 100%;
     height: 100%;
+
+    &__noteDisplay {
+        position: relative;
+        flex: 1;
+        display: inline-flex;
+        align-items: center;
+        height: 100%;
+    }
 
     &__title {
         display: inline-flex;

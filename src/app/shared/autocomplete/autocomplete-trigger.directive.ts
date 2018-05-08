@@ -45,7 +45,7 @@ import {
 import { AutocompleteComponent } from './autocomplete.component';
 
 
-const AUTOCOMPLETE_OPTION_HEIGHT = 48;
+const AUTOCOMPLETE_OPTION_HEIGHT = 28;
 const AUTOCOMPLETE_PANEL_HEIGHT = 256;
 
 export const AUTOCOMPLETE_TRIGGER_VALUE_ACCESSOR = {
@@ -83,7 +83,7 @@ export class AutocompleteTriggerDirective implements ControlValueAccessor, OnDes
             .pipe(take(1), switchMap(() => this.optionSelections));
     });
 
-    @HostBinding('attr.role') readonly roletAttr = 'combobox';
+    @HostBinding('attr.role') readonly roleAttr = 'combobox';
     @HostBinding('attr.autocomplete') readonly autocompleteAttr = 'off';
 
     _onChange: (value: any) => void = () => {};
@@ -356,9 +356,11 @@ export class AutocompleteTriggerDirective implements ControlValueAccessor, OnDes
         if (optionOffset < panelTop) {
             // Scroll up to reveal selected option scrolled above the panel top
             this.autocomplete._setScrollTop(optionOffset);
-        } else if (optionOffset + AUTOCOMPLETE_OPTION_HEIGHT > panelTop + AUTOCOMPLETE_PANEL_HEIGHT) {
+        } else if (optionOffset + AUTOCOMPLETE_OPTION_HEIGHT
+            > panelTop + AUTOCOMPLETE_PANEL_HEIGHT) {
             // Scroll down to reveal selected option scrolled below the panel bottom
-            const newScrollTop = optionOffset - AUTOCOMPLETE_PANEL_HEIGHT + AUTOCOMPLETE_OPTION_HEIGHT;
+            const newScrollTop =
+                optionOffset - AUTOCOMPLETE_PANEL_HEIGHT + AUTOCOMPLETE_OPTION_HEIGHT;
             this.autocomplete._setScrollTop(Math.max(0, newScrollTop));
         }
     }

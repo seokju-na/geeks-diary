@@ -2,7 +2,8 @@ import { Component } from '@angular/core';
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
 import { KeyCodes } from '../../../common/key-codes';
-import { dispatchKeyboardEvent, expectDebugElement } from '../../../testing';
+import { dispatchKeyboardEvent } from '../../../testing/fake-event';
+import { expectDebugElement } from '../../../testing/validation';
 import { OptionItemComponent } from './option-item.component';
 
 
