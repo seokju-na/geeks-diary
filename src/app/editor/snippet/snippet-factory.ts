@@ -8,6 +8,7 @@ import {
     EditorSnippetConfig,
     EditorSnippetRef,
 } from './snippet';
+import { EditorTextSnippetComponent } from './text-snippet.component';
 
 
 @Injectable()
@@ -44,6 +45,7 @@ export class EditorSnippetFactory {
 
         switch (contentSnippet.type) {
             case NoteContentSnippetTypes.TEXT:
+                component = EditorTextSnippetComponent;
                 break;
             case NoteContentSnippetTypes.CODE:
                 component = EditorCodeSnippetComponent;
