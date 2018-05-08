@@ -19,6 +19,14 @@ class Datetime {
         return new Date();
     }
 
+    shortFormat(date: Date): string {
+        const year = date.getFullYear().toString().slice(2, 4);
+        const month = (date.getMonth() + 1).toString().padStart(2, '0');
+        const day = date.getDate().toString().padStart(2, '0');
+
+        return `${year}-${month}-${day}`;
+    }
+
     add(date: Date, unit: DateUnits, value: number): void {
         switch (unit) {
             case DateUnits.MILLISECOND:
@@ -82,6 +90,16 @@ class Datetime {
         const targetStartOfDay = this.getStartOfDay(target);
 
         return sourceStartOfDay.getTime() === targetStartOfDay.getTime();
+    }
+
+    isAtSameMonth(source: Date, target: Date): boolean {
+        const sourceYear = source.getFullYear();
+        const sourceMonth = source.getMonth();
+        const targetYear = target.getFullYear();
+        const targetMonth = target.getMonth();
+
+        return sourceYear === targetYear
+            && sourceMonth === targetMonth;
     }
 }
 

@@ -12,7 +12,9 @@
 
     <div class="NoteFinder__calendar">
         <gd-note-calendar
-            (changeIndexDate)="updateIndexDate($event.distDate)"
+            (changeIndexDate)="updateIndexDate($event)"
+            (selectDate)="selectDateFilter($event)"
+            [contributeTable]="contributeTable"
             [indexDate]="indexDate"></gd-note-calendar>
     </div>
 
@@ -21,7 +23,7 @@
             <div class="NoteFinder__writtenAt">
                 <span gd-text size="small">Date selection: </span>
                 <h2 gd-text size="small" weight="bold">
-                    {{indexDate | date:'dd, MMM'}}
+                    {{selectedDate ? (selectedDate | date:'MMM d') : '-'}}
                 </h2>
             </div>
 
@@ -34,17 +36,12 @@
         </div>
 
         <ul class="NoteFinder__noteList">
-            <li class="NoteFinder__noteItem">
-                <a gd-note-item [selected]="true"></a>
-            </li>
-            <li class="NoteFinder__noteItem">
-                <a gd-note-item status="added"></a>
-            </li>
-            <li class="NoteFinder__noteItem">
-                <a gd-note-item status="modified"></a>
-            </li>
-            <li class="NoteFinder__noteItem">
-                <a gd-note-item></a>
+            <li *ngFor="let note of notes | async"
+                class="NoteFinder__noteItem">
+                <a gd-note-item
+                   (click)="selectNote(note)"
+                   [selected]="note.id === (selectedNote | async)?.id"
+                   [note]="note"></a>
             </li>
         </ul>
     </section>

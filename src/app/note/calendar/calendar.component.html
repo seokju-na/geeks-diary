@@ -4,6 +4,7 @@
                 (click)="decreaseMonth()"
                 buttonType="flat"
                 size="regular"
+                aria-label="decrease-month-button"
                 class="NoteCalendar__navigateButton">
             <i gd-icon name="angle-left" size="regular"></i>
         </button>
@@ -16,6 +17,7 @@
                 (click)="increaseMonth()"
                 buttonType="flat"
                 size="regular"
+                aria-label="increase-month-button"
                 class="NoteCalendar__navigateButton">
             <i gd-icon name="angle-right" size="regular"></i>
         </button>
@@ -25,10 +27,14 @@
         <tbody>
         <tr *ngFor="let row of calendar.rows">
             <td *ngFor="let cell of row.cells">
-                <a [class.NoteCalendar__cell--blank]="cell.isBlank()"
-                   [class.NoteCalendar__cell--today]="cell.isToday()"
+                <a (click)="clickDateCell(cell)"
+                   [attr.datetime]="cell.id"
+                   [ngClass]="'NoteCalendar__cell--contributionLevel-' + getContributionLevel(cell)"
+                   [class.NoteCalendar__cell--blank]="cell.isBlank()"
+                   [class.NoteCalendar__cell--selected]="isCellSelected(cell)"
+                   type="button"
                    class="NoteCalendar__cell">
-                    <label *ngIf="!cell.isBlank()"></label>
+                    <label *ngIf="!cell.isBlank()">{{cell.date | date:'d'}}</label>
                 </a>
             </td>
         </tr>
