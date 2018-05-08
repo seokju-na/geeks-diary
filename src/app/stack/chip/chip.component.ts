@@ -19,6 +19,10 @@ export class StackChipComponent {
     constructor(private sanitizer: DomSanitizer) {
     }
 
+    isIconExists(): boolean {
+        return this.stack.icon !== null;
+    }
+
     getIconUrl(): SafeResourceUrl {
         return this.sanitizer.bypassSecurityTrustResourceUrl(this.stack.iconFilePath);
     }

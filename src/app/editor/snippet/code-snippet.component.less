@@ -2,24 +2,74 @@
     &__header {
         display: flex;
         align-items: center;
-        padding: 0 var(--size-space-regular);
+        padding: var(--size-space-small) var(--size-space-regular);
         width: 100%;
-        height: var(--size-box-medium);
+        min-height: var(--size-box-medium);
         border-top-left-radius: 5px;
         border-top-right-radius: 5px;
-        background-color: var(--color-gray-3);
+        background-color: var(--color-white);
+        border: 1px solid var(--color-gray-2);
     }
 
     &__stackIcon {
     }
 
+    &__title {
+        flex: 1;
+        margin: 0;
+        padding: 0 var(--size-space-regular);
+        color: var(--color-gray-8);
+    }
+
     &__settingForm {
         display: flex;
         align-items: center;
+        flex-wrap: wrap;
         padding: 0 var(--size-space-small);
+        width: 100%;
+
+        gd-form-field {
+            display: inline-flex;
+            margin-right: var(--size-space-regular);
+        }
 
         input {
+            font-size: var(--size-font-small);
+            line-height: var(--size-lineHeight-small);
+            padding: 0 var(--size-space-small);
             height: var(--size-box-small);
+            background-color: var(--color-gray-1);
+            border: 1px solid var(--color-gray-4);
+            outline: 0;
+
+            &:focus {
+                border-color: var(--color-blue-5);
+                box-shadow: 0 0 2px 0 var(--color-blue-5);
+            }
+        }
+    }
+
+    &__settingButton {
+        color: var(--color-gray-7);
+    }
+
+    &__optionItem {
+        span {
+            display: inline-block;
+            flex: 1;
+            padding: 0 var(--size-space-small);
+        }
+    }
+
+    &__formButtonGroup {
+        flex: 1;
+        display: inline-flex;
+        justify-content: flex-end;
+        align-self: center;
+
+        button {
+            display: inline-block;
+            margin: 0 var(--size-space-tiny);
         }
     }
 
@@ -29,23 +79,43 @@
         border-right: 1px solid;
         border-bottom-left-radius: 5px;
         border-bottom-right-radius: 5px;
-        border-color: var(--color-gray-3);
-        padding: var(--size-space-regular) 0 var(--size-space-small) 0;
+        border-color: var(--color-gray-2);
+        padding: var(--size-space-regular) 0;
+    }
+
+    &__content {
+        overflow-x: hidden;
+        overflow-y: visible;
     }
 
     & .monaco-editor {
         background-color: transparent !important;
 
-        & .margin {
+        .margin {
             background-color: transparent !important;
+        }
+
+        .line-numbers {
+            font-size: 12px;
+            color: var(--color-blue-5);
         }
     }
 
-    & .monaco-scrollable-element {
-        border-radius: 5px;
+    .mtk1 {
+        color: var(--color-gray-9);
     }
 
-    & .mtk1 {
-        color: var(--color-gray-9);
+    .decorationsOverviewRuler {
+        display: none;
+    }
+
+    &--focused {
+        .EditorCodeSnippet__header {
+            border-color: var(--color-gray-4);
+        }
+
+        .EditorCodeSnippet__contentWrapper {
+            border-color: var(--color-gray-4);
+        }
     }
 }

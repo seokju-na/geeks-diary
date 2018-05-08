@@ -1,6 +1,7 @@
 import { NgModule } from '@angular/core';
 import { SharedModule } from '../shared/shared.module';
 import { StackChipComponent } from './chip/chip.component';
+import { StackViewer } from './stack-viewer';
 
 
 @NgModule({
@@ -10,7 +11,9 @@ import { StackChipComponent } from './chip/chip.component';
     declarations: [
         StackChipComponent,
     ],
-    providers: [],
+    providers: [
+        StackViewer,
+    ],
     exports: [
         StackChipComponent,
     ],

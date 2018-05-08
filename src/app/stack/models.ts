@@ -54,6 +54,7 @@ export const stackDefinitions: StackDefinition[] = [
 
 
 export interface StackIcon {
+    iconName: string;
     tags: string[];
     versions: string[];
 }
@@ -98,7 +99,7 @@ export class Stack {
 
         if (icon) {
             this.icon = icon;
-            this.iconFilePath = Stack.getIconFilePath(name, icon.versions);
+            this.iconFilePath = Stack.getIconFilePath(this.icon.iconName, icon.versions);
         }
 
         if (language) {

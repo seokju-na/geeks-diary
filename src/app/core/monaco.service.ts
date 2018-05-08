@@ -18,4 +18,15 @@ export class MonacoService {
     getLanguages(): monaco.languages.ILanguageExtensionPoint[] {
         return this._monaco.languages.getLanguages();
     }
+
+    updateEditorLanguage(
+        editor: monaco.editor.IStandaloneCodeEditor,
+        language: string,
+    ): void {
+
+        this._monaco.editor.setModelLanguage(
+            editor.getModel(),
+            language,
+        );
+    }
 }

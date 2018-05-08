@@ -1,16 +1,27 @@
-<div class="EditorCodeSnippet">
-    <!--
+<div #wrapper class="EditorCodeSnippet">
     <header [ngSwitch]="mode"
-            class="NoteCodeEditorSnippet__header">
+            class="EditorCodeSnippet__header">
+
         <div *ngSwitchCase="'edit'"
-             class="NoteCodeEditorSnippet__stackIcon">
+             class="EditorCodeSnippet__stackIcon">
+            <gd-stack-chip *ngIf="canDisplayLanguageStackIcon()"
+                           [stack]="languageStack"></gd-stack-chip>
         </div>
+
+        <h1 *ngSwitchCase="'edit'"
+            gd-text
+            size="regular"
+            weight="bold"
+            class="EditorCodeSnippet__title">
+            {{_config.fileName}}
+        </h1>
 
         <form *ngSwitchCase="'setting'"
               (ngSubmit)="submitSetting()"
               [formGroup]="settingForm"
-              class="NoteCodeEditorSnippet__settingForm">
+              class="EditorCodeSnippet__settingForm">
             <gd-form-field>
+                <label gd-text size="small">Language :</label>
                 <input gdFormFieldControl
                        gdAutocomplete
                        [autocomplete]="auto"
@@ -18,27 +29,54 @@
                        name="language">
 
                 <gd-autocomplete #auto="gdAutocomplete">
-                    <gd-option-item value="ho">ho!</gd-option-item>
+                    <gd-option-item *ngFor="let stack of filteredStacks | async"
+                                    [value]="stack.name"
+                                    class="EditorCodeSnippet__optionItem">
+                        <gd-stack-chip [stack]="stack"></gd-stack-chip>
+                        <span gd-text>{{stack.name}}</span>
+                    </gd-option-item>
                 </gd-autocomplete>
-
-                <gd-form-field-error errorName="required">
-                    Code language required!
-                </gd-form-field-error>
             </gd-form-field>
 
-            <button gd-button size="small" aria-label="save-button">
-                <span gd-text>Save</span>
-            </button>
-            <button *ngIf="!firstSetting"
-                    gd-button
-                    size="small"
-                    aria-label="cancel-button"
-                    type="button">
-                <span gd-text>Cancel</span>
-            </button>
+            <gd-form-field>
+                <label gd-text size="small">File Name :</label>
+                <input gdFormFieldControl
+                       formControlName="fileName"
+                       name="fileName">
+            </gd-form-field>
+
+            <div class="EditorCodeSnippet__formButtonGroup">
+                <button gd-button
+                        size="small"
+                        aria-label="save-button"
+                        type="submit">
+                    <span gd-text>Save</span>
+                </button>
+                <button gd-button
+                        (click)="cancelSetting()"
+                        size="small"
+                        aria-label="cancel-button"
+                        type="button">
+                    <span gd-text>Cancel</span>
+                </button>
+            </div>
         </form>
+
+        <button *ngSwitchCase="'edit'"
+                gd-button
+                gdTooltip
+                position="left"
+                message="Setting snippet (⌥ + ⇧ + S)"
+                [showDelay]="500"
+                (click)="turnSettingModeOn()"
+                size="small"
+                buttonType="flat"
+                aria-label="setting-button"
+                class="EditorCodeSnippet__settingButton"
+                type="button">
+            <i gd-icon name="cog"></i>
+        </button>
     </header>
-    -->
 
     <div class="EditorCodeSnippet__contentWrapper">
         <div #content class="EditorCodeSnippet__content"></div>

@@ -3,10 +3,16 @@ import {
     Component,
     ElementRef,
     Injector,
+    OnInit,
     ViewChild,
     ViewEncapsulation,
 } from '@angular/core';
+import { FormControl, FormGroup, Validators } from '@angular/forms';
+import { Observable } from 'rxjs/Observable';
 import { MonacoService } from '../../core/monaco.service';
+import { Stack } from '../../stack/models';
+import { StackViewer } from '../../stack/stack-viewer';
+import { UpdateSnippetContentAction } from '../actions';
 import { EditorSnippet } from './snippet';
 
 
@@ -17,16 +23,39 @@ import { EditorSnippet } from './snippet';
     changeDetection: ChangeDetectionStrategy.OnPush,
     encapsulation: ViewEncapsulation.None,
 })
-export class EditorCodeSnippetComponent extends EditorSnippet {
+export class EditorCodeSnippetComponent extends EditorSnippet implements OnInit {
+    settingForm = new FormGroup({
+        language: new FormControl('', [Validators.required]),
+        fileName: new FormControl('', [Validators.required]),
+    });
+    mode: 'edit' | 'setting' = 'edit';
+    filteredStacks: Observable<Stack[]>;
+    languageStack: Stack | null = null;
+
+    @ViewChild('wrapper') wrapperEl: ElementRef;
     @ViewChild('content') contentEl: ElementRef;
     _editor: monaco.editor.IStandaloneCodeEditor;
 
     constructor(
         injector: Injector,
         private monacoService: MonacoService,
+        private stackViewer: StackViewer,
     ) {
 
         super(injector);
+    }
+
+    ngOnInit(): void {
+        this.applyStack();
+
+        if (this._config.isNewSnippet) {
+            this.turnSettingModeOn();
+        }
+
+        this.filteredStacks =
+            this.stackViewer.searchAsObservable(
+                this.settingForm.get('language').valueChanges,
+            );
     }
 
     init(): void {
@@ -35,10 +64,12 @@ export class EditorCodeSnippetComponent extends EditorSnippet {
 
         this._editor.onDidFocusEditor(() => {
             this.handleFocus(true);
+            this.layoutHeight();
         });
 
         this._editor.onDidBlurEditor(() => {
             this.handleFocus(false);
+            this.layoutHeight();
         });
 
         this._editor.onDidChangeModelContent(() => {
@@ -64,7 +95,9 @@ export class EditorCodeSnippetComponent extends EditorSnippet {
     }
 
     destroy(): void {
-        this._editor.dispose();
+        if (this._editor) {
+            this._editor.dispose();
+        }
     }
 
     focus(): void {
@@ -85,6 +118,10 @@ export class EditorCodeSnippetComponent extends EditorSnippet {
     }
 
     hasFocusOnEditor(): boolean {
+        if (!this._editor) {
+            return false;
+        }
+
         return this._editor.isFocused();
     }
 
@@ -138,7 +175,43 @@ export class EditorCodeSnippetComponent extends EditorSnippet {
         };
     }
 
+    turnSettingModeOn(): void {
+        this.mode = 'setting';
+        this.settingForm.setValue({
+            language: this._config.language ? this._config.language : '',
+            fileName: this._config.fileName ? this._config.fileName : '',
+        }, { emitEvent: false });
+    }
+
     submitSetting(): void {
+        const settings = this.settingForm.value;
+
+        this._config.language = settings.language;
+        this._config.fileName = settings.fileName;
+
+        this.monacoService.updateEditorLanguage(
+            this._editor,
+            this._config.language,
+        );
+
+        this.store.dispatch(new UpdateSnippetContentAction({
+            content: {
+                id: this.id,
+                language: this._config.language,
+                fileName: this._config.fileName,
+            },
+        }));
+
+        this.mode = 'edit';
+        this.applyStack();
+    }
+
+    cancelSetting(): void {
+        this.mode = 'edit';
+    }
+
+    canDisplayLanguageStackIcon(): boolean {
+        return this.languageStack !== null && this.languageStack.icon !== null;
     }
 
     private layoutHeight(): void {
@@ -147,7 +220,25 @@ export class EditorCodeSnippetComponent extends EditorSnippet {
 
         this._editor.layout({
             width: contentWidth,
-            height: lineCount * this.getEditorOptions().lineHeight + 10,
+            height: lineCount * this.getEditorOptions().lineHeight,
         });
+    }
+
+    private applyStack(): void {
+        const language = this._config.language;
+
+        this.languageStack = this.stackViewer.getStack(language);
+    }
+
+    protected handleFocus(focused: boolean) {
+        super.handleFocus(focused);
+
+        const className = 'EditorCodeSnippet--focused';
+
+        if (focused) {
+            this.wrapperEl.nativeElement.classList.add(className);
+        } else {
+            this.wrapperEl.nativeElement.classList.remove(className);
+        }
     }
 }

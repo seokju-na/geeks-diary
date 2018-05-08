@@ -1,5 +1,8 @@
 import { Injectable } from '@angular/core';
+import { Observable } from 'rxjs/Observable';
+import { map, startWith } from 'rxjs/operators';
 import * as iconMapJson from '../../assets/vendors/devicon/devicon.json';
+import { SearchModel } from '../../common/search.model';
 import { MonacoService } from '../core/monaco.service';
 import { Stack, stackDefinitions, StackIcon } from './models';
 
@@ -15,10 +18,28 @@ export interface StackIconMap {
 
 @Injectable()
 export class StackViewer {
-    readonly stacks: Stack[];
+    _stacks: Stack[];
 
     constructor(private monacoService: MonacoService) {
-        this.stacks = this.makeStacks();
+        this._stacks = this.makeStacks();
+    }
+
+    getStack(name: string): Stack | null {
+        return this._stacks.find(stack => stack.name === name) || null;
+    }
+
+    search(query: string): Stack[] {
+        return new SearchModel<Stack>()
+            .setScoringStrategy(3, (stack, queryStr) =>
+                stack.name.toLowerCase().indexOf(queryStr.toLowerCase()) === 0)
+            .search(this._stacks, query);
+    }
+
+    searchAsObservable(queries: Observable<string>): Observable<Stack[]> {
+        return queries.pipe(
+            startWith(''),
+            map(query => this.search(query)),
+        );
     }
 
     private makeStacks(): Stack[] {
@@ -35,6 +56,7 @@ export class StackViewer {
             if (definition && definition.iconName) {
                 iconMap = iconMaps.find(item => item.name === definition.iconName);
                 icon = {
+                    iconName: iconMap.name,
                     tags: iconMap.tags,
                     versions: iconMap.versions.svg,
                 };

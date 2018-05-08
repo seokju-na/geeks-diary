@@ -3,6 +3,7 @@
      [showDelay]="500"
      [ngClass]="['StackChip--size-' + size]"
      class="StackChip">
-    <img [attr.alt]="stack?.name"
+    <img *ngIf="isIconExists()"
+         [attr.alt]="stack?.name"
          [src]="getIconUrl()">
 </div>

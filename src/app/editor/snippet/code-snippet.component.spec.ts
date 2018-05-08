@@ -1,22 +1,18 @@
-import { async, ComponentFixture, flush, TestBed } from '@angular/core/testing';
+import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
+import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { combineReducers, Store, StoreModule } from '@ngrx/store';
 import { KeyCodes } from '../../../common/key-codes';
-import {
-    dispatchFakeEvent,
-    dispatchKeyboardEvent,
-    typeInElement,
-} from '../../../testing/fake-event';
-import { verifyFormFieldError } from '../../../testing/validation';
+import { dispatchKeyboardEvent, typeInElement } from '../../../testing/fake-event';
 import { MonacoService } from '../../core/monaco.service';
 import { SharedModule } from '../../shared/shared.module';
-import { StackDummyFactory } from '../../stack/dummies';
-import { Stack } from '../../stack/models';
+import { StackChipComponent } from '../../stack/chip/chip.component';
 import { StackViewer } from '../../stack/stack-viewer';
 import {
     MoveFocusToNextSnippetAction,
     MoveFocusToPreviousSnippetAction,
-    RemoveSnippetAction, UpdateSnippetContentAction,
+    RemoveSnippetAction,
+    UpdateSnippetContentAction,
 } from '../actions';
 import { editorReducerMap, EditorStateForFeature } from '../reducers';
 import { EditorCodeSnippetComponent } from './code-snippet.component';
@@ -35,19 +31,40 @@ describe('app.editor.snippet.EditorCodeSnippetComponent', () => {
     let ref: EditorSnippetRef;
     let config: EditorSnippetConfig;
 
-    let stackViewer: StackViewer;
     let store: Store<EditorStateForFeature>;
 
     const getInputField = (): HTMLTextAreaElement =>
         document.querySelector('.monaco-editor .inputarea');
 
-    const overrideConfig = (newConfig: Partial<EditorSnippetConfig>) => {
-        config = { ...config, ...newConfig };
+    const overwriteConfig = (newConfig: Partial<EditorSnippetConfig>) => {
+        const overwrittenConfig = { ...config, ...newConfig };
 
         TestBed.overrideProvider(EDITOR_SNIPPET_CONFIG, {
-            useValue: newConfig,
+            useValue: overwrittenConfig,
         });
     };
+
+    const configureTestBed = () => TestBed
+        .configureTestingModule({
+            imports: [
+                SharedModule,
+                NoopAnimationsModule,
+                StoreModule.forRoot({
+                    editor: combineReducers(editorReducerMap),
+                }),
+            ],
+            providers: [
+                MonacoService,
+                StackViewer,
+                { provide: EDITOR_SNIPPET_REF, useValue: ref },
+                { provide: EDITOR_SNIPPET_CONFIG, useValue: config },
+            ],
+            declarations: [
+                StackChipComponent,
+                EditorCodeSnippetComponent,
+            ],
+        })
+        .compileComponents();
 
     const createFixture = () => {
         fixture = TestBed.createComponent(EditorCodeSnippetComponent);
@@ -60,29 +77,10 @@ describe('app.editor.snippet.EditorCodeSnippetComponent', () => {
         config = {
             initialValue: 'initial value',
             language: 'javascript',
+            fileName: 'some-file',
             isNewSnippet: false,
         };
     });
-
-    beforeEach(async(() => {
-        TestBed
-            .configureTestingModule({
-                imports: [
-                    SharedModule,
-                    StoreModule.forRoot({
-                        editor: combineReducers(editorReducerMap),
-                    }),
-                ],
-                providers: [
-                    MonacoService,
-                    StackViewer,
-                    { provide: EDITOR_SNIPPET_REF, useValue: ref },
-                    { provide: EDITOR_SNIPPET_CONFIG, useValue: config },
-                ],
-                declarations: [EditorCodeSnippetComponent],
-            })
-            .compileComponents();
-    }));
 
     afterEach(() => {
         if (fixture) {
@@ -91,25 +89,29 @@ describe('app.editor.snippet.EditorCodeSnippetComponent', () => {
     });
 
     describe('initialize', () => {
-        beforeEach(() => {
-            createFixture();
-        });
+        beforeEach(async(() => {
+            configureTestBed();
+        }));
 
         it('should show initial value when initialized editor.', () => {
+            createFixture();
             expect(component.getValue()).toEqual(config.initialValue);
         });
 
         it('should language has been set.', () => {
+            createFixture();
             expect(component.getLanguage()).toEqual(config.language);
         });
     });
 
     describe('isCurrentPositionTop(): boolean', () => {
-        beforeEach(() => {
-            createFixture();
-        });
+        beforeEach(async(() => {
+            configureTestBed();
+        }));
 
         it('should be true when cursor in the start line of editor.', () => {
+            createFixture();
+
             component._editor.setPosition({
                 lineNumber: 1,
                 column: 0,
@@ -120,16 +122,20 @@ describe('app.editor.snippet.EditorCodeSnippetComponent', () => {
     });
 
     describe('isCurrentPositionBottom(): boolean', () => {
-        beforeEach(() => {
-            createFixture();
-        });
+        beforeEach(async(() => {
+            configureTestBed();
+        }));
 
         it('if editor has only one line, it should be true on both top and bottom.', () => {
+            createFixture();
+
             expect(component.isCurrentPositionTop()).toBe(true);
             expect(component.isCurrentPositionBottom()).toBe(true);
         });
 
         it('should be true when cursor in the last line of editor', () => {
+            createFixture();
+
             component.setValue('hello\nworld!');
             component._editor.setPosition({
                 lineNumber: 2,
@@ -141,11 +147,13 @@ describe('app.editor.snippet.EditorCodeSnippetComponent', () => {
     });
 
     describe('setPositionToTop(): void', () => {
-        beforeEach(() => {
-            createFixture();
-        });
+        beforeEach(async(() => {
+            configureTestBed();
+        }));
 
         it('should cursor located at first line.', () => {
+            createFixture();
+
             component.setValue('Some long\nparagraph');
             component._editor.setPosition({
                 lineNumber: 2,
@@ -159,11 +167,13 @@ describe('app.editor.snippet.EditorCodeSnippetComponent', () => {
     });
 
     describe('setPositionToBottom(): void', () => {
-        beforeEach(() => {
-            createFixture();
-        });
+        beforeEach(async(() => {
+            configureTestBed();
+        }));
 
         it('should cursor located at last line.', () => {
+            createFixture();
+
             component.setValue('Some long\nparagraph.');
             expect(component.isCurrentPositionBottom()).toBe(false);
 
@@ -174,6 +184,7 @@ describe('app.editor.snippet.EditorCodeSnippetComponent', () => {
 
     describe('typing', () => {
         beforeEach(() => {
+            configureTestBed();
             createFixture();
 
             store = TestBed.get(Store);
@@ -221,107 +232,21 @@ describe('app.editor.snippet.EditorCodeSnippetComponent', () => {
     });
 
     describe('setting', () => {
-        it('should fill language and file name at input when setting mode on', () => {
-            overrideConfig({ fileName: 'test-file.js' });
+        beforeEach(async(() => {
+            overwriteConfig({ isNewSnippet: true });
+            configureTestBed();
+        }));
+
+        it('should setting form appeared if \'isNewSnippet\' value is true ' +
+            'which from snippet config, when snippet is initialized', () => {
+
             createFixture();
 
-            const settingButton = fixture.debugElement.query(
-                By.css('button[aria-label="setting-button"]'));
-            settingButton.nativeElement.click();
-            fixture.detectChanges();
-
-            // Expect setting form has been appeared.
             const settingForm = fixture.debugElement.query(
-                By.css('form.NoteCodeEditorSnippet__settingForm'));
+                By.css('form.EditorCodeSnippet__settingForm'));
+
+            expect(component.mode).toEqual('setting');
             expect(settingForm).not.toBeNull();
-
-            const languageInputEl = settingForm.query(
-                By.css('input[name="language"]')).nativeElement;
-            const fileNameInputEl = settingForm.query(
-                By.css('input[name="fileName"]')).nativeElement;
-
-            expect(languageInputEl.value).toEqual('javascript');
-            expect(fileNameInputEl.value).toEqual('test-file.js');
-        });
-
-        it('should setting form appeared when snippet initialized ' +
-            'if \'isNewSnippet\' is true.', () => {
-
-            overrideConfig({ isNewSnippet: true });
-            createFixture();
-
-            const settingForm = fixture.debugElement.query(
-                By.css('form.NoteCodeEditorSnippet__settingForm'));
-            expect(settingForm).not.toBeNull();
-        });
-
-        it('should not fill language and file name when snippet is new.', () => {
-            overrideConfig({ fileName: 'test-file.js', isNewSnippet: true });
-            createFixture();
-
-            const languageInputEl = fixture.debugElement.query(
-                By.css('input[name="language"]')).nativeElement;
-            const fileNameInputEl = fixture.debugElement.query(
-                By.css('input[name="fileName"]')).nativeElement;
-
-            expect(languageInputEl.value).toEqual('');
-            expect(fileNameInputEl.value).toEqual('');
-        });
-
-        it('should get \'required\' error touched language input ' +
-            'but didn\'t type any value.', () => {
-
-            overrideConfig({ isNewSnippet: true });
-            createFixture();
-
-            const languageInputEl = fixture.debugElement.query(
-                By.css('input[name="language"]')).nativeElement;
-
-            dispatchFakeEvent(languageInputEl, 'focusin');
-            fixture.detectChanges();
-
-            typeInElement('', languageInputEl);
-            fixture.detectChanges();
-
-            dispatchFakeEvent(languageInputEl, 'focusout');
-            fixture.detectChanges();
-
-            const settingForm = fixture.debugElement.query(
-                By.css('form.NoteCodeEditorSnippet__settingForm'));
-
-            verifyFormFieldError(settingForm, 'required');
-        });
-
-        it('should fill the language name when an option is selected ' +
-            'form options.', () => {
-
-            const dummyFactory = new StackDummyFactory();
-            const stacks: Stack[] = [
-                dummyFactory.create(true, true, true),
-                dummyFactory.create(true, true, true),
-                dummyFactory.create(true, true, true),
-            ];
-
-            stackViewer = TestBed.get(StackViewer);
-            spyOn(stackViewer, 'stacks').and.returnValue(stacks);
-
-            overrideConfig({ isNewSnippet: true });
-            createFixture();
-
-            const languageInputEl = fixture.debugElement.query(
-                By.css('input[name="language"]')).nativeElement;
-
-            typeInElement('stack-2', languageInputEl);
-            fixture.detectChanges();
-
-            dispatchKeyboardEvent(languageInputEl, 'keydown', KeyCodes.DOWN_ARROW);
-            flush();
-            fixture.detectChanges();
-
-            dispatchKeyboardEvent(languageInputEl, 'keydown', KeyCodes.ENTER);
-            fixture.detectChanges();
-
-            expect(languageInputEl.value).toContain('stack-2');
         });
 
         it('should dispatch \'UPDATE_SNIPPET_CONTENT\' action ' +
@@ -330,7 +255,6 @@ describe('app.editor.snippet.EditorCodeSnippetComponent', () => {
             store = TestBed.get(Store);
             spyOn(store, 'dispatch').and.callThrough();
 
-            overrideConfig({ isNewSnippet: true });
             createFixture();
 
             const languageInputEl = fixture.debugElement.query(
@@ -345,12 +269,16 @@ describe('app.editor.snippet.EditorCodeSnippetComponent', () => {
             fixture.detectChanges();
 
             const submitButton = fixture.debugElement.query(
-                By.css('button[aria-label="save-button"]'));
+                By.css('button[aria-label=save-button]'));
             submitButton.nativeElement.click();
             fixture.detectChanges();
 
             const expectedPayload = {
-                content: { language: 'some-language', fileName: 'some-filename' },
+                content: {
+                    id: component.id,
+                    language: 'some-language',
+                    fileName: 'some-filename',
+                },
             };
             const expectedAction = new UpdateSnippetContentAction(expectedPayload);
 

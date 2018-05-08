@@ -36,7 +36,7 @@ export class StackDummyFactory implements DummyFactory<Stack> {
         let color: string;
 
         if (hasIcon) {
-            icon = { tags: [], versions: ['original'] };
+            icon = { iconName: name, tags: [], versions: ['original'] };
         }
 
         if (hasLanguage) {
