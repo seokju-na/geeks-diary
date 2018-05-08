@@ -5,12 +5,41 @@
 
     &__aside {
         display: inline-flex;
+        width: var(--layout-sidebar-nav);
         height: 100%;
     }
 
     &__main {
-        flex: 1;
         display: inline-flex;
+        width: calc(~"100% - var(--layout-sidebar-nav)");
         height: 100%;
+    }
+
+    &__noteWorkspace {
+        display: flex;
+        flex-direction: column;
+        width: 100%;
+        height: 100%;
+
+        header {
+            width: 100%;
+            height: var(--size-box-medium);
+            border-bottom: 1px solid var(--color-gray-4);
+        }
+
+        section {
+            width: 100%;
+            height: calc(~"100% - var(--size-box-mediume)");
+        }
+    }
+
+    &--asideOpened {
+        .AppShell__aside {
+            width: calc(~"var(--layout-sidebar-full)");
+        }
+
+        .AppShell__main {
+            width: calc(~"100% - var(--layout-sidebar-full)");
+        }
     }
 }
