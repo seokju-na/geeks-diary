@@ -7,15 +7,22 @@
 
     <h1 gd-text
         size="regular"
-        [weight]="selected ? 'bold' : 'medium'"
-        class="NoteItem__title">Note title</h1>
+        weight="bold"
+        class="NoteItem__title">
+        {{note.title}}
+    </h1>
+
+    <time [attr.datetime]="note.createdDatetime | date"
+          gd-text
+          size="small"
+          class="NoteItem__createdAt">
+        {{note.createdDatetime | date:'MMM d, y HH:mm'}}
+    </time>
 
     <div role="list" class="NoteItem__stackChips">
-        <!--
         <gd-stack-chip
-            *ngFor="let stackItem of getStackItemDummies() | async"
+            *ngFor="let stack of stacks"
             size="medium"
-            [stackItem]="stackItem"></gd-stack-chip>
-            -->
+            [stack]="stack"></gd-stack-chip>
     </div>
 </div>

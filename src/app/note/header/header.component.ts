@@ -1,4 +1,8 @@
 import { Component } from '@angular/core';
+import { select, Store } from '@ngrx/store';
+import { Observable } from 'rxjs/Observable';
+import { NoteMetadata } from '../models';
+import { NoteStateWithRoot } from '../reducers';
 
 
 interface NoteHeaderToolItem {
@@ -19,4 +23,10 @@ export class NoteHeaderComponent {
         { name: 'editorView', description: 'Switch editor view', iconName: 'eye' },
         { name: 'noteInfo', description: 'Show note info', iconName: 'info-circle' },
     ];
+    selectedNote: Observable<NoteMetadata>;
+
+    constructor(private store: Store<NoteStateWithRoot>) {
+        this.selectedNote = this.store.pipe(
+            select(state => state.note.collection.selectedNote));
+    }
 }
