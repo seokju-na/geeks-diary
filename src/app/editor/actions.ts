@@ -1,5 +1,5 @@
 import { Action } from '@ngrx/store';
-import { NoteContent, NoteContentSnippet, NoteSimple } from '../note/models';
+import { NoteContent, NoteContentSnippet, NoteMetadata } from '../note/models';
 import { EditorViewModes } from './models';
 
 
@@ -21,7 +21,7 @@ export enum EditorActionTypes {
 export class InitEditorAction implements Action {
     readonly type = EditorActionTypes.INIT_EDITOR;
 
-    constructor(readonly payload: { note: NoteSimple, content: NoteContent }) {
+    constructor(readonly payload: { note: NoteMetadata, content: NoteContent }) {
     }
 }
 

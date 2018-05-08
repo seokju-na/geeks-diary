@@ -1,5 +1,5 @@
-import { NoteContentDummyFactory, NoteSimpleDummyFactory } from '../note/dummies';
-import { NoteContent, NoteSimple } from '../note/models';
+import { NoteContentDummyFactory, NoteMetadataDummyFactory } from '../note/dummies';
+import { NoteContent, NoteMetadata } from '../note/models';
 import {
     ChangeEditorViewModeAction,
     EditorActionTypes,
@@ -11,11 +11,11 @@ import { createInitialEditorState, editorReducer, EditorState } from './reducers
 
 
 describe('app.editor.reducers', () => {
-    let note: NoteSimple;
+    let note: NoteMetadata;
     let content: NoteContent;
 
     beforeEach(() => {
-        note = new NoteSimpleDummyFactory().create();
+        note = new NoteMetadataDummyFactory().create();
         content = new NoteContentDummyFactory().create(note.id);
     });
 
@@ -57,16 +57,6 @@ describe('app.editor.reducers', () => {
 
             expect(state.title).toEqual(note.title);
         });
-
-        it('should set focused snippet to first snippet.', () => {
-            const action = new InitEditorAction({ note, content });
-            const state = editorReducer(
-                createInitialEditorState(),
-                action,
-            );
-
-            expect(state.focusedSnippetId).toEqual(state.snippets[0].id);
-        });
     });
 
     describe('EditorActionTypes.REMOVE_SNIPPET', () => {
@@ -77,34 +67,30 @@ describe('app.editor.reducers', () => {
             beforeState = editorReducer(createInitialEditorState(), action);
         });
 
-        it('should remove snippet. If snippet is first one, ' +
-            'set focused snippet id with new first snippet.', () => {
-
+        it('should remove snippet, if the number of snippets is more than 1', () => {
             const targetId = content.snippets[0].id;
-            const newFocusedSnippetId = content.snippets[1].id;
-
             const action = new RemoveSnippetAction({ snippetId: targetId });
 
             const state = editorReducer(beforeState, action);
             const indexOfTarget = state.snippets.findIndex(snippet => snippet.id === targetId);
 
             expect(indexOfTarget).toEqual(-1);
-            expect(state.focusedSnippetId).toEqual(newFocusedSnippetId);
         });
 
-        it('should remove snippet. If snippet is not first one, ' +
-            'set focused snippet id with previous snippet.', () => {
+        it('should note remove snippet, if the number of snippets is 1', () => {
+            content.snippets.splice(1, content.snippets.length - 1);
 
-            const targetId = content.snippets[5].id;
-            const newFocusedSnippetId = content.snippets[4].id;
+            beforeState = editorReducer(undefined, new InitEditorAction({
+                note, content,
+            }));
 
+            const targetId = content.snippets[0].id;
             const action = new RemoveSnippetAction({ snippetId: targetId });
 
             const state = editorReducer(beforeState, action);
             const indexOfTarget = state.snippets.findIndex(snippet => snippet.id === targetId);
 
-            expect(indexOfTarget).toEqual(-1);
-            expect(state.focusedSnippetId).toEqual(newFocusedSnippetId);
+            expect(indexOfTarget).toEqual(0);
         });
     });
 

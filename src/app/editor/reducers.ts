@@ -7,7 +7,6 @@ import { EditorViewModes } from './models';
 export interface EditorState {
     loaded: boolean;
     title: string | null;
-    focusedSnippetId: string | null;
     snippets: NoteContentSnippet[];
     viewMode: EditorViewModes;
 }
@@ -22,7 +21,6 @@ export function createInitialEditorState(): EditorState {
     return {
         loaded: false,
         title: null,
-        focusedSnippetId: null,
         snippets: [],
         viewMode: EditorViewModes.SHOW_BOTH,
     };
@@ -40,7 +38,6 @@ export function editorReducer(
                 ...state,
                 loaded: true,
                 title: action.payload.note.title,
-                focusedSnippetId: action.payload.content.snippets[0].id,
                 snippets: [...action.payload.content.snippets],
             };
 
@@ -48,16 +45,13 @@ export function editorReducer(
             const index = state.snippets.findIndex(snippet =>
                 snippet.id === action.payload.snippetId);
             const snippets = state.snippets;
-            let nextFocusedSnippetIndex: number;
 
-            if (index !== -1) {
+            if (index !== -1 && state.snippets.length > 1) {
                 snippets.splice(index, 1);
-                nextFocusedSnippetIndex = index === 0 ? 0 : index - 1;
 
                 return {
                     ...state,
                     snippets: [...snippets],
-                    focusedSnippetId: snippets[nextFocusedSnippetIndex].id,
                 };
             }
 

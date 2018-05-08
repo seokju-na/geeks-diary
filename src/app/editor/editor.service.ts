@@ -45,8 +45,33 @@ export class EditorService {
     removeSnippet(snippetId: string): void {
         const index = this.getIndexOfSnippetRef(snippetId);
 
-        if (index !== -1) {
+        if (index !== -1 && this.snippetRefs.length > 1) {
             this.snippetRefs.splice(index, 1);
+            this.moveFocusByIndex(index, -1);
+        }
+    }
+
+    moveFocus(snippetId: string, direction: 1 | -1): void {
+        const index = this.snippetRefs.findIndex(snippet => snippet.id === snippetId);
+
+        if (index !== -1) {
+            this.moveFocusByIndex(index, direction);
+        }
+    }
+
+    moveFocusByIndex(snippetIndex: number, direction: 1 | -1): void {
+        const nextSnippet = this.snippetRefs[snippetIndex + direction];
+
+        if (!nextSnippet) {
+            return;
+        }
+
+        nextSnippet.instance.focus();
+
+        if (direction > 0) {
+            nextSnippet.instance.setPositionToTop();
+        } else if (direction < 0) {
+            nextSnippet.instance.setPositionToBottom();
         }
     }
 }

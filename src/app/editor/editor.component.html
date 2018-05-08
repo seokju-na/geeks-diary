@@ -1,0 +1,8 @@
+<div class="Editor">
+    <div class="Editor__snippets">
+        <div *ngFor="let ref of snippetRefs" class="Editor__snippet">
+            <ng-container
+                *ngComponentOutlet="ref.outlet.component; injector: ref.outlet.injector"></ng-container>
+        </div>
+    </div>
+</div>
