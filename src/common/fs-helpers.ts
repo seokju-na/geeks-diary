@@ -1,6 +1,6 @@
 import * as fs from 'fs';
-import { bindNodeCallback } from 'rxjs/observable/bindNodeCallback';
 import { Observable } from 'rxjs/Observable';
+import { bindNodeCallback } from 'rxjs/observable/bindNodeCallback';
 import { catchError } from 'rxjs/operators';
 
 

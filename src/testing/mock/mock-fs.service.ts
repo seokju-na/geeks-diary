@@ -52,6 +52,10 @@ export class MockFsService extends FsService {
         return new FsStub<R>(stubName, this.stubMap.get(stubName), this);
     }
 
+    expectMany<R = any>(matchObjList: FsMatchObject[]): FsStub<R>[] {
+        return matchObjList.map(obj => this.expect<R>(obj));
+    }
+
     spyOn(method: keyof this): jasmine.Spy {
         return spyOn(this, method);
     }
