@@ -7,6 +7,9 @@ import { environment } from './environments/environment';
 import './styles/styles.less';
 
 
+require('electron').webFrame.setZoomLevelLimits(1, 1);
+
+
 if (environment.config.production) {
     enableProdMode();
 }
