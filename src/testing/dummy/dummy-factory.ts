@@ -49,6 +49,19 @@ export class DatetimeDummyFactory implements DummyFactory<number> {
 }
 
 
+export class TypesDummyFactory<T> implements DummyFactory<T> {
+    constructor(readonly types: T[]) {
+    }
+
+    create(): T {
+        const index = Math.floor(Math.random() * this.types.length);
+
+        return this.types[index];
+    }
+}
+
+
+
 export function createDummyList<T>(factory: DummyFactory<T>, count: number): T[] {
     const list: T[] = [];
 

@@ -1,6 +1,7 @@
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { EffectsModule } from '@ngrx/effects';
 import { StoreModule } from '@ngrx/store';
 import { StoreDevtoolsModule } from '@ngrx/store-devtools';
 import { appMetaReducers, appReducers } from './app-reducers';
@@ -22,6 +23,7 @@ import { StackModule } from './stack/stack.module';
             metaReducers: appMetaReducers,
         }),
         StoreDevtoolsModule.instrument(),
+        EffectsModule.forRoot([]),
         EditorModule,
         NoteModule,
         StackModule,

@@ -4,20 +4,22 @@ import {
     DummyFactory,
     StringIdDummyFactory,
     TextDummyFactory,
+    TypesDummyFactory,
 } from '../../testing/dummy';
-import { NoteContent, NoteContentSnippet, NoteContentSnippetTypes, NoteSimple } from './models';
+import { NoteContent, NoteContentSnippet, NoteContentSnippetTypes, NoteMetadata } from './models';
 
 
-export class NoteSimpleDummyFactory implements DummyFactory<NoteSimple> {
-    id = new StringIdDummyFactory(this.namespace);
+export class NoteMetadataDummyFactory implements DummyFactory<NoteMetadata> {
+    id: StringIdDummyFactory;
     title = new TextDummyFactory('NoteTitle');
     createdDatetime = new DatetimeDummyFactory();
     updatedDatetime = new DatetimeDummyFactory();
 
     constructor(readonly namespace = 'note') {
+        this.id = new StringIdDummyFactory(this.namespace);
     }
 
-    create(): NoteSimple {
+    create(): NoteMetadata {
         return {
             id: this.id.create(),
             title: this.title.create(),
@@ -30,16 +32,20 @@ export class NoteSimpleDummyFactory implements DummyFactory<NoteSimple> {
 
 
 export class NoteContentSnippetDummyFactory implements DummyFactory<NoteContentSnippet> {
-    id = new StringIdDummyFactory(this.namespace);
+    id: StringIdDummyFactory;
+    type = new TypesDummyFactory<NoteContentSnippetTypes>(
+        [NoteContentSnippetTypes.CODE, NoteContentSnippetTypes.TEXT],
+    );
     value = new TextDummyFactory('some note content...');
 
     constructor(readonly namespace = 'noteContentSnippet') {
+        this.id = new StringIdDummyFactory(this.namespace);
     }
 
     create(
-        type: NoteContentSnippetTypes = NoteContentSnippetTypes.TEXT,
-        language?: string,
-        fileName?: string,
+        type: NoteContentSnippetTypes = this.type.create(),
+        language = 'typescript',
+        fileName = 'test-file.ts',
     ): NoteContentSnippet {
 
         const id = this.id.create();
@@ -66,15 +72,16 @@ export class NoteContentSnippetDummyFactory implements DummyFactory<NoteContentS
 
 
 export class NoteContentDummyFactory implements DummyFactory<NoteContent> {
-    id = new StringIdDummyFactory(this.namespace);
+    id: StringIdDummyFactory;
 
     constructor(readonly namespace = 'note') {
+        this.id = new StringIdDummyFactory(this.namespace);
     }
 
     create(
         noteId: string = this.id.create(),
         snippets: NoteContentSnippet[] =
-            createDummyList(new NoteContentSnippetDummyFactory(), 10),
+            createDummyList(new NoteContentSnippetDummyFactory(), 3),
     ): NoteContent {
         return {
             noteId,
