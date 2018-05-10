@@ -4,6 +4,7 @@ export class NoteMetadata {
     readonly stacks: string[];
     readonly createdDatetime: number;
     readonly updatedDatetime: number | null;
+    noteFileName?: string;
     fileName?: string;
 }
 
@@ -25,7 +26,10 @@ export class NoteContentSnippet {
 
 export class NoteContent {
     readonly noteId: string;
+    readonly title: string;
     readonly snippets: NoteContentSnippet[];
+    noteFileName?: string;
+    fileName?: string;
 }
 
 

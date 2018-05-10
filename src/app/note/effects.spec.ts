@@ -1,13 +1,19 @@
 import { fakeAsync, flush, inject, TestBed } from '@angular/core/testing';
 import { Actions } from '@ngrx/effects';
 import { Action } from '@ngrx/store';
+import { ErrorObservable } from 'rxjs/observable/ErrorObservable';
 import { of } from 'rxjs/observable/of';
 import { Subject } from 'rxjs/Subject';
 import { createDummyList } from '../../testing/dummy';
 import { MockActions, MockFsService } from '../../testing/mock';
 import {
     GetNoteCollectionAction,
-    GetNoteCollectionCompleteAction, LoadNoteContentAction, LoadNoteContentCompleteAction,
+    GetNoteCollectionCompleteAction,
+    LoadNoteContentAction,
+    LoadNoteContentCompleteAction,
+    SaveNoteContentAction,
+    SaveNoteContentCompleteAction,
+    SaveNoteContentErrorAction,
     SelectNoteAction,
 } from './actions';
 import { NoteContentDummyFactory, NoteMetadataDummyFactory } from './dummies';
@@ -27,8 +33,7 @@ describe('app.note.effects.NoteEffects', () => {
     beforeEach(() => {
         TestBed
             .configureTestingModule({
-                imports: [
-                ],
+                imports: [],
                 providers: [
                     ...MockFsService.providersForTesting,
                     ...MockActions.providersForTesting,
@@ -108,6 +113,45 @@ describe('app.note.effects.NoteEffects', () => {
             flush();
 
             const expected = new LoadNoteContentCompleteAction({ content });
+
+            expect(callback).toHaveBeenCalledWith(expected);
+        }));
+    });
+
+    describe('saveContent', () => {
+        it('should return new \'SAVE_NOTE_CONTENT_COMPLETE\' action, ' +
+            'if the content data is successfully saved in file.', fakeAsync(() => {
+
+            const note = new NoteMetadataDummyFactory().create();
+            const content = new NoteContentDummyFactory().create(note.id);
+
+            spyOn(noteFsService, 'writeNoteContent').and.returnValue(of(null));
+
+            noteEffects.saveContent.subscribe(callback);
+            actions.next(new SaveNoteContentAction({ content }));
+            flush();
+
+            const expected = new SaveNoteContentCompleteAction();
+
+            expect(callback).toHaveBeenCalledWith(expected);
+        }));
+
+        it('should return new \'SAVE_NOTE_CONTENT_ERROR\' action, ' +
+            'if it fails to save the content data to file.', fakeAsync(() => {
+
+            const note = new NoteMetadataDummyFactory().create();
+            const content = new NoteContentDummyFactory().create(note.id);
+
+            const error = 'some error';
+
+            spyOn(noteFsService, 'writeNoteContent')
+                .and.returnValue(ErrorObservable.create(error));
+
+            noteEffects.saveContent.subscribe(callback);
+            actions.next(new SaveNoteContentAction({ content }));
+            flush();
+
+            const expected = new SaveNoteContentErrorAction(error);
 
             expect(callback).toHaveBeenCalledWith(expected);
         }));

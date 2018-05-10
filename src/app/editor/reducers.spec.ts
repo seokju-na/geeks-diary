@@ -3,7 +3,7 @@ import { NoteContent, NoteMetadata } from '../note/models';
 import {
     ChangeEditorViewModeAction,
     EditorActionTypes,
-    InitEditorAction,
+    InitEditorWithNoteContentAction,
     RemoveSnippetAction,
 } from './actions';
 import { EditorViewModes } from './models';
@@ -17,6 +17,12 @@ describe('app.editor.reducers', () => {
     beforeEach(() => {
         note = new NoteMetadataDummyFactory().create();
         content = new NoteContentDummyFactory().create(note.id);
+
+        note.noteFileName = '/test/note.gd';
+        note.fileName = '/test/note.gd/meta.json';
+
+        content.noteFileName = '/test/note.gd';
+        content.fileName = '/test/note.gd/content.json';
     });
 
     describe('undefined action', () => {
@@ -29,7 +35,7 @@ describe('app.editor.reducers', () => {
 
     describe('EditorActionTypes.INIT_EDITOR', () => {
         it('should add snippets.', () => {
-            const action = new InitEditorAction({ note, content });
+            const action = new InitEditorWithNoteContentAction({ content });
             const state = editorReducer(
                 createInitialEditorState(),
                 action,
@@ -39,7 +45,7 @@ describe('app.editor.reducers', () => {
         });
 
         it('should set loaded to true.', () => {
-            const action = new InitEditorAction({ note, content });
+            const action = new InitEditorWithNoteContentAction({ content });
             const state = editorReducer(
                 createInitialEditorState(),
                 action,
@@ -49,7 +55,7 @@ describe('app.editor.reducers', () => {
         });
 
         it('should set title.', () => {
-            const action = new InitEditorAction({ note, content });
+            const action = new InitEditorWithNoteContentAction({ content });
             const state = editorReducer(
                 createInitialEditorState(),
                 action,
@@ -63,7 +69,7 @@ describe('app.editor.reducers', () => {
         let beforeState: EditorState;
 
         beforeEach(() => {
-            const action = new InitEditorAction({ note, content });
+            const action = new InitEditorWithNoteContentAction({ content });
             beforeState = editorReducer(createInitialEditorState(), action);
         });
 
@@ -80,8 +86,8 @@ describe('app.editor.reducers', () => {
         it('should note remove snippet, if the number of snippets is 1', () => {
             content.snippets.splice(1, content.snippets.length - 1);
 
-            beforeState = editorReducer(undefined, new InitEditorAction({
-                note, content,
+            beforeState = editorReducer(undefined, new InitEditorWithNoteContentAction({
+                content,
             }));
 
             const targetId = content.snippets[0].id;

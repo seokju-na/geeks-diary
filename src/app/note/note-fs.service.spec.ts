@@ -90,7 +90,9 @@ describe('app.note.NoteFsService', () => {
 
             const expected = notes.map(note => ({
                 ...note.metadata,
-                fileName: path.resolve(noteFsService.noteStoragePath, note.fileName),
+                noteFileName: path.resolve(noteFsService.noteStoragePath, note.fileName),
+                fileName: path.resolve(
+                    noteFsService.noteStoragePath, note.fileName, NoteFsService.metadataFileName),
             }));
 
             expect(callback).toHaveBeenCalledWith(expected);
@@ -122,7 +124,8 @@ describe('app.note.NoteFsService', () => {
             const metadataFileName = noteFsService.getMetadataFileName(noteFileName);
             const metadata = new NoteMetadataDummyFactory().create();
 
-            metadata.fileName = noteFileName;
+            metadata.noteFileName = noteFileName;
+            metadata.fileName = noteFsService.getMetadataFileName(noteFileName);
 
             const callback = jasmine.createSpy('callback');
 
@@ -165,6 +168,9 @@ describe('app.note.NoteFsService', () => {
             const contentFileName = noteFsService.getContentFileName(noteFileName);
             const content = new NoteContentDummyFactory().create();
 
+            content.noteFileName = noteFileName;
+            content.fileName = contentFileName;
+
             const callback = jasmine.createSpy('callback');
 
             noteFsService.readNoteContent(noteFileName).subscribe(callback);
@@ -178,6 +184,48 @@ describe('app.note.NoteFsService', () => {
                 .flush(Buffer.from(JSON.stringify(content)));
 
             expect(callback).toHaveBeenCalledWith(content);
+        }));
+    });
+
+    describe('writeNoteMetadata', () => {
+        it('should write note metadata at metadata file.', fakeAsync(() => {
+            const metadata = new NoteMetadataDummyFactory().create();
+            metadata.fileName = '/test/note.gd/meta.json';
+
+            noteFsService.writeNoteMetadata(metadata).subscribe();
+            flush();
+
+            mockFsService
+                .expect({
+                    methodName: 'writeFile',
+                    args: [
+                        metadata.fileName,
+                        NoteFsService.convertMetadataToValue(metadata),
+                        'utf8',
+                    ],
+                })
+                .flush();
+        }));
+    });
+
+    describe('writeNoteContent', () => {
+        it('should write note content at content file.', fakeAsync(() => {
+            const content = new NoteContentDummyFactory().create();
+            content.fileName = '/test/note.gd/content.json';
+
+            noteFsService.writeNoteContent(content).subscribe();
+            flush();
+
+            mockFsService
+                .expect({
+                    methodName: 'writeFile',
+                    args: [
+                        content.fileName,
+                        NoteFsService.convertContentToValue(content),
+                        'utf8',
+                    ],
+                })
+                .flush();
         }));
     });
 });

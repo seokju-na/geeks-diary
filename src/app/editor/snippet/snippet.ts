@@ -16,6 +16,7 @@ import {
     MoveFocusToNextSnippetAction,
     MoveFocusToPreviousSnippetAction,
     RemoveSnippetAction,
+    UpdateSnippetContentAction,
 } from '../actions';
 import { EditorState } from '../reducers';
 
@@ -112,6 +113,13 @@ export abstract class EditorSnippet implements OnDestroy, AfterViewInit {
         return this.getValue().trim() === '';
     }
 
+    protected handleValueChanged(value: string): void {
+        this.store.dispatch(new UpdateSnippetContentAction({
+            snippetId: this.id,
+            content: { value },
+        }));
+    }
+
     protected handleFocus(focused: boolean): void {
         let action: EditorActions;
 
@@ -121,7 +129,7 @@ export abstract class EditorSnippet implements OnDestroy, AfterViewInit {
             action = new DidSnippetBlurAction({ snippetId: this.id });
         }
 
-        this.store.dispatch(action);
+        // this.store.dispatch(action);
     }
 
     protected handleKeyDown(event: KeyboardEvent): void {

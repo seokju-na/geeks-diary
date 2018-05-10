@@ -1,4 +1,5 @@
 import { ActionReducerMap } from '@ngrx/store';
+import { AppState } from '../app-reducers';
 import { NoteContentSnippet } from '../note/models';
 import { EditorActions, EditorActionTypes } from './actions';
 import { EditorViewModes } from './models';
@@ -6,8 +7,10 @@ import { EditorViewModes } from './models';
 
 export interface EditorState {
     loaded: boolean;
-    title: string | null;
+    noteId: string | null;
+    title: string;
     snippets: NoteContentSnippet[];
+    fileName: string | null;
     viewMode: EditorViewModes;
 }
 
@@ -17,11 +20,18 @@ export interface EditorStateForFeature {
 }
 
 
+export interface EditorStateWithRoot extends AppState {
+    editor: EditorStateForFeature;
+}
+
+
 export function createInitialEditorState(): EditorState {
     return {
         loaded: false,
-        title: null,
+        noteId: null,
+        title: '',
         snippets: [],
+        fileName: null,
         viewMode: EditorViewModes.SHOW_BOTH,
     };
 }
@@ -32,26 +42,48 @@ export function editorReducer(
     action: EditorActions,
 ): EditorState {
 
+    const indexOfSnippet = (snippetId: string): number =>
+        state.snippets.findIndex(snippet => snippet.id === snippetId);
+
+    let index: number;
+
     switch (action.type) {
-        case EditorActionTypes.INIT_EDITOR:
+        case EditorActionTypes.INIT_EDITOR_WITH_NOTE_CONTENT:
             return {
                 ...state,
                 loaded: true,
-                title: action.payload.note.title,
+                noteId: action.payload.content.noteId,
+                title: action.payload.content.title,
+                fileName: action.payload.content.fileName,
                 snippets: [...action.payload.content.snippets],
             };
 
         case EditorActionTypes.REMOVE_SNIPPET:
-            const index = state.snippets.findIndex(snippet =>
-                snippet.id === action.payload.snippetId);
-            const snippets = state.snippets;
+            index = indexOfSnippet(action.payload.snippetId);
 
             if (index !== -1 && state.snippets.length > 1) {
-                snippets.splice(index, 1);
+                state.snippets.splice(index, 1);
 
                 return {
                     ...state,
-                    snippets: [...snippets],
+                    snippets: [...state.snippets],
+                };
+            }
+
+            return state;
+
+        case EditorActionTypes.UPDATE_SNIPPET_CONTENT:
+            index = indexOfSnippet(action.payload.snippetId);
+
+            if (index !== -1) {
+                state.snippets[index] = {
+                    ...state.snippets[index],
+                    ...action.payload.content,
+                };
+
+                return {
+                    ...state,
+                    snippets: [...state.snippets],
                 };
             }
 

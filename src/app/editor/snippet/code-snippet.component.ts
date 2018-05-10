@@ -73,8 +73,9 @@ export class EditorCodeSnippetComponent extends EditorSnippet implements OnInit 
         });
 
         this._editor.onDidChangeModelContent(() => {
-            // const value = this._editor.getModel().getValue();
-            // this.emitEvent();
+            const value = this._editor.getModel().getValue();
+
+            this.handleValueChanged(value);
             this.layoutHeight();
         });
 
@@ -96,7 +97,7 @@ export class EditorCodeSnippetComponent extends EditorSnippet implements OnInit 
 
     destroy(): void {
         if (this._editor) {
-            this._editor.dispose();
+            // this._editor.dispose();
         }
     }
 
@@ -195,8 +196,8 @@ export class EditorCodeSnippetComponent extends EditorSnippet implements OnInit 
         );
 
         this.store.dispatch(new UpdateSnippetContentAction({
+            snippetId: this.id,
             content: {
-                id: this.id,
                 language: this._config.language,
                 fileName: this._config.fileName,
             },

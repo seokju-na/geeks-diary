@@ -23,6 +23,24 @@ export class NoteFsService {
         return `${createdAt}-${title}.gd`;
     }
 
+    static convertMetadataToValue(metadata: NoteMetadata): string {
+        return JSON.stringify({
+            id: metadata.id,
+            title: metadata.title,
+            stacks: metadata.stacks,
+            createdDatetime: metadata.createdDatetime,
+            updatedDatetime: metadata.updatedDatetime,
+        });
+    }
+
+    static convertContentToValue(content: NoteContent): string {
+        return JSON.stringify({
+            noteId: content.noteId,
+            title: content.title,
+            snippets: content.snippets,
+        });
+    }
+
     readonly workspacePath: string;
     readonly noteStoragePath: string;
 
@@ -64,7 +82,8 @@ export class NoteFsService {
         return this.fsService.readFile(metadataFileName).pipe(
             map((buf: Buffer) => ({
                 ...JSON.parse(buf.toString()),
-                fileName: noteFileName,
+                noteFileName,
+                fileName: metadataFileName,
             })),
             catchError(() => of(null)),
         );
@@ -74,8 +93,24 @@ export class NoteFsService {
         const contentFileName = this.getContentFileName(noteFileName);
 
         return this.fsService.readFile(contentFileName).pipe(
-            map((buf: Buffer) => JSON.parse(buf.toString())),
+            map((buf: Buffer) => ({
+                ...JSON.parse(buf.toString()),
+                noteFileName,
+                fileName: contentFileName,
+            })),
             catchError(() => of(null)),
         );
+    }
+
+    writeNoteMetadata(metadata: NoteMetadata): Observable<void> {
+        const value = NoteFsService.convertMetadataToValue(metadata);
+
+        return this.fsService.writeFile(metadata.fileName, value);
+    }
+
+    writeNoteContent(content: NoteContent): Observable<void> {
+        const value = NoteFsService.convertContentToValue(content);
+
+        return this.fsService.writeFile(content.fileName, value);
     }
 }

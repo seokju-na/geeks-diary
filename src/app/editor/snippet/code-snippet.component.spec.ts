@@ -274,8 +274,8 @@ describe('app.editor.snippet.EditorCodeSnippetComponent', () => {
             fixture.detectChanges();
 
             const expectedPayload = {
+                snippetId: component.id,
                 content: {
-                    id: component.id,
                     language: 'some-language',
                     fileName: 'some-filename',
                 },

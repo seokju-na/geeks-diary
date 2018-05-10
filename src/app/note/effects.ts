@@ -2,12 +2,16 @@ import { Injectable } from '@angular/core';
 import { Actions, Effect, ofType } from '@ngrx/effects';
 import { Action } from '@ngrx/store';
 import { Observable } from 'rxjs/Observable';
-import { map, switchMap } from 'rxjs/operators';
+import { of } from 'rxjs/observable/of';
+import { catchError, map, switchMap } from 'rxjs/operators';
 import {
     GetNoteCollectionCompleteAction,
     LoadNoteContentAction,
     LoadNoteContentCompleteAction,
     NoteActionTypes,
+    SaveNoteContentAction,
+    SaveNoteContentCompleteAction,
+    SaveNoteContentErrorAction,
     SelectNoteAction,
 } from './actions';
 import { NoteFsService } from './note-fs.service';
@@ -33,8 +37,24 @@ export class NoteEffects {
     loadContent: Observable<Action> = this.actions.pipe(
         ofType(NoteActionTypes.LOAD_NOTE_CONTENT),
         switchMap((action: LoadNoteContentAction) =>
-            this.noteFsService.readNoteContent(action.payload.note.fileName)),
+            this.noteFsService.readNoteContent(action.payload.note.noteFileName)),
         map(content => new LoadNoteContentCompleteAction({ content })),
+    );
+
+    @Effect()
+    saveContent: Observable<Action> = this.actions.pipe(
+        ofType<SaveNoteContentAction>(NoteActionTypes.SAVE_NOTE_CONTENT),
+        map(action => action.payload),
+        switchMap(payload =>
+            this.noteFsService
+                .writeNoteContent(payload.content)
+                .pipe(
+                    map(() => new SaveNoteContentCompleteAction()),
+                    // TODO : Handle save note content error
+                    catchError(error =>
+                        of(new SaveNoteContentErrorAction(error))),
+                ),
+        ),
     );
 
     constructor(

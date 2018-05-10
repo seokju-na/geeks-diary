@@ -51,9 +51,11 @@ export class EditorTextSnippetComponent extends EditorSnippet {
     }
 
     destroy(): void {
-        this._editor.off('keydown', this.keyDownEventListener);
-        this._editor.off('focus', this.focusEventListener);
-        this._editor.off('blur', this.blurEventListener);
+        if (this._editor) {
+            this._editor.off('keydown', this.keyDownEventListener);
+            this._editor.off('focus', this.focusEventListener);
+            this._editor.off('blur', this.blurEventListener);
+        }
     }
 
     getValue(): string {
