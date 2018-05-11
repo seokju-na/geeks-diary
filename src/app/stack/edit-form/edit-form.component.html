@@ -1,0 +1,34 @@
+<div class="StackEditForm">
+    <div class="StackEditForm__stacks">
+        <div *ngFor="let stack of stacks; let i = index"
+             class="StackEditForm__stackItem">
+            <gd-stack-chip *ngIf="stack.icon"
+                           [stack]="stack"
+                           [disabled]="true"></gd-stack-chip>
+            <span gd-text size="small" weight="bold">
+                {{stack.name}}
+            </span>
+            <button aria-label="remove-stack"
+                    (click)="removeStack(i)">
+                <i gd-icon name="times-circle" size="small"></i>
+            </button>
+        </div>
+    </div>
+
+    <div class="StackEditForm__input">
+        <input [formControl]="stackSearch"
+               gdAutocomplete
+               (keyup.enter)="addStack()"
+               [autocomplete]="auto"
+               placeholder="Input stack">
+
+        <gd-autocomplete #auto="gdAutocomplete">
+            <gd-option-item *ngFor="let stack of filteredStacks | async"
+                            [value]="stack.name"
+                            class="StackEditForm__optionItem">
+                <gd-stack-chip [stack]="stack"></gd-stack-chip>
+                <span gd-text>{{stack.name}}</span>
+            </gd-option-item>
+        </gd-autocomplete>
+    </div>
+</div>
