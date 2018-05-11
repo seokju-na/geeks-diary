@@ -1,6 +1,7 @@
 <div gdTooltip
      [message]="stack.name"
      [showDelay]="500"
+     [disabled]="disabled"
      [ngClass]="['StackChip--size-' + size]"
      class="StackChip">
     <img *ngIf="isIconExists()"
