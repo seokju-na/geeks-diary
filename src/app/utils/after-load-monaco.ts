@@ -1,17 +1,12 @@
-import { Observable } from 'rxjs/Observable';
-
-
-export function afterLoadMonaco(): Observable<any> {
+export function afterLoadMonaco(): Promise<any> {
     const targetWindow: any = <any>window;
 
-    return new Observable<any>((observer) => {
+    return new Promise((resolve) => {
         if (targetWindow.MONACO) {
-            observer.next(targetWindow.MONACO);
-            observer.complete();
+            resolve(targetWindow.MONACO);
         } else {
             targetWindow.REGISTER_MONACO_INIT_CALLBACK(() => {
-                observer.next(targetWindow.MONACO);
-                observer.complete();
+                resolve(targetWindow.MONACO);
             });
         }
     });

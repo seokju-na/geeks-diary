@@ -14,10 +14,10 @@ if (environment.config.production) {
     enableProdMode();
 }
 
-afterLoadMonaco().subscribe(() => {
-    platformBrowserDynamic()
-        .bootstrapModule(AppModule)
-        .catch((err) => {
-            console.error(err);
-        });
-});
+afterLoadMonaco()
+    .then(() =>
+        platformBrowserDynamic().bootstrapModule(AppModule),
+    )
+    .catch((err) => {
+        console.error(err);
+    });
