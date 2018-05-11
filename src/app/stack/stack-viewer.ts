@@ -77,6 +77,16 @@ export class StackViewer {
             }
         });
 
+        iconMaps.forEach((iconMap) => {
+            const icon = {
+                iconName: iconMap.name,
+                tags: iconMap.tags,
+                versions: iconMap.versions.svg,
+            };
+
+            stacks.push(new Stack(iconMap.name, icon));
+        });
+
         return stacks;
     }
 }
