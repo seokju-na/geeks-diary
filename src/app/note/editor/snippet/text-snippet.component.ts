@@ -7,21 +7,22 @@ import {
 } from '@angular/core';
 import * as CodeMirror from 'codemirror';
 import 'codemirror/mode/markdown/markdown';
-import { EditorSnippet } from './snippet';
+import { NoteEditorSnippet } from './snippet';
 
 
 @Component({
-    selector: 'gd-editor-text-snippet',
+    selector: 'gd-note-editor-text-snippet',
     templateUrl: './text-snippet.component.html',
     styleUrls: ['./text-snippet.component.less'],
     changeDetection: ChangeDetectionStrategy.OnPush,
     encapsulation: ViewEncapsulation.None,
 })
-export class EditorTextSnippetComponent extends EditorSnippet {
+export class NoteEditorTextSnippetComponent extends NoteEditorSnippet {
     @ViewChild('wrapper') wrapperEl: ElementRef;
     @ViewChild('content') contentEl: ElementRef;
     _editor: CodeMirror.Editor;
 
+    private changeEventListener: any;
     private keyDownEventListener: any;
     private focusEventListener: any;
     private blurEventListener: any;
@@ -32,6 +33,10 @@ export class EditorTextSnippetComponent extends EditorSnippet {
 
     init(): void {
         this._editor = CodeMirror(this.contentEl.nativeElement, this.getEditorOptions());
+
+        this.changeEventListener = () => {
+            this.handleValueChanged(this.getValue());
+        };
 
         this.keyDownEventListener = (_, event: KeyboardEvent) => {
             this.handleKeyDown(event);
@@ -45,6 +50,7 @@ export class EditorTextSnippetComponent extends EditorSnippet {
             this.handleFocus(false);
         };
 
+        this._editor.on('change', this.changeEventListener);
         this._editor.on('keydown', this.keyDownEventListener);
         this._editor.on('focus', this.focusEventListener);
         this._editor.on('blur', this.blurEventListener);
@@ -52,6 +58,7 @@ export class EditorTextSnippetComponent extends EditorSnippet {
 
     destroy(): void {
         if (this._editor) {
+            this._editor.off('change', this.changeEventListener);
             this._editor.off('keydown', this.keyDownEventListener);
             this._editor.off('focus', this.focusEventListener);
             this._editor.off('blur', this.blurEventListener);
@@ -116,7 +123,7 @@ export class EditorTextSnippetComponent extends EditorSnippet {
     protected handleFocus(focused: boolean) {
         super.handleFocus(focused);
 
-        const className = 'EditorTextSnippet--focused';
+        const className = 'NoteEditorTextSnippet--focused';
 
         if (focused) {
             this.wrapperEl.nativeElement.classList.add(className);

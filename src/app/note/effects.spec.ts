@@ -1,7 +1,6 @@
-import { fakeAsync, flush, inject, TestBed } from '@angular/core/testing';
+import { fakeAsync, flush, inject, TestBed, tick } from '@angular/core/testing';
 import { Actions } from '@ngrx/effects';
-import { Action } from '@ngrx/store';
-import { ErrorObservable } from 'rxjs/observable/ErrorObservable';
+import { Action, combineReducers, Store, StoreModule } from '@ngrx/store';
 import { of } from 'rxjs/observable/of';
 import { Subject } from 'rxjs/Subject';
 import { createDummyList } from '../../testing/dummy';
@@ -10,22 +9,23 @@ import {
     GetNoteCollectionAction,
     GetNoteCollectionCompleteAction,
     LoadNoteContentAction,
-    LoadNoteContentCompleteAction,
-    SaveNoteContentAction,
-    SaveNoteContentCompleteAction,
-    SaveNoteContentErrorAction,
-    SelectNoteAction,
+    LoadNoteContentCompleteAction, SaveSelectedNoteAction,
+    SelectNoteAction, UpdateSnippetContentAction, UpdateStacksAction,
 } from './actions';
 import { NoteContentDummyFactory, NoteMetadataDummyFactory } from './dummies';
-import { NoteEffects } from './effects';
+import { NoteEditorService } from './editor/editor.service';
+import { NoteEditorSnippetFactory } from './editor/snippet/snippet-factory';
+import { NoteEditorEffects, NoteFsEffects } from './effects';
 import { NoteFsService } from './note-fs.service';
+import { noteReducerMap, NoteStateWithRoot } from './reducers';
 
 
-describe('app.note.effects.NoteEffects', () => {
-    let noteEffects: NoteEffects;
+describe('app.note.effects.NoteFsEffects', () => {
+    let noteFsEffects: NoteFsEffects;
 
-    let mockActions: MockActions;
     let noteFsService: NoteFsService;
+    let store: Store<NoteStateWithRoot>;
+    let mockActions: MockActions;
 
     let actions: Subject<Action>;
     let callback: jasmine.Spy;
@@ -33,21 +33,26 @@ describe('app.note.effects.NoteEffects', () => {
     beforeEach(() => {
         TestBed
             .configureTestingModule({
-                imports: [],
+                imports: [
+                    StoreModule.forRoot({
+                        note: combineReducers(noteReducerMap),
+                    }),
+                ],
                 providers: [
-                    ...MockFsService.providersForTesting,
                     ...MockActions.providersForTesting,
+                    ...MockFsService.providersForTesting,
                     NoteFsService,
-                    NoteEffects,
+                    NoteFsEffects,
                 ],
             });
     });
 
     beforeEach(inject(
-        [NoteEffects, NoteFsService, Actions],
-        (n: NoteEffects, ns: NoteFsService, a: MockActions) => {
-            noteEffects = n;
-            noteFsService = ns;
+        [NoteFsEffects, NoteFsService, Store, Actions],
+        (nfe: NoteFsEffects, nfs: NoteFsService, s: Store<NoteStateWithRoot>, a: MockActions) => {
+            noteFsEffects = nfe;
+            noteFsService = nfs;
+            store = s;
             mockActions = a;
         },
     ));
@@ -68,7 +73,7 @@ describe('app.note.effects.NoteEffects', () => {
             spyOn(noteFsService, 'readNoteMetadataCollection')
                 .and.returnValue(of(collection));
 
-            noteEffects.getCollection.subscribe(callback);
+            noteFsEffects.getCollection.subscribe(callback);
             actions.next(new GetNoteCollectionAction());
             flush();
 
@@ -86,7 +91,7 @@ describe('app.note.effects.NoteEffects', () => {
 
             const selectedNote = new NoteMetadataDummyFactory().create();
 
-            noteEffects.afterSelectNote.subscribe(callback);
+            noteFsEffects.afterSelectNote.subscribe(callback);
             actions.next(new SelectNoteAction({ selectedNote }));
             flush();
 
@@ -108,7 +113,7 @@ describe('app.note.effects.NoteEffects', () => {
             spyOn(noteFsService, 'readNoteContent')
                 .and.returnValue(of(content));
 
-            noteEffects.loadContent.subscribe(callback);
+            noteFsEffects.loadContent.subscribe(callback);
             actions.next(new LoadNoteContentAction({ note }));
             flush();
 
@@ -117,41 +122,65 @@ describe('app.note.effects.NoteEffects', () => {
             expect(callback).toHaveBeenCalledWith(expected);
         }));
     });
+});
 
-    describe('saveContent', () => {
-        it('should return new \'SAVE_NOTE_CONTENT_COMPLETE\' action, ' +
-            'if the content data is successfully saved in file.', fakeAsync(() => {
 
-            const note = new NoteMetadataDummyFactory().create();
-            const content = new NoteContentDummyFactory().create(note.id);
+describe('app.note.effects.NoteEditorEffects', () => {
+    let noteEditorEffects: NoteEditorEffects;
 
-            spyOn(noteFsService, 'writeNoteContent').and.returnValue(of(null));
+    let noteEditorService: NoteEditorService;
+    let mockActions: MockActions;
 
-            noteEffects.saveContent.subscribe(callback);
-            actions.next(new SaveNoteContentAction({ content }));
-            flush();
+    let actions: Subject<Action>;
+    let callback: jasmine.Spy;
 
-            const expected = new SaveNoteContentCompleteAction();
+    beforeEach(() => {
+        TestBed
+            .configureTestingModule({
+                providers: [
+                    ...MockActions.providersForTesting,
+                    NoteEditorSnippetFactory,
+                    NoteEditorService,
+                    NoteEditorEffects,
+                ],
+            });
+    });
+
+    beforeEach(inject(
+        [NoteEditorEffects, NoteEditorService, Actions],
+        (nee: NoteEditorEffects, nes: NoteEditorService, a: MockActions) => {
+            noteEditorEffects = nee;
+            noteEditorService = nes;
+            mockActions = a;
+        },
+    ));
+
+    beforeEach(() => {
+        actions = new Subject<Action>();
+        callback = jasmine.createSpy('callback');
+
+        mockActions.stream = actions;
+    });
+
+    describe('afterUpdate', () => {
+        it('should return new \'SAVE_SELECTED_NOTE\' action after debounced.', fakeAsync(() => {
+            let action: Action = new UpdateSnippetContentAction({
+                snippetId: 'test-id',
+                patch: {},
+            });
+
+            const expected = new SaveSelectedNoteAction();
+
+            noteEditorEffects.afterUpdate.subscribe(callback);
+            actions.next(action);
+            tick(400);
 
             expect(callback).toHaveBeenCalledWith(expected);
-        }));
 
-        it('should return new \'SAVE_NOTE_CONTENT_ERROR\' action, ' +
-            'if it fails to save the content data to file.', fakeAsync(() => {
+            action = new UpdateStacksAction({ stacks: [] });
 
-            const note = new NoteMetadataDummyFactory().create();
-            const content = new NoteContentDummyFactory().create(note.id);
-
-            const error = 'some error';
-
-            spyOn(noteFsService, 'writeNoteContent')
-                .and.returnValue(ErrorObservable.create(error));
-
-            noteEffects.saveContent.subscribe(callback);
-            actions.next(new SaveNoteContentAction({ content }));
-            flush();
-
-            const expected = new SaveNoteContentErrorAction(error);
+            actions.next(action);
+            tick(400);
 
             expect(callback).toHaveBeenCalledWith(expected);
         }));

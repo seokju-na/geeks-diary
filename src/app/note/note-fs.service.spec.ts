@@ -200,7 +200,7 @@ describe('app.note.NoteFsService', () => {
                     methodName: 'writeFile',
                     args: [
                         metadata.fileName,
-                        NoteFsService.convertMetadataToValue(metadata),
+                        NoteMetadata.convertToFileData(metadata),
                         'utf8',
                     ],
                 })
@@ -221,7 +221,7 @@ describe('app.note.NoteFsService', () => {
                     methodName: 'writeFile',
                     args: [
                         content.fileName,
-                        NoteFsService.convertContentToValue(content),
+                        NoteContent.convertToFileData(content),
                         'utf8',
                     ],
                 })

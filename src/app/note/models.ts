@@ -6,6 +6,27 @@ export class NoteMetadata {
     readonly updatedDatetime: number | null;
     noteFileName?: string;
     fileName?: string;
+
+    static applyPatch(
+        original: NoteMetadata,
+        patch: Partial<NoteMetadata>,
+    ): NoteMetadata {
+
+        return {
+            ...original,
+            ...patch,
+        };
+    }
+
+    static convertToFileData(metadata: NoteMetadata): string {
+        return JSON.stringify({
+            id: metadata.id,
+            title: metadata.title,
+            stacks: metadata.stacks,
+            createdDatetime: metadata.createdDatetime,
+            updatedDatetime: metadata.updatedDatetime,
+        });
+    }
 }
 
 
@@ -27,9 +48,30 @@ export class NoteContentSnippet {
 export class NoteContent {
     readonly noteId: string;
     readonly title: string;
+    readonly stacks: string[];
     readonly snippets: NoteContentSnippet[];
     noteFileName?: string;
     fileName?: string;
+
+    static applyPatch(
+        original: NoteContent,
+        patch: Partial<NoteContent>,
+    ): NoteContent {
+
+        return {
+            ...original,
+            ...patch,
+        };
+    }
+
+    static convertToFileData(content: NoteContent): string {
+        return JSON.stringify({
+            noteId: content.noteId,
+            title: content.title,
+            stacks: content.stacks,
+            snippets: content.snippets,
+        });
+    }
 }
 
 
@@ -49,4 +91,11 @@ export enum NoteFinderSortTypes {
 export enum NoteFinderSortDirection {
     ASC = 'ASC',
     DESC = 'DESC',
+}
+
+
+export enum NoteEditorViewModes {
+    SHOW_BOTH = 'SHOW_BOTH',
+    EDITOR_ONLY = 'EDITOR_ONLY',
+    PREVIEW_ONLY = 'PREVIEW_ONLY',
 }

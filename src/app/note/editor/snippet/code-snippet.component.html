@@ -1,9 +1,9 @@
-<div #wrapper class="EditorCodeSnippet">
+<div #wrapper class="NoteEditorCodeSnippet">
     <header [ngSwitch]="mode"
-            class="EditorCodeSnippet__header">
+            class="NoteEditorCodeSnippet__header">
 
         <div *ngSwitchCase="'edit'"
-             class="EditorCodeSnippet__stackIcon">
+             class="NoteEditorCodeSnippet__stackIcon">
             <gd-stack-chip *ngIf="canDisplayLanguageStackIcon()"
                            [stack]="languageStack"></gd-stack-chip>
         </div>
@@ -12,14 +12,14 @@
             gd-text
             size="regular"
             weight="bold"
-            class="EditorCodeSnippet__title">
+            class="NoteEditorCodeSnippet__title">
             {{_config.fileName}}
         </h1>
 
         <form *ngSwitchCase="'setting'"
               (ngSubmit)="submitSetting()"
               [formGroup]="settingForm"
-              class="EditorCodeSnippet__settingForm">
+              class="NoteEditorCodeSnippet__settingForm">
             <gd-form-field>
                 <label gd-text size="small">Language :</label>
                 <input gdFormFieldControl
@@ -31,7 +31,7 @@
                 <gd-autocomplete #auto="gdAutocomplete">
                     <gd-option-item *ngFor="let stack of filteredStacks | async"
                                     [value]="stack.name"
-                                    class="EditorCodeSnippet__optionItem">
+                                    class="NoteEditorCodeSnippet__optionItem">
                         <gd-stack-chip [stack]="stack"></gd-stack-chip>
                         <span gd-text>{{stack.name}}</span>
                     </gd-option-item>
@@ -45,7 +45,7 @@
                        name="fileName">
             </gd-form-field>
 
-            <div class="EditorCodeSnippet__formButtonGroup">
+            <div class="NoteEditorCodeSnippet__formButtonGroup">
                 <button gd-button
                         size="small"
                         aria-label="save-button"
@@ -72,13 +72,13 @@
                 size="small"
                 buttonType="flat"
                 aria-label="setting-button"
-                class="EditorCodeSnippet__settingButton"
+                class="NoteEditorCodeSnippet__settingButton"
                 type="button">
             <i gd-icon name="cog"></i>
         </button>
     </header>
 
-    <div class="EditorCodeSnippet__contentWrapper">
-        <div #content class="EditorCodeSnippet__content"></div>
+    <div class="NoteEditorCodeSnippet__contentWrapper">
+        <div #content class="NoteEditorCodeSnippet__content"></div>
     </div>
 </div>

@@ -1,14 +1,14 @@
 import { Injectable } from '@angular/core';
-import { NoteContent, NoteContentSnippet } from '../note/models';
-import { EditorSnippetRef } from './snippet/snippet';
-import { EditorSnippetFactory } from './snippet/snippet-factory';
+import { NoteContent, NoteContentSnippet } from '../models';
+import { NoteEditorSnippetRef } from './snippet/snippet';
+import { NoteEditorSnippetFactory } from './snippet/snippet-factory';
 
 
 @Injectable()
-export class EditorService {
-    snippetRefs: EditorSnippetRef[] = [];
+export class NoteEditorService {
+    snippetRefs: NoteEditorSnippetRef[] = [];
 
-    constructor(private snippetFactory: EditorSnippetFactory) {
+    constructor(private snippetFactory: NoteEditorSnippetFactory) {
     }
 
     initFromNoteContent(content: NoteContent): void {
@@ -34,7 +34,7 @@ export class EditorService {
         );
     }
 
-    getSnippetRef(snippetId: string): EditorSnippetRef | null {
+    getSnippetRef(snippetId: string): NoteEditorSnippetRef | null {
         return this.snippetRefs.find(ref => ref.id === snippetId) || null;
     }
 

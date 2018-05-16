@@ -87,6 +87,7 @@ export class NoteContentDummyFactory implements DummyFactory<NoteContent> {
         return {
             noteId,
             title: this.title.create(),
+            stacks: [],
             snippets,
         };
     }

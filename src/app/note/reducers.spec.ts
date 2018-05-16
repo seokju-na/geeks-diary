@@ -2,12 +2,17 @@ import { datetime } from '../../common/datetime';
 import { createDummyList } from '../../testing/dummy';
 import {
     ChangeDateFilterAction,
-    GetNoteCollectionCompleteAction,
-    SelectNoteAction,
+    GetNoteCollectionCompleteAction, InitEditorAction, RemoveSnippetAction,
+    SelectNoteAction, UpdateSnippetContentAction, UpdateStacksAction,
 } from './actions';
-import { NoteMetadataDummyFactory } from './dummies';
-import { NoteFinderDateFilterTypes } from './models';
-import { noteCollectionReducer, noteFinderReducer } from './reducers';
+import { NoteContentDummyFactory, NoteMetadataDummyFactory } from './dummies';
+import { NoteContent, NoteFinderDateFilterTypes } from './models';
+import {
+    noteCollectionReducer,
+    noteEditorReducer,
+    NoteEditorState,
+    noteFinderReducer,
+} from './reducers';
 
 
 describe('app.note.reducers.noteCollectionReducer', () => {
@@ -66,6 +71,121 @@ describe('app.note.reducers.noteFinderReducer', () => {
 
             expect(datetime.isSameDay(dateFilter, state.dateFilter)).toBe(true);
             expect(state.dateFilterBy).toEqual(NoteFinderDateFilterTypes.MONTH);
+        });
+    });
+});
+
+
+describe('app.note.reducers.noteEditorReducer', () => {
+    describe('INIT_EDITOR', () => {
+        it('should loaded value to be true.', () => {
+            const content = new NoteContentDummyFactory().create();
+            const action = new InitEditorAction({ content });
+
+            const state = noteEditorReducer(undefined, action);
+
+            expect(state.loaded).toBe(true);
+        });
+
+        it('should set selected note content from payload.', () => {
+            const content = new NoteContentDummyFactory().create();
+            const action = new InitEditorAction({ content });
+
+            const state = noteEditorReducer(undefined, action);
+
+            expect(state.selectedNoteContent).toEqual(content);
+        });
+    });
+
+    describe('REMOVE_SNIPPET', () => {
+        let content: NoteContent;
+        let beforeState: NoteEditorState;
+
+        beforeEach(() => {
+            content = new NoteContentDummyFactory().create();
+        });
+
+        it('should not remove snippet, if number of snippets is 1.', () => {
+            content.snippets.splice(1, content.snippets.length - 1);
+            beforeState = noteEditorReducer(
+                undefined,
+                new InitEditorAction({ content }),
+            );
+
+            const snippetId = content.snippets[0].id;
+            const action = new RemoveSnippetAction({ snippetId });
+
+            const state = noteEditorReducer(beforeState, action);
+            const indexOfTarget = state.selectedNoteContent.snippets.findIndex(
+                snippet => snippet.id === snippetId);
+
+            expect(indexOfTarget).not.toEqual(-1);
+        });
+
+        it('should remove snippet.', () => {
+            beforeState = noteEditorReducer(
+                undefined,
+                new InitEditorAction({ content }),
+            );
+
+            const snippetId = content.snippets[1].id;
+            const action = new RemoveSnippetAction({ snippetId });
+
+            const state = noteEditorReducer(beforeState, action);
+            const indexOfTarget = state.selectedNoteContent.snippets.findIndex(
+                snippet => snippet.id === snippetId);
+
+            expect(indexOfTarget).toEqual(-1);
+        });
+    });
+
+    describe('UPDATE_SNIPPET_CONTENT', () => {
+        let content: NoteContent;
+        let beforeState: NoteEditorState;
+
+        beforeEach(() => {
+            content = new NoteContentDummyFactory().create();
+            beforeState = noteEditorReducer(
+                undefined,
+                new InitEditorAction({ content }),
+            );
+        });
+
+        it('should update snippet.', () => {
+            const snippetId = content.snippets[0].id;
+            const patch = { value: 'new value' };
+
+            const action = new UpdateSnippetContentAction({
+                snippetId, patch,
+            });
+            const state = noteEditorReducer(beforeState, action);
+
+            expect(state.selectedNoteContent.snippets[0])
+                .toEqual({
+                    ...content.snippets[0],
+                    ...patch,
+                });
+        });
+    });
+
+    describe('UPDATE_STACKS', () => {
+        let content: NoteContent;
+        let beforeState: NoteEditorState;
+
+        beforeEach(() => {
+            content = new NoteContentDummyFactory().create();
+            beforeState = noteEditorReducer(
+                undefined,
+                new InitEditorAction({ content }),
+            );
+        });
+
+        it('should update stacks.', () => {
+            const newStacks = ['stack1', 'stack2'];
+            const action = new UpdateStacksAction({ stacks: newStacks });
+            const state = noteEditorReducer(beforeState, action);
+
+            expect(state.selectedNoteContent.stacks).toEqual(newStacks);
         });
     });
 });

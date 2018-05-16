@@ -3,6 +3,8 @@ import { datetime } from '../../common/datetime';
 import { AppState } from '../app-reducers';
 import { NoteActions, NoteActionTypes } from './actions';
 import {
+    NoteContent,
+    NoteContentSnippet,
     NoteFinderDateFilterTypes,
     NoteFinderSortDirection,
     NoteFinderSortTypes,
@@ -10,6 +12,7 @@ import {
 } from './models';
 
 
+// State interfaces
 export interface NoteCollectionState {
     loaded: boolean;
     notes: NoteMetadata[];
@@ -25,9 +28,16 @@ export interface NoteFinderState {
 }
 
 
+export interface NoteEditorState {
+    loaded: boolean;
+    selectedNoteContent: NoteContent | null;
+}
+
+
 export interface NoteStateForFeature {
     collection: NoteCollectionState;
     finder: NoteFinderState;
+    editor: NoteEditorState;
 }
 
 
@@ -36,6 +46,7 @@ export interface NoteStateWithRoot extends AppState {
 }
 
 
+// Initial states
 export function createInitialNoteCollectionState(): NoteCollectionState {
     return {
         loaded: false,
@@ -55,6 +66,15 @@ export function createInitialNoteFinderState(): NoteFinderState {
 }
 
 
+export function createInitialNoteEditorState(): NoteEditorState {
+    return {
+        loaded: false,
+        selectedNoteContent: null,
+    };
+}
+
+
+// Reducers
 export function noteCollectionReducer(
     state = createInitialNoteCollectionState(),
     action: NoteActions,
@@ -74,11 +94,32 @@ export function noteCollectionReducer(
                 selectedNote: action.payload.selectedNote,
             };
 
+        case NoteActionTypes.UPDATE_STACKS:
+            if (!state.loaded) {
+                return state;
+            }
+
+            const selectedNoteId = state.selectedNote.id;
+            const index = state.notes.findIndex(note => note.id === selectedNoteId);
+
+            state.notes[index] = {
+                ...state.notes[index],
+                stacks: [...action.payload.stacks],
+            };
+
+            return {
+                ...state,
+                notes: [...state.notes],
+                selectedNote: {
+                    ...state.selectedNote,
+                    stacks: [...action.payload.stacks],
+                },
+            };
+
         default:
             return state;
     }
 }
-
 
 
 export function noteFinderReducer(
@@ -100,7 +141,122 @@ export function noteFinderReducer(
 }
 
 
+export function noteEditorReducer(
+    state = createInitialNoteEditorState(),
+    action: NoteActions,
+): NoteEditorState {
+
+    switch (action.type) {
+        case NoteActionTypes.INIT_EDITOR:
+            return {
+                ...state,
+                loaded: true,
+                selectedNoteContent: { ...action.payload.content },
+            };
+
+        case NoteActionTypes.REMOVE_SNIPPET:
+            return noteEditorStateAdapter(state).removeSnippet(action.payload.snippetId);
+
+        case NoteActionTypes.UPDATE_SNIPPET_CONTENT:
+            return noteEditorStateAdapter(state).updateSnippet(
+                action.payload.snippetId,
+                action.payload.patch,
+            );
+
+        case NoteActionTypes.UPDATE_STACKS:
+            if (!state.loaded) {
+                return state;
+            }
+
+            return {
+                ...state,
+                selectedNoteContent: {
+                    ...state.selectedNoteContent,
+                    stacks: [...action.payload.stacks],
+                },
+            };
+
+        default:
+            return state;
+    }
+}
+
+
+// State adapters
+class NoteEditorStateAdapter {
+    constructor(readonly state: NoteEditorState) {
+    }
+
+    removeSnippet(snippetId: string): NoteEditorState {
+        const index = this.indexOfSnippet(snippetId);
+
+        if (index !== -1 && this.getSnippetsCount() > 1) {
+            this.state.selectedNoteContent.snippets.splice(index, 1);
+
+            return this.getSnippetsUpdated();
+        }
+
+        return this.state;
+    }
+
+    updateSnippet(
+        snippetId: string,
+        patch: Partial<NoteContentSnippet>,
+    ): NoteEditorState {
+
+        const index = this.indexOfSnippet(snippetId);
+
+        if (index !== -1) {
+            const snippet = this.state.selectedNoteContent.snippets[index];
+
+            this.state.selectedNoteContent.snippets[index] = {
+                ...snippet,
+                ...patch,
+            };
+
+            return this.getSnippetsUpdated();
+        }
+
+        return this.state;
+    }
+
+    private indexOfSnippet(snippetId: string): number {
+        if (!this.state.loaded) {
+            return -1;
+        }
+
+        return this.state.selectedNoteContent.snippets.findIndex(
+            snippet => snippet.id === snippetId);
+    }
+
+    private getSnippetsCount(): number {
+        if (!this.state.loaded) {
+            return 0;
+        }
+
+        return this.state.selectedNoteContent.snippets.length;
+    }
+
+    private getSnippetsUpdated(): NoteEditorState {
+        return {
+            ...this.state,
+            selectedNoteContent: {
+                ...this.state.selectedNoteContent,
+                snippets: [...this.state.selectedNoteContent.snippets],
+            },
+        };
+    }
+}
+
+
+export function noteEditorStateAdapter(state: NoteEditorState): NoteEditorStateAdapter {
+    return new NoteEditorStateAdapter(state);
+}
+
+
+// Reducer map
 export const noteReducerMap: ActionReducerMap<NoteStateForFeature> = {
     collection: noteCollectionReducer,
     finder: noteFinderReducer,
+    editor: noteEditorReducer,
 };

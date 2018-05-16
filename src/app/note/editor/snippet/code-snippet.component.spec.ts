@@ -2,44 +2,44 @@ import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { combineReducers, Store, StoreModule } from '@ngrx/store';
-import { KeyCodes } from '../../../common/key-codes';
-import { dispatchKeyboardEvent, typeInElement } from '../../../testing/fake-event';
-import { MonacoService } from '../../core/monaco.service';
-import { SharedModule } from '../../shared/shared.module';
-import { StackChipComponent } from '../../stack/chip/chip.component';
-import { StackViewer } from '../../stack/stack-viewer';
+import { KeyCodes } from '../../../../common/key-codes';
+import { dispatchKeyboardEvent, typeInElement } from '../../../../testing/fake-event';
+import { MonacoService } from '../../../core/monaco.service';
+import { SharedModule } from '../../../shared/shared.module';
+import { StackChipComponent } from '../../../stack/chip/chip.component';
+import { StackViewer } from '../../../stack/stack-viewer';
 import {
     MoveFocusToNextSnippetAction,
     MoveFocusToPreviousSnippetAction,
     RemoveSnippetAction,
     UpdateSnippetContentAction,
-} from '../actions';
-import { editorReducerMap, EditorStateForFeature } from '../reducers';
-import { EditorCodeSnippetComponent } from './code-snippet.component';
+} from '../../actions';
+import { noteReducerMap, NoteStateWithRoot } from '../../reducers';
+import { NoteEditorCodeSnippetComponent } from './code-snippet.component';
 import {
-    EDITOR_SNIPPET_CONFIG,
-    EDITOR_SNIPPET_REF,
-    EditorSnippetConfig,
-    EditorSnippetRef,
+    NOTE_EDITOR_SNIPPET_CONFIG,
+    NOTE_EDITOR_SNIPPET_REF,
+    NoteEditorSnippetConfig,
+    NoteEditorSnippetRef,
 } from './snippet';
 
 
-describe('app.editor.snippet.EditorCodeSnippetComponent', () => {
-    let fixture: ComponentFixture<EditorCodeSnippetComponent>;
-    let component: EditorCodeSnippetComponent;
+describe('app.note.editor.snippet.EditorCodeSnippetComponent', () => {
+    let fixture: ComponentFixture<NoteEditorCodeSnippetComponent>;
+    let component: NoteEditorCodeSnippetComponent;
 
-    let ref: EditorSnippetRef;
-    let config: EditorSnippetConfig;
+    let ref: NoteEditorSnippetRef;
+    let config: NoteEditorSnippetConfig;
 
-    let store: Store<EditorStateForFeature>;
+    let store: Store<NoteStateWithRoot>;
 
     const getInputField = (): HTMLTextAreaElement =>
         document.querySelector('.monaco-editor .inputarea');
 
-    const overwriteConfig = (newConfig: Partial<EditorSnippetConfig>) => {
+    const overwriteConfig = (newConfig: Partial<NoteEditorSnippetConfig>) => {
         const overwrittenConfig = { ...config, ...newConfig };
 
-        TestBed.overrideProvider(EDITOR_SNIPPET_CONFIG, {
+        TestBed.overrideProvider(NOTE_EDITOR_SNIPPET_CONFIG, {
             useValue: overwrittenConfig,
         });
     };
@@ -50,30 +50,30 @@ describe('app.editor.snippet.EditorCodeSnippetComponent', () => {
                 SharedModule,
                 NoopAnimationsModule,
                 StoreModule.forRoot({
-                    editor: combineReducers(editorReducerMap),
+                    note: combineReducers(noteReducerMap),
                 }),
             ],
             providers: [
                 MonacoService,
                 StackViewer,
-                { provide: EDITOR_SNIPPET_REF, useValue: ref },
-                { provide: EDITOR_SNIPPET_CONFIG, useValue: config },
+                { provide: NOTE_EDITOR_SNIPPET_REF, useValue: ref },
+                { provide: NOTE_EDITOR_SNIPPET_CONFIG, useValue: config },
             ],
             declarations: [
                 StackChipComponent,
-                EditorCodeSnippetComponent,
+                NoteEditorCodeSnippetComponent,
             ],
         })
         .compileComponents();
 
     const createFixture = () => {
-        fixture = TestBed.createComponent(EditorCodeSnippetComponent);
+        fixture = TestBed.createComponent(NoteEditorCodeSnippetComponent);
         component = fixture.componentInstance;
         fixture.detectChanges();
     };
 
     beforeEach(() => {
-        ref = new EditorSnippetRef('noteId');
+        ref = new NoteEditorSnippetRef('noteId');
         config = {
             initialValue: 'initial value',
             language: 'javascript',
@@ -243,7 +243,7 @@ describe('app.editor.snippet.EditorCodeSnippetComponent', () => {
             createFixture();
 
             const settingForm = fixture.debugElement.query(
-                By.css('form.EditorCodeSnippet__settingForm'));
+                By.css('form.NoteEditorCodeSnippet__settingForm'));
 
             expect(component.mode).toEqual('setting');
             expect(settingForm).not.toBeNull();
@@ -275,7 +275,7 @@ describe('app.editor.snippet.EditorCodeSnippetComponent', () => {
 
             const expectedPayload = {
                 snippetId: component.id,
-                content: {
+                patch: {
                     language: 'some-language',
                     fileName: 'some-filename',
                 },

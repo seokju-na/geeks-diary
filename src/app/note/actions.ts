@@ -1,5 +1,5 @@
 import { Action } from '@ngrx/store';
-import { NoteContent, NoteFinderDateFilterTypes, NoteMetadata } from './models';
+import { NoteContent, NoteContentSnippet, NoteFinderDateFilterTypes, NoteMetadata } from './models';
 
 
 export enum NoteActionTypes {
@@ -8,13 +8,17 @@ export enum NoteActionTypes {
     SAVE_NOTE = '[Note] Save note',
     SAVE_NOTE_COMPLETE = '[Note] Save note complete',
     SAVE_NOTE_ERROR = '[Note] Save note error',
-    SAVE_NOTE_CONTENT = '[Note] Save note content',
-    SAVE_NOTE_CONTENT_COMPLETE = '[Note] Save note content complete',
-    SAVE_NOTE_CONTENT_ERROR = '[Note] Save note content error',
     CHANGE_DATE_FILTER = '[Note] Change date filter',
     SELECT_NOTE = '[Note] Select note',
     LOAD_NOTE_CONTENT = '[Note] Load note content',
     LOAD_NOTE_CONTENT_COMPLETE = '[Note] Load note content complete',
+    INIT_EDITOR = '[Note] Init editor',
+    MOVE_FOCUS_TO_PREVIOUS_SNIPPET = '[Note] Move focus to previous snippet',
+    MOVE_FOCUS_TO_NEXT_SNIPPET = '[Note] Move focus to next snippet',
+    REMOVE_SNIPPET = '[Note] Remove snippet',
+    INSERT_SWITCHED_SNIPPET = '[Note] Insert switched snippet',
+    UPDATE_SNIPPET_CONTENT = '[Note] Update snippet content',
+    UPDATE_STACKS = '[Note] Update stacks',
 }
 
 
@@ -65,23 +69,76 @@ export class LoadNoteContentCompleteAction implements Action {
 }
 
 
-export class SaveNoteContentAction implements Action {
-    readonly type = NoteActionTypes.SAVE_NOTE_CONTENT;
+export class SaveSelectedNoteAction implements Action {
+    readonly type = NoteActionTypes.SAVE_NOTE;
+}
+
+
+export class SaveSelectedNoteCompleteAction implements Action {
+    readonly type = NoteActionTypes.SAVE_NOTE_COMPLETE;
+}
+
+
+export class SaveSelectedNoteErrorAction implements Action {
+    readonly type = NoteActionTypes.SAVE_NOTE_ERROR;
+
+    constructor(readonly error?: any) {
+    }
+}
+
+
+export class InitEditorAction implements Action {
+    readonly type = NoteActionTypes.INIT_EDITOR;
 
     constructor(readonly payload: { content: NoteContent }) {
     }
 }
 
 
-export class SaveNoteContentCompleteAction implements Action {
-    readonly type = NoteActionTypes.SAVE_NOTE_CONTENT_COMPLETE;
+export class MoveFocusToPreviousSnippetAction implements Action {
+    readonly type = NoteActionTypes.MOVE_FOCUS_TO_PREVIOUS_SNIPPET;
+
+    constructor(readonly payload: { snippetId: string }) {
+    }
 }
 
 
-export class SaveNoteContentErrorAction implements Action {
-    readonly type = NoteActionTypes.SAVE_NOTE_CONTENT_ERROR;
+export class MoveFocusToNextSnippetAction implements Action {
+    readonly type = NoteActionTypes.MOVE_FOCUS_TO_NEXT_SNIPPET;
 
-    constructor(readonly error?: any) {
+    constructor(readonly payload: { snippetId: string }) {
+    }
+}
+
+
+export class RemoveSnippetAction implements Action {
+    readonly type = NoteActionTypes.REMOVE_SNIPPET;
+
+    constructor(readonly payload: { snippetId: string }) {
+    }
+}
+
+
+export class InsertSwitchedSnippetAction implements Action {
+    readonly type = NoteActionTypes.INSERT_SWITCHED_SNIPPET;
+}
+
+
+export class UpdateSnippetContentAction implements Action {
+    readonly type = NoteActionTypes.UPDATE_SNIPPET_CONTENT;
+
+    constructor(readonly payload: {
+        snippetId: string,
+        patch: Partial<NoteContentSnippet>,
+    }) {
+    }
+}
+
+
+export class UpdateStacksAction implements Action {
+    readonly type = NoteActionTypes.UPDATE_STACKS;
+
+    constructor(readonly payload: { stacks: string[] }) {
     }
 }
 
@@ -93,5 +150,13 @@ export type NoteActions =
     | SelectNoteAction
     | LoadNoteContentAction
     | LoadNoteContentCompleteAction
-    | SaveNoteContentAction
-    | SaveNoteContentCompleteAction;
+    | SaveSelectedNoteAction
+    | SaveSelectedNoteCompleteAction
+    | SaveSelectedNoteErrorAction
+    | InitEditorAction
+    | MoveFocusToPreviousSnippetAction
+    | MoveFocusToNextSnippetAction
+    | RemoveSnippetAction
+    | InsertSwitchedSnippetAction
+    | UpdateSnippetContentAction
+    | UpdateStacksAction;

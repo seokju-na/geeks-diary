@@ -9,21 +9,21 @@ import {
 } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { Observable } from 'rxjs/Observable';
-import { MonacoService } from '../../core/monaco.service';
-import { Stack } from '../../stack/models';
-import { StackViewer } from '../../stack/stack-viewer';
-import { UpdateSnippetContentAction } from '../actions';
-import { EditorSnippet } from './snippet';
+import { MonacoService } from '../../../core/monaco.service';
+import { Stack } from '../../../stack/models';
+import { StackViewer } from '../../../stack/stack-viewer';
+import { UpdateSnippetContentAction } from '../../actions';
+import { NoteEditorSnippet } from './snippet';
 
 
 @Component({
-    selector: 'gd-editor-code-snippet',
+    selector: 'gd-note-editor-code-snippet',
     templateUrl: './code-snippet.component.html',
     styleUrls: ['./code-snippet.component.less'],
     changeDetection: ChangeDetectionStrategy.OnPush,
     encapsulation: ViewEncapsulation.None,
 })
-export class EditorCodeSnippetComponent extends EditorSnippet implements OnInit {
+export class NoteEditorCodeSnippetComponent extends NoteEditorSnippet implements OnInit {
     settingForm = new FormGroup({
         language: new FormControl('', [Validators.required]),
         fileName: new FormControl('', [Validators.required]),
@@ -73,9 +73,7 @@ export class EditorCodeSnippetComponent extends EditorSnippet implements OnInit 
         });
 
         this._editor.onDidChangeModelContent(() => {
-            const value = this._editor.getModel().getValue();
-
-            this.handleValueChanged(value);
+            this.handleValueChanged(this.getValue());
             this.layoutHeight();
         });
 
@@ -197,7 +195,7 @@ export class EditorCodeSnippetComponent extends EditorSnippet implements OnInit 
 
         this.store.dispatch(new UpdateSnippetContentAction({
             snippetId: this.id,
-            content: {
+            patch: {
                 language: this._config.language,
                 fileName: this._config.fileName,
             },
@@ -234,7 +232,7 @@ export class EditorCodeSnippetComponent extends EditorSnippet implements OnInit 
     protected handleFocus(focused: boolean) {
         super.handleFocus(focused);
 
-        const className = 'EditorCodeSnippet--focused';
+        const className = 'NoteEditorCodeSnippet--focused';
 
         if (focused) {
             this.wrapperEl.nativeElement.classList.add(className);

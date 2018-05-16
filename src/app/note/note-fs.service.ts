@@ -23,24 +23,6 @@ export class NoteFsService {
         return `${createdAt}-${title}.gd`;
     }
 
-    static convertMetadataToValue(metadata: NoteMetadata): string {
-        return JSON.stringify({
-            id: metadata.id,
-            title: metadata.title,
-            stacks: metadata.stacks,
-            createdDatetime: metadata.createdDatetime,
-            updatedDatetime: metadata.updatedDatetime,
-        });
-    }
-
-    static convertContentToValue(content: NoteContent): string {
-        return JSON.stringify({
-            noteId: content.noteId,
-            title: content.title,
-            snippets: content.snippets,
-        });
-    }
-
     readonly workspacePath: string;
     readonly noteStoragePath: string;
 
@@ -103,13 +85,13 @@ export class NoteFsService {
     }
 
     writeNoteMetadata(metadata: NoteMetadata): Observable<void> {
-        const value = NoteFsService.convertMetadataToValue(metadata);
+        const value = NoteMetadata.convertToFileData(metadata);
 
         return this.fsService.writeFile(metadata.fileName, value);
     }
 
     writeNoteContent(content: NoteContent): Observable<void> {
-        const value = NoteFsService.convertContentToValue(content);
+        const value = NoteContent.convertToFileData(content);
 
         return this.fsService.writeFile(content.fileName, value);
     }

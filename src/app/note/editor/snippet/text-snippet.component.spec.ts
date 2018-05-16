@@ -1,48 +1,48 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { combineReducers, Store, StoreModule } from '@ngrx/store';
-import { KeyCodes } from '../../../common/key-codes';
-import { dispatchKeyboardEvent } from '../../../testing/fake-event';
-import { SharedModule } from '../../shared/shared.module';
+import { KeyCodes } from '../../../../common/key-codes';
+import { dispatchKeyboardEvent } from '../../../../testing/fake-event';
+import { SharedModule } from '../../../shared/shared.module';
 import {
     MoveFocusToNextSnippetAction,
     MoveFocusToPreviousSnippetAction,
     RemoveSnippetAction,
-} from '../actions';
-import { editorReducerMap, EditorState } from '../reducers';
+} from '../../actions';
+import { noteReducerMap, NoteStateWithRoot } from '../../reducers';
 import {
-    EDITOR_SNIPPET_CONFIG,
-    EDITOR_SNIPPET_REF,
-    EditorSnippetConfig,
-    EditorSnippetRef,
+    NOTE_EDITOR_SNIPPET_CONFIG,
+    NOTE_EDITOR_SNIPPET_REF,
+    NoteEditorSnippetConfig,
+    NoteEditorSnippetRef,
 } from './snippet';
-import { EditorTextSnippetComponent } from './text-snippet.component';
+import { NoteEditorTextSnippetComponent } from './text-snippet.component';
 
 
-describe('app.editor.snippet.EditorTextSnippetComponent', () => {
-    let fixture: ComponentFixture<EditorTextSnippetComponent>;
-    let component: EditorTextSnippetComponent;
+describe('app.note.editor.snippet.EditorTextSnippetComponent', () => {
+    let fixture: ComponentFixture<NoteEditorTextSnippetComponent>;
+    let component: NoteEditorTextSnippetComponent;
 
-    let ref: EditorSnippetRef;
-    let config: EditorSnippetConfig;
+    let ref: NoteEditorSnippetRef;
+    let config: NoteEditorSnippetConfig;
 
-    let store: Store<EditorState>;
+    let store: Store<NoteStateWithRoot>;
 
-    const overrideConfig = (newConfig: Partial<EditorSnippetConfig>) => {
+    const overrideConfig = (newConfig: Partial<NoteEditorSnippetConfig>) => {
         config = { ...config, ...newConfig };
 
-        TestBed.overrideProvider(EDITOR_SNIPPET_CONFIG, {
+        TestBed.overrideProvider(NOTE_EDITOR_SNIPPET_CONFIG, {
             useValue: newConfig,
         });
     };
 
     const createFixture = () => {
-        fixture = TestBed.createComponent(EditorTextSnippetComponent);
+        fixture = TestBed.createComponent(NoteEditorTextSnippetComponent);
         component = fixture.componentInstance;
         fixture.detectChanges();
     };
 
     beforeEach(() => {
-        ref = new EditorSnippetRef('noteId');
+        ref = new NoteEditorSnippetRef('noteId');
         config = {
             initialValue: 'initial value',
             isNewSnippet: false,
@@ -55,14 +55,14 @@ describe('app.editor.snippet.EditorTextSnippetComponent', () => {
                 imports: [
                     SharedModule,
                     StoreModule.forRoot({
-                        editor: combineReducers(editorReducerMap),
+                        note: combineReducers(noteReducerMap),
                     }),
                 ],
                 providers: [
-                    { provide: EDITOR_SNIPPET_REF, useValue: ref },
-                    { provide: EDITOR_SNIPPET_CONFIG, useValue: config },
+                    { provide: NOTE_EDITOR_SNIPPET_REF, useValue: ref },
+                    { provide: NOTE_EDITOR_SNIPPET_CONFIG, useValue: config },
                 ],
-                declarations: [EditorTextSnippetComponent],
+                declarations: [NoteEditorTextSnippetComponent],
             })
             .compileComponents();
     }));
@@ -110,7 +110,7 @@ describe('app.editor.snippet.EditorTextSnippetComponent', () => {
 
     describe('setPositionToTop(): void', () => {
         it('should cursor located at first line.', () => {
-            overrideConfig({ initialValue: 'Some long\nparagraph'});
+            overrideConfig({ initialValue: 'Some long\nparagraph' });
             createFixture();
 
             component._editor.getDoc().setCursor({ line: 1, ch: 0 });
@@ -123,7 +123,7 @@ describe('app.editor.snippet.EditorTextSnippetComponent', () => {
 
     describe('setPositionToBottom(): void', () => {
         it('should cursor located at last line.', () => {
-            overrideConfig({ initialValue: 'Some long\nparagraph'});
+            overrideConfig({ initialValue: 'Some long\nparagraph' });
             createFixture();
 
             expect(component.isCurrentPositionBottom()).toBe(false);

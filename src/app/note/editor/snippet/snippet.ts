@@ -8,30 +8,30 @@ import {
     Type,
 } from '@angular/core';
 import { Store } from '@ngrx/store';
-import { KeyCodes } from '../../../common/key-codes';
+import { KeyCodes } from '../../../../common/key-codes';
 import {
-    DidSnippetBlurAction,
-    DidSnippetFocusAction,
-    EditorActions,
     MoveFocusToNextSnippetAction,
     MoveFocusToPreviousSnippetAction,
     RemoveSnippetAction,
     UpdateSnippetContentAction,
-} from '../actions';
-import { EditorState } from '../reducers';
+} from '../../actions';
+import { NoteStateWithRoot } from '../../reducers';
 
 
-export interface EditorSnippetOutlet {
+export interface NoteEditorSnippetOutlet {
     component: Type<any>;
     injector: Injector;
 }
 
 
-export const EDITOR_SNIPPET_REF = new InjectionToken<EditorSnippetRef>('EditorSnippetRef');
-export const EDITOR_SNIPPET_CONFIG = new InjectionToken<EditorSnippetConfig>('EditorSnippetConfig');
+export const NOTE_EDITOR_SNIPPET_REF =
+    new InjectionToken<NoteEditorSnippetRef>('NoteEditorSnippetRef');
+
+export const NOTE_EDITOR_SNIPPET_CONFIG =
+    new InjectionToken<NoteEditorSnippetConfig>('NoteEditorSnippetConfig');
 
 
-export class EditorSnippetConfig {
+export class NoteEditorSnippetConfig {
     initialValue = '';
     language?: string;
     fileName?: string;
@@ -39,27 +39,27 @@ export class EditorSnippetConfig {
 }
 
 
-export class EditorSnippetRef {
-    outlet: EditorSnippetOutlet;
-    instance: EditorSnippet;
+export class NoteEditorSnippetRef {
+    outlet: NoteEditorSnippetOutlet;
+    instance: NoteEditorSnippet;
 
     constructor(readonly id: string) {
     }
 
-    setOutlet(component: Type<EditorSnippet>, injector: Injector): void {
+    setOutlet(component: Type<NoteEditorSnippet>, injector: Injector): void {
         this.outlet = { component, injector };
     }
 
-    setInstance(instance: EditorSnippet): void {
+    setInstance(instance: NoteEditorSnippet): void {
         this.instance = instance;
     }
 }
 
 
-export abstract class EditorSnippet implements OnDestroy, AfterViewInit {
-    readonly _ref: EditorSnippetRef;
-    readonly _config: EditorSnippetConfig;
-    protected readonly store: Store<EditorState>;
+export abstract class NoteEditorSnippet implements OnDestroy, AfterViewInit {
+    readonly _ref: NoteEditorSnippetRef;
+    readonly _config: NoteEditorSnippetConfig;
+    protected readonly store: Store<NoteStateWithRoot>;
     abstract contentEl: ElementRef;
     abstract _editor: any;
 
@@ -69,8 +69,8 @@ export abstract class EditorSnippet implements OnDestroy, AfterViewInit {
     }
 
     protected constructor(injector: Injector) {
-        this._ref = injector.get(EDITOR_SNIPPET_REF);
-        this._config = injector.get(EDITOR_SNIPPET_CONFIG);
+        this._ref = injector.get(NOTE_EDITOR_SNIPPET_REF);
+        this._config = injector.get(NOTE_EDITOR_SNIPPET_CONFIG);
         this.store = injector.get(Store);
 
         this._ref.setInstance(this);
@@ -116,18 +116,20 @@ export abstract class EditorSnippet implements OnDestroy, AfterViewInit {
     protected handleValueChanged(value: string): void {
         this.store.dispatch(new UpdateSnippetContentAction({
             snippetId: this.id,
-            content: { value },
+            patch: { value },
         }));
     }
 
     protected handleFocus(focused: boolean): void {
-        let action: EditorActions;
+        // let action: NoteActions;
 
-        if (focused) {
-            action = new DidSnippetFocusAction({ snippetId: this.id });
-        } else {
-            action = new DidSnippetBlurAction({ snippetId: this.id });
-        }
+        /*
+         if (focused) {
+         action = new DidSnippetFocusAction({ snippetId: this.id });
+         } else {
+         action = new DidSnippetBlurAction({ snippetId: this.id });
+         }
+         */
 
         // this.store.dispatch(action);
     }

@@ -1,28 +1,28 @@
 import { inject, TestBed } from '@angular/core/testing';
-import { createDummyList } from '../../testing/dummy';
-import { NoteContentDummyFactory, NoteContentSnippetDummyFactory } from '../note/dummies';
-import { NoteContent, NoteContentSnippet } from '../note/models';
-import { EditorService } from './editor.service';
-import { EDITOR_SNIPPET_CONFIG } from './snippet/snippet';
-import { EditorSnippetFactory } from './snippet/snippet-factory';
+import { createDummyList } from '../../../testing/dummy';
+import { NoteContentDummyFactory, NoteContentSnippetDummyFactory } from '../dummies';
+import { NoteContent, NoteContentSnippet } from '../models';
+import { NoteEditorService } from './editor.service';
+import { NOTE_EDITOR_SNIPPET_CONFIG } from './snippet/snippet';
+import { NoteEditorSnippetFactory } from './snippet/snippet-factory';
 
 
-describe('app.editor.EditorService', () => {
-    let editorService: EditorService;
+describe('app.note.editor.EditorService', () => {
+    let editorService: NoteEditorService;
 
     beforeEach(() => {
         TestBed
             .configureTestingModule({
                 providers: [
-                    EditorSnippetFactory,
-                    EditorService,
+                    NoteEditorSnippetFactory,
+                    NoteEditorService,
                 ],
             });
     });
 
     beforeEach(inject(
-        [EditorService],
-        (e: EditorService) => {
+        [NoteEditorService],
+        (e: NoteEditorService) => {
             editorService = e;
         },
     ));
@@ -63,7 +63,7 @@ describe('app.editor.EditorService', () => {
             const newSnippetRef = editorService.snippetRefs[3];
             expect(newSnippetRef.id).toEqual(newContentSnippet.id);
 
-            const config = newSnippetRef.outlet.injector.get(EDITOR_SNIPPET_CONFIG);
+            const config = newSnippetRef.outlet.injector.get(NOTE_EDITOR_SNIPPET_CONFIG);
             expect(config.isNewSnippet).toEqual(true);
         });
     });

@@ -1,22 +1,22 @@
 import { Injectable, Injector, Type } from '@angular/core';
-import { NoteContentSnippet, NoteContentSnippetTypes } from '../../note/models';
-import { EditorCodeSnippetComponent } from './code-snippet.component';
+import { NoteContentSnippet, NoteContentSnippetTypes } from '../../models';
+import { NoteEditorCodeSnippetComponent } from './code-snippet.component';
 import {
-    EDITOR_SNIPPET_CONFIG,
-    EDITOR_SNIPPET_REF,
-    EditorSnippet,
-    EditorSnippetConfig,
-    EditorSnippetRef,
+    NOTE_EDITOR_SNIPPET_CONFIG,
+    NOTE_EDITOR_SNIPPET_REF,
+    NoteEditorSnippet,
+    NoteEditorSnippetConfig,
+    NoteEditorSnippetRef,
 } from './snippet';
-import { EditorTextSnippetComponent } from './text-snippet.component';
+import { NoteEditorTextSnippetComponent } from './text-snippet.component';
 
 
 @Injectable()
-export class EditorSnippetFactory {
+export class NoteEditorSnippetFactory {
     static makeConfig(
         contentSnippet: NoteContentSnippet,
         isNewSnippet: boolean,
-    ): EditorSnippetConfig {
+    ): NoteEditorSnippetConfig {
 
         switch (contentSnippet.type) {
             case NoteContentSnippetTypes.TEXT:
@@ -38,23 +38,23 @@ export class EditorSnippetFactory {
     create(
         contentSnippet: NoteContentSnippet,
         isNewSnippet = false,
-    ): EditorSnippetRef {
+    ): NoteEditorSnippetRef {
 
-        const config = EditorSnippetFactory.makeConfig(contentSnippet, isNewSnippet);
-        let component: Type<EditorSnippet>;
+        const config = NoteEditorSnippetFactory.makeConfig(contentSnippet, isNewSnippet);
+        let component: Type<NoteEditorSnippet>;
 
         switch (contentSnippet.type) {
             case NoteContentSnippetTypes.TEXT:
-                component = EditorTextSnippetComponent;
+                component = NoteEditorTextSnippetComponent;
                 break;
             case NoteContentSnippetTypes.CODE:
-                component = EditorCodeSnippetComponent;
+                component = NoteEditorCodeSnippetComponent;
                 break;
             default:
                 throw new Error(`Invalid editor snippet type: ${contentSnippet.type}`);
         }
 
-        const snippetRef = new EditorSnippetRef(contentSnippet.id);
+        const snippetRef = new NoteEditorSnippetRef(contentSnippet.id);
         const injector = this.createInjector(config, snippetRef);
 
         snippetRef.setOutlet(component, injector);
@@ -63,13 +63,13 @@ export class EditorSnippetFactory {
     }
 
     private createInjector(
-        contentSnippet: EditorSnippetConfig,
-        ref: EditorSnippetRef,
+        contentSnippet: NoteEditorSnippetConfig,
+        ref: NoteEditorSnippetRef,
     ): Injector {
 
         const providers = [
-            { provide: EDITOR_SNIPPET_CONFIG, useValue: contentSnippet },
-            { provide: EDITOR_SNIPPET_REF, useValue: ref },
+            { provide: NOTE_EDITOR_SNIPPET_CONFIG, useValue: contentSnippet },
+            { provide: NOTE_EDITOR_SNIPPET_REF, useValue: ref },
         ];
 
         return Injector.create({ providers, parent: this.injector });
