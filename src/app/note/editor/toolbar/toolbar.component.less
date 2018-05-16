@@ -1,0 +1,29 @@
+.NoteEditorToolbar {
+    position: relative;
+
+    &__content {
+        background-color: var(--color-gray-0);
+        border-bottom: 1px solid var(--color-gray-4);
+    }
+
+    &__stackEdit {
+        display: flex;
+        padding: var(--size-space-small);
+
+        label {
+            display: inline-flex;
+            padding: 0 var(--size-space-small);
+            height: var(--size-box-regular);
+            line-height: var(--size-box-regular);
+        }
+
+        gd-stack-edit-form {
+            flex: 1;
+            display: inline-flex;
+        }
+    }
+
+    &__showButton {
+        display: none;
+    }
+}

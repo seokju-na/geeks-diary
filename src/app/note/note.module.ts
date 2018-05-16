@@ -9,6 +9,7 @@ import { NoteEditorService } from './editor/editor.service';
 import { NoteEditorCodeSnippetComponent } from './editor/snippet/code-snippet.component';
 import { NoteEditorSnippetFactory } from './editor/snippet/snippet-factory';
 import { NoteEditorTextSnippetComponent } from './editor/snippet/text-snippet.component';
+import { NoteEditorToolbarComponent } from './editor/toolbar/toolbar.component';
 import { NoteEditorEffects, NoteFsEffects } from './effects';
 import { NoteFinderComponent } from './finder/finder.component';
 import { NoteHeaderComponent } from './header/header.component';
@@ -34,6 +35,7 @@ import { noteReducerMap } from './reducers';
         NoteHeaderComponent,
         NoteEditorCodeSnippetComponent,
         NoteEditorTextSnippetComponent,
+        NoteEditorToolbarComponent,
         NoteEditorComponent,
     ],
     entryComponents: [

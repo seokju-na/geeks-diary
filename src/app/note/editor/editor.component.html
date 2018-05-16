@@ -1,4 +1,8 @@
 <div class="NoteEditor">
+    <div *ngIf="editorLoaded | async" class="NoteEditor__toolbar">
+        <gd-note-editor-toolbar></gd-note-editor-toolbar>
+    </div>
+
     <div class="NoteEditor__snippets">
         <div *ngFor="let ref of snippetRefs" class="NoteEditor__snippet">
             <ng-container

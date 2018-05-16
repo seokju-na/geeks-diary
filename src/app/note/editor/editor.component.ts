@@ -1,4 +1,7 @@
 import { Component, OnInit } from '@angular/core';
+import { select, Store } from '@ngrx/store';
+import { Observable } from 'rxjs/Observable';
+import { NoteStateWithRoot } from '../reducers';
 import { NoteEditorService } from './editor.service';
 import { NoteEditorSnippetRef } from './snippet/snippet';
 
@@ -9,7 +12,12 @@ import { NoteEditorSnippetRef } from './snippet/snippet';
     styleUrls: ['./editor.component.less'],
 })
 export class NoteEditorComponent implements OnInit {
-    constructor(private editorService: NoteEditorService) {
+    editorLoaded: Observable<boolean>;
+
+    constructor(
+        private editorService: NoteEditorService,
+        private store: Store<NoteStateWithRoot>,
+    ) {
     }
 
     get snippetRefs(): NoteEditorSnippetRef[] {
@@ -17,5 +25,7 @@ export class NoteEditorComponent implements OnInit {
     }
 
     ngOnInit(): void {
+        this.editorLoaded =
+            this.store.pipe(select(state => state.note.editor.loaded));
     }
 }
