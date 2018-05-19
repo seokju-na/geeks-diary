@@ -6,6 +6,7 @@ import { NgModule } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { AutocompleteTriggerDirective } from './autocomplete/autocomplete-trigger.directive';
 import { AutocompleteComponent } from './autocomplete/autocomplete.component';
+import { AutosizeDirective } from './autosize/autosize.directive';
 import { ButtonComponent } from './button/button.component';
 import { CalendarTableProvider } from './calendar/calendar-table';
 import { Dialog } from './dialog/dialog';
@@ -36,6 +37,8 @@ import { TooltipDirective } from './tooltip/tooltip.directive';
         // Autocomplete
         AutocompleteTriggerDirective,
         AutocompleteComponent,
+        // Autosize
+        AutosizeDirective,
         // Button
         ButtonComponent,
         // Icon
@@ -75,6 +78,8 @@ import { TooltipDirective } from './tooltip/tooltip.directive';
         // Autocomplete
         AutocompleteTriggerDirective,
         AutocompleteComponent,
+        // Autosize
+        AutosizeDirective,
         // Button
         ButtonComponent,
         // Icon
