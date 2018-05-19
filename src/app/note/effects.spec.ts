@@ -9,8 +9,11 @@ import {
     GetNoteCollectionAction,
     GetNoteCollectionCompleteAction,
     LoadNoteContentAction,
-    LoadNoteContentCompleteAction, SaveSelectedNoteAction,
-    SelectNoteAction, UpdateSnippetContentAction, UpdateStacksAction,
+    LoadNoteContentCompleteAction,
+    SaveSelectedNoteAction,
+    SelectNoteAction,
+    UpdateSnippetContentAction,
+    UpdateStacksAction, UpdateTitleAction,
 } from './actions';
 import { NoteContentDummyFactory, NoteMetadataDummyFactory } from './dummies';
 import { NoteEditorService } from './editor/editor.service';
@@ -172,13 +175,22 @@ describe('app.note.effects.NoteEditorEffects', () => {
             const expected = new SaveSelectedNoteAction();
 
             noteEditorEffects.afterUpdate.subscribe(callback);
+
+            // UPDATE_SNIPPET_CONTENT
             actions.next(action);
             tick(400);
 
             expect(callback).toHaveBeenCalledWith(expected);
 
+            // UPDATE_STACKS
             action = new UpdateStacksAction({ stacks: [] });
+            actions.next(action);
+            tick(400);
 
+            expect(callback).toHaveBeenCalledWith(expected);
+
+            // UPDATE_TITLE
+            action = new UpdateTitleAction({ title: 'New Title' });
             actions.next(action);
             tick(400);
 

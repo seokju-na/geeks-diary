@@ -5,10 +5,41 @@
     &__toolbar {
     }
 
+    &__titleEditor {
+        padding: var(--size-space-regular);
+    }
+
+    &__titleInput {
+        padding: var(--size-space-regular) 0;
+        border-bottom: 1px solid var(--color-gray-4);
+
+        > textarea {
+            display: block;
+            width: 100%;
+            resize: none;
+            padding: var(--size-space-regular);
+            outline: 0;
+            font-size: var(--size-font-medium);
+            line-height: var(--size-lineHeight-medium);
+            border: 1px solid transparent;
+            color: var(--color-gray-9);
+            overflow: hidden;
+
+            &:focus {
+                border-color: var(--color-gray-4);
+                border-radius: 5px;
+            }
+
+            &::placeholder {
+                color: var(--color-gray-5);
+            }
+        }
+    }
+
     &__snippets {
         flex: 1;
         display: block;
-        overflow-y: scroll;
+        overflow-y: auto;
     }
 
     &__snippet {

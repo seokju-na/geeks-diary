@@ -3,6 +3,18 @@
         <gd-note-editor-toolbar></gd-note-editor-toolbar>
     </div>
 
+    <div *ngIf="editorLoaded | async" class="NoteEditor__titleEditor">
+        <div class="NoteEditor__titleInput">
+            <textarea gdAutosize
+                      rows="1"
+                      placeholder="Untitled Note"
+                      #titleTextarea
+                      [formControl]="titleInputControl"
+                      (keydown.arrowdown)="moveFocusToSnippetEditor($event)"
+                      (keydown.enter)="moveFocusToSnippetEditor($event)"></textarea>
+        </div>
+    </div>
+
     <div class="NoteEditor__snippets">
         <div *ngFor="let ref of snippetRefs" class="NoteEditor__snippet">
             <ng-container

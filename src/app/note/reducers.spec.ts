@@ -2,8 +2,13 @@ import { datetime } from '../../common/datetime';
 import { createDummyList } from '../../testing/dummy';
 import {
     ChangeDateFilterAction,
-    GetNoteCollectionCompleteAction, InitEditorAction, RemoveSnippetAction,
-    SelectNoteAction, UpdateSnippetContentAction, UpdateStacksAction,
+    GetNoteCollectionCompleteAction,
+    InitEditorAction,
+    RemoveSnippetAction,
+    SelectNoteAction,
+    UpdateSnippetContentAction,
+    UpdateStacksAction,
+    UpdateTitleAction,
 } from './actions';
 import { NoteContentDummyFactory, NoteMetadataDummyFactory } from './dummies';
 import { NoteContent, NoteFinderDateFilterTypes } from './models';
@@ -55,7 +60,6 @@ describe('app.note.reducers.noteCollectionReducer', () => {
         });
     });
 });
-
 
 
 describe('app.note.reducers.noteFinderReducer', () => {
@@ -186,6 +190,27 @@ describe('app.note.reducers.noteEditorReducer', () => {
             const state = noteEditorReducer(beforeState, action);
 
             expect(state.selectedNoteContent.stacks).toEqual(newStacks);
+        });
+    });
+
+    describe('UPDATE_TITLE', () => {
+        let content: NoteContent;
+        let beforeState: NoteEditorState;
+
+        beforeEach(() => {
+            content = new NoteContentDummyFactory().create();
+            beforeState = noteEditorReducer(
+                undefined,
+                new InitEditorAction({ content }),
+            );
+        });
+
+        it('should update title.', () => {
+            const newTitle = 'New Title';
+            const action = new UpdateTitleAction({ title: newTitle });
+            const state = noteEditorReducer(beforeState, action);
+
+            expect(state.selectedNoteContent.title).toEqual(newTitle);
         });
     });
 });

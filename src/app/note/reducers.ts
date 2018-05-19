@@ -2,9 +2,9 @@ import { ActionReducerMap } from '@ngrx/store';
 import { datetime } from '../../common/datetime';
 import { AppState } from '../app-reducers';
 import { NoteActions, NoteActionTypes } from './actions';
+import { noteCollectionStateAdapter, noteEditorStateAdapter } from './adapters';
 import {
     NoteContent,
-    NoteContentSnippet,
     NoteFinderDateFilterTypes,
     NoteFinderSortDirection,
     NoteFinderSortTypes,
@@ -95,26 +95,16 @@ export function noteCollectionReducer(
             };
 
         case NoteActionTypes.UPDATE_STACKS:
-            if (!state.loaded) {
-                return state;
-            }
+            return noteCollectionStateAdapter.updateNote(
+                state,
+                { stacks: [...action.payload.stacks] },
+            );
 
-            const selectedNoteId = state.selectedNote.id;
-            const index = state.notes.findIndex(note => note.id === selectedNoteId);
-
-            state.notes[index] = {
-                ...state.notes[index],
-                stacks: [...action.payload.stacks],
-            };
-
-            return {
-                ...state,
-                notes: [...state.notes],
-                selectedNote: {
-                    ...state.selectedNote,
-                    stacks: [...action.payload.stacks],
-                },
-            };
+        case NoteActionTypes.UPDATE_TITLE:
+            return noteCollectionStateAdapter.updateNote(
+                state,
+                { title: action.payload.title },
+            );
 
         default:
             return state;
@@ -155,102 +145,43 @@ export function noteEditorReducer(
             };
 
         case NoteActionTypes.REMOVE_SNIPPET:
-            return noteEditorStateAdapter(state).removeSnippet(action.payload.snippetId);
+            if (!state.loaded) {
+                return state;
+            }
+
+            if (state.selectedNoteContent.snippets.length <= 1
+                || noteEditorStateAdapter._indexOfSnippet(state, action.payload.snippetId) === 0) {
+
+                return state;
+            }
+
+            return noteEditorStateAdapter.removeSnippet(
+                state,
+                action.payload.snippetId,
+            );
 
         case NoteActionTypes.UPDATE_SNIPPET_CONTENT:
-            return noteEditorStateAdapter(state).updateSnippet(
+            return noteEditorStateAdapter.updateSnippet(
+                state,
                 action.payload.snippetId,
                 action.payload.patch,
             );
 
         case NoteActionTypes.UPDATE_STACKS:
-            if (!state.loaded) {
-                return state;
-            }
+            return noteEditorStateAdapter.updateContent(
+                state,
+                { stacks: action.payload.stacks },
+            );
 
-            return {
-                ...state,
-                selectedNoteContent: {
-                    ...state.selectedNoteContent,
-                    stacks: [...action.payload.stacks],
-                },
-            };
+        case NoteActionTypes.UPDATE_TITLE:
+            return noteEditorStateAdapter.updateContent(
+                state,
+                { title: action.payload.title },
+            );
 
         default:
             return state;
     }
-}
-
-
-// State adapters
-class NoteEditorStateAdapter {
-    constructor(readonly state: NoteEditorState) {
-    }
-
-    removeSnippet(snippetId: string): NoteEditorState {
-        const index = this.indexOfSnippet(snippetId);
-
-        if (index !== -1 && this.getSnippetsCount() > 1) {
-            this.state.selectedNoteContent.snippets.splice(index, 1);
-
-            return this.getSnippetsUpdated();
-        }
-
-        return this.state;
-    }
-
-    updateSnippet(
-        snippetId: string,
-        patch: Partial<NoteContentSnippet>,
-    ): NoteEditorState {
-
-        const index = this.indexOfSnippet(snippetId);
-
-        if (index !== -1) {
-            const snippet = this.state.selectedNoteContent.snippets[index];
-
-            this.state.selectedNoteContent.snippets[index] = {
-                ...snippet,
-                ...patch,
-            };
-
-            return this.getSnippetsUpdated();
-        }
-
-        return this.state;
-    }
-
-    private indexOfSnippet(snippetId: string): number {
-        if (!this.state.loaded) {
-            return -1;
-        }
-
-        return this.state.selectedNoteContent.snippets.findIndex(
-            snippet => snippet.id === snippetId);
-    }
-
-    private getSnippetsCount(): number {
-        if (!this.state.loaded) {
-            return 0;
-        }
-
-        return this.state.selectedNoteContent.snippets.length;
-    }
-
-    private getSnippetsUpdated(): NoteEditorState {
-        return {
-            ...this.state,
-            selectedNoteContent: {
-                ...this.state.selectedNoteContent,
-                snippets: [...this.state.selectedNoteContent.snippets],
-            },
-        };
-    }
-}
-
-
-export function noteEditorStateAdapter(state: NoteEditorState): NoteEditorStateAdapter {
-    return new NoteEditorStateAdapter(state);
 }
 
 

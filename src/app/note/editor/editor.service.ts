@@ -1,14 +1,38 @@
-import { Injectable } from '@angular/core';
+import { Injectable, OnDestroy } from '@angular/core';
+import { Observable, Subject } from 'rxjs';
 import { NoteContent, NoteContentSnippet } from '../models';
 import { NoteEditorSnippetRef } from './snippet/snippet';
 import { NoteEditorSnippetFactory } from './snippet/snippet-factory';
 
 
+export enum NoteEditorExtraEventNames {
+    MOVE_FOCUS_OUT_OF_SNIPPETS = 'MOVE_FOCUS_OUT_OF_SNIPPETS',
+}
+
+
+export class NoteEditorExtraEvent {
+    constructor(
+        readonly name: NoteEditorExtraEventNames,
+        readonly payload?: any,
+    ) {
+    }
+}
+
+
 @Injectable()
-export class NoteEditorService {
+export class NoteEditorService implements OnDestroy {
     snippetRefs: NoteEditorSnippetRef[] = [];
+    private _events = new Subject<NoteEditorExtraEvent>();
 
     constructor(private snippetFactory: NoteEditorSnippetFactory) {
+    }
+
+    ngOnDestroy(): void {
+        this._events.complete();
+    }
+
+    events(): Observable<NoteEditorExtraEvent> {
+        return this._events.asObservable();
     }
 
     initFromNoteContent(content: NoteContent): void {
@@ -51,6 +75,14 @@ export class NoteEditorService {
         }
     }
 
+    setFocusByIndex(snippetIndex: number): void {
+        const snippet = this.snippetRefs[snippetIndex];
+
+        if (snippet) {
+            snippet.instance.focus();
+        }
+    }
+
     moveFocus(snippetId: string, direction: 1 | -1): void {
         const index = this.snippetRefs.findIndex(snippet => snippet.id === snippetId);
 
@@ -60,11 +92,17 @@ export class NoteEditorService {
     }
 
     moveFocusByIndex(snippetIndex: number, direction: 1 | -1): void {
-        const nextSnippet = this.snippetRefs[snippetIndex + direction];
+        const nextIndex = snippetIndex + direction;
 
-        if (!nextSnippet) {
+        if (nextIndex < 0) {
+            this.handleFocusOut(-1);
+            return;
+        } else if (nextIndex >= this.snippetRefs.length) {
+            this.handleFocusOut(1);
             return;
         }
+
+        const nextSnippet = this.snippetRefs[snippetIndex + direction];
 
         nextSnippet.instance.focus();
 
@@ -73,5 +111,12 @@ export class NoteEditorService {
         } else if (direction < 0) {
             nextSnippet.instance.setPositionToBottom();
         }
+    }
+
+    private handleFocusOut(direction: 1 | -1): void {
+        this._events.next(new NoteEditorExtraEvent(
+            NoteEditorExtraEventNames.MOVE_FOCUS_OUT_OF_SNIPPETS,
+            { direction },
+        ));
     }
 }

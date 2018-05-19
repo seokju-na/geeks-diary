@@ -118,6 +118,7 @@ export class NoteEditorEffects {
         ofType(
             NoteActionTypes.UPDATE_SNIPPET_CONTENT,
             NoteActionTypes.UPDATE_STACKS,
+            NoteActionTypes.UPDATE_TITLE,
         ),
         debounceTime(300),
         map(() => new SaveSelectedNoteAction()),

@@ -19,6 +19,7 @@ export enum NoteActionTypes {
     INSERT_SWITCHED_SNIPPET = '[Note] Insert switched snippet',
     UPDATE_SNIPPET_CONTENT = '[Note] Update snippet content',
     UPDATE_STACKS = '[Note] Update stacks',
+    UPDATE_TITLE = '[Note] Update title',
 }
 
 
@@ -143,6 +144,14 @@ export class UpdateStacksAction implements Action {
 }
 
 
+export class UpdateTitleAction implements Action {
+    readonly type = NoteActionTypes.UPDATE_TITLE;
+
+    constructor(readonly payload: { title: string }) {
+    }
+}
+
+
 export type NoteActions =
     GetNoteCollectionAction
     | GetNoteCollectionCompleteAction
@@ -159,4 +168,5 @@ export type NoteActions =
     | RemoveSnippetAction
     | InsertSwitchedSnippetAction
     | UpdateSnippetContentAction
-    | UpdateStacksAction;
+    | UpdateStacksAction
+    | UpdateTitleAction;
