@@ -8,6 +8,7 @@ import {
     MoveFocusToPreviousSnippetAction,
     RemoveSnippetAction,
 } from '../../actions';
+import { NoteContentSnippetTypes } from '../../models';
 import { noteReducerMap, NoteStateWithRoot } from '../../reducers';
 import {
     NOTE_EDITOR_SNIPPET_CONFIG,
@@ -44,6 +45,7 @@ describe('app.note.editor.snippet.EditorTextSnippetComponent', () => {
     beforeEach(() => {
         ref = new NoteEditorSnippetRef('noteId');
         config = {
+            type: NoteContentSnippetTypes.TEXT,
             initialValue: 'initial value',
             isNewSnippet: false,
         };

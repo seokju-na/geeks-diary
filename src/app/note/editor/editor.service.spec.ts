@@ -43,12 +43,10 @@ describe('app.note.editor.EditorService', () => {
 
     describe('insertNewSnippetRef', () => {
         let initialSnippets: NoteContentSnippet[];
-        let newContentSnippet: NoteContentSnippet;
 
         beforeEach(() => {
             initialSnippets = createDummyList(
                 new NoteContentSnippetDummyFactory('initialNoteContentSnippet'), 5);
-            newContentSnippet = new NoteContentSnippetDummyFactory().create();
 
             editorService.initFromNoteContent(new NoteContentDummyFactory().create(
                 'note1',
@@ -57,13 +55,14 @@ describe('app.note.editor.EditorService', () => {
         });
 
         it('should insert new snippet after target snippet.', () => {
+            const content = new NoteContentSnippetDummyFactory().create();
             const targetId = initialSnippets[2].id;
-            editorService.insertNewSnippetRef(targetId, newContentSnippet);
+
+            editorService.insertNewSnippetRef(targetId, content);
 
             const newSnippetRef = editorService.snippetRefs[3];
-            expect(newSnippetRef.id).toEqual(newContentSnippet.id);
-
             const config = newSnippetRef.outlet.injector.get(NOTE_EDITOR_SNIPPET_CONFIG);
+
             expect(config.isNewSnippet).toEqual(true);
         });
     });

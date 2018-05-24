@@ -33,6 +33,31 @@ export const noteCollectionStateAdapter = {
 
 
 export const noteEditorStateAdapter = {
+    insertSnippet(
+        state: NoteEditorState,
+        snippetId: string,
+        newSnippet: NoteContentSnippet,
+    ): NoteEditorState {
+
+        if (!state.loaded) {
+            return state;
+        }
+
+        const index = this._indexOfSnippet(state, snippetId);
+
+        if (index === -1) {
+            return state;
+        }
+
+        state.selectedNoteContent.snippets.splice(
+            index + 1,
+            0,
+            newSnippet,
+        );
+
+        return this._getStateWithSnippetsUpdated(state);
+    },
+
     updateSnippet(
         state: NoteEditorState,
         snippetId: string,

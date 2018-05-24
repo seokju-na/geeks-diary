@@ -8,6 +8,7 @@ import { catchError, debounceTime, map, mergeMap, switchMap, tap } from 'rxjs/op
 import {
     GetNoteCollectionCompleteAction,
     InitEditorAction,
+    InsertNewSnippetAction,
     LoadNoteContentAction,
     LoadNoteContentCompleteAction,
     NoteActions,
@@ -113,9 +114,21 @@ export class NoteEditorEffects {
             this.editorService.removeSnippet(action.payload.snippetId)),
     );
 
+    @Effect({ dispatch: false })
+    insertSnippet: Observable<Action> = this.actions.pipe(
+        ofType<InsertNewSnippetAction>(NoteActionTypes.INSERT_NEW_SNIPPET),
+        tap((action: InsertNewSnippetAction) =>
+            this.editorService.insertNewSnippetRef(
+                action.payload.snippetId,
+                action.payload.content,
+            )),
+    );
+
     @Effect()
     afterUpdate: Observable<Action> = this.actions.pipe(
         ofType(
+            NoteActionTypes.REMOVE_SNIPPET,
+            NoteActionTypes.INSERT_NEW_SNIPPET,
             NoteActionTypes.UPDATE_SNIPPET_CONTENT,
             NoteActionTypes.UPDATE_STACKS,
             NoteActionTypes.UPDATE_TITLE,

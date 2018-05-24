@@ -1,4 +1,5 @@
 import { Injectable, Injector, Type } from '@angular/core';
+import * as createUniqueId from 'uuid/v4';
 import { NoteContentSnippet, NoteContentSnippetTypes } from '../../models';
 import { NoteEditorCodeSnippetComponent } from './code-snippet.component';
 import {
@@ -11,23 +12,73 @@ import {
 import { NoteEditorTextSnippetComponent } from './text-snippet.component';
 
 
+function throwInvalidNoteContentSnippetTypeError(type: any): void {
+    throw new Error(`Invalid note content snippet type: ${type}`);
+}
+
+
 @Injectable()
 export class NoteEditorSnippetFactory {
+    static isValidType(type: NoteContentSnippetTypes): boolean {
+        return type === NoteContentSnippetTypes.TEXT
+            || type === NoteContentSnippetTypes.CODE;
+    }
+
     static makeConfig(
         contentSnippet: NoteContentSnippet,
         isNewSnippet: boolean,
     ): NoteEditorSnippetConfig {
 
-        switch (contentSnippet.type) {
+        const type = contentSnippet.type;
+
+        if (!NoteEditorSnippetFactory.isValidType(type)) {
+            throwInvalidNoteContentSnippetTypeError(type);
+        }
+
+        switch (type) {
             case NoteContentSnippetTypes.TEXT:
-                return { initialValue: contentSnippet.value, isNewSnippet };
+                return {
+                    type: NoteContentSnippetTypes.TEXT,
+                    initialValue: contentSnippet.value,
+                    isNewSnippet,
+                };
 
             case NoteContentSnippetTypes.CODE:
                 return {
+                    type: NoteContentSnippetTypes.CODE,
                     initialValue: contentSnippet.value,
-                    language: isNewSnippet ? null : contentSnippet.language,
-                    fileName: isNewSnippet ? null : contentSnippet.fileName,
+                    language: isNewSnippet ? '' : contentSnippet.language,
+                    fileName: isNewSnippet ? 'No File Name' : contentSnippet.fileName,
                     isNewSnippet,
+                };
+        }
+    }
+
+    static createNewNoteContentSnippet(
+        type: NoteContentSnippetTypes,
+    ): NoteContentSnippet {
+
+        if (!NoteEditorSnippetFactory.isValidType(type)) {
+            throwInvalidNoteContentSnippetTypeError(type);
+        }
+
+        const id = createUniqueId();
+
+        switch (type) {
+            case NoteContentSnippetTypes.TEXT:
+                return {
+                    id,
+                    type,
+                    value: '',
+                };
+
+            case NoteContentSnippetTypes.CODE:
+                return {
+                    id,
+                    type,
+                    value: '',
+                    language: '',
+                    fileName: 'No File Name',
                 };
         }
     }
@@ -35,7 +86,7 @@ export class NoteEditorSnippetFactory {
     constructor(private injector: Injector) {
     }
 
-    create(
+    createWithContent(
         contentSnippet: NoteContentSnippet,
         isNewSnippet = false,
     ): NoteEditorSnippetRef {

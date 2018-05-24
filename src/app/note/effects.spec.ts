@@ -8,14 +8,21 @@ import { MockActions, MockFsService } from '../../testing/mock';
 import {
     GetNoteCollectionAction,
     GetNoteCollectionCompleteAction,
+    InsertNewSnippetAction,
     LoadNoteContentAction,
     LoadNoteContentCompleteAction,
+    RemoveSnippetAction,
     SaveSelectedNoteAction,
     SelectNoteAction,
     UpdateSnippetContentAction,
-    UpdateStacksAction, UpdateTitleAction,
+    UpdateStacksAction,
+    UpdateTitleAction,
 } from './actions';
-import { NoteContentDummyFactory, NoteMetadataDummyFactory } from './dummies';
+import {
+    NoteContentDummyFactory,
+    NoteContentSnippetDummyFactory,
+    NoteMetadataDummyFactory,
+} from './dummies';
 import { NoteEditorService } from './editor/editor.service';
 import { NoteEditorSnippetFactory } from './editor/snippet/snippet-factory';
 import { NoteEditorEffects, NoteFsEffects } from './effects';
@@ -167,16 +174,34 @@ describe('app.note.effects.NoteEditorEffects', () => {
 
     describe('afterUpdate', () => {
         it('should return new \'SAVE_SELECTED_NOTE\' action after debounced.', fakeAsync(() => {
-            let action: Action = new UpdateSnippetContentAction({
-                snippetId: 'test-id',
-                patch: {},
-            });
+            let action: Action;
 
             const expected = new SaveSelectedNoteAction();
 
             noteEditorEffects.afterUpdate.subscribe(callback);
 
+            // REMOVE_SNIPPET
+            action = new RemoveSnippetAction({ snippetId: 'test-id' });
+            actions.next(action);
+            tick(400);
+
+            expect(callback).toHaveBeenCalledWith(expected);
+
+            // INSERT_NEW_SNIPPET
+            action = new InsertNewSnippetAction({
+                snippetId: 'test-id',
+                content: new NoteContentSnippetDummyFactory().create(),
+            });
+            actions.next(action);
+            tick(400);
+
+            expect(callback).toHaveBeenCalledWith(expected);
+
             // UPDATE_SNIPPET_CONTENT
+            action = new UpdateSnippetContentAction({
+                snippetId: 'test-id',
+                patch: {},
+            });
             actions.next(action);
             tick(400);
 

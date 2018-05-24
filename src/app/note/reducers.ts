@@ -160,6 +160,13 @@ export function noteEditorReducer(
                 action.payload.snippetId,
             );
 
+        case NoteActionTypes.INSERT_NEW_SNIPPET:
+            return noteEditorStateAdapter.insertSnippet(
+                state,
+                action.payload.snippetId,
+                action.payload.content,
+            );
+
         case NoteActionTypes.UPDATE_SNIPPET_CONTENT:
             return noteEditorStateAdapter.updateSnippet(
                 state,

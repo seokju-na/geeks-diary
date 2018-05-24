@@ -16,7 +16,7 @@ export enum NoteActionTypes {
     MOVE_FOCUS_TO_PREVIOUS_SNIPPET = '[Note] Move focus to previous snippet',
     MOVE_FOCUS_TO_NEXT_SNIPPET = '[Note] Move focus to next snippet',
     REMOVE_SNIPPET = '[Note] Remove snippet',
-    INSERT_SWITCHED_SNIPPET = '[Note] Insert switched snippet',
+    INSERT_NEW_SNIPPET = '[Note] Insert new snippet',
     UPDATE_SNIPPET_CONTENT = '[Note] Update snippet content',
     UPDATE_STACKS = '[Note] Update stacks',
     UPDATE_TITLE = '[Note] Update title',
@@ -120,8 +120,14 @@ export class RemoveSnippetAction implements Action {
 }
 
 
-export class InsertSwitchedSnippetAction implements Action {
-    readonly type = NoteActionTypes.INSERT_SWITCHED_SNIPPET;
+export class InsertNewSnippetAction implements Action {
+    readonly type = NoteActionTypes.INSERT_NEW_SNIPPET;
+
+    constructor(readonly payload: {
+        snippetId: string,
+        content: NoteContentSnippet,
+    }) {
+    }
 }
 
 
@@ -166,7 +172,7 @@ export type NoteActions =
     | MoveFocusToPreviousSnippetAction
     | MoveFocusToNextSnippetAction
     | RemoveSnippetAction
-    | InsertSwitchedSnippetAction
+    | InsertNewSnippetAction
     | UpdateSnippetContentAction
     | UpdateStacksAction
     | UpdateTitleAction;

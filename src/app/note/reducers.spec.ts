@@ -3,14 +3,18 @@ import { createDummyList } from '../../testing/dummy';
 import {
     ChangeDateFilterAction,
     GetNoteCollectionCompleteAction,
-    InitEditorAction,
+    InitEditorAction, InsertNewSnippetAction,
     RemoveSnippetAction,
     SelectNoteAction,
     UpdateSnippetContentAction,
     UpdateStacksAction,
     UpdateTitleAction,
 } from './actions';
-import { NoteContentDummyFactory, NoteMetadataDummyFactory } from './dummies';
+import {
+    NoteContentDummyFactory,
+    NoteContentSnippetDummyFactory,
+    NoteMetadataDummyFactory,
+} from './dummies';
 import { NoteContent, NoteFinderDateFilterTypes } from './models';
 import {
     noteCollectionReducer,
@@ -140,6 +144,32 @@ describe('app.note.reducers.noteEditorReducer', () => {
                 snippet => snippet.id === snippetId);
 
             expect(indexOfTarget).toEqual(-1);
+        });
+    });
+
+    describe('INSERT_NEW_SNIPPET', () => {
+        let content: NoteContent;
+        let beforeState: NoteEditorState;
+
+        beforeEach(() => {
+            content = new NoteContentDummyFactory().create();
+            beforeState = noteEditorReducer(
+                undefined,
+                new InitEditorAction({ content }),
+            );
+        });
+
+        it('should insert new snippet.', () => {
+            const snippetId = content.snippets[0].id;
+            const newSnippetContent = new NoteContentSnippetDummyFactory().create();
+
+            const action = new InsertNewSnippetAction({
+                snippetId,
+                content: newSnippetContent,
+            });
+            const state = noteEditorReducer(beforeState, action);
+
+            expect(state.selectedNoteContent.snippets[1]).toEqual(newSnippetContent);
         });
     });
 

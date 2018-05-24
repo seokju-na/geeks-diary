@@ -10,12 +10,15 @@ import {
 import { Store } from '@ngrx/store';
 import { KeyCodes } from '../../../../common/key-codes';
 import {
+    InsertNewSnippetAction,
     MoveFocusToNextSnippetAction,
     MoveFocusToPreviousSnippetAction,
     RemoveSnippetAction,
     UpdateSnippetContentAction,
 } from '../../actions';
+import { NoteContentSnippetTypes } from '../../models';
 import { NoteStateWithRoot } from '../../reducers';
+import { NoteEditorSnippetFactory } from './snippet-factory';
 
 
 export interface NoteEditorSnippetOutlet {
@@ -32,6 +35,7 @@ export const NOTE_EDITOR_SNIPPET_CONFIG =
 
 
 export class NoteEditorSnippetConfig {
+    type: NoteContentSnippetTypes;
     initialValue = '';
     language?: string;
     fileName?: string;
@@ -113,6 +117,28 @@ export abstract class NoteEditorSnippet implements OnDestroy, AfterViewInit {
         return this.getValue().trim() === '';
     }
 
+    protected insertSwitchedSnippetAfter(): void {
+        let switchedSnippetType: NoteContentSnippetTypes;
+
+        switch (this._config.type) {
+            case NoteContentSnippetTypes.TEXT:
+                switchedSnippetType = NoteContentSnippetTypes.CODE;
+                break;
+            case NoteContentSnippetTypes.CODE:
+                switchedSnippetType = NoteContentSnippetTypes.TEXT;
+                break;
+        }
+
+        const action = new InsertNewSnippetAction({
+            snippetId: this.id,
+            content: NoteEditorSnippetFactory.createNewNoteContentSnippet(
+                switchedSnippetType,
+            ),
+        });
+
+        this.store.dispatch(action);
+    }
+
     protected handleValueChanged(value: string): void {
         this.store.dispatch(new UpdateSnippetContentAction({
             snippetId: this.id,
@@ -153,6 +179,13 @@ export abstract class NoteEditorSnippet implements OnDestroy, AfterViewInit {
                 if (this.isCurrentPositionBottom()) {
                     this.store.dispatch(
                         new MoveFocusToNextSnippetAction({ snippetId: this.id }));
+                }
+                break;
+
+            case KeyCodes.ENTER:
+                if (event.shiftKey) {
+                    event.preventDefault();
+                    this.insertSwitchedSnippetAfter();
                 }
                 break;
         }

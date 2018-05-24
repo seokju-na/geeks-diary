@@ -14,6 +14,7 @@ import {
     RemoveSnippetAction,
     UpdateSnippetContentAction,
 } from '../../actions';
+import { NoteContentSnippetTypes } from '../../models';
 import { noteReducerMap, NoteStateWithRoot } from '../../reducers';
 import { NoteEditorCodeSnippetComponent } from './code-snippet.component';
 import {
@@ -34,7 +35,7 @@ describe('app.note.editor.snippet.EditorCodeSnippetComponent', () => {
     let store: Store<NoteStateWithRoot>;
 
     const getInputField = (): HTMLTextAreaElement =>
-        document.querySelector('.monaco-editor .inputarea');
+        document.querySelector('.monaco-editor .inputarea') as HTMLTextAreaElement;
 
     const overwriteConfig = (newConfig: Partial<NoteEditorSnippetConfig>) => {
         const overwrittenConfig = { ...config, ...newConfig };
@@ -75,6 +76,7 @@ describe('app.note.editor.snippet.EditorCodeSnippetComponent', () => {
     beforeEach(() => {
         ref = new NoteEditorSnippetRef('noteId');
         config = {
+            type: NoteContentSnippetTypes.CODE,
             initialValue: 'initial value',
             language: 'javascript',
             fileName: 'some-file',

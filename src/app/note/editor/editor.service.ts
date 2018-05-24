@@ -37,12 +37,12 @@ export class NoteEditorService implements OnDestroy {
 
     initFromNoteContent(content: NoteContent): void {
         this.snippetRefs = content.snippets.map(snippet =>
-            this.snippetFactory.create(snippet, false));
+            this.snippetFactory.createWithContent(snippet, false));
     }
 
     insertNewSnippetRef(
         snippetId: string,
-        newContentSnippet: NoteContentSnippet,
+        content: NoteContentSnippet,
     ): void {
 
         const index = this.getIndexOfSnippetRef(snippetId);
@@ -51,15 +51,19 @@ export class NoteEditorService implements OnDestroy {
             return;
         }
 
+        const snippetRef = this.snippetFactory.createWithContent(content, true);
+
         this.snippetRefs.splice(
             index + 1,
             0,
-            this.snippetFactory.create(newContentSnippet, true),
+            snippetRef,
         );
-    }
 
-    getSnippetRef(snippetId: string): NoteEditorSnippetRef | null {
-        return this.snippetRefs.find(ref => ref.id === snippetId) || null;
+        setTimeout(() => {
+            if (snippetRef.instance) {
+                snippetRef.instance.focus();
+            }
+        });
     }
 
     getIndexOfSnippetRef(snippetId: string): number {

@@ -31,7 +31,7 @@ describe('app.note.editor.snippet.EditorSnippetFactory', () => {
         it('should snippet reference has snippet config provider ' +
             'in isolated injector.', () => {
 
-            const ref = snippetFactory.create(content);
+            const ref = snippetFactory.createWithContent(content);
             const config = NoteEditorSnippetFactory.makeConfig(content, false);
 
             expect(ref.outlet.injector.get(NOTE_EDITOR_SNIPPET_CONFIG)).toEqual(config);
@@ -40,7 +40,7 @@ describe('app.note.editor.snippet.EditorSnippetFactory', () => {
         it('should snippet reference has its reference provider ' +
             'in isolated injector.', () => {
 
-            const ref = snippetFactory.create(content);
+            const ref = snippetFactory.createWithContent(content);
 
             expect(ref.outlet.injector.get(NOTE_EDITOR_SNIPPET_REF)).toEqual(ref);
         });
