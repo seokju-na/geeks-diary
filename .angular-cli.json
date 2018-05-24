@@ -1,0 +1,45 @@
+{
+    "$schema": "./node_modules/@angular/cli/lib/config/schema.json",
+    "project": {
+        "name": "geeks-diary"
+    },
+    "apps": [
+        {
+            "root": "src",
+            "outDir": "dist",
+            "assets": [
+                "assets"
+            ],
+            "index": "index.html",
+            "main": "main.ts",
+            "polyfills": "polyfills.ts",
+            "test": "test.ts",
+            "tsconfig": "tsconfig.app.json",
+            "testTsconfig": "tsconfig.spec.json",
+            "prefix": "gd",
+            "styles": [
+                "styles/styles.less"
+            ],
+            "scripts": []
+        }
+    ],
+    "lint": [
+        {
+            "project": "src/tsconfig.app.json",
+            "exclude": "**/node_modules/**"
+        },
+        {
+            "project": "src/tsconfig.spec.json",
+            "exclude": "**/node_modules/**"
+        }
+    ],
+    "test": {
+        "karma": {
+            "config": "./karma.conf.js"
+        }
+    },
+    "defaults": {
+        "styleExt": "less",
+        "component": {}
+    }
+}
