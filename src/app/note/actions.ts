@@ -1,5 +1,11 @@
 import { Action } from '@ngrx/store';
-import { NoteContent, NoteContentSnippet, NoteFinderDateFilterTypes, NoteMetadata } from './models';
+import {
+    NoteContent,
+    NoteContentSnippet,
+    NoteEditorViewModes,
+    NoteFinderDateFilterTypes,
+    NoteMetadata,
+} from './models';
 
 
 export enum NoteActionTypes {
@@ -20,6 +26,7 @@ export enum NoteActionTypes {
     UPDATE_SNIPPET_CONTENT = '[Note] Update snippet content',
     UPDATE_STACKS = '[Note] Update stacks',
     UPDATE_TITLE = '[Note] Update title',
+    CHANGE_EDITOR_VIEW_MODE = '[Note] Change editor view mode',
 }
 
 
@@ -158,6 +165,14 @@ export class UpdateTitleAction implements Action {
 }
 
 
+export class ChangeEditorViewModeAction implements Action {
+    readonly type = NoteActionTypes.CHANGE_EDITOR_VIEW_MODE;
+
+    constructor(readonly payload: { viewMode: NoteEditorViewModes }) {
+    }
+}
+
+
 export type NoteActions =
     GetNoteCollectionAction
     | GetNoteCollectionCompleteAction
@@ -175,4 +190,5 @@ export type NoteActions =
     | InsertNewSnippetAction
     | UpdateSnippetContentAction
     | UpdateStacksAction
-    | UpdateTitleAction;
+    | UpdateTitleAction
+    | ChangeEditorViewModeAction;

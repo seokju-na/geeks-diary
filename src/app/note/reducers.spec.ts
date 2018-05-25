@@ -1,7 +1,7 @@
 import { datetime } from '../../common/datetime';
 import { createDummyList } from '../../testing/dummy';
 import {
-    ChangeDateFilterAction,
+    ChangeDateFilterAction, ChangeEditorViewModeAction,
     GetNoteCollectionCompleteAction,
     InitEditorAction, InsertNewSnippetAction,
     RemoveSnippetAction,
@@ -15,7 +15,7 @@ import {
     NoteContentSnippetDummyFactory,
     NoteMetadataDummyFactory,
 } from './dummies';
-import { NoteContent, NoteFinderDateFilterTypes } from './models';
+import { NoteContent, NoteEditorViewModes, NoteFinderDateFilterTypes } from './models';
 import {
     noteCollectionReducer,
     noteEditorReducer,
@@ -241,6 +241,17 @@ describe('app.note.reducers.noteEditorReducer', () => {
             const state = noteEditorReducer(beforeState, action);
 
             expect(state.selectedNoteContent.title).toEqual(newTitle);
+        });
+    });
+
+    describe('CHANGE_EDITOR_VIEW_MODE', () => {
+        it('should change editor view mode.', () => {
+            const action = new ChangeEditorViewModeAction({
+                viewMode: NoteEditorViewModes.EDITOR_ONLY,
+            });
+            const state = noteEditorReducer(undefined, action);
+
+            expect(state.viewMode).toEqual(NoteEditorViewModes.EDITOR_ONLY);
         });
     });
 });

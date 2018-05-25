@@ -5,6 +5,7 @@ import { NoteActions, NoteActionTypes } from './actions';
 import { noteCollectionStateAdapter, noteEditorStateAdapter } from './adapters';
 import {
     NoteContent,
+    NoteEditorViewModes,
     NoteFinderDateFilterTypes,
     NoteFinderSortDirection,
     NoteFinderSortTypes,
@@ -31,6 +32,7 @@ export interface NoteFinderState {
 export interface NoteEditorState {
     loaded: boolean;
     selectedNoteContent: NoteContent | null;
+    viewMode: NoteEditorViewModes;
 }
 
 
@@ -70,6 +72,7 @@ export function createInitialNoteEditorState(): NoteEditorState {
     return {
         loaded: false,
         selectedNoteContent: null,
+        viewMode: NoteEditorViewModes.SHOW_BOTH,
     };
 }
 
@@ -185,6 +188,12 @@ export function noteEditorReducer(
                 state,
                 { title: action.payload.title },
             );
+
+        case NoteActionTypes.CHANGE_EDITOR_VIEW_MODE:
+            return {
+                ...state,
+                viewMode: action.payload.viewMode,
+            };
 
         default:
             return state;
