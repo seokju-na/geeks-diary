@@ -11,6 +11,9 @@ import {
 export enum NoteActionTypes {
     GET_NOTE_COLLECTION = '[Note] Get note collection',
     GET_NOTE_COLLECTION_COMPLETE = '[Note] Get note collection complete',
+    ADD_NOTE = '[Note] Add note',
+    ADD_NOTE_COMPLETE = '[Note] Add note complete',
+    ADD_NOTE_ERROR = '[Note] Add note error',
     SAVE_NOTE = '[Note] Save note',
     SAVE_NOTE_COMPLETE = '[Note] Save note complete',
     SAVE_NOTE_ERROR = '[Note] Save note error',
@@ -73,6 +76,33 @@ export class LoadNoteContentCompleteAction implements Action {
     readonly type = NoteActionTypes.LOAD_NOTE_CONTENT_COMPLETE;
 
     constructor(readonly payload: { content: NoteContent }) {
+    }
+}
+
+
+export class AddNoteAction implements Action {
+    readonly type = NoteActionTypes.ADD_NOTE;
+
+    constructor(readonly payload: {
+        metadata: NoteMetadata,
+        content: NoteContent,
+    }) {
+    }
+}
+
+
+export class AddNoteCompleteAction implements Action {
+    readonly type = NoteActionTypes.ADD_NOTE_COMPLETE;
+
+    constructor(readonly payload: { note: NoteMetadata }) {
+    }
+}
+
+
+export class AddNoteErrorAction implements Action {
+    readonly type = NoteActionTypes.ADD_NOTE_ERROR;
+
+    constructor(readonly error: any) {
     }
 }
 
@@ -180,6 +210,9 @@ export type NoteActions =
     | SelectNoteAction
     | LoadNoteContentAction
     | LoadNoteContentCompleteAction
+    | AddNoteAction
+    | AddNoteCompleteAction
+    | AddNoteErrorAction
     | SaveSelectedNoteAction
     | SaveSelectedNoteCompleteAction
     | SaveSelectedNoteErrorAction

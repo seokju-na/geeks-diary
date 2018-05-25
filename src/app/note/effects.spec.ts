@@ -1,11 +1,15 @@
 import { fakeAsync, flush, inject, TestBed, tick } from '@angular/core/testing';
 import { Actions } from '@ngrx/effects';
 import { Action, combineReducers, Store, StoreModule } from '@ngrx/store';
+import { ErrorObservable } from 'rxjs/observable/ErrorObservable';
 import { of } from 'rxjs/observable/of';
 import { Subject } from 'rxjs/Subject';
 import { createDummyList } from '../../testing/dummy';
 import { MockActions, MockFsService } from '../../testing/mock';
 import {
+    AddNoteAction,
+    AddNoteCompleteAction,
+    AddNoteErrorAction,
     GetNoteCollectionAction,
     GetNoteCollectionCompleteAction,
     InsertNewSnippetAction,
@@ -128,6 +132,59 @@ describe('app.note.effects.NoteFsEffects', () => {
             flush();
 
             const expected = new LoadNoteContentCompleteAction({ content });
+
+            expect(callback).toHaveBeenCalledWith(expected);
+        }));
+    });
+
+    describe('addNote', () => {
+        it('should return new \'ADD_NOTE_COMPLETE\' action, ' +
+            'with new note metadata, on success.', fakeAsync(() => {
+
+            const note = new NoteMetadataDummyFactory().create();
+            const content = new NoteContentDummyFactory().create(note.id);
+
+            spyOn(noteFsService, 'createNote').and.returnValue(of(null));
+
+            noteFsEffects.addNote.subscribe(callback);
+            actions.next(new AddNoteAction({ metadata: note, content }));
+            flush();
+
+            const expected = new AddNoteCompleteAction({ note });
+
+            expect(callback).toHaveBeenCalledWith(expected);
+        }));
+
+        it('should return new \'ADD_NOTE_ERROR\' action, ' +
+            'with error, on fail.', fakeAsync(() => {
+
+            const note = new NoteMetadataDummyFactory().create();
+            const content = new NoteContentDummyFactory().create(note.id);
+
+            const error = new Error('Some error');
+
+            spyOn(noteFsService, 'createNote')
+                .and.returnValue(ErrorObservable.create(error));
+
+            noteFsEffects.addNote.subscribe(callback);
+            actions.next(new AddNoteAction({ metadata: note, content }));
+            flush();
+
+            const expected = new AddNoteErrorAction(error);
+
+            expect(callback).toHaveBeenCalledWith(expected);
+        }));
+    });
+
+    describe('afterAddNote', () => {
+        it('should return new \'SELECT_NOTE\' action with newly created note.', fakeAsync(() => {
+            const note = new NoteMetadataDummyFactory().create();
+
+            noteFsEffects.afterAddNote.subscribe(callback);
+            actions.next(new AddNoteCompleteAction({ note }));
+            flush();
+
+            const expected = new SelectNoteAction({ selectedNote: note });
 
             expect(callback).toHaveBeenCalledWith(expected);
         }));

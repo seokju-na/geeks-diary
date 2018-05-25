@@ -3,6 +3,23 @@ import { NoteCollectionState, NoteEditorState } from './reducers';
 
 
 export const noteCollectionStateAdapter = {
+    addNote(
+        state: NoteCollectionState,
+        newNote: NoteMetadata,
+    ): NoteCollectionState {
+
+        if (!state.loaded) {
+            return state;
+        }
+
+        state.notes.push(newNote);
+
+        return {
+            ...state,
+            notes: [...state.notes],
+        };
+    },
+
     updateNote(
         state: NoteCollectionState,
         patch: Partial<NoteMetadata>,

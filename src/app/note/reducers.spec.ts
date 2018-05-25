@@ -1,9 +1,12 @@
 import { datetime } from '../../common/datetime';
 import { createDummyList } from '../../testing/dummy';
 import {
-    ChangeDateFilterAction, ChangeEditorViewModeAction,
+    AddNoteAction,
+    ChangeDateFilterAction,
+    ChangeEditorViewModeAction,
     GetNoteCollectionCompleteAction,
-    InitEditorAction, InsertNewSnippetAction,
+    InitEditorAction,
+    InsertNewSnippetAction,
     RemoveSnippetAction,
     SelectNoteAction,
     UpdateSnippetContentAction,
@@ -49,6 +52,23 @@ describe('app.note.reducers.noteCollectionReducer', () => {
             );
 
             expect(state.loaded).toBe(true);
+        });
+    });
+
+    describe('ADD_NOTE', () => {
+        it('should add new note at collection.', () => {
+            const beforeState = noteCollectionReducer(
+                undefined,
+                new GetNoteCollectionCompleteAction({ notes: [] }),
+            );
+
+            const note = new NoteMetadataDummyFactory().create();
+            const content = new NoteContentDummyFactory().create(note.id);
+            const action = new AddNoteAction({ metadata: note, content });
+
+            const state = noteCollectionReducer(beforeState, action);
+
+            expect(state.notes[0]).toEqual(note);
         });
     });
 

@@ -2,10 +2,22 @@ import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { select, Store } from '@ngrx/store';
 import { Observable } from 'rxjs/Observable';
 import { map, mergeMap, take } from 'rxjs/operators';
+import * as createUniqueId from 'uuid/v4';
 import { datetime, DateUnits } from '../../../common/datetime';
-import { ChangeDateFilterAction, GetNoteCollectionAction, SelectNoteAction } from '../actions';
+import {
+    AddNoteAction,
+    ChangeDateFilterAction,
+    GetNoteCollectionAction,
+    SelectNoteAction,
+} from '../actions';
 import { NoteContributeTable } from '../calendar/calendar.component';
-import { NoteFinderDateFilterTypes, NoteMetadata } from '../models';
+import {
+    NoteContent,
+    NoteContentSnippetTypes,
+    NoteFinderDateFilterTypes,
+    NoteMetadata,
+} from '../models';
+import { NoteFsService } from '../note-fs.service';
 import { NoteFinderState, NoteStateWithRoot } from '../reducers';
 
 
@@ -23,6 +35,7 @@ export class NoteFinderComponent implements OnInit {
 
     constructor(
         private store: Store<NoteStateWithRoot>,
+        private noteFsService: NoteFsService,
         private changeDetector: ChangeDetectorRef,
     ) {
     }
@@ -71,6 +84,38 @@ export class NoteFinderComponent implements OnInit {
             });
     }
 
+    addNewNote(): void {
+        const id = createUniqueId();
+        const title = 'Untitled Note';
+        const stacks = [];
+        const noteFileName = this.noteFsService.getNoteFileName(id);
+
+        const metadata: NoteMetadata = {
+            id,
+            title,
+            stacks,
+            createdDatetime: datetime.today().getTime(),
+            updatedDatetime: datetime.today().getTime(),
+            fileName: this.noteFsService.getMetadataFileName(noteFileName),
+            noteFileName,
+        };
+
+        const content: NoteContent = {
+            noteId: id,
+            title,
+            stacks,
+            snippets: [{
+                id: createUniqueId(),
+                type: NoteContentSnippetTypes.TEXT,
+                value: 'Type contents...',
+            }],
+            fileName: this.noteFsService.getContentFileName(noteFileName),
+            noteFileName,
+        };
+
+        this.store.dispatch(new AddNoteAction({ metadata, content }));
+    }
+
     private dispatchMonthFilterChanges(): void {
         this.store.dispatch(new ChangeDateFilterAction({
             dateFilter: datetime.copy(this.indexDate),
@@ -95,8 +140,15 @@ export class NoteFinderComponent implements OnInit {
             map(([notes, finderState]) => {
                 this.makeContributeTable(notes);
 
-                return this.applyFilter(
-                    notes, finderState.dateFilter, finderState.dateFilterBy);
+                const filteredNotes = this.applyFilter(
+                    notes,
+                    finderState.dateFilter,
+                    finderState.dateFilterBy,
+                );
+
+                filteredNotes.sort((a, b) => b.createdDatetime - a.createdDatetime);
+
+                return filteredNotes;
             }),
         );
     }

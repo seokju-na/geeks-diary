@@ -6,6 +6,9 @@ import { of } from 'rxjs/observable/of';
 import { zip } from 'rxjs/observable/zip';
 import { catchError, debounceTime, map, mergeMap, switchMap, tap } from 'rxjs/operators';
 import {
+    AddNoteAction,
+    AddNoteCompleteAction,
+    AddNoteErrorAction,
     GetNoteCollectionCompleteAction,
     InitEditorAction,
     InsertNewSnippetAction,
@@ -46,6 +49,28 @@ export class NoteFsEffects {
         switchMap((action: LoadNoteContentAction) =>
             this.noteFsService.readNoteContent(action.payload.note.noteFileName)),
         map(content => new LoadNoteContentCompleteAction({ content })),
+    );
+
+    @Effect()
+    addNote: Observable<Action> = this.actions.pipe(
+        ofType<AddNoteAction>(NoteActionTypes.ADD_NOTE),
+        switchMap((action: AddNoteAction) =>
+            this.noteFsService
+                .createNote(action.payload.metadata, action.payload.content)
+                .pipe(
+                    map(() => new AddNoteCompleteAction({
+                        note: action.payload.metadata,
+                    })),
+                    catchError(error => of(new AddNoteErrorAction(error))),
+                ),
+        ),
+    );
+
+    @Effect()
+    afterAddNote: Observable<Action> = this.actions.pipe(
+        ofType<AddNoteCompleteAction>(NoteActionTypes.ADD_NOTE_COMPLETE),
+        map((action: AddNoteCompleteAction) =>
+            new SelectNoteAction({ selectedNote: action.payload.note })),
     );
 
     @Effect()

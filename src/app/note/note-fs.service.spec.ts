@@ -1,5 +1,6 @@
 import { fakeAsync, flush, inject, TestBed } from '@angular/core/testing';
 import * as path from 'path';
+import { of } from 'rxjs/observable/of';
 import { MockFsService } from '../../testing/mock';
 import { FsService } from '../core/fs.service';
 import { NoteContentDummyFactory, NoteMetadataDummyFactory } from './dummies';
@@ -32,7 +33,7 @@ describe('app.note.NoteFsService', () => {
             notes.push({
                 metadata,
                 content,
-                fileName: NoteFsService.getFileNameFromMetadata(metadata),
+                fileName: `${metadata.id}.gd`,
             });
         }
     });
@@ -226,6 +227,34 @@ describe('app.note.NoteFsService', () => {
                     ],
                 })
                 .flush();
+        }));
+    });
+
+    describe('createNote', () => {
+        it('should create note directory and save metadata, content file.', fakeAsync(() => {
+            const metadata = new NoteMetadataDummyFactory().create();
+            metadata.noteFileName = 'test.gd';
+
+            const content = new NoteContentDummyFactory().create(metadata.id);
+
+            spyOn(noteFsService, 'writeNoteMetadata').and.returnValue(of(null));
+            spyOn(noteFsService, 'writeNoteContent').and.returnValue(of(null));
+
+            noteFsService.createNote(metadata, content).subscribe();
+
+            mockFsService
+                .expect({
+                    methodName: 'makeDirectory',
+                    args: [
+                        path.resolve(noteFsService.noteStoragePath, metadata.noteFileName),
+                    ],
+                })
+                .flush();
+
+            flush();
+
+            expect(noteFsService.writeNoteMetadata).toHaveBeenCalledWith(metadata);
+            expect(noteFsService.writeNoteContent).toHaveBeenCalledWith(content);
         }));
     });
 });

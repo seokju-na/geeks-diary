@@ -91,6 +91,12 @@ export function noteCollectionReducer(
                 notes: action.payload.notes,
             };
 
+        case NoteActionTypes.ADD_NOTE:
+            return noteCollectionStateAdapter.addNote(
+                state,
+                action.payload.metadata,
+            );
+
         case NoteActionTypes.SELECT_NOTE:
             return {
                 ...state,

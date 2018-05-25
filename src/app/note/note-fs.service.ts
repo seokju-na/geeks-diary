@@ -3,8 +3,7 @@ import * as path from 'path';
 import { Observable } from 'rxjs/Observable';
 import { of } from 'rxjs/observable/of';
 import { zip } from 'rxjs/observable/zip';
-import { catchError, filter, map, switchMap } from 'rxjs/operators';
-import { datetime } from '../../common/datetime';
+import { catchError, filter, map, mapTo, switchMap } from 'rxjs/operators';
 import { environment } from '../../environments/environment';
 import { FsService } from '../core/fs.service';
 import { NoteContent, NoteMetadata } from './models';
@@ -16,19 +15,16 @@ export class NoteFsService {
     static readonly contentFileName = 'content.json';
     static readonly fileNameRegExp = /\.gd$/;
 
-    static getFileNameFromMetadata(metadata: NoteMetadata): string {
-        const createdAt = datetime.shortFormat(new Date(metadata.createdDatetime));
-        const title = metadata.title.replace(' ', '-');
-
-        return `${createdAt}-${title}.gd`;
-    }
-
     readonly workspacePath: string;
     readonly noteStoragePath: string;
 
     constructor(private fsService: FsService) {
         this.workspacePath = path.resolve(environment.getPath('userData'), 'workspace/');
         this.noteStoragePath = path.resolve(this.workspacePath, 'notes/');
+    }
+
+    getNoteFileName(noteId: string): string {
+        return path.resolve(this.noteStoragePath, `${noteId}.gd`);
     }
 
     getMetadataFileName(noteFileName: string): string {
@@ -94,5 +90,21 @@ export class NoteFsService {
         const value = NoteContent.convertToFileData(content);
 
         return this.fsService.writeFile(content.fileName, value);
+    }
+
+    createNote(
+        metadata: NoteMetadata,
+        content: NoteContent,
+    ): Observable<void> {
+
+        const noteFileName = metadata.noteFileName;
+        const noteFilePath = path.resolve(this.noteStoragePath, noteFileName);
+
+        return this.fsService.makeDirectory(noteFilePath).pipe(
+            switchMap(() =>
+                zip(this.writeNoteMetadata(metadata), this.writeNoteContent(content)),
+            ),
+            mapTo(null),
+        );
     }
 }
