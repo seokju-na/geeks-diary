@@ -16,6 +16,7 @@ import { FormFieldErrorComponent } from './form-field/form-field-error.component
 import { FormFieldHintComponent } from './form-field/form-field-hint.component';
 import { FormFieldComponent } from './form-field/form-field.component';
 import { IconComponent } from './icon/icon.component';
+import { Menu } from './menu/menu';
 import { OptionItemComponent } from './option-item/option-item.component';
 import { ProgressBarComponent } from './progress-bar/progress-bar.component';
 import { SpinnerComponent } from './spinner/spinner.component';
@@ -71,6 +72,7 @@ import { TooltipDirective } from './tooltip/tooltip.directive';
     providers: [
         CalendarTableProvider,
         Dialog,
+        Menu,
     ],
     exports: [
         CommonModule,
