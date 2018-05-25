@@ -1,12 +1,28 @@
+&:host {
+    display: block;
+    width: 100%;
+}
+
+
 .NoteEditor {
     display: flex;
     flex-direction: column;
+    flex-wrap: wrap;
+    width: 100%;
+    height: 100%;
 
     &__toolbar {
     }
 
+    &__content {
+        flex: 1;
+        display: block;
+        overflow-y: auto;
+    }
+
     &__titleEditor {
         padding: var(--size-space-regular);
+        min-height: min-content;
     }
 
     &__titleInput {
@@ -37,13 +53,10 @@
     }
 
     &__snippets {
-        flex: 1;
-        display: block;
-        overflow-y: auto;
     }
 
     &__snippet {
-        display: block;
         padding: var(--size-space-regular);
+        min-height: min-content;
     }
 }

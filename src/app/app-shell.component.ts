@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { Store } from '@ngrx/store';
+import { select, Store } from '@ngrx/store';
 import { Observable } from 'rxjs/Observable';
 import { AppState } from './app-reducers';
 import { SidebarOutlet } from './core/sidebar/sidebar.component';
@@ -23,6 +23,6 @@ export class AppShellComponent {
     sidebarOpened: Observable<boolean>;
 
     constructor(private store: Store<AppState>) {
-        this.sidebarOpened = this.store.select(state => state.layout.showSidebar);
+        this.sidebarOpened = this.store.pipe(select(state => state.layout.showSidebar));
     }
 }

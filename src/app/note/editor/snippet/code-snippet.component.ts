@@ -213,7 +213,7 @@ export class NoteEditorCodeSnippetComponent extends NoteEditorSnippet implements
         return this.languageStack !== null && this.languageStack.icon !== null;
     }
 
-    private layoutHeight(): void {
+    layoutHeight(): void {
         const contentWidth = this.contentEl.nativeElement.clientWidth;
         const lineCount = this._editor.getModel().getLineCount();
 

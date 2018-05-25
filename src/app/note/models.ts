@@ -72,6 +72,29 @@ export class NoteContent {
             snippets: content.snippets,
         });
     }
+
+    static convertToPreviewString(content: NoteContent): string {
+        let str = '';
+
+        content.snippets.forEach((snippet) => {
+            switch (snippet.type) {
+                case NoteContentSnippetTypes.TEXT:
+                    str += snippet.value;
+                    break;
+
+                case NoteContentSnippetTypes.CODE:
+                    str += `\`\`\`${snippet.language}`;
+                    str += '\n';
+                    str += snippet.value;
+                    str += '\n';
+                    str += '\`\`\`';
+            }
+
+            str += `\n\n`;
+        });
+
+        return str;
+    }
 }
 
 

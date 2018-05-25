@@ -16,11 +16,11 @@
         <ul role="toolbar" class="NoteHeader__toolbar">
             <li *ngFor="let toolItem of toolItems"
                 role="presentation"
-                gdTooltip
-                [message]="toolItem.description"
-                [showDelay]="500"
+                [attr.aria-label]="toolItem.description"
                 class="NoteHeader__toolItem">
-                <button gd-button buttonType="flat">
+                <button gd-button
+                        (click)="clickToolbarItem(toolItem)"
+                        buttonType="flat">
                     <i gd-icon [name]="toolItem.iconName"></i>
                 </button>
             </li>

@@ -1,6 +1,7 @@
 import { Injectable, OnDestroy } from '@angular/core';
 import { Observable, Subject } from 'rxjs';
-import { NoteContent, NoteContentSnippet } from '../models';
+import { NoteContent, NoteContentSnippet, NoteContentSnippetTypes } from '../models';
+import { NoteEditorCodeSnippetComponent } from './snippet/code-snippet.component';
 import { NoteEditorSnippetRef } from './snippet/snippet';
 import { NoteEditorSnippetFactory } from './snippet/snippet-factory';
 
@@ -115,6 +116,15 @@ export class NoteEditorService implements OnDestroy {
         } else if (direction < 0) {
             nextSnippet.instance.setPositionToBottom();
         }
+    }
+
+    updateLayout(): void {
+        this.snippetRefs.forEach((snippetRef) => {
+            if (snippetRef.instance._config.type === NoteContentSnippetTypes.CODE) {
+                const instance = snippetRef.instance as NoteEditorCodeSnippetComponent;
+                instance.layoutHeight();
+            }
+        });
     }
 
     private handleFocusOut(direction: 1 | -1): void {

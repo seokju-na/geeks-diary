@@ -1,7 +1,8 @@
-import { DebugElement } from '@angular/core';
-import { async, ComponentFixture, inject, TestBed } from '@angular/core/testing';
+import { Component, DebugElement } from '@angular/core';
+import { async, ComponentFixture, fakeAsync, inject, TestBed, tick } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
 import { combineReducers, Store, StoreModule } from '@ngrx/store';
+import { Observable, Subject } from 'rxjs';
 import { typeInElement } from '../../../testing/fake-event';
 import { MonacoService } from '../../core/monaco.service';
 import { SharedModule } from '../../shared/shared.module';
@@ -19,10 +20,11 @@ import { NoteEditorToolbarComponent } from './toolbar/toolbar.component';
 
 
 describe('app.note.editor.NoteEditorComponent', () => {
-    let fixture: ComponentFixture<NoteEditorComponent>;
-    let component: NoteEditorComponent;
+    let fixture: ComponentFixture<NoteEditorTestComponent>;
+    let component: NoteEditorTestComponent;
 
     let store: Store<NoteStateWithRoot>;
+    let editorService: NoteEditorService;
 
     beforeEach(async(() => {
         TestBed
@@ -44,22 +46,24 @@ describe('app.note.editor.NoteEditorComponent', () => {
                     NoteEditorTextSnippetComponent,
                     NoteEditorCodeSnippetComponent,
                     NoteEditorComponent,
+                    NoteEditorTestComponent,
                 ],
             })
             .compileComponents();
     }));
 
     beforeEach(inject(
-        [Store],
-        (s: Store<NoteStateWithRoot>) => {
+        [Store, NoteEditorService],
+        (s: Store<NoteStateWithRoot>, n: NoteEditorService) => {
             store = s;
+            editorService = n;
         },
     ));
 
     beforeEach(() => {
         spyOn(store, 'dispatch').and.callThrough();
 
-        fixture = TestBed.createComponent(NoteEditorComponent);
+        fixture = TestBed.createComponent(NoteEditorTestComponent);
         component = fixture.componentInstance;
         fixture.detectChanges();
     });
@@ -132,4 +136,27 @@ describe('app.note.editor.NoteEditorComponent', () => {
             expect(instance.getValue()).toEqual(content.snippets[index].value);
         });
     });
+
+    it('should update layouts when event dispatched.', fakeAsync(() => {
+        spyOn(editorService, 'updateLayout');
+
+        component._layoutUpdated.next();
+        tick();
+
+        expect(editorService.updateLayout).toHaveBeenCalled();
+    }));
 });
+
+
+@Component({
+    template: `
+        <gd-note-editor [layoutUpdated]="layoutUpdated"></gd-note-editor>
+    `,
+})
+class NoteEditorTestComponent {
+    readonly _layoutUpdated = new Subject<void>();
+
+    get layoutUpdated(): Observable<void> {
+        return this._layoutUpdated.asObservable();
+    }
+}

@@ -1,0 +1,18 @@
+<div [class.NoteWorkspace--view-editorOnly]="(editorViewMode | async) === VIEW_EDITOR_ONLY_MODE"
+     [class.NoteWorkspace--view-previewOnly]="(editorViewMode | async) === VIEW_PREVIEW_ONLY_MODE"
+     class="NoteWorkspace">
+
+    <header>
+        <gd-note-header></gd-note-header>
+    </header>
+
+    <section>
+        <div class="NoteWorkspace__panel NoteWorkspace__panel--editor">
+            <gd-note-editor [layoutUpdated]="layoutUpdateActions"></gd-note-editor>
+        </div>
+
+        <div class="NoteWorkspace__panel NoteWorkspace__panel--preview">
+            <gd-note-preview></gd-note-preview>
+        </div>
+    </section>
+</div>

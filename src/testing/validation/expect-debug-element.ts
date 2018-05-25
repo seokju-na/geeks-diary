@@ -23,6 +23,12 @@ class DebugElementMatcher {
 
         return expect(classContained).toBeTruthy();
     }
+
+    toBeDisplayed(): boolean {
+        const displayProp = this.nativeElem.style.display;
+
+        return expect(displayProp).not.toEqual('none');
+    }
 }
 
 

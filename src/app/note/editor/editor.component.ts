@@ -1,4 +1,4 @@
-import { Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { Component, ElementRef, Input, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { select, Store } from '@ngrx/store';
 import { Subscription } from 'rxjs';
@@ -19,6 +19,8 @@ import { NoteEditorSnippetRef } from './snippet/snippet';
     styleUrls: ['./editor.component.less'],
 })
 export class NoteEditorComponent implements OnInit, OnDestroy {
+    @Input() readonly layoutUpdated: Observable<void>;
+
     editorLoaded: Observable<boolean>;
     titleInputControl = new FormControl('');
 
@@ -27,6 +29,7 @@ export class NoteEditorComponent implements OnInit, OnDestroy {
     private titleChangesViaUserInputSubscription: Subscription;
     private titleChangesFromStoreSubscription: Subscription;
     private extraEventsSubscription: Subscription;
+    private layoutUpdatesSubscription: Subscription;
 
     constructor(
         private editorService: NoteEditorService,
@@ -61,6 +64,13 @@ export class NoteEditorComponent implements OnInit, OnDestroy {
             this.editorService.events().subscribe((event) => {
                 this.handleExtraEvents(event);
             });
+
+        this.layoutUpdatesSubscription =
+            this.layoutUpdated.subscribe(() => {
+                setTimeout(() => {
+                    this.editorService.updateLayout();
+                });
+            });
     }
 
     ngOnDestroy(): void {
@@ -74,6 +84,10 @@ export class NoteEditorComponent implements OnInit, OnDestroy {
 
         if (this.extraEventsSubscription) {
             this.extraEventsSubscription.unsubscribe();
+        }
+
+        if (this.layoutUpdatesSubscription) {
+            this.layoutUpdatesSubscription.unsubscribe();
         }
     }
 
