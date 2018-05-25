@@ -1,0 +1,79 @@
+.StackEditForm {
+    display: inline-flex;
+    flex-wrap: wrap;
+    margin-top: calc(~"-1 * var(--size-space-tiny)");
+    margin-bottom: calc(~"-1 * var(--size-space-tiny)");
+    width: 100%;
+
+    &__stacks {
+        display: inline-flex;
+        flex-wrap: wrap;
+        max-width: 100%;
+    }
+
+    &__stackItem {
+        display: inline-flex;
+        align-items: center;
+        margin: var(--size-space-tiny);
+        padding: var(--size-space-tiny) var(--size-space-small);
+        border: 1px solid var(--color-gray-4);
+        border-radius: 2px;
+        background-color: var(--color-gray-1);
+        cursor: default;
+        user-select: none;
+
+        span {
+            display: inline-block;
+            padding: 0 var(--size-space-tiny);
+            color: var(--color-gray-7);
+        }
+
+        button {
+            padding: 0 var(--size-space-tiny);
+            margin: 0;
+            border: none;
+            background: transparent;
+            cursor: pointer;
+            outline: 0;
+            color: var(--color-gray-7);
+        }
+    }
+
+    &__input {
+        display: inline-flex;
+        align-items: center;
+        margin: var(--size-space-tiny);
+        padding: 0 var(--size-space-small);
+
+        input {
+            display: inline-block;
+            width: 150px;
+            height: var(--size-box-small);
+            background: transparent;
+            border: none;
+            margin: 0;
+            padding: 0;
+            outline: 0;
+            border-bottom: 1px solid var(--color-gray-4);
+            font-size: var(--size-font-small);
+            line-height: var(--size-lineHeight-small);
+            color: var(--color-gray-7);
+
+            &::placeholder {
+                font-weight: 500;
+                color: var(--color-gray-5);
+            }
+        }
+    }
+
+    &__optionItem {
+        span {
+            display: inline-block;
+            flex: 1;
+            padding: 0 var(--size-space-small);
+            min-width: 1px;
+            text-overflow: ellipsis;
+            overflow: hidden;
+        }
+    }
+}

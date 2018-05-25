@@ -4,12 +4,21 @@ import { StoreModule } from '@ngrx/store';
 import { SharedModule } from '../shared/shared.module';
 import { StackModule } from '../stack/stack.module';
 import { NoteCalendarComponent } from './calendar/calendar.component';
-import { NoteEffects } from './effects';
+import { NoteEditorComponent } from './editor/editor.component';
+import { NoteEditorService } from './editor/editor.service';
+import { NoteEditorCodeSnippetComponent } from './editor/snippet/code-snippet.component';
+import { NoteEditorSnippetFactory } from './editor/snippet/snippet-factory';
+import { NoteEditorTextSnippetComponent } from './editor/snippet/text-snippet.component';
+import { NoteEditorToolbarComponent } from './editor/toolbar/toolbar.component';
+import { NoteEditorEffects, NoteFsEffects } from './effects';
 import { NoteFinderComponent } from './finder/finder.component';
+import { NoteEditorViewModeSettingMenu } from './header/editor-view-mode-setting-menu';
 import { NoteHeaderComponent } from './header/header.component';
 import { NoteItemComponent } from './item/item.component';
 import { NoteFsService } from './note-fs.service';
+import { NotePreviewComponent } from './preview/preview.component';
 import { noteReducerMap } from './reducers';
+import { NoteWorkspaceComponent } from './workspace/workspace.component';
 
 
 @NgModule({
@@ -17,23 +26,37 @@ import { noteReducerMap } from './reducers';
         SharedModule,
         StackModule,
         StoreModule.forFeature('note', noteReducerMap),
-        EffectsModule.forFeature([NoteEffects]),
+        EffectsModule.forFeature([
+            NoteFsEffects,
+            NoteEditorEffects,
+        ]),
     ],
     declarations: [
         NoteFinderComponent,
         NoteCalendarComponent,
         NoteItemComponent,
         NoteHeaderComponent,
+        NoteEditorCodeSnippetComponent,
+        NoteEditorTextSnippetComponent,
+        NoteEditorToolbarComponent,
+        NoteEditorComponent,
+        NotePreviewComponent,
+        NoteWorkspaceComponent,
     ],
     entryComponents: [
         NoteFinderComponent,
+        NoteEditorCodeSnippetComponent,
+        NoteEditorTextSnippetComponent,
     ],
     providers: [
         NoteFsService,
+        NoteEditorSnippetFactory,
+        NoteEditorService,
+        NoteEditorViewModeSettingMenu,
     ],
     exports: [
         NoteFinderComponent,
-        NoteHeaderComponent,
+        NoteWorkspaceComponent,
     ],
 })
 export class NoteModule {

@@ -73,6 +73,7 @@ export class NoteContentSnippetDummyFactory implements DummyFactory<NoteContentS
 
 export class NoteContentDummyFactory implements DummyFactory<NoteContent> {
     id: StringIdDummyFactory;
+    title = new TextDummyFactory('NoteTitle');
 
     constructor(readonly namespace = 'note') {
         this.id = new StringIdDummyFactory(this.namespace);
@@ -85,6 +86,8 @@ export class NoteContentDummyFactory implements DummyFactory<NoteContent> {
     ): NoteContent {
         return {
             noteId,
+            title: this.title.create(),
+            stacks: [],
             snippets,
         };
     }

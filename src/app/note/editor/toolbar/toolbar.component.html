@@ -1,0 +1,17 @@
+<div class="NoteEditorToolbar">
+    <div class="NoteEditorToolbar__content">
+        <div class="NoteEditorToolbar__stackEdit">
+            <label gd-text size="small">Stacks : </label>
+            <gd-stack-edit-form
+                [stacks]="stacks | async"
+                (stacksChanged)="updateStacks($event)"></gd-stack-edit-form>
+        </div>
+
+        <div class="NoteEditorToolbar__controls">
+        </div>
+    </div>
+
+    <button class="NoteEditorToolbar__showButton">
+        <i gd-icon name="toggle-down"></i>
+    </button>
+</div>

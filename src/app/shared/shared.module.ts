@@ -6,6 +6,7 @@ import { NgModule } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { AutocompleteTriggerDirective } from './autocomplete/autocomplete-trigger.directive';
 import { AutocompleteComponent } from './autocomplete/autocomplete.component';
+import { AutosizeDirective } from './autosize/autosize.directive';
 import { ButtonComponent } from './button/button.component';
 import { CalendarTableProvider } from './calendar/calendar-table';
 import { Dialog } from './dialog/dialog';
@@ -15,6 +16,7 @@ import { FormFieldErrorComponent } from './form-field/form-field-error.component
 import { FormFieldHintComponent } from './form-field/form-field-hint.component';
 import { FormFieldComponent } from './form-field/form-field.component';
 import { IconComponent } from './icon/icon.component';
+import { Menu } from './menu/menu';
 import { OptionItemComponent } from './option-item/option-item.component';
 import { ProgressBarComponent } from './progress-bar/progress-bar.component';
 import { SpinnerComponent } from './spinner/spinner.component';
@@ -36,6 +38,8 @@ import { TooltipDirective } from './tooltip/tooltip.directive';
         // Autocomplete
         AutocompleteTriggerDirective,
         AutocompleteComponent,
+        // Autosize
+        AutosizeDirective,
         // Button
         ButtonComponent,
         // Icon
@@ -68,6 +72,7 @@ import { TooltipDirective } from './tooltip/tooltip.directive';
     providers: [
         CalendarTableProvider,
         Dialog,
+        Menu,
     ],
     exports: [
         CommonModule,
@@ -75,6 +80,8 @@ import { TooltipDirective } from './tooltip/tooltip.directive';
         // Autocomplete
         AutocompleteTriggerDirective,
         AutocompleteComponent,
+        // Autosize
+        AutosizeDirective,
         // Button
         ButtonComponent,
         // Icon

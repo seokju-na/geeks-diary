@@ -2,7 +2,10 @@ import { ActionReducerMap } from '@ngrx/store';
 import { datetime } from '../../common/datetime';
 import { AppState } from '../app-reducers';
 import { NoteActions, NoteActionTypes } from './actions';
+import { noteCollectionStateAdapter, noteEditorStateAdapter } from './adapters';
 import {
+    NoteContent,
+    NoteEditorViewModes,
     NoteFinderDateFilterTypes,
     NoteFinderSortDirection,
     NoteFinderSortTypes,
@@ -10,6 +13,7 @@ import {
 } from './models';
 
 
+// State interfaces
 export interface NoteCollectionState {
     loaded: boolean;
     notes: NoteMetadata[];
@@ -25,9 +29,17 @@ export interface NoteFinderState {
 }
 
 
+export interface NoteEditorState {
+    loaded: boolean;
+    selectedNoteContent: NoteContent | null;
+    viewMode: NoteEditorViewModes;
+}
+
+
 export interface NoteStateForFeature {
     collection: NoteCollectionState;
     finder: NoteFinderState;
+    editor: NoteEditorState;
 }
 
 
@@ -36,6 +48,7 @@ export interface NoteStateWithRoot extends AppState {
 }
 
 
+// Initial states
 export function createInitialNoteCollectionState(): NoteCollectionState {
     return {
         loaded: false,
@@ -55,6 +68,16 @@ export function createInitialNoteFinderState(): NoteFinderState {
 }
 
 
+export function createInitialNoteEditorState(): NoteEditorState {
+    return {
+        loaded: false,
+        selectedNoteContent: null,
+        viewMode: NoteEditorViewModes.SHOW_BOTH,
+    };
+}
+
+
+// Reducers
 export function noteCollectionReducer(
     state = createInitialNoteCollectionState(),
     action: NoteActions,
@@ -68,17 +91,34 @@ export function noteCollectionReducer(
                 notes: action.payload.notes,
             };
 
+        case NoteActionTypes.ADD_NOTE:
+            return noteCollectionStateAdapter.addNote(
+                state,
+                action.payload.metadata,
+            );
+
         case NoteActionTypes.SELECT_NOTE:
             return {
                 ...state,
                 selectedNote: action.payload.selectedNote,
             };
 
+        case NoteActionTypes.UPDATE_STACKS:
+            return noteCollectionStateAdapter.updateNote(
+                state,
+                { stacks: [...action.payload.stacks] },
+            );
+
+        case NoteActionTypes.UPDATE_TITLE:
+            return noteCollectionStateAdapter.updateNote(
+                state,
+                { title: action.payload.title },
+            );
+
         default:
             return state;
     }
 }
-
 
 
 export function noteFinderReducer(
@@ -100,7 +140,76 @@ export function noteFinderReducer(
 }
 
 
+export function noteEditorReducer(
+    state = createInitialNoteEditorState(),
+    action: NoteActions,
+): NoteEditorState {
+
+    switch (action.type) {
+        case NoteActionTypes.INIT_EDITOR:
+            return {
+                ...state,
+                loaded: true,
+                selectedNoteContent: { ...action.payload.content },
+            };
+
+        case NoteActionTypes.REMOVE_SNIPPET:
+            if (!state.loaded) {
+                return state;
+            }
+
+            if (state.selectedNoteContent.snippets.length <= 1
+                || noteEditorStateAdapter._indexOfSnippet(state, action.payload.snippetId) === 0) {
+
+                return state;
+            }
+
+            return noteEditorStateAdapter.removeSnippet(
+                state,
+                action.payload.snippetId,
+            );
+
+        case NoteActionTypes.INSERT_NEW_SNIPPET:
+            return noteEditorStateAdapter.insertSnippet(
+                state,
+                action.payload.snippetId,
+                action.payload.content,
+            );
+
+        case NoteActionTypes.UPDATE_SNIPPET_CONTENT:
+            return noteEditorStateAdapter.updateSnippet(
+                state,
+                action.payload.snippetId,
+                action.payload.patch,
+            );
+
+        case NoteActionTypes.UPDATE_STACKS:
+            return noteEditorStateAdapter.updateContent(
+                state,
+                { stacks: action.payload.stacks },
+            );
+
+        case NoteActionTypes.UPDATE_TITLE:
+            return noteEditorStateAdapter.updateContent(
+                state,
+                { title: action.payload.title },
+            );
+
+        case NoteActionTypes.CHANGE_EDITOR_VIEW_MODE:
+            return {
+                ...state,
+                viewMode: action.payload.viewMode,
+            };
+
+        default:
+            return state;
+    }
+}
+
+
+// Reducer map
 export const noteReducerMap: ActionReducerMap<NoteStateForFeature> = {
     collection: noteCollectionReducer,
     finder: noteFinderReducer,
+    editor: noteEditorReducer,
 };

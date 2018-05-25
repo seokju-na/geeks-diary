@@ -3,6 +3,7 @@ import { select, Store } from '@ngrx/store';
 import { Observable } from 'rxjs/Observable';
 import { NoteMetadata } from '../models';
 import { NoteStateWithRoot } from '../reducers';
+import { NoteEditorViewModeSettingMenu } from './editor-view-mode-setting-menu';
 
 
 interface NoteHeaderToolItem {
@@ -25,8 +26,20 @@ export class NoteHeaderComponent {
     ];
     selectedNote: Observable<NoteMetadata>;
 
-    constructor(private store: Store<NoteStateWithRoot>) {
+    constructor(
+        private store: Store<NoteStateWithRoot>,
+        private editorViewModeSettingMenu: NoteEditorViewModeSettingMenu,
+    ) {
+
         this.selectedNote = this.store.pipe(
             select(state => state.note.collection.selectedNote));
+    }
+
+    clickToolbarItem(item: NoteHeaderToolItem): void {
+        switch (item.name) {
+            case 'editorView':
+                this.editorViewModeSettingMenu.open();
+                break;
+        }
     }
 }

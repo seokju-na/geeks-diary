@@ -1,0 +1,84 @@
+<div #wrapper class="NoteEditorCodeSnippet">
+    <header [ngSwitch]="mode"
+            class="NoteEditorCodeSnippet__header">
+
+        <div *ngSwitchCase="'edit'"
+             class="NoteEditorCodeSnippet__stackIcon">
+            <gd-stack-chip *ngIf="canDisplayLanguageStackIcon()"
+                           [stack]="languageStack"></gd-stack-chip>
+        </div>
+
+        <h1 *ngSwitchCase="'edit'"
+            gd-text
+            size="regular"
+            weight="bold"
+            class="NoteEditorCodeSnippet__title">
+            {{_config.fileName}}
+        </h1>
+
+        <form *ngSwitchCase="'setting'"
+              (ngSubmit)="submitSetting()"
+              [formGroup]="settingForm"
+              class="NoteEditorCodeSnippet__settingForm">
+            <gd-form-field>
+                <label gd-text size="small">Language :</label>
+                <input gdFormFieldControl
+                       gdAutocomplete
+                       [autocomplete]="auto"
+                       formControlName="language"
+                       name="language">
+
+                <gd-autocomplete #auto="gdAutocomplete">
+                    <gd-option-item *ngFor="let stack of filteredStacks | async"
+                                    [value]="stack.name"
+                                    class="NoteEditorCodeSnippet__optionItem">
+                        <gd-stack-chip [stack]="stack"></gd-stack-chip>
+                        <span gd-text>{{stack.name}}</span>
+                    </gd-option-item>
+                </gd-autocomplete>
+            </gd-form-field>
+
+            <gd-form-field>
+                <label gd-text size="small">File Name :</label>
+                <input gdFormFieldControl
+                       formControlName="fileName"
+                       name="fileName">
+            </gd-form-field>
+
+            <div class="NoteEditorCodeSnippet__formButtonGroup">
+                <button gd-button
+                        size="small"
+                        aria-label="save-button"
+                        type="submit">
+                    <span gd-text>Save</span>
+                </button>
+                <button gd-button
+                        (click)="cancelSetting()"
+                        size="small"
+                        aria-label="cancel-button"
+                        type="button">
+                    <span gd-text>Cancel</span>
+                </button>
+            </div>
+        </form>
+
+        <button *ngSwitchCase="'edit'"
+                gd-button
+                gdTooltip
+                position="left"
+                message="Setting snippet (⌥ + ⇧ + S)"
+                [showDelay]="500"
+                (click)="turnSettingModeOn()"
+                size="small"
+                buttonType="flat"
+                aria-label="setting-button"
+                class="NoteEditorCodeSnippet__settingButton"
+                type="button">
+            <i gd-icon name="cog"></i>
+        </button>
+    </header>
+
+    <div class="NoteEditorCodeSnippet__contentWrapper">
+        <div #content class="NoteEditorCodeSnippet__content"></div>
+    </div>
+</div>

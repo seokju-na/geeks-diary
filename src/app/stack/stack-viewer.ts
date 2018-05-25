@@ -28,6 +28,18 @@ export class StackViewer {
         return this._stacks.find(stack => stack.name === name) || null;
     }
 
+    getStackCollection(names: string[]): Stack[] {
+        return names.map((name) => {
+            let stack = this.getStack(name);
+
+            if (!stack) {
+                stack = new Stack(name);
+            }
+
+            return stack;
+        });
+    }
+
     search(query: string): Stack[] {
         return new SearchModel<Stack>()
             .setScoringStrategy(3, (stack, queryStr) =>
@@ -75,6 +87,16 @@ export class StackViewer {
                     iconMaps.splice(indexOfIconMap, 1);
                 }
             }
+        });
+
+        iconMaps.forEach((iconMap) => {
+            const icon = {
+                iconName: iconMap.name,
+                tags: iconMap.tags,
+                versions: iconMap.versions.svg,
+            };
+
+            stacks.push(new Stack(iconMap.name, icon));
         });
 
         return stacks;

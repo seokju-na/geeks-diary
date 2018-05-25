@@ -12,6 +12,7 @@ import { Stack } from '../models';
 export class StackChipComponent {
     @Input() stack: Stack;
     @Input() size = 'regular';
+    @Input() disabled = false;
 
     @HostBinding('attr.aria-label')
     private get attrAriaLabel() { return this.stack.name; }
