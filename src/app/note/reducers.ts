@@ -64,7 +64,7 @@ export function createInitialNoteFinderState(): NoteFinderState {
         dateFilter: datetime.today(),
         dateFilterBy: NoteFinderDateFilterTypes.MONTH,
         sortBy: NoteFinderSortTypes.CREATED,
-        sortDirection: NoteFinderSortDirection.ASC,
+        sortDirection: NoteFinderSortDirection.DESC,
     };
 }
 
@@ -135,6 +135,21 @@ export function noteFinderReducer(
                 dateFilter: action.payload.dateFilter,
                 dateFilterBy: action.payload.dateFilterBy,
             };
+
+        case NoteActionTypes.CHANGE_SORT:
+            if (action.payload.sortBy) {
+                return {
+                    ...state,
+                    sortBy: action.payload.sortBy,
+                };
+            } else if (action.payload.sortDirection) {
+                return {
+                    ...state,
+                    sortDirection: action.payload.sortDirection,
+                };
+            }
+
+            return state;
 
         default:
             return state;

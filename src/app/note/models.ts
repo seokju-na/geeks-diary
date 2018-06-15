@@ -27,6 +27,57 @@ export class NoteMetadata {
             updatedDatetime: metadata.updatedDatetime,
         });
     }
+
+    static sort(
+        notes: NoteMetadata[],
+        sortBy: NoteFinderSortTypes,
+        direction: NoteFinderSortDirection,
+    ): void {
+
+        const sortByTitle = (a: NoteMetadata, b: NoteMetadata): number => {
+            if (a.title < b.title) {
+                return -1;
+            } else if (a.title > b.title) {
+                return 1;
+            }
+            return 0;
+        };
+
+        const sortByCreatedDatetime = (a: NoteMetadata, b: NoteMetadata): number => {
+            if (a.createdDatetime < b.createdDatetime) {
+                return -1;
+            } else if (a.createdDatetime > b.createdDatetime) {
+                return 1;
+            }
+            return 0;
+        };
+
+        const sortByUpdatedDatetime = (a: NoteMetadata, b: NoteMetadata): number => {
+            if (a.updatedDatetime < b.updatedDatetime) {
+                return -1;
+            } else if (a.updatedDatetime > b.updatedDatetime) {
+                return 1;
+            }
+            return 0;
+        };
+
+        notes.sort((noteA, noteB) => {
+            const dir = direction === NoteFinderSortDirection.ASC
+                ? 1
+                : -1;
+
+            switch (sortBy) {
+                case NoteFinderSortTypes.TITLE:
+                    return sortByTitle(noteA, noteB) * dir;
+
+                case NoteFinderSortTypes.CREATED:
+                    return sortByCreatedDatetime(noteA, noteB) * dir;
+
+                case NoteFinderSortTypes.UPDATED:
+                    return sortByUpdatedDatetime(noteA, noteB) * dir;
+            }
+        });
+    }
 }
 
 

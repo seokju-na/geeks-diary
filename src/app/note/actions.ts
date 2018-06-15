@@ -3,7 +3,7 @@ import {
     NoteContent,
     NoteContentSnippet,
     NoteEditorViewModes,
-    NoteFinderDateFilterTypes,
+    NoteFinderDateFilterTypes, NoteFinderSortDirection, NoteFinderSortTypes,
     NoteMetadata,
 } from './models';
 
@@ -18,6 +18,7 @@ export enum NoteActionTypes {
     SAVE_NOTE_COMPLETE = '[Note] Save note complete',
     SAVE_NOTE_ERROR = '[Note] Save note error',
     CHANGE_DATE_FILTER = '[Note] Change date filter',
+    CHANGE_SORT = '[Note] Change sort',
     SELECT_NOTE = '[Note] Select note',
     LOAD_NOTE_CONTENT = '[Note] Load note content',
     LOAD_NOTE_CONTENT_COMPLETE = '[Note] Load note content complete',
@@ -54,6 +55,16 @@ export class ChangeDateFilterAction implements Action {
     constructor(readonly payload: {
         dateFilter: Date | null,
         dateFilterBy: NoteFinderDateFilterTypes,
+    }) {}
+}
+
+
+export class ChangeSortAction implements Action {
+    readonly type = NoteActionTypes.CHANGE_SORT;
+
+    constructor(readonly payload: {
+        sortBy?: NoteFinderSortTypes,
+        sortDirection?: NoteFinderSortDirection,
     }) {}
 }
 
@@ -225,6 +236,7 @@ export type NoteActions =
     GetNoteCollectionAction
     | GetNoteCollectionCompleteAction
     | ChangeDateFilterAction
+    | ChangeSortAction
     | SelectNoteAction
     | LoadNoteContentAction
     | LoadNoteContentCompleteAction
