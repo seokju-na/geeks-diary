@@ -19,6 +19,8 @@ export class NoteWorkspaceComponent {
     VIEW_EDITOR_ONLY_MODE = NoteEditorViewModes.EDITOR_ONLY;
     VIEW_PREVIEW_ONLY_MODE = NoteEditorViewModes.PREVIEW_ONLY;
 
+    editorLoaded: Observable<boolean>;
+
     readonly layoutUpdateActions: Observable<void>;
 
     constructor(private store: Store<NoteStateWithRoot>) {
@@ -33,6 +35,10 @@ export class NoteWorkspaceComponent {
         ).pipe(
             debounceTime(50),
             mapTo(null),
+        );
+
+        this.editorLoaded = this.store.pipe(
+            select(state => state.note.editor.loaded),
         );
     }
 }
