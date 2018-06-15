@@ -91,6 +91,9 @@ export class NoteEditorCodeSnippetComponent extends NoteEditorSnippet implements
         /* tslint:enable */
 
         this.layoutHeight();
+
+        this._afterEditorInitialized.next();
+        this._afterEditorInitialized.complete();
     }
 
     destroy(): void {
@@ -160,9 +163,14 @@ export class NoteEditorCodeSnippetComponent extends NoteEditorSnippet implements
             codeLens: false,
             fontSize: 14,
             lineHeight: 21,
+            links: false,
             glyphMargin: false,
             minimap: {
                 enabled: false,
+            },
+            scrollbar: {
+                vertical: 'hidden',
+                horizontal: 'auto',
             },
             overviewRulerLanes: 0,
             overviewRulerBorder: false,
@@ -171,6 +179,9 @@ export class NoteEditorCodeSnippetComponent extends NoteEditorSnippet implements
             automaticLayout: true,
             roundedSelection: false,
             renderLineHighlight: 'none',
+            selectionHighlight: false,
+            matchBrackets: false,
+            occurrencesHighlight: false,
         };
     }
 

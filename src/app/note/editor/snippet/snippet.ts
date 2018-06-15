@@ -8,6 +8,7 @@ import {
     Type,
 } from '@angular/core';
 import { Store } from '@ngrx/store';
+import { Observable, Subject } from 'rxjs';
 import { KeyCodes } from '../../../../common/key-codes';
 import {
     InsertNewSnippetAction,
@@ -46,8 +47,13 @@ export class NoteEditorSnippetConfig {
 export class NoteEditorSnippetRef {
     outlet: NoteEditorSnippetOutlet;
     instance: NoteEditorSnippet;
+    private _afterEditorInitialized = new Subject<void>();
 
     constructor(readonly id: string) {
+    }
+
+    afterEditorInitialized(): Observable<void> {
+        return this._afterEditorInitialized.asObservable();
     }
 
     setOutlet(component: Type<NoteEditorSnippet>, injector: Injector): void {
@@ -56,6 +62,9 @@ export class NoteEditorSnippetRef {
 
     setInstance(instance: NoteEditorSnippet): void {
         this.instance = instance;
+        this.instance.afterEditorInitialized().subscribe(() => {
+            this._afterEditorInitialized.next();
+        });
     }
 }
 
@@ -64,6 +73,8 @@ export abstract class NoteEditorSnippet implements OnDestroy, AfterViewInit {
     readonly _ref: NoteEditorSnippetRef;
     readonly _config: NoteEditorSnippetConfig;
     protected readonly store: Store<NoteStateWithRoot>;
+    protected readonly _focusChanged = new Subject<boolean>();
+    protected readonly _afterEditorInitialized = new Subject<void>();
     abstract contentEl: ElementRef;
     abstract _editor: any;
 
@@ -86,6 +97,15 @@ export abstract class NoteEditorSnippet implements OnDestroy, AfterViewInit {
 
     ngOnDestroy(): void {
         this.destroy();
+        this._focusChanged.complete();
+    }
+
+    focusChanged(): Observable<boolean> {
+        return this._focusChanged.asObservable();
+    }
+
+    afterEditorInitialized(): Observable<void> {
+        return this._afterEditorInitialized.asObservable();
     }
 
     /** Editor initialize method **/
@@ -147,17 +167,7 @@ export abstract class NoteEditorSnippet implements OnDestroy, AfterViewInit {
     }
 
     protected handleFocus(focused: boolean): void {
-        // let action: NoteActions;
-
-        /*
-         if (focused) {
-         action = new DidSnippetFocusAction({ snippetId: this.id });
-         } else {
-         action = new DidSnippetBlurAction({ snippetId: this.id });
-         }
-         */
-
-        // this.store.dispatch(action);
+        this._focusChanged.next(focused);
     }
 
     protected handleKeyDown(event: KeyboardEvent): void {

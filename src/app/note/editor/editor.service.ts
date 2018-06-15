@@ -1,5 +1,5 @@
 import { Injectable, OnDestroy } from '@angular/core';
-import { Observable, Subject } from 'rxjs';
+import { Observable, Subject, Subscription } from 'rxjs';
 import { NoteContent, NoteContentSnippet, NoteContentSnippetTypes } from '../models';
 import { NoteEditorCodeSnippetComponent } from './snippet/code-snippet.component';
 import { NoteEditorSnippetRef } from './snippet/snippet';
@@ -8,6 +8,7 @@ import { NoteEditorSnippetFactory } from './snippet/snippet-factory';
 
 export enum NoteEditorExtraEventNames {
     MOVE_FOCUS_OUT_OF_SNIPPETS = 'MOVE_FOCUS_OUT_OF_SNIPPETS',
+    SNIPPET_FOCUSED = 'SNIPPET_FOCUSED',
 }
 
 
@@ -24,12 +25,14 @@ export class NoteEditorExtraEvent {
 export class NoteEditorService implements OnDestroy {
     snippetRefs: NoteEditorSnippetRef[] = [];
     private _events = new Subject<NoteEditorExtraEvent>();
+    private focusEventSubscriptionMap = new Map<NoteEditorSnippetRef, Subscription>();
 
     constructor(private snippetFactory: NoteEditorSnippetFactory) {
     }
 
     ngOnDestroy(): void {
         this._events.complete();
+        this.focusEventSubscriptionMap.clear();
     }
 
     events(): Observable<NoteEditorExtraEvent> {
@@ -37,8 +40,13 @@ export class NoteEditorService implements OnDestroy {
     }
 
     initFromNoteContent(content: NoteContent): void {
-        this.snippetRefs = content.snippets.map(snippet =>
-            this.snippetFactory.createWithContent(snippet, false));
+        this.snippetRefs = content.snippets.map((snippet) => {
+            const snippetRef = this.snippetFactory.createWithContent(snippet, false);
+
+            this.subscribeSnippetFocusEvent(snippetRef);
+
+            return snippetRef;
+        });
     }
 
     insertNewSnippetRef(
@@ -54,17 +62,12 @@ export class NoteEditorService implements OnDestroy {
 
         const snippetRef = this.snippetFactory.createWithContent(content, true);
 
-        this.snippetRefs.splice(
-            index + 1,
-            0,
-            snippetRef,
-        );
-
-        setTimeout(() => {
-            if (snippetRef.instance) {
-                snippetRef.instance.focus();
-            }
+        snippetRef.afterEditorInitialized().subscribe(() => {
+            snippetRef.instance.focus();
         });
+
+        this.subscribeSnippetFocusEvent(snippetRef);
+        this.snippetRefs.splice(index + 1, 0, snippetRef);
     }
 
     getIndexOfSnippetRef(snippetId: string): number {
@@ -75,6 +78,7 @@ export class NoteEditorService implements OnDestroy {
         const index = this.getIndexOfSnippetRef(snippetId);
 
         if (index !== -1 && this.snippetRefs.length > 1) {
+            this.unsubscribeSnippetFocusEvent(this.snippetRefs[index]);
             this.snippetRefs.splice(index, 1);
             this.moveFocusByIndex(index, -1);
         }
@@ -127,10 +131,37 @@ export class NoteEditorService implements OnDestroy {
         });
     }
 
+    private subscribeSnippetFocusEvent(ref: NoteEditorSnippetRef): void {
+        ref.afterEditorInitialized().subscribe(() => {
+            const subscription = ref.instance.focusChanged().subscribe((focused) => {
+                this.handleSnippetFocus(ref, focused);
+            });
+
+            this.focusEventSubscriptionMap.set(ref, subscription);
+        });
+    }
+
+    private unsubscribeSnippetFocusEvent(ref: NoteEditorSnippetRef): void {
+        const subscription = this.focusEventSubscriptionMap.get(ref);
+
+        if (subscription) {
+            subscription.unsubscribe();
+        }
+
+        this.focusEventSubscriptionMap.delete(ref);
+    }
+
     private handleFocusOut(direction: 1 | -1): void {
         this._events.next(new NoteEditorExtraEvent(
             NoteEditorExtraEventNames.MOVE_FOCUS_OUT_OF_SNIPPETS,
             { direction },
+        ));
+    }
+
+    private handleSnippetFocus(ref: NoteEditorSnippetRef, focused: boolean): void {
+        this._events.next(new NoteEditorExtraEvent(
+            NoteEditorExtraEventNames.SNIPPET_FOCUSED,
+            { snippetRef: ref, focused },
         ));
     }
 }

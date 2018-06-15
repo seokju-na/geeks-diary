@@ -54,6 +54,9 @@ export class NoteEditorTextSnippetComponent extends NoteEditorSnippet {
         this._editor.on('keydown', this.keyDownEventListener);
         this._editor.on('focus', this.focusEventListener);
         this._editor.on('blur', this.blurEventListener);
+
+        this._afterEditorInitialized.next();
+        this._afterEditorInitialized.complete();
     }
 
     destroy(): void {
@@ -117,6 +120,7 @@ export class NoteEditorTextSnippetComponent extends NoteEditorSnippet {
             lineNumbers: false,
             scrollbarStyle: 'null',
             autofocus: false,
+            viewportMargin: Infinity,
         };
     }
 
