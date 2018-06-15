@@ -24,6 +24,12 @@ cp -R node_modules/monaco-editor/min/vs/ src/assets/vendors/monaco-editor/vs/
 cp node_modules/monaco-editor/monaco.d.ts src/assets/vendors/monaco-editor/monaco.d.ts
 
 
+# Copy highlight style
+mkdir -p src/assets/vendors/highlight/
+
+cp node_modules/highlight.js/styles/github-gist.css src/assets/vendors/highlight/github-gist.css
+
+
 # Copy devicon
 mkdir -p src/assets/vendors/devicon/
 cp -R node_modules/devicon-2.2/icons/ src/assets/vendors/devicon/
