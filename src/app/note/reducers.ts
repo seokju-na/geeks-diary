@@ -105,6 +105,12 @@ export function noteCollectionReducer(
                 selectedNote: action.payload.selectedNote,
             };
 
+        case NoteActionTypes.DESELECT_NOTE:
+            return {
+                ...state,
+                selectedNote: null,
+            };
+
         case NoteActionTypes.UPDATE_STACKS:
             return noteCollectionStateAdapter.updateNote(
                 state,
@@ -168,6 +174,14 @@ export function noteEditorReducer(
                 ...state,
                 loaded: true,
                 selectedNoteContent: { ...action.payload.content },
+            };
+
+        case NoteActionTypes.DESELECT_NOTE:
+            return {
+                ...state,
+                loaded: false,
+                selectedNoteContent: null,
+                focusedSnippetId: null,
             };
 
         case NoteActionTypes.REMOVE_SNIPPET:

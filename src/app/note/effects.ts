@@ -4,11 +4,18 @@ import { Action, select, Store } from '@ngrx/store';
 import { Observable } from 'rxjs/Observable';
 import { of } from 'rxjs/observable/of';
 import { zip } from 'rxjs/observable/zip';
-import { catchError, debounceTime, map, mergeMap, switchMap, tap } from 'rxjs/operators';
+import {
+    catchError,
+    debounceTime,
+    map,
+    mergeMap,
+    switchMap, take,
+    tap,
+} from 'rxjs/operators';
 import {
     AddNoteAction,
     AddNoteCompleteAction,
-    AddNoteErrorAction,
+    AddNoteErrorAction, DeselectNoteAction,
     GetNoteCollectionCompleteAction,
     InitEditorAction,
     InsertNewSnippetAction,
@@ -23,6 +30,7 @@ import {
     SelectNoteAction,
 } from './actions';
 import { NoteEditorService } from './editor/editor.service';
+import { NoteMetadata } from './models';
 import { NoteFsService } from './note-fs.service';
 import { NoteStateForFeature, NoteStateWithRoot } from './reducers';
 
@@ -114,6 +122,12 @@ export class NoteEditorEffects {
     );
 
     @Effect({ dispatch: false })
+    disposeEditor: Observable<Action> = this.actions.pipe(
+        ofType(NoteActionTypes.DESELECT_NOTE),
+        tap(() => this.editorService.dispose()),
+    );
+
+    @Effect({ dispatch: false })
     moveFocus: Observable<Action> = this.actions.pipe(
         ofType(
             NoteActionTypes.MOVE_FOCUS_TO_PREVIOUS_SNIPPET,
@@ -165,6 +179,48 @@ export class NoteEditorEffects {
     constructor(
         private readonly actions: Actions,
         private editorService: NoteEditorService,
+    ) {
+    }
+}
+
+
+@Injectable()
+export class NoteFinderEffects {
+    @Effect()
+    selectNoteAtMonth: Observable<Action> = this.actions.pipe(
+        ofType(NoteActionTypes.CHANGE_DATE_FILTER),
+        switchMap(() =>
+            this.store.pipe(
+                select(state => state.note),
+                take(1),
+            ),
+        ),
+        map((noteState) => {
+            const notes = noteState.collection.notes;
+
+            const filteredNotes = NoteMetadata.filterByDate(
+                notes,
+                noteState.finder.dateFilter,
+                noteState.finder.dateFilterBy,
+            );
+
+            NoteMetadata.sort(
+                filteredNotes,
+                noteState.finder.sortBy,
+                noteState.finder.sortDirection,
+            );
+
+            if (filteredNotes.length === 0) {
+                return new DeselectNoteAction();
+            }
+
+            return new SelectNoteAction({ selectedNote: filteredNotes[0] });
+        }),
+    );
+
+    constructor(
+        private readonly actions: Actions,
+        private store: Store<NoteStateWithRoot>,
     ) {
     }
 }

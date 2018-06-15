@@ -49,6 +49,15 @@ export class NoteEditorService implements OnDestroy {
         });
     }
 
+    dispose(): void {
+        this.snippetRefs.forEach((snippetRef) => {
+            this.unsubscribeSnippetFocusEvent(snippetRef);
+        });
+
+        this.snippetRefs = [];
+        this.focusEventSubscriptionMap.clear();
+    }
+
     insertNewSnippetRef(
         snippetId: string,
         content: NoteContentSnippet,

@@ -41,6 +41,19 @@ describe('app.note.editor.EditorService', () => {
         });
     });
 
+    describe('dispose', () => {
+        beforeEach(() => {
+            editorService.initFromNoteContent(
+                new NoteContentDummyFactory().create());
+        });
+
+        it('should remove all snippet references.', () => {
+            editorService.dispose();
+
+            expect(editorService.snippetRefs).toEqual([]);
+        });
+    });
+
     describe('insertNewSnippetRef', () => {
         let initialSnippets: NoteContentSnippet[];
 

@@ -20,6 +20,7 @@ export enum NoteActionTypes {
     CHANGE_DATE_FILTER = '[Note] Change date filter',
     CHANGE_SORT = '[Note] Change sort',
     SELECT_NOTE = '[Note] Select note',
+    DESELECT_NOTE = '[Note] Deselect note',
     LOAD_NOTE_CONTENT = '[Note] Load note content',
     LOAD_NOTE_CONTENT_COMPLETE = '[Note] Load note content complete',
     INIT_EDITOR = '[Note] Init editor',
@@ -74,6 +75,11 @@ export class SelectNoteAction implements Action {
 
     constructor(readonly payload: { selectedNote: NoteMetadata }) {
     }
+}
+
+
+export class DeselectNoteAction implements Action {
+    readonly type = NoteActionTypes.DESELECT_NOTE;
 }
 
 
@@ -238,6 +244,7 @@ export type NoteActions =
     | ChangeDateFilterAction
     | ChangeSortAction
     | SelectNoteAction
+    | DeselectNoteAction
     | LoadNoteContentAction
     | LoadNoteContentCompleteAction
     | AddNoteAction
