@@ -58,6 +58,18 @@ export class NoteCalendarComponent {
         this.calendar = calendarFactory();
     }
 
+    get canIncreaseMonth(): boolean {
+        if (!this._indexDate) {
+            return false;
+        }
+
+        return !datetime.isAfterOrSame(
+            this._indexDate,
+            datetime.today(),
+            DateUnits.MONTH,
+        );
+    }
+
     isCellSelected(cell: CalendarTableCell): boolean {
         if (cell.isBlank() || !this.selectedDate) {
             return;

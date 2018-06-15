@@ -29,6 +29,10 @@ class DebugElementMatcher {
 
         return expect(displayProp).not.toEqual('none');
     }
+
+    toBeDisabled(): boolean {
+        return expect((<any>this.nativeElem).disabled).toBe(true);
+    }
 }
 
 
