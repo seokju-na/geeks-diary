@@ -77,6 +77,7 @@ import { TooltipDirective } from './tooltip/tooltip.directive';
     exports: [
         CommonModule,
         ReactiveFormsModule,
+        A11yModule,
         // Autocomplete
         AutocompleteTriggerDirective,
         AutocompleteComponent,

@@ -24,6 +24,8 @@ export enum NoteActionTypes {
     INIT_EDITOR = '[Note] Init editor',
     MOVE_FOCUS_TO_PREVIOUS_SNIPPET = '[Note] Move focus to previous snippet',
     MOVE_FOCUS_TO_NEXT_SNIPPET = '[Note] Move focus to next snippet',
+    DID_SNIPPET_FOCUS = '[Note] Did snippet focus',
+    DID_SNIPPET_BLUR = '[Note] Did snippet blur',
     REMOVE_SNIPPET = '[Note] Remove snippet',
     INSERT_NEW_SNIPPET = '[Note] Insert new snippet',
     UPDATE_SNIPPET_CONTENT = '[Note] Update snippet content',
@@ -149,6 +151,22 @@ export class MoveFocusToNextSnippetAction implements Action {
 }
 
 
+export class DidSnippetFocusAction implements Action {
+    readonly type = NoteActionTypes.DID_SNIPPET_FOCUS;
+
+    constructor(readonly payload: { snippetId: string }) {
+    }
+}
+
+
+export class DidSnippetBlurAction implements Action {
+    readonly type = NoteActionTypes.DID_SNIPPET_BLUR;
+
+    constructor(readonly payload: { snippetId: string }) {
+    }
+}
+
+
 export class RemoveSnippetAction implements Action {
     readonly type = NoteActionTypes.REMOVE_SNIPPET;
 
@@ -219,6 +237,8 @@ export type NoteActions =
     | InitEditorAction
     | MoveFocusToPreviousSnippetAction
     | MoveFocusToNextSnippetAction
+    | DidSnippetFocusAction
+    | DidSnippetBlurAction
     | RemoveSnippetAction
     | InsertNewSnippetAction
     | UpdateSnippetContentAction

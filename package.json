@@ -49,6 +49,7 @@
         "@ngrx/store-devtools": "^5.2.0",
         "@types/codemirror": "^0.0.55",
         "@types/fs-extra": "^5.0.2",
+        "@types/highlight.js": "^9.12.3",
         "@types/jasmine": "^2.8.6",
         "@types/node": "^9.6.0",
         "@types/tinycolor2": "^1.4.0",

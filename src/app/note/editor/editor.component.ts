@@ -1,4 +1,11 @@
-import { Component, ElementRef, Input, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import {
+    Component,
+    ElementRef,
+    Input,
+    OnDestroy,
+    OnInit,
+    ViewChild,
+} from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { select, Store } from '@ngrx/store';
 import { Subscription } from 'rxjs';

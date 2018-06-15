@@ -1,7 +1,3 @@
-import * as path from 'path';
-import { environment } from '../../environments/environment';
-
-
 interface StackDefinition {
     languageName: string;
     iconName?: string;
@@ -64,8 +60,7 @@ export type StackLanguage = monaco.languages.ILanguageExtensionPoint;
 
 
 export class Stack {
-    static iconStorePath = path.resolve(
-        environment.config.basePath, 'assets/vendors/devicon/');
+    static iconStorePath = 'assets/vendors/devicon';
 
     static getIconFilePath(name: string, svgFiles: string[]): string {
         let iconName;
@@ -85,7 +80,7 @@ export class Stack {
             }
         }
 
-        return path.resolve(Stack.iconStorePath, name, `${iconName}.svg`);
+        return `${Stack.iconStorePath}/${name}/${iconName}.svg`;
     }
 
     readonly name: string;

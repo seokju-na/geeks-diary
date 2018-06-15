@@ -56,7 +56,7 @@ export class NoteFinderComponent implements OnInit {
     }
 
     selectDateFilter(selectedDate: Date | null): void {
-        // If date is toggled, apply month filter.
+        // If date is deselected, apply month filter.
         if (!selectedDate) {
             this.selectedDate = null;
             this.dispatchMonthFilterChanges();
@@ -133,9 +133,11 @@ export class NoteFinderComponent implements OnInit {
     private get filteredNotes(): Observable<NoteMetadata[]> {
         return this.store.pipe(
             select(state => state.note.collection.notes),
-            mergeMap<NoteMetadata[], NoteFinderState, [NoteMetadata[], NoteFinderState]>(
-                () => this.store.pipe(select(state => state.note.finder)),
-                (notes, finderState) => ([notes, finderState]),
+            mergeMap<NoteMetadata[], [NoteMetadata[], NoteFinderState]>(
+                notes => this.store.pipe(
+                    select(state => state.note.finder),
+                    map(finderState => ([notes, finderState])),
+                ),
             ),
             map(([notes, finderState]) => {
                 this.makeContributeTable(notes);

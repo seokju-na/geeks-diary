@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { select, Store } from '@ngrx/store';
 import { Observable } from 'rxjs/Observable';
 import { map } from 'rxjs/operators';
@@ -12,6 +12,7 @@ import { NoteStateWithRoot } from '../../reducers';
     selector: 'gd-note-editor-toolbar',
     templateUrl: './toolbar.component.html',
     styleUrls: ['./toolbar.component.less'],
+    changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class NoteEditorToolbarComponent {
     stacks: Observable<Stack[]>;

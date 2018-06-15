@@ -14,6 +14,7 @@ import { NoteEditorToolbarComponent } from '../editor/toolbar/toolbar.component'
 import { NoteEditorViewModeSettingMenu } from '../header/editor-view-mode-setting-menu';
 import { NoteHeaderComponent } from '../header/header.component';
 import { NoteEditorViewModes } from '../models';
+import { NotePreviewLanguageChartComponent } from '../preview/language-chart.component';
 import { NotePreviewComponent } from '../preview/preview.component';
 import { noteReducerMap, NoteStateWithRoot } from '../reducers';
 import { NoteWorkspaceComponent } from './workspace.component';
@@ -47,6 +48,7 @@ describe('app.note.workspace.NoteWorkspaceComponent', () => {
                     NoteEditorToolbarComponent,
                     NoteEditorComponent,
                     NotePreviewComponent,
+                    NotePreviewLanguageChartComponent,
                     NoteWorkspaceComponent,
                 ],
             })

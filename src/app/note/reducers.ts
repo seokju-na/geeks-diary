@@ -32,6 +32,7 @@ export interface NoteFinderState {
 export interface NoteEditorState {
     loaded: boolean;
     selectedNoteContent: NoteContent | null;
+    focusedSnippetId: string | null;
     viewMode: NoteEditorViewModes;
 }
 
@@ -73,6 +74,7 @@ export function createInitialNoteEditorState(): NoteEditorState {
         loaded: false,
         selectedNoteContent: null,
         viewMode: NoteEditorViewModes.SHOW_BOTH,
+        focusedSnippetId: null,
     };
 }
 
@@ -175,6 +177,22 @@ export function noteEditorReducer(
                 action.payload.snippetId,
                 action.payload.content,
             );
+
+        case NoteActionTypes.DID_SNIPPET_FOCUS:
+            return {
+                ...state,
+                focusedSnippetId: action.payload.snippetId,
+            };
+
+        case NoteActionTypes.DID_SNIPPET_BLUR:
+            if (state.focusedSnippetId === action.payload.snippetId) {
+                return {
+                    ...state,
+                    focusedSnippetId: null,
+                };
+            }
+
+            return state;
 
         case NoteActionTypes.UPDATE_SNIPPET_CONTENT:
             return noteEditorStateAdapter.updateSnippet(

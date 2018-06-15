@@ -21,6 +21,7 @@ branches:
         - master
 
 script:
+    - npm run tools:copy-vendors
     - npm run ci:travis
 
 cache:

@@ -16,6 +16,7 @@ import { NoteEditorViewModeSettingMenu } from './header/editor-view-mode-setting
 import { NoteHeaderComponent } from './header/header.component';
 import { NoteItemComponent } from './item/item.component';
 import { NoteFsService } from './note-fs.service';
+import { NotePreviewLanguageChartComponent } from './preview/language-chart.component';
 import { NotePreviewComponent } from './preview/preview.component';
 import { noteReducerMap } from './reducers';
 import { NoteWorkspaceComponent } from './workspace/workspace.component';
@@ -40,6 +41,7 @@ import { NoteWorkspaceComponent } from './workspace/workspace.component';
         NoteEditorTextSnippetComponent,
         NoteEditorToolbarComponent,
         NoteEditorComponent,
+        NotePreviewLanguageChartComponent,
         NotePreviewComponent,
         NoteWorkspaceComponent,
     ],
