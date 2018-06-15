@@ -1,3 +1,45 @@
+gd-note-preview {
+    position: relative;
+    display: block;
+    width: 100%;
+    height: 100%;
+}
+
+
 .NotePreview {
-    padding: var(--size-space-regular);
+    padding-bottom: var(--size-box-medium);
+    width: 100%;
+    max-height: 100%;
+    overflow-y: auto;
+
+    &__title {
+        padding: var(--size-space-medium) var(--size-space-big);
+
+
+        > h1 {
+            display: block;
+            margin: 0;
+            padding: var(--size-space-regular);
+            border-bottom: 1px solid var(--color-gray-4);
+        }
+    }
+
+    &__content {
+        padding: var(--size-space-big);
+
+        // TODO : Customize preview style.
+
+        > code {
+        }
+    }
+
+    &__languageChart {
+        position: absolute;
+        display: flex;
+        left: 0;
+        bottom: 0;
+        width: 100%;
+        border-top: 1px solid var(--color-gray-4);
+        background-color: var(--color-white);
+    }
 }

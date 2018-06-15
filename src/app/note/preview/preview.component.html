@@ -1,3 +1,11 @@
 <div class="NotePreview">
+    <div *ngIf="noteTitle | async as title" class="NotePreview__title">
+        <h1 gd-text size="medium" weight="bold">{{title}}</h1>
+    </div>
+
     <div #content class="NotePreview__content"></div>
+
+    <div *ngIf="editorLoaded | async" class="NotePreview__languageChart">
+        <gd-note-preview-language-chart></gd-note-preview-language-chart>
+    </div>
 </div>

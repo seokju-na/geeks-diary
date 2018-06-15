@@ -1,0 +1,29 @@
+<div class="NotePreviewLanguageChart">
+    <div *ngIf="languageChart | async as chart"
+         class="NotePreviewLanguageChart__chart">
+        <ol class="NotePreviewLanguageChart__languageStats">
+            <li *ngFor="let info of chart">
+                <span [style.background-color]="info.color"
+                      class="NotePreviewLanguageChart__colorDot"></span>
+                <span gd-text
+                      size="small"
+                      weight="medium"
+                      class="NotePreviewLanguageChart__languageName">
+                    {{info.name}}
+                </span>
+                <span gd-text
+                      size="small"
+                      class="NotePreviewLanguageChart__languagePercent">
+                    {{info.percentDisplay}}%
+                </span>
+            </li>
+        </ol>
+
+        <div class="NotePreviewLanguageChart__graph">
+            <span *ngFor="let info of chart"
+                  [style.width.%]="info.percent"
+                  [style.background-color]="info.color"
+                  [attr.aria-labe]="info.label"></span>
+        </div>
+    </div>
+</div>
