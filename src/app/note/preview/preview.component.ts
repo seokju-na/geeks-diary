@@ -11,7 +11,7 @@ import { select, Store } from '@ngrx/store';
 import { highlightAuto } from 'highlight.js';
 import * as marked from 'marked';
 import { Observable, Subscription } from 'rxjs';
-import { filter, map } from 'rxjs/operators';
+import { filter, map, share } from 'rxjs/operators';
 import { NoteContent } from '../models';
 import { NoteStateWithRoot } from '../reducers';
 
@@ -49,6 +49,7 @@ export class NotePreviewComponent implements OnInit, OnDestroy {
         this.editorLoaded = this.store.pipe(
             select(state => state.note.editor),
             map(editorState => editorState.loaded),
+            share(),
         );
 
         this.noteTitle = this.store.pipe(
@@ -60,10 +61,13 @@ export class NotePreviewComponent implements OnInit, OnDestroy {
         this.storeSubscription = this.store
             .pipe(
                 select(state => state.note.editor),
-                filter(editorState => editorState.loaded),
             )
             .subscribe((editorState) => {
-                this.parseContent(editorState.selectedNoteContent);
+                if (editorState.loaded) {
+                    this.parseContent(editorState.selectedNoteContent);
+                } else {
+                    this.removeContent();
+                }
             });
     }
 
@@ -79,6 +83,12 @@ export class NotePreviewComponent implements OnInit, OnDestroy {
 
         if (this.contentEl) {
             this.contentEl.nativeElement.innerHTML = this._parsedContent;
+        }
+    }
+
+    private removeContent(): void {
+        if (this.contentEl) {
+            this.contentEl.nativeElement.innerHTML = '';
         }
     }
 }
