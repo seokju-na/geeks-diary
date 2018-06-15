@@ -1,3 +1,6 @@
+import { datetime } from '../../common/datetime';
+
+
 export class NoteMetadata {
     readonly id: string;
     readonly title: string;
@@ -26,6 +29,26 @@ export class NoteMetadata {
             createdDatetime: metadata.createdDatetime,
             updatedDatetime: metadata.updatedDatetime,
         });
+    }
+
+    static filterByDate(
+        notes: NoteMetadata[],
+        dateFilter: Date,
+        dateFilterBy: NoteFinderDateFilterTypes,
+    ): NoteMetadata[] {
+
+        switch (dateFilterBy) {
+            case NoteFinderDateFilterTypes.DATE:
+                return notes.filter(note =>
+                    datetime.isSameDay(new Date(note.createdDatetime), dateFilter));
+
+            case NoteFinderDateFilterTypes.MONTH:
+                return notes.filter(note =>
+                    datetime.isAtSameMonth(new Date(note.createdDatetime), dateFilter));
+
+            default:
+                return notes;
+        }
     }
 
     static sort(

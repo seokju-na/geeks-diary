@@ -148,37 +148,21 @@ export class NoteFinderComponent implements OnInit {
             map(([notes, finderState]) => {
                 this.makeContributeTable(notes);
 
-                const filteredNotes = this.applyFilter(
+                const filteredNotes = NoteMetadata.filterByDate(
                     notes,
                     finderState.dateFilter,
                     finderState.dateFilterBy,
                 );
 
-                filteredNotes.sort((a, b) => b.createdDatetime - a.createdDatetime);
+                NoteMetadata.sort(
+                    filteredNotes,
+                    finderState.sortBy,
+                    finderState.sortDirection,
+                );
 
                 return filteredNotes;
             }),
         );
-    }
-
-    private applyFilter(
-        notes: NoteMetadata[],
-        dateFilter: Date,
-        dateFilterBy: NoteFinderDateFilterTypes,
-    ): NoteMetadata[] {
-
-        switch (dateFilterBy) {
-            case NoteFinderDateFilterTypes.DATE:
-                return notes.filter(note =>
-                    datetime.isSameDay(new Date(note.createdDatetime), dateFilter));
-
-            case NoteFinderDateFilterTypes.MONTH:
-                return notes.filter(note =>
-                    datetime.isAtSameMonth(new Date(note.createdDatetime), dateFilter));
-
-            default:
-                return notes;
-        }
     }
 
     private makeContributeTable(notes: NoteMetadata[]): void {
