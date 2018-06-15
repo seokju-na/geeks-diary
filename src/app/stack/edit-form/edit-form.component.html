@@ -20,7 +20,7 @@
                gdAutocomplete
                (keyup.enter)="addStack()"
                [autocomplete]="auto"
-               placeholder="Input stack">
+               placeholder="Click to add stacks">
 
         <gd-autocomplete #auto="gdAutocomplete">
             <gd-option-item *ngFor="let stack of filteredStacks | async"
