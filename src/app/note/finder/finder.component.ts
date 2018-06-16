@@ -17,9 +17,9 @@ import {
     NoteFinderDateFilterTypes,
     NoteMetadata,
 } from '../models';
-import { NoteFsService } from '../note-fs.service';
 import { NoteFinderState, NoteStateWithRoot } from '../reducers';
 import { NoteCollectionSortingMenu } from '../shared/note-collection-sorting.menu';
+import { NoteFsService } from '../shared/note-fs.service';
 
 
 @Component({

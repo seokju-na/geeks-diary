@@ -4,18 +4,12 @@ import { Action, select, Store } from '@ngrx/store';
 import { Observable } from 'rxjs/Observable';
 import { of } from 'rxjs/observable/of';
 import { zip } from 'rxjs/observable/zip';
-import {
-    catchError,
-    debounceTime,
-    map,
-    mergeMap,
-    switchMap, take,
-    tap,
-} from 'rxjs/operators';
+import { catchError, debounceTime, map, mergeMap, switchMap, take, tap } from 'rxjs/operators';
 import {
     AddNoteAction,
     AddNoteCompleteAction,
-    AddNoteErrorAction, DeselectNoteAction,
+    AddNoteErrorAction,
+    DeselectNoteAction,
     GetNoteCollectionCompleteAction,
     InitEditorAction,
     InsertNewSnippetAction,
@@ -31,8 +25,8 @@ import {
 } from './actions';
 import { NoteEditorService } from './editor/editor.service';
 import { NoteMetadata } from './models';
-import { NoteFsService } from './note-fs.service';
 import { NoteStateForFeature, NoteStateWithRoot } from './reducers';
+import { NoteFsService } from './shared/note-fs.service';
 
 
 @Injectable()

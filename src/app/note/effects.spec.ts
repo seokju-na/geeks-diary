@@ -35,8 +35,8 @@ import { NoteEditorService } from './editor/editor.service';
 import { NoteEditorSnippetFactory } from './editor/snippet/snippet-factory';
 import { NoteEditorEffects, NoteFinderEffects, NoteFsEffects } from './effects';
 import { NoteFinderDateFilterTypes } from './models';
-import { NoteFsService } from './note-fs.service';
 import { noteReducerMap, NoteStateWithRoot } from './reducers';
+import { NoteFsService } from './shared/note-fs.service';
 
 
 describe('app.note.effects.NoteFsEffects', () => {
@@ -314,7 +314,7 @@ describe('app.note.effects.NoteFinderEffects', () => {
     beforeEach(() => {
         finderEffects = TestBed.get(NoteFinderEffects);
         store = TestBed.get(Store);
-        mockActions = TestBed.get(MockActions);
+        mockActions = TestBed.get(Actions);
     });
 
     beforeEach(() => {

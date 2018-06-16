@@ -13,13 +13,13 @@ import { NoteEditorToolbarComponent } from './editor/toolbar/toolbar.component';
 import { NoteEditorEffects, NoteFinderEffects, NoteFsEffects } from './effects';
 import { NoteFinderComponent } from './finder/finder.component';
 import { NoteHeaderComponent } from './header/header.component';
-import { NoteViewModeSettingMenu } from './shared/note-view-mode-setting.menu';
 import { NoteItemComponent } from './item/item.component';
-import { NoteFsService } from './note-fs.service';
 import { NotePreviewLanguageChartComponent } from './preview/language-chart.component';
 import { NotePreviewComponent } from './preview/preview.component';
 import { noteReducerMap } from './reducers';
 import { NoteCollectionSortingMenu } from './shared/note-collection-sorting.menu';
+import { NoteFsService } from './shared/note-fs.service';
+import { NoteViewModeSettingMenu } from './shared/note-view-mode-setting.menu';
 import { NoteWorkspaceComponent } from './workspace/workspace.component';
 
 
