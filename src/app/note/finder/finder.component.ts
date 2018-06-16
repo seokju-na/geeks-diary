@@ -2,7 +2,6 @@ import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { select, Store } from '@ngrx/store';
 import { Observable } from 'rxjs/Observable';
 import { map, mergeMap, take } from 'rxjs/operators';
-import * as createUniqueId from 'uuid/v4';
 import { datetime, DateUnits } from '../../../common/datetime';
 import {
     AddNoteAction,
@@ -11,15 +10,11 @@ import {
     SelectNoteAction,
 } from '../actions';
 import { NoteContributeTable } from '../calendar/calendar.component';
-import {
-    NoteContent,
-    NoteContentSnippetTypes,
-    NoteFinderDateFilterTypes,
-    NoteMetadata,
-} from '../models';
+import { NoteFinderDateFilterTypes, NoteMetadata } from '../models';
 import { NoteFinderState, NoteStateWithRoot } from '../reducers';
 import { NoteCollectionSortingMenu } from '../shared/note-collection-sorting.menu';
 import { NoteFsService } from '../shared/note-fs.service';
+import { NoteProduceService } from '../shared/note-produce.service';
 
 
 @Component({
@@ -37,6 +32,7 @@ export class NoteFinderComponent implements OnInit {
     constructor(
         private store: Store<NoteStateWithRoot>,
         private noteFsService: NoteFsService,
+        private noteProduceService: NoteProduceService,
         private sortingMenu: NoteCollectionSortingMenu,
         private changeDetector: ChangeDetectorRef,
     ) {
@@ -87,35 +83,9 @@ export class NoteFinderComponent implements OnInit {
     }
 
     addNewNote(): void {
-        const id = createUniqueId();
-        const title = 'Untitled Note';
-        const stacks = [];
-        const noteFileName = this.noteFsService.getNoteFileName(id);
+        const action = new AddNoteAction(this.noteProduceService.createNewNote());
 
-        const metadata: NoteMetadata = {
-            id,
-            title,
-            stacks,
-            createdDatetime: datetime.today().getTime(),
-            updatedDatetime: datetime.today().getTime(),
-            fileName: this.noteFsService.getMetadataFileName(noteFileName),
-            noteFileName,
-        };
-
-        const content: NoteContent = {
-            noteId: id,
-            title,
-            stacks,
-            snippets: [{
-                id: createUniqueId(),
-                type: NoteContentSnippetTypes.TEXT,
-                value: 'Type contents...',
-            }],
-            fileName: this.noteFsService.getContentFileName(noteFileName),
-            noteFileName,
-        };
-
-        this.store.dispatch(new AddNoteAction({ metadata, content }));
+        this.store.dispatch(action);
     }
 
     openSortMenu(): void {

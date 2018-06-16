@@ -21,6 +21,7 @@ import { NoteMetadata } from '../models';
 import { noteReducerMap, NoteStateWithRoot } from '../reducers';
 import { NoteCollectionSortingMenu } from '../shared/note-collection-sorting.menu';
 import { NoteFsService } from '../shared/note-fs.service';
+import { NoteProduceService } from '../shared/note-produce.service';
 import { NoteFinderComponent } from './finder.component';
 
 
@@ -52,6 +53,7 @@ describe('app.note.finder.NoteFinderComponent', () => {
                     ...MockFsService.providersForTesting,
                     MonacoService,
                     NoteFsService,
+                    NoteProduceService,
                     NoteCollectionSortingMenu,
                 ],
                 declarations: [
