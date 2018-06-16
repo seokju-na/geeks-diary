@@ -1,6 +1,6 @@
 <div class="NotePreview">
-    <div *ngIf="noteTitle | async as title" class="NotePreview__title">
-        <h1 gd-text size="medium" weight="bold">{{title}}</h1>
+    <div *ngIf="editorLoaded | async" class="NotePreview__title">
+        <h1 gd-text size="medium" weight="bold">{{noteTitle | async}}</h1>
     </div>
 
     <div #content class="NotePreview__content"></div>

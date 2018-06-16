@@ -18,8 +18,10 @@ import { NoteCalendarComponent } from '../calendar/calendar.component';
 import { NoteMetadataDummyFactory } from '../dummies';
 import { NoteItemComponent } from '../item/item.component';
 import { NoteMetadata } from '../models';
-import { NoteFsService } from '../note-fs.service';
 import { noteReducerMap, NoteStateWithRoot } from '../reducers';
+import { NoteCollectionSortingMenu } from '../shared/note-collection-sorting.menu';
+import { NoteFsService } from '../shared/note-fs.service';
+import { NoteProduceService } from '../shared/note-produce.service';
 import { NoteFinderComponent } from './finder.component';
 
 
@@ -51,6 +53,8 @@ describe('app.note.finder.NoteFinderComponent', () => {
                     ...MockFsService.providersForTesting,
                     MonacoService,
                     NoteFsService,
+                    NoteProduceService,
+                    NoteCollectionSortingMenu,
                 ],
                 declarations: [
                     NoteCalendarComponent,

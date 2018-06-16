@@ -106,8 +106,19 @@ describe('app.note.calendar.NoteCalendarComponent', () => {
         validateDateCell(target, 'none');
     });
 
+    it('should increase be disabled when today is at current month.', () => {
+        component.indexDate = datetime.today();
+        fixture.detectChanges();
+
+        const rightNavButton = fixture.debugElement.query(
+            By.css('button[aria-label=increase-month-button]'));
+
+        expectDebugElement(rightNavButton).toBeDisabled();
+    });
+
     it('should increase month when click right nav button.', () => {
         const indexDate = new Date();
+        datetime.add(indexDate, DateUnits.MONTH, -1);
 
         component.indexDate = datetime.copy(indexDate);
         fixture.detectChanges();

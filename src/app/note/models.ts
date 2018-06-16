@@ -1,3 +1,6 @@
+import { datetime } from '../../common/datetime';
+
+
 export class NoteMetadata {
     readonly id: string;
     readonly title: string;
@@ -25,6 +28,77 @@ export class NoteMetadata {
             stacks: metadata.stacks,
             createdDatetime: metadata.createdDatetime,
             updatedDatetime: metadata.updatedDatetime,
+        });
+    }
+
+    static filterByDate(
+        notes: NoteMetadata[],
+        dateFilter: Date,
+        dateFilterBy: NoteFinderDateFilterTypes,
+    ): NoteMetadata[] {
+
+        switch (dateFilterBy) {
+            case NoteFinderDateFilterTypes.DATE:
+                return notes.filter(note =>
+                    datetime.isSameDay(new Date(note.createdDatetime), dateFilter));
+
+            case NoteFinderDateFilterTypes.MONTH:
+                return notes.filter(note =>
+                    datetime.isAtSameMonth(new Date(note.createdDatetime), dateFilter));
+
+            default:
+                return notes;
+        }
+    }
+
+    static sort(
+        notes: NoteMetadata[],
+        sortBy: NoteFinderSortTypes,
+        direction: NoteFinderSortDirection,
+    ): void {
+
+        const sortByTitle = (a: NoteMetadata, b: NoteMetadata): number => {
+            if (a.title < b.title) {
+                return -1;
+            } else if (a.title > b.title) {
+                return 1;
+            }
+            return 0;
+        };
+
+        const sortByCreatedDatetime = (a: NoteMetadata, b: NoteMetadata): number => {
+            if (a.createdDatetime < b.createdDatetime) {
+                return -1;
+            } else if (a.createdDatetime > b.createdDatetime) {
+                return 1;
+            }
+            return 0;
+        };
+
+        const sortByUpdatedDatetime = (a: NoteMetadata, b: NoteMetadata): number => {
+            if (a.updatedDatetime < b.updatedDatetime) {
+                return -1;
+            } else if (a.updatedDatetime > b.updatedDatetime) {
+                return 1;
+            }
+            return 0;
+        };
+
+        notes.sort((noteA, noteB) => {
+            const dir = direction === NoteFinderSortDirection.ASC
+                ? 1
+                : -1;
+
+            switch (sortBy) {
+                case NoteFinderSortTypes.TITLE:
+                    return sortByTitle(noteA, noteB) * dir;
+
+                case NoteFinderSortTypes.CREATED:
+                    return sortByCreatedDatetime(noteA, noteB) * dir;
+
+                case NoteFinderSortTypes.UPDATED:
+                    return sortByUpdatedDatetime(noteA, noteB) * dir;
+            }
         });
     }
 }

@@ -64,7 +64,7 @@ export function createInitialNoteFinderState(): NoteFinderState {
         dateFilter: datetime.today(),
         dateFilterBy: NoteFinderDateFilterTypes.MONTH,
         sortBy: NoteFinderSortTypes.CREATED,
-        sortDirection: NoteFinderSortDirection.ASC,
+        sortDirection: NoteFinderSortDirection.DESC,
     };
 }
 
@@ -105,6 +105,12 @@ export function noteCollectionReducer(
                 selectedNote: action.payload.selectedNote,
             };
 
+        case NoteActionTypes.DESELECT_NOTE:
+            return {
+                ...state,
+                selectedNote: null,
+            };
+
         case NoteActionTypes.UPDATE_STACKS:
             return noteCollectionStateAdapter.updateNote(
                 state,
@@ -136,6 +142,21 @@ export function noteFinderReducer(
                 dateFilterBy: action.payload.dateFilterBy,
             };
 
+        case NoteActionTypes.CHANGE_SORT:
+            if (action.payload.sortBy) {
+                return {
+                    ...state,
+                    sortBy: action.payload.sortBy,
+                };
+            } else if (action.payload.sortDirection) {
+                return {
+                    ...state,
+                    sortDirection: action.payload.sortDirection,
+                };
+            }
+
+            return state;
+
         default:
             return state;
     }
@@ -153,6 +174,14 @@ export function noteEditorReducer(
                 ...state,
                 loaded: true,
                 selectedNoteContent: { ...action.payload.content },
+            };
+
+        case NoteActionTypes.DESELECT_NOTE:
+            return {
+                ...state,
+                loaded: false,
+                selectedNoteContent: null,
+                focusedSnippetId: null,
             };
 
         case NoteActionTypes.REMOVE_SNIPPET:

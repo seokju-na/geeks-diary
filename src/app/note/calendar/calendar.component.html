@@ -18,6 +18,7 @@
                 buttonType="flat"
                 size="regular"
                 aria-label="increase-month-button"
+                [disabled]="!canIncreaseMonth"
                 class="NoteCalendar__navigateButton">
             <i gd-icon name="angle-right" size="regular"></i>
         </button>

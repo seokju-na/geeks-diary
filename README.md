@@ -22,9 +22,15 @@ TIL writing tool based on electron and angular.
 
 ### Project setup
 
+Fork the project [on GitHub](https://github.com/seokju-na/geeks-diary) and clone your fork locally.
+
 ```bash
-git clone https://github.com/seokju-na/geeks-diary
+git clone git@gitnub.com:username/geeks-diary.git
 cd geeks-diary
+
+git remote add upstream https://github.com/seokju-na/geeks-diary.git
+git fetch upstream
+
 yarn install
 ```
 

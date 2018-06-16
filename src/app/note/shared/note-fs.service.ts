@@ -4,9 +4,9 @@ import { Observable } from 'rxjs/Observable';
 import { of } from 'rxjs/observable/of';
 import { zip } from 'rxjs/observable/zip';
 import { catchError, filter, map, mapTo, switchMap } from 'rxjs/operators';
-import { environment } from '../../environments/environment';
-import { FsService } from '../core/fs.service';
-import { NoteContent, NoteMetadata } from './models';
+import { environment } from '../../../environments/environment';
+import { FsService } from '../../core/fs.service';
+import { NoteContent, NoteMetadata } from '../models';
 
 
 @Injectable()

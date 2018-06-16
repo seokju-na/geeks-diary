@@ -85,6 +85,37 @@ class Datetime {
         return distDate;
     }
 
+    diff(source: Date, target: Date, unit: DateUnits = DateUnits.MILLISECOND): number {
+        const sourceCopy = this.copy(source);
+        const targetCopy = this.copy(target);
+
+        this.resetDate(sourceCopy, unit);
+        this.resetDate(targetCopy, unit);
+
+        const sourceTime = sourceCopy.getTime();
+        const targetTime = targetCopy.getTime();
+
+        return targetTime - sourceTime;
+    }
+
+    resetDate(date: Date, unit: DateUnits = DateUnits.MILLISECOND): void {
+        switch (unit) {
+            case DateUnits.MONTH:
+                date.setDate(1);
+                date.setHours(0, 0, 0, 0);
+                break;
+            case DateUnits.DAY:
+                date.setHours(0, 0, 0, 0);
+                break;
+            case DateUnits.HOUR:
+                date.setMinutes(0, 0, 0);
+                break;
+            case DateUnits.MINUTE:
+                date.setSeconds(0, 0);
+                break;
+        }
+    }
+
     isSameDay(source: Date, target: Date): boolean {
         const sourceStartOfDay = this.getStartOfDay(source);
         const targetStartOfDay = this.getStartOfDay(target);
@@ -100,6 +131,15 @@ class Datetime {
 
         return sourceYear === targetYear
             && sourceMonth === targetMonth;
+    }
+
+    isAfterOrSame(
+        source: Date,
+        target: Date,
+        unit: DateUnits = DateUnits.MILLISECOND,
+    ): boolean {
+
+        return this.diff(source, target, unit) <= 0;
     }
 }
 

@@ -10,15 +10,17 @@ import { NoteEditorCodeSnippetComponent } from './editor/snippet/code-snippet.co
 import { NoteEditorSnippetFactory } from './editor/snippet/snippet-factory';
 import { NoteEditorTextSnippetComponent } from './editor/snippet/text-snippet.component';
 import { NoteEditorToolbarComponent } from './editor/toolbar/toolbar.component';
-import { NoteEditorEffects, NoteFsEffects } from './effects';
+import { NoteEditorEffects, NoteFinderEffects, NoteFsEffects } from './effects';
 import { NoteFinderComponent } from './finder/finder.component';
-import { NoteEditorViewModeSettingMenu } from './header/editor-view-mode-setting-menu';
 import { NoteHeaderComponent } from './header/header.component';
 import { NoteItemComponent } from './item/item.component';
-import { NoteFsService } from './note-fs.service';
 import { NotePreviewLanguageChartComponent } from './preview/language-chart.component';
 import { NotePreviewComponent } from './preview/preview.component';
 import { noteReducerMap } from './reducers';
+import { NoteCollectionSortingMenu } from './shared/note-collection-sorting.menu';
+import { NoteFsService } from './shared/note-fs.service';
+import { NoteProduceService } from './shared/note-produce.service';
+import { NoteViewModeSettingMenu } from './shared/note-view-mode-setting.menu';
 import { NoteWorkspaceComponent } from './workspace/workspace.component';
 
 
@@ -30,6 +32,7 @@ import { NoteWorkspaceComponent } from './workspace/workspace.component';
         EffectsModule.forFeature([
             NoteFsEffects,
             NoteEditorEffects,
+            NoteFinderEffects,
         ]),
     ],
     declarations: [
@@ -54,7 +57,9 @@ import { NoteWorkspaceComponent } from './workspace/workspace.component';
         NoteFsService,
         NoteEditorSnippetFactory,
         NoteEditorService,
-        NoteEditorViewModeSettingMenu,
+        NoteProduceService,
+        NoteViewModeSettingMenu,
+        NoteCollectionSortingMenu,
     ],
     exports: [
         NoteFinderComponent,

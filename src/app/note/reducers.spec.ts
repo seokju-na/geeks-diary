@@ -4,6 +4,7 @@ import {
     AddNoteAction,
     ChangeDateFilterAction,
     ChangeEditorViewModeAction,
+    DeselectNoteAction,
     GetNoteCollectionCompleteAction,
     InitEditorAction,
     InsertNewSnippetAction,
@@ -18,9 +19,15 @@ import {
     NoteContentSnippetDummyFactory,
     NoteMetadataDummyFactory,
 } from './dummies';
-import { NoteContent, NoteEditorViewModes, NoteFinderDateFilterTypes } from './models';
+import {
+    NoteContent,
+    NoteEditorViewModes,
+    NoteFinderDateFilterTypes,
+    NoteMetadata,
+} from './models';
 import {
     noteCollectionReducer,
+    NoteCollectionState,
     noteEditorReducer,
     NoteEditorState,
     noteFinderReducer,
@@ -83,6 +90,28 @@ describe('app.note.reducers.noteCollectionReducer', () => {
             expect(state.selectedNote).toEqual(selectedNote);
         });
     });
+
+    describe('DESELECT_NOTE', () => {
+        let selectedNote: NoteMetadata;
+        let beforeState: NoteCollectionState;
+
+        beforeEach(() => {
+            selectedNote = new NoteMetadataDummyFactory().create();
+            beforeState = noteCollectionReducer(
+                undefined,
+                new SelectNoteAction({ selectedNote }),
+            );
+        });
+
+        it('should set selected note to null', () => {
+            const result = noteCollectionReducer(
+                beforeState,
+                new DeselectNoteAction(),
+            );
+
+            expect(result.selectedNote).toBeNull();
+        });
+    });
 });
 
 
@@ -122,6 +151,46 @@ describe('app.note.reducers.noteEditorReducer', () => {
             const state = noteEditorReducer(undefined, action);
 
             expect(state.selectedNoteContent).toEqual(content);
+        });
+    });
+
+    describe('DESELECT_NOTE', () => {
+        let content: NoteContent;
+        let beforeState: NoteEditorState;
+
+        beforeEach(() => {
+            content = new NoteContentDummyFactory().create();
+            beforeState = noteEditorReducer(
+                undefined,
+                new InitEditorAction({ content }),
+            );
+        });
+
+        it('should loaded value to be false.', () => {
+            const result = noteEditorReducer(
+                beforeState,
+                new DeselectNoteAction(),
+            );
+
+            expect(result.loaded).toBe(false);
+        });
+
+        it('should selected note content to be null.', () => {
+            const result = noteEditorReducer(
+                beforeState,
+                new DeselectNoteAction(),
+            );
+
+            expect(result.selectedNoteContent).toBeNull();
+        });
+
+        it('should focused snippet id to be null.', () => {
+            const result = noteEditorReducer(
+                beforeState,
+                new DeselectNoteAction(),
+            );
+
+            expect(result.focusedSnippetId).toBeNull();
         });
     });
 

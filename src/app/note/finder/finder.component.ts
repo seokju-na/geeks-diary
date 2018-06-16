@@ -2,7 +2,6 @@ import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { select, Store } from '@ngrx/store';
 import { Observable } from 'rxjs/Observable';
 import { map, mergeMap, take } from 'rxjs/operators';
-import * as createUniqueId from 'uuid/v4';
 import { datetime, DateUnits } from '../../../common/datetime';
 import {
     AddNoteAction,
@@ -11,14 +10,11 @@ import {
     SelectNoteAction,
 } from '../actions';
 import { NoteContributeTable } from '../calendar/calendar.component';
-import {
-    NoteContent,
-    NoteContentSnippetTypes,
-    NoteFinderDateFilterTypes,
-    NoteMetadata,
-} from '../models';
-import { NoteFsService } from '../note-fs.service';
+import { NoteFinderDateFilterTypes, NoteMetadata } from '../models';
 import { NoteFinderState, NoteStateWithRoot } from '../reducers';
+import { NoteCollectionSortingMenu } from '../shared/note-collection-sorting.menu';
+import { NoteFsService } from '../shared/note-fs.service';
+import { NoteProduceService } from '../shared/note-produce.service';
 
 
 @Component({
@@ -36,6 +32,8 @@ export class NoteFinderComponent implements OnInit {
     constructor(
         private store: Store<NoteStateWithRoot>,
         private noteFsService: NoteFsService,
+        private noteProduceService: NoteProduceService,
+        private sortingMenu: NoteCollectionSortingMenu,
         private changeDetector: ChangeDetectorRef,
     ) {
     }
@@ -85,35 +83,13 @@ export class NoteFinderComponent implements OnInit {
     }
 
     addNewNote(): void {
-        const id = createUniqueId();
-        const title = 'Untitled Note';
-        const stacks = [];
-        const noteFileName = this.noteFsService.getNoteFileName(id);
+        const action = new AddNoteAction(this.noteProduceService.createNewNote());
 
-        const metadata: NoteMetadata = {
-            id,
-            title,
-            stacks,
-            createdDatetime: datetime.today().getTime(),
-            updatedDatetime: datetime.today().getTime(),
-            fileName: this.noteFsService.getMetadataFileName(noteFileName),
-            noteFileName,
-        };
+        this.store.dispatch(action);
+    }
 
-        const content: NoteContent = {
-            noteId: id,
-            title,
-            stacks,
-            snippets: [{
-                id: createUniqueId(),
-                type: NoteContentSnippetTypes.TEXT,
-                value: 'Type contents...',
-            }],
-            fileName: this.noteFsService.getContentFileName(noteFileName),
-            noteFileName,
-        };
-
-        this.store.dispatch(new AddNoteAction({ metadata, content }));
+    openSortMenu(): void {
+        this.sortingMenu.open();
     }
 
     private dispatchMonthFilterChanges(): void {
@@ -142,37 +118,21 @@ export class NoteFinderComponent implements OnInit {
             map(([notes, finderState]) => {
                 this.makeContributeTable(notes);
 
-                const filteredNotes = this.applyFilter(
+                const filteredNotes = NoteMetadata.filterByDate(
                     notes,
                     finderState.dateFilter,
                     finderState.dateFilterBy,
                 );
 
-                filteredNotes.sort((a, b) => b.createdDatetime - a.createdDatetime);
+                NoteMetadata.sort(
+                    filteredNotes,
+                    finderState.sortBy,
+                    finderState.sortDirection,
+                );
 
                 return filteredNotes;
             }),
         );
-    }
-
-    private applyFilter(
-        notes: NoteMetadata[],
-        dateFilter: Date,
-        dateFilterBy: NoteFinderDateFilterTypes,
-    ): NoteMetadata[] {
-
-        switch (dateFilterBy) {
-            case NoteFinderDateFilterTypes.DATE:
-                return notes.filter(note =>
-                    datetime.isSameDay(new Date(note.createdDatetime), dateFilter));
-
-            case NoteFinderDateFilterTypes.MONTH:
-                return notes.filter(note =>
-                    datetime.isAtSameMonth(new Date(note.createdDatetime), dateFilter));
-
-            default:
-                return notes;
-        }
     }
 
     private makeContributeTable(notes: NoteMetadata[]): void {

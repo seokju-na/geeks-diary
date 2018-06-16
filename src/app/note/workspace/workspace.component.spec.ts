@@ -1,17 +1,20 @@
+import { DebugElement } from '@angular/core';
 import { async, ComponentFixture, inject, TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
 import { combineReducers, Store, StoreModule } from '@ngrx/store';
 import { expectDebugElement } from '../../../testing/validation';
+import { MonacoService } from '../../core/monaco.service';
 import { SharedModule } from '../../shared/shared.module';
 import { StackModule } from '../../stack/stack.module';
-import { ChangeEditorViewModeAction } from '../actions';
+import { ChangeEditorViewModeAction, DeselectNoteAction, InitEditorAction } from '../actions';
+import { NoteContentDummyFactory } from '../dummies';
 import { NoteEditorComponent } from '../editor/editor.component';
 import { NoteEditorService } from '../editor/editor.service';
 import { NoteEditorCodeSnippetComponent } from '../editor/snippet/code-snippet.component';
 import { NoteEditorSnippetFactory } from '../editor/snippet/snippet-factory';
 import { NoteEditorTextSnippetComponent } from '../editor/snippet/text-snippet.component';
 import { NoteEditorToolbarComponent } from '../editor/toolbar/toolbar.component';
-import { NoteEditorViewModeSettingMenu } from '../header/editor-view-mode-setting-menu';
+import { NoteViewModeSettingMenu } from '../shared/note-view-mode-setting.menu';
 import { NoteHeaderComponent } from '../header/header.component';
 import { NoteEditorViewModes } from '../models';
 import { NotePreviewLanguageChartComponent } from '../preview/language-chart.component';
@@ -37,9 +40,10 @@ describe('app.note.workspace.NoteWorkspaceComponent', () => {
                     }),
                 ],
                 providers: [
+                    MonacoService,
                     NoteEditorSnippetFactory,
                     NoteEditorService,
-                    NoteEditorViewModeSettingMenu,
+                    NoteViewModeSettingMenu,
                 ],
                 declarations: [
                     NoteHeaderComponent,
@@ -117,5 +121,23 @@ describe('app.note.workspace.NoteWorkspaceComponent', () => {
 
         expectDebugElement(editorPanel).not.toBeDisplayed();
         expectDebugElement(previewPanel).toBeDisplayed();
+    });
+
+    it('should show empty state when editor not loaded.', () => {
+        let emptyState: DebugElement;
+
+        store.dispatch(new InitEditorAction({
+            content: new NoteContentDummyFactory().create(),
+        }));
+        fixture.detectChanges();
+
+        emptyState = fixture.debugElement.query(By.css('#noteEmptyState'));
+        expect(emptyState).toBeNull();
+
+        store.dispatch(new DeselectNoteAction());
+        fixture.detectChanges();
+
+        emptyState = fixture.debugElement.query(By.css('#noteEmptyState'));
+        expect(emptyState).not.toBeNull();
     });
 });

@@ -16,9 +16,22 @@
     }
 
     > section {
+        position: relative;
         display: flex;
         width: 100%;
         height: calc(~"100% - var(--size-box-medium)");
+    }
+
+    &__emptyState {
+        position: absolute;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        background-color: var(--color-gray-0);
     }
 
     &__panel {
