@@ -12,7 +12,6 @@ import { NoteEditorTextSnippetComponent } from './editor/snippet/text-snippet.co
 import { NoteEditorToolbarComponent } from './editor/toolbar/toolbar.component';
 import { NoteEditorEffects, NoteFinderEffects, NoteFsEffects } from './effects';
 import { NoteFinderComponent } from './finder/finder.component';
-import { NoteFinderSortMenu } from './finder/sort-menu';
 import { NoteEditorViewModeSettingMenu } from './header/editor-view-mode-setting-menu';
 import { NoteHeaderComponent } from './header/header.component';
 import { NoteItemComponent } from './item/item.component';
@@ -20,6 +19,7 @@ import { NoteFsService } from './note-fs.service';
 import { NotePreviewLanguageChartComponent } from './preview/language-chart.component';
 import { NotePreviewComponent } from './preview/preview.component';
 import { noteReducerMap } from './reducers';
+import { NoteCollectionSortingMenu } from './shared/note-collection-sorting.menu';
 import { NoteWorkspaceComponent } from './workspace/workspace.component';
 
 
@@ -57,7 +57,7 @@ import { NoteWorkspaceComponent } from './workspace/workspace.component';
         NoteEditorSnippetFactory,
         NoteEditorService,
         NoteEditorViewModeSettingMenu,
-        NoteFinderSortMenu,
+        NoteCollectionSortingMenu,
     ],
     exports: [
         NoteFinderComponent,

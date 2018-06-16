@@ -19,7 +19,7 @@ import {
 } from '../models';
 import { NoteFsService } from '../note-fs.service';
 import { NoteFinderState, NoteStateWithRoot } from '../reducers';
-import { NoteFinderSortMenu } from './sort-menu';
+import { NoteCollectionSortingMenu } from '../shared/note-collection-sorting.menu';
 
 
 @Component({
@@ -37,7 +37,7 @@ export class NoteFinderComponent implements OnInit {
     constructor(
         private store: Store<NoteStateWithRoot>,
         private noteFsService: NoteFsService,
-        private sortMenu: NoteFinderSortMenu,
+        private sortingMenu: NoteCollectionSortingMenu,
         private changeDetector: ChangeDetectorRef,
     ) {
     }
@@ -119,7 +119,7 @@ export class NoteFinderComponent implements OnInit {
     }
 
     openSortMenu(): void {
-        this.sortMenu.open();
+        this.sortingMenu.open();
     }
 
     private dispatchMonthFilterChanges(): void {

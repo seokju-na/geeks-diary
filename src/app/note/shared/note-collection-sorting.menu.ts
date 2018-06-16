@@ -8,7 +8,7 @@ import { NoteStateWithRoot } from '../reducers';
 
 
 @Injectable()
-export class NoteFinderSortMenu {
+export class NoteCollectionSortingMenu {
     constructor(
         private store: Store<NoteStateWithRoot>,
         private menu: Menu,
