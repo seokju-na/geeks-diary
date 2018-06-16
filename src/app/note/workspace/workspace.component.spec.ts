@@ -14,7 +14,7 @@ import { NoteEditorCodeSnippetComponent } from '../editor/snippet/code-snippet.c
 import { NoteEditorSnippetFactory } from '../editor/snippet/snippet-factory';
 import { NoteEditorTextSnippetComponent } from '../editor/snippet/text-snippet.component';
 import { NoteEditorToolbarComponent } from '../editor/toolbar/toolbar.component';
-import { NoteEditorViewModeSettingMenu } from '../header/editor-view-mode-setting-menu';
+import { NoteViewModeSettingMenu } from '../shared/note-view-mode-setting.menu';
 import { NoteHeaderComponent } from '../header/header.component';
 import { NoteEditorViewModes } from '../models';
 import { NotePreviewLanguageChartComponent } from '../preview/language-chart.component';
@@ -43,7 +43,7 @@ describe('app.note.workspace.NoteWorkspaceComponent', () => {
                     MonacoService,
                     NoteEditorSnippetFactory,
                     NoteEditorService,
-                    NoteEditorViewModeSettingMenu,
+                    NoteViewModeSettingMenu,
                 ],
                 declarations: [
                     NoteHeaderComponent,
