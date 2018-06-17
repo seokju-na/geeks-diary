@@ -4,8 +4,10 @@ import { Observable } from 'rxjs';
 import { fromEvent } from 'rxjs/observable/fromEvent';
 import { merge } from 'rxjs/observable/merge';
 import { debounceTime, mapTo, share } from 'rxjs/operators';
+import { AddNoteAction } from '../actions';
 import { NoteEditorViewModes } from '../models';
 import { NoteStateWithRoot } from '../reducers';
+import { NoteProduceService } from '../shared/note-produce.service';
 
 
 @Component({
@@ -23,7 +25,11 @@ export class NoteWorkspaceComponent {
 
     readonly layoutUpdateActions: Observable<void>;
 
-    constructor(private store: Store<NoteStateWithRoot>) {
+    constructor(
+        private store: Store<NoteStateWithRoot>,
+        private noteProduceService: NoteProduceService,
+    ) {
+
         this.editorViewMode = this.store.pipe(
             select(state => state.note.editor.viewMode),
             share(),
@@ -40,5 +46,11 @@ export class NoteWorkspaceComponent {
         this.editorLoaded = this.store.pipe(
             select(state => state.note.editor.loaded),
         );
+    }
+
+    addNewNote(): void {
+        const action = new AddNoteAction(this.noteProduceService.createNewNote());
+
+        this.store.dispatch(action);
     }
 }
