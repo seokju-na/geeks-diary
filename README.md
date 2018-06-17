@@ -2,6 +2,7 @@
 
 [![Build Status](https://img.shields.io/travis/seokju-na/geeks-diary.svg?style=flat-square
 )](https://travis-ci.org/seokju-na/geeks-diary)
+[![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2Fseokju-na%2Fgeeks-diary.svg?type=shield)](https://app.fossa.io/projects/git%2Bgithub.com%2Fseokju-na%2Fgeeks-diary?ref=badge_shield)
 
 
 [![Demo Image](https://user-images.githubusercontent.com/13250888/41206142-8d5daf2e-6d3a-11e8-857f-03f200f4a184.png)](https://youtu.be/qBtb7sIuL7w)
@@ -55,3 +56,6 @@ npm run test
 ## License
 
 MIT Licensed
+
+
+[![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2Fseokju-na%2Fgeeks-diary.svg?type=large)](https://app.fossa.io/projects/git%2Bgithub.com%2Fseokju-na%2Fgeeks-diary?ref=badge_large)
