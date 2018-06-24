@@ -33,6 +33,10 @@ class DebugElementMatcher {
     toBeDisabled(): boolean {
         return expect((<any>this.nativeElem).disabled).toBe(true);
     }
+
+    toBeFocused(): boolean {
+        return document.activeElement === this.nativeElem;
+    }
 }
 
 

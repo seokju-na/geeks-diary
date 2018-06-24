@@ -1,0 +1,72 @@
+&:host {
+    display: block;
+}
+
+
+.NoteEditorSnippetSettingDialog {
+    width: 400px;
+    padding: var(--size-space-big);
+    background-color: var(--color-white);
+    border-radius: 3.5px;
+    box-shadow: 0 2px 6px 0 rgba(0, 0, 0, .75);
+
+    > h1 {
+        display: block;
+        margin: 0 0 var(--size-space-big) 0;
+    }
+
+    &__form {
+    }
+
+    &__row {
+        display: flex;
+        margin-bottom: var(--size-space-medium);
+
+        > label {
+            display: inline-block;
+            margin-right: var(--size-space-regular);
+            line-height: var(--size-box-regular);
+            width: 58px;
+            height: var(--size-box-regular);
+        }
+
+        > gd-form-field {
+            flex: 1;
+            display: block;
+
+            input {
+                width: 100%;
+                height: var(--size-box-regular);
+                padding: 0 var(--size-space-regular);
+                border: 1px solid var(--color-gray-4);
+                background-color: var(--color-gray-0);
+                font-size: var(--size-font-small);
+                border-radius: 2.5px;
+                outline: 0;
+
+                &:focus {
+                    box-shadow: 0 0 2px 0 var(--color-blue-5);
+                }
+            }
+
+            &.errorCaught {
+                input {
+                    border-color: var(--color-red-5);
+
+                    &:focus {
+                        box-shadow: 0 0 2px 0 var(--color-red-5);
+                    }
+                }
+            }
+        }
+    }
+
+    &__actions {
+        display: flex;
+        padding-top: var(--size-space-medium);
+
+        button:first-child {
+            margin-right: var(--size-space-small);
+        }
+    }
+}

@@ -19,12 +19,13 @@
         margin: 0;
         padding: 0 var(--size-space-regular);
         color: var(--color-gray-8);
+        user-select: none;
+        cursor: default;
     }
 
     &__settingForm {
         display: flex;
-        align-items: center;
-        flex-wrap: wrap;
+        grid-gap: var(--size-space-small);
         padding: 0 var(--size-space-small);
         width: 100%;
 
@@ -33,18 +34,26 @@
             margin-right: var(--size-space-regular);
         }
 
+        label {
+            display: block;
+            margin-bottom: var(--size-space-small);
+        }
+
         input {
-            font-size: var(--size-font-small);
-            line-height: var(--size-lineHeight-small);
+            display: block;
+            width: 100%;
+            font-size: var(--size-font-regular);
+            line-height: var(--size-lineHeight-regular);
             padding: 0 var(--size-space-small);
-            height: var(--size-box-small);
-            background-color: var(--color-gray-1);
+            height: var(--size-box-regular);
+            background-color: var(--color-gray-0);
             border: 1px solid var(--color-gray-4);
             outline: 0;
+            z-index: 4; // Higher than cdk overlay
 
             &:focus {
+                background-color: var(--color-gray-1);
                 border-color: var(--color-blue-5);
-                box-shadow: 0 0 2px 0 var(--color-blue-5);
             }
         }
     }
@@ -62,10 +71,12 @@
     }
 
     &__formButtonGroup {
-        flex: 1;
+        // flex: 1;
         display: inline-flex;
-        justify-content: flex-end;
+        // justify-content: flex-end;
         align-self: center;
+        grid-column: 3 / 3;
+        grid-row: 1;
 
         button {
             display: inline-block;

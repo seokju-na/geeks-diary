@@ -1,5 +1,6 @@
 import {
     ChangeDetectionStrategy,
+    ChangeDetectorRef,
     Component,
     ElementRef,
     Injector,
@@ -7,13 +8,13 @@ import {
     ViewChild,
     ViewEncapsulation,
 } from '@angular/core';
-import { FormControl, FormGroup, Validators } from '@angular/forms';
-import { Observable } from 'rxjs/Observable';
 import { MonacoService } from '../../../core/monaco.service';
+import { Dialog } from '../../../shared/dialog/dialog';
 import { Stack } from '../../../stack/models';
 import { StackViewer } from '../../../stack/stack-viewer';
 import { UpdateSnippetContentAction } from '../../actions';
-import { NoteEditorSnippet } from './snippet';
+import { NoteEditorSnippetSettingDialogComponent } from '../snippet-setting-dialog/snippet-setting-dialog.component';
+import { NoteEditorSnippet, NoteEditorSnippetConfig } from './snippet';
 
 
 @Component({
@@ -24,12 +25,6 @@ import { NoteEditorSnippet } from './snippet';
     encapsulation: ViewEncapsulation.None,
 })
 export class NoteEditorCodeSnippetComponent extends NoteEditorSnippet implements OnInit {
-    settingForm = new FormGroup({
-        language: new FormControl('', [Validators.required]),
-        fileName: new FormControl('', [Validators.required]),
-    });
-    mode: 'edit' | 'setting' = 'edit';
-    filteredStacks: Observable<Stack[]>;
     languageStack: Stack | null = null;
 
     @ViewChild('wrapper') wrapperEl: ElementRef;
@@ -40,6 +35,8 @@ export class NoteEditorCodeSnippetComponent extends NoteEditorSnippet implements
         injector: Injector,
         private monacoService: MonacoService,
         private stackViewer: StackViewer,
+        private dialog: Dialog,
+        private changeDetector: ChangeDetectorRef,
     ) {
 
         super(injector);
@@ -47,15 +44,6 @@ export class NoteEditorCodeSnippetComponent extends NoteEditorSnippet implements
 
     ngOnInit(): void {
         this.applyStack();
-
-        if (this._config.isNewSnippet) {
-            this.turnSettingModeOn();
-        }
-
-        this.filteredStacks =
-            this.stackViewer.searchAsObservable(
-                this.settingForm.get('language').valueChanges,
-            );
     }
 
     init(): void {
@@ -185,17 +173,32 @@ export class NoteEditorCodeSnippetComponent extends NoteEditorSnippet implements
         };
     }
 
-    turnSettingModeOn(): void {
-        this.mode = 'setting';
-        this.settingForm.setValue({
-            language: this._config.language ? this._config.language : '',
-            fileName: this._config.fileName ? this._config.fileName : '',
-        }, { emitEvent: false });
+    openSettingDialog(): void {
+        const data = this._config;
+        const config = {
+            width: '360px',
+            data,
+        };
+
+        this.dialog
+            .open<NoteEditorSnippetSettingDialogComponent,
+                NoteEditorSnippetConfig,
+                { language: string, fileName: string }>(
+                NoteEditorSnippetSettingDialogComponent,
+                config,
+            )
+            .beforeClose()
+            .subscribe((result) => {
+                if (!result) {
+                    return;
+                }
+
+                this.updateSettings(result);
+                this.changeDetector.markForCheck();
+            });
     }
 
-    submitSetting(): void {
-        const settings = this.settingForm.value;
-
+    updateSettings(settings: Partial<NoteEditorSnippetConfig>): void {
         this._config.language = settings.language;
         this._config.fileName = settings.fileName;
 
@@ -206,18 +209,10 @@ export class NoteEditorCodeSnippetComponent extends NoteEditorSnippet implements
 
         this.store.dispatch(new UpdateSnippetContentAction({
             snippetId: this.id,
-            patch: {
-                language: this._config.language,
-                fileName: this._config.fileName,
-            },
+            patch: settings,
         }));
 
-        this.mode = 'edit';
         this.applyStack();
-    }
-
-    cancelSetting(): void {
-        this.mode = 'edit';
     }
 
     canDisplayLanguageStackIcon(): boolean {
