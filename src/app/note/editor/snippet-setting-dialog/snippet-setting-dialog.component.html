@@ -1,0 +1,59 @@
+<div class="NoteEditorSnippetSettingDialog">
+    <h1 gd-text size="medium" weight="bold">Setting Code Snippet</h1>
+    <form [formGroup]="settingForm"
+          (ngSubmit)="submit()"
+          class="NoteEditorSnippetSettingDialog__form">
+
+        <div class="NoteEditorSnippetSettingDialog__row">
+            <label gd-text size="small" for="languageInput">Language</label>
+            <gd-form-field>
+                <input gdFormFieldControl
+                       gdAutocomplete
+                       [autocomplete]="auto"
+                       formControlName="language"
+                       placeholder="Input code language"
+                       id="languageInput"
+                       name="language">
+
+                <gd-autocomplete #auto="gdAutocomplete">
+                    <gd-option-item *ngFor="let stack of filteredStacks | async"
+                                    [value]="stack.name"
+                                    class="NoteEditorSnippetSettingDialog__languageOptionItem">
+                        <gd-stack-chip [stack]="stack"></gd-stack-chip>
+                        <span gd-text>{{stack.name}}</span>
+                    </gd-option-item>
+                </gd-autocomplete>
+            </gd-form-field>
+        </div>
+
+        <div class="NoteEditorSnippetSettingDialog__row">
+            <label gd-text size="small" for="fileNameInput">File Name</label>
+            <gd-form-field>
+                <input gdFormFieldControl
+                       formControlName="fileName"
+                       placeholder="Input file name"
+                       id="fileNameInput"
+                       name="fileName">
+
+                <gd-form-field-error errorName="required">
+                    <span gd-text size="small">File name is required</span>
+                </gd-form-field-error>
+            </gd-form-field>
+        </div>
+
+        <div class="NoteEditorSnippetSettingDialog__actions">
+            <button gd-button
+                    aria-label="save-settings-button"
+                    buttonType="primary">
+                <span gd-text>Save</span>
+            </button>
+            <button gd-button
+                    type="button"
+                    (click)="cancel()"
+                    aria-label="cancel-settings-button"
+                    cdkFocusInitial>
+                <span gd-text>Cancel</span>
+            </button>
+        </div>
+    </form>
+</div>

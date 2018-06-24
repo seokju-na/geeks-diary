@@ -6,6 +6,9 @@ import { StackModule } from '../stack/stack.module';
 import { NoteCalendarComponent } from './calendar/calendar.component';
 import { NoteEditorComponent } from './editor/editor.component';
 import { NoteEditorService } from './editor/editor.service';
+import {
+    NoteEditorSnippetSettingDialogComponent,
+} from './editor/snippet-setting-dialog/snippet-setting-dialog.component';
 import { NoteEditorCodeSnippetComponent } from './editor/snippet/code-snippet.component';
 import { NoteEditorSnippetFactory } from './editor/snippet/snippet-factory';
 import { NoteEditorTextSnippetComponent } from './editor/snippet/text-snippet.component';
@@ -43,6 +46,7 @@ import { NoteWorkspaceComponent } from './workspace/workspace.component';
         NoteEditorCodeSnippetComponent,
         NoteEditorTextSnippetComponent,
         NoteEditorToolbarComponent,
+        NoteEditorSnippetSettingDialogComponent,
         NoteEditorComponent,
         NotePreviewLanguageChartComponent,
         NotePreviewComponent,
@@ -52,6 +56,7 @@ import { NoteWorkspaceComponent } from './workspace/workspace.component';
         NoteFinderComponent,
         NoteEditorCodeSnippetComponent,
         NoteEditorTextSnippetComponent,
+        NoteEditorSnippetSettingDialogComponent,
     ],
     providers: [
         NoteFsService,
