@@ -1,13 +1,12 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
-import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { combineReducers, Store, StoreModule } from '@ngrx/store';
 import { KeyCodes } from '../../../../common/key-codes';
-import { dispatchKeyboardEvent, typeInElement } from '../../../../testing/fake-event';
+import { dispatchKeyboardEvent } from '../../../../testing/fake-event';
+import { MockDialog } from '../../../../testing/mock';
 import { MonacoService } from '../../../core/monaco.service';
-import { SharedModule } from '../../../shared/shared.module';
-import { StackChipComponent } from '../../../stack/chip/chip.component';
-import { StackViewer } from '../../../stack/stack-viewer';
+import { Dialog } from '../../../shared/dialog/dialog';
+import { StackModule } from '../../../stack/stack.module';
 import {
     MoveFocusToNextSnippetAction,
     MoveFocusToPreviousSnippetAction,
@@ -16,6 +15,7 @@ import {
 } from '../../actions';
 import { NoteContentSnippetTypes } from '../../models';
 import { noteReducerMap, NoteStateWithRoot } from '../../reducers';
+import { NoteEditorSnippetSettingDialogComponent } from '../snippet-setting-dialog/snippet-setting-dialog.component';
 import { NoteEditorCodeSnippetComponent } from './code-snippet.component';
 import {
     NOTE_EDITOR_SNIPPET_CONFIG,
@@ -33,6 +33,7 @@ describe('app.note.editor.snippet.EditorCodeSnippetComponent', () => {
     let config: NoteEditorSnippetConfig;
 
     let store: Store<NoteStateWithRoot>;
+    let mockDialog: MockDialog;
 
     const getInputField = (): HTMLTextAreaElement =>
         document.querySelector('.monaco-editor .inputarea') as HTMLTextAreaElement;
@@ -48,20 +49,19 @@ describe('app.note.editor.snippet.EditorCodeSnippetComponent', () => {
     const configureTestBed = () => TestBed
         .configureTestingModule({
             imports: [
-                SharedModule,
-                NoopAnimationsModule,
+                ...MockDialog.importsForTesting,
+                StackModule,
                 StoreModule.forRoot({
                     note: combineReducers(noteReducerMap),
                 }),
             ],
             providers: [
+                ...MockDialog.providersForTesting,
                 MonacoService,
-                StackViewer,
                 { provide: NOTE_EDITOR_SNIPPET_REF, useValue: ref },
                 { provide: NOTE_EDITOR_SNIPPET_CONFIG, useValue: config },
             ],
             declarations: [
-                StackChipComponent,
                 NoteEditorCodeSnippetComponent,
             ],
         })
@@ -95,13 +95,15 @@ describe('app.note.editor.snippet.EditorCodeSnippetComponent', () => {
             configureTestBed();
         }));
 
-        it('should show initial value when initialized editor.', () => {
+        beforeEach(() => {
             createFixture();
+        });
+
+        it('should show initial value when initialized editor.', () => {
             expect(component.getValue()).toEqual(config.initialValue);
         });
 
         it('should language has been set.', () => {
-            createFixture();
             expect(component.getLanguage()).toEqual(config.language);
         });
     });
@@ -111,9 +113,11 @@ describe('app.note.editor.snippet.EditorCodeSnippetComponent', () => {
             configureTestBed();
         }));
 
-        it('should be true when cursor in the start line of editor.', () => {
+        beforeEach(() => {
             createFixture();
+        });
 
+        it('should be true when cursor in the start line of editor.', () => {
             component._editor.setPosition({
                 lineNumber: 1,
                 column: 0,
@@ -128,16 +132,16 @@ describe('app.note.editor.snippet.EditorCodeSnippetComponent', () => {
             configureTestBed();
         }));
 
-        it('if editor has only one line, it should be true on both top and bottom.', () => {
+        beforeEach(() => {
             createFixture();
+        });
 
+        it('if editor has only one line, it should be true on both top and bottom.', () => {
             expect(component.isCurrentPositionTop()).toBe(true);
             expect(component.isCurrentPositionBottom()).toBe(true);
         });
 
         it('should be true when cursor in the last line of editor', () => {
-            createFixture();
-
             component.setValue('hello\nworld!');
             component._editor.setPosition({
                 lineNumber: 2,
@@ -153,9 +157,11 @@ describe('app.note.editor.snippet.EditorCodeSnippetComponent', () => {
             configureTestBed();
         }));
 
-        it('should cursor located at first line.', () => {
+        beforeEach(() => {
             createFixture();
+        });
 
+        it('should cursor located at first line.', () => {
             component.setValue('Some long\nparagraph');
             component._editor.setPosition({
                 lineNumber: 2,
@@ -173,9 +179,11 @@ describe('app.note.editor.snippet.EditorCodeSnippetComponent', () => {
             configureTestBed();
         }));
 
-        it('should cursor located at last line.', () => {
+        beforeEach(() => {
             createFixture();
+        });
 
+        it('should cursor located at last line.', () => {
             component.setValue('Some long\nparagraph.');
             expect(component.isCurrentPositionBottom()).toBe(false);
 
@@ -185,8 +193,11 @@ describe('app.note.editor.snippet.EditorCodeSnippetComponent', () => {
     });
 
     describe('typing', () => {
-        beforeEach(() => {
+        beforeEach(async(() => {
             configureTestBed();
+        }));
+
+        beforeEach(() => {
             createFixture();
 
             store = TestBed.get(Store);
@@ -235,56 +246,45 @@ describe('app.note.editor.snippet.EditorCodeSnippetComponent', () => {
 
     describe('setting', () => {
         beforeEach(async(() => {
-            overwriteConfig({ isNewSnippet: true });
             configureTestBed();
         }));
 
-        it('should setting form appeared if \'isNewSnippet\' value is true ' +
-            'which from snippet config, when snippet is initialized', () => {
-
+        beforeEach(() => {
             createFixture();
 
-            const settingForm = fixture.debugElement.query(
-                By.css('form.NoteEditorCodeSnippet__settingForm'));
+            mockDialog = TestBed.get(Dialog);
+            store = TestBed.get(Store);
 
-            expect(component.mode).toEqual('setting');
-            expect(settingForm).not.toBeNull();
+            spyOn(store, 'dispatch').and.callThrough();
         });
 
-        it('should dispatch \'UPDATE_SNIPPET_CONTENT\' action ' +
-            'after submit setting form', () => {
-
-            store = TestBed.get(Store);
-            spyOn(store, 'dispatch').and.callThrough();
-
-            createFixture();
-
-            const languageInputEl = fixture.debugElement.query(
-                By.css('input[name="language"]')).nativeElement;
-            const fileNameInputEl = fixture.debugElement.query(
-                By.css('input[name="fileName"]')).nativeElement;
-
-            typeInElement('some-language', languageInputEl);
-            fixture.detectChanges();
-
-            typeInElement('some-filename', fileNameInputEl);
-            fixture.detectChanges();
-
-            const submitButton = fixture.debugElement.query(
-                By.css('button[aria-label=save-button]'));
-            submitButton.nativeElement.click();
-            fixture.detectChanges();
-
-            const expectedPayload = {
-                snippetId: component.id,
-                patch: {
-                    language: 'some-language',
-                    fileName: 'some-filename',
-                },
+        it('should update settings and dispatch \'UPDATE_SNIPPET_CONTENT\' action ' +
+            'after snippet setting dialog submitted with patch.', () => {
+            const patch = {
+                language: 'modified-language',
+                fileName: 'modified-fileName',
             };
-            const expectedAction = new UpdateSnippetContentAction(expectedPayload);
 
-            expect(store.dispatch).toHaveBeenCalledWith(expectedAction);
+            const settingButton = fixture.debugElement.query(
+                By.css('button[aria-label=setting-button]'));
+
+            settingButton.nativeElement.click();
+            fixture.detectChanges();
+
+            expect(mockDialog.openDialog).toEqual(NoteEditorSnippetSettingDialogComponent);
+            expect(mockDialog.openDialogConfig.data).toEqual(component._config);
+
+            mockDialog.dialogRef.close(patch);
+            fixture.detectChanges();
+
+            expect(component._config.language).toEqual('modified-language');
+
+            const expected = new UpdateSnippetContentAction({
+                snippetId: component.id,
+                patch,
+            });
+
+            expect(store.dispatch).toHaveBeenCalledWith(expected);
         });
     });
 });
