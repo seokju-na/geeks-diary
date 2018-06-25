@@ -13,7 +13,9 @@ export interface LayoutState {
 }
 
 
-export interface UserDataState extends UserData {
+export interface UserDataState {
+    loaded: boolean;
+    data: UserData;
 }
 
 
@@ -27,7 +29,8 @@ export function createInitialLayoutState(): LayoutState {
 
 export function createInitialUserDataState(): UserDataState {
     return {
-        lastOpenedNoteId: null,
+        loaded: false,
+        data: {},
     };
 }
 
@@ -63,7 +66,19 @@ export function userDataReducer(
 
     switch (action.type) {
         case UserDataActionTypes.LOAD_COMPLETE:
-            return { ...action.payload.userData };
+            return {
+                loaded: true,
+                data: { ...action.payload.userData },
+            };
+
+        case UserDataActionTypes.SAVE:
+            return {
+                ...state,
+                data: {
+                    ...state.data,
+                    ...action.payload.userData,
+                },
+            };
 
         default:
             return state;
