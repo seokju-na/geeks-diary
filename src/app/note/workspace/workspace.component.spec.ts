@@ -1,18 +1,13 @@
 import { DebugElement } from '@angular/core';
 import { async, ComponentFixture, inject, TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
-import { Action, combineReducers, Store, StoreModule } from '@ngrx/store';
+import { combineReducers, Store, StoreModule } from '@ngrx/store';
 import { MockFsService } from '../../../testing/mock';
 import { expectDebugElement } from '../../../testing/validation';
 import { MonacoService } from '../../core/monaco.service';
 import { SharedModule } from '../../shared/shared.module';
 import { StackModule } from '../../stack/stack.module';
-import {
-    ChangeEditorViewModeAction,
-    DeselectNoteAction,
-    InitEditorAction,
-    NoteActionTypes,
-} from '../actions';
+import { ChangeEditorViewModeAction, DeselectNoteAction, InitEditorAction } from '../actions';
 import { NoteContentDummyFactory } from '../dummies';
 import { NoteEditorComponent } from '../editor/editor.component';
 import { NoteEditorService } from '../editor/editor.service';
@@ -20,14 +15,14 @@ import { NoteEditorCodeSnippetComponent } from '../editor/snippet/code-snippet.c
 import { NoteEditorSnippetFactory } from '../editor/snippet/snippet-factory';
 import { NoteEditorTextSnippetComponent } from '../editor/snippet/text-snippet.component';
 import { NoteEditorToolbarComponent } from '../editor/toolbar/toolbar.component';
-import { NoteFsService } from '../shared/note-fs.service';
-import { NoteProduceService } from '../shared/note-produce.service';
-import { NoteViewModeSettingMenu } from '../shared/note-view-mode-setting.menu';
 import { NoteHeaderComponent } from '../header/header.component';
 import { NoteEditorViewModes } from '../models';
 import { NotePreviewLanguageChartComponent } from '../preview/language-chart.component';
 import { NotePreviewComponent } from '../preview/preview.component';
 import { noteReducerMap, NoteStateWithRoot } from '../reducers';
+import { NoteFsService } from '../shared/note-fs.service';
+import { NoteProduceService } from '../shared/note-produce.service';
+import { NoteViewModeSettingMenu } from '../shared/note-view-mode-setting.menu';
 import { NoteWorkspaceComponent } from './workspace.component';
 
 
@@ -150,25 +145,5 @@ describe('app.note.workspace.NoteWorkspaceComponent', () => {
 
         emptyState = fixture.debugElement.query(By.css('#noteEmptyState'));
         expect(emptyState).not.toBeNull();
-    });
-
-    it('should dispatch \'ADD_NEW_NOTE\' when click add new note button ' +
-        'from empty state.', () => {
-
-        store.dispatch(new DeselectNoteAction());
-        fixture.detectChanges();
-
-        spyOn(store, 'dispatch');
-
-        const addNewNoteButton = fixture.debugElement.query(
-            By.css('button.NoteWorkspace__addNewNote'));
-
-        addNewNoteButton.nativeElement.click();
-        fixture.detectChanges();
-
-        const expected = (<jasmine.Spy>store.dispatch)
-            .calls.mostRecent().args[0] as Action;
-
-        expect(expected.type).toEqual(NoteActionTypes.ADD_NOTE);
     });
 });
