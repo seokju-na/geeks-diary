@@ -53,7 +53,10 @@ const config = {
             }
         })
     ],
-    target: 'electron-main'
+    target: 'electron-main',
+    externals: {
+        nodegit: 'require("nodegit")'
+    }
 };
 
 if (PROD) {
