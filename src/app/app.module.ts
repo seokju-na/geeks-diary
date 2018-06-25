@@ -7,6 +7,7 @@ import { StoreDevtoolsModule } from '@ngrx/store-devtools';
 import { appReducers } from './app-reducers';
 import { AppShellComponent } from './app-shell.component';
 import { CoreModule } from './core/core.module';
+import { UserDataEffects } from './core/effects';
 import { NoteModule } from './note/note.module';
 import { SharedModule } from './shared/shared.module';
 import { StackModule } from './stack/stack.module';
@@ -20,7 +21,9 @@ import { StackModule } from './stack/stack.module';
         CoreModule,
         StoreModule.forRoot(appReducers),
         StoreDevtoolsModule.instrument(),
-        EffectsModule.forRoot([]),
+        EffectsModule.forRoot([
+            UserDataEffects,
+        ]),
         NoteModule,
         StackModule,
     ],

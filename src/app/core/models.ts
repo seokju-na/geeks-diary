@@ -1,3 +1,6 @@
+import { NoteMetadata } from '../note/models';
+
+
 export class UserData {
-    readonly lastOpenedNoteId: string | null;
+    lastOpenedNote?: NoteMetadata;
 }

@@ -56,6 +56,7 @@ export class ChangeDateFilterAction implements Action {
     constructor(readonly payload: {
         dateFilter: Date | null,
         dateFilterBy: NoteFinderDateFilterTypes,
+        ignoreSideEffect?: boolean, // Used for handling select last opened note.
     }) {}
 }
 

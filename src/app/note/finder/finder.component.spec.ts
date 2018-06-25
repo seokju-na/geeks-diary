@@ -7,6 +7,7 @@ import { datetime, DateUnits } from '../../../common/datetime';
 import { createDummyList } from '../../../testing/dummy';
 import { MockFsService } from '../../../testing/mock';
 import { MonacoService } from '../../core/monaco.service';
+import { userDataReducer } from '../../core/reducers';
 import { SharedModule } from '../../shared/shared.module';
 import { StackModule } from '../../stack/stack.module';
 import {
@@ -22,6 +23,7 @@ import { noteReducerMap, NoteStateWithRoot } from '../reducers';
 import { NoteCollectionSortingMenu } from '../shared/note-collection-sorting.menu';
 import { NoteFsService } from '../shared/note-fs.service';
 import { NoteProduceService } from '../shared/note-produce.service';
+import { NoteSelectionService } from '../shared/note-selection.service';
 import { NoteFinderComponent } from './finder.component';
 
 
@@ -45,6 +47,7 @@ describe('app.note.finder.NoteFinderComponent', () => {
                     SharedModule,
                     StackModule,
                     StoreModule.forRoot({
+                        userData: userDataReducer,
                         note: combineReducers(noteReducerMap),
                     }),
                 ],
@@ -55,6 +58,7 @@ describe('app.note.finder.NoteFinderComponent', () => {
                     NoteFsService,
                     NoteProduceService,
                     NoteCollectionSortingMenu,
+                    NoteSelectionService,
                 ],
                 declarations: [
                     NoteCalendarComponent,
@@ -155,23 +159,6 @@ describe('app.note.finder.NoteFinderComponent', () => {
         expect(selectedDateEl.nativeElement.innerText).toContain(
             datePipe.transform(selectedDate, 'MMM d'),
         );
-    });
-
-    it('should dispatch \'SELECT_NOTE\' action on click note item.', () => {
-        const notes = createDummyList(new NoteMetadataDummyFactory(), 5);
-
-        store.dispatch(new GetNoteCollectionCompleteAction({ notes }));
-        fixture.detectChanges();
-
-        const noteItemElList = fixture.debugElement.queryAll(By.directive(NoteItemComponent));
-        const target = noteItemElList[2];
-
-        target.triggerEventHandler('click', {});
-        fixture.detectChanges();
-
-        expect(store.dispatch).toHaveBeenCalledWith(new SelectNoteAction({
-            selectedNote: notes[2],
-        }));
     });
 
     it('should note item has been selected if note is selected.', () => {

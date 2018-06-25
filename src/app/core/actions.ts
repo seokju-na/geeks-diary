@@ -1,5 +1,5 @@
 import { Action } from '@ngrx/store';
-import { UserDataState } from './reducers';
+import { UserData } from './models';
 
 
 export enum LayoutActionTypes {
@@ -8,8 +8,11 @@ export enum LayoutActionTypes {
 
 
 export enum UserDataActionTypes {
-    LOAD = '[UserData] Load',
-    LOAD_COMPLETE = '[UserData] Load complete',
+    LOAD = '[UserData] Load user data',
+    LOAD_COMPLETE = '[UserData] Load user data complete',
+    SAVE = '[UserData] Save user data',
+    SAVE_COMPLETE = '[UserData] Save user data complete',
+    SAVE_ERROR = '[UserData] Save user data error',
 }
 
 
@@ -29,7 +32,28 @@ export class LoadUserDataAction implements Action {
 export class LoadUserDataCompleteAction implements Action {
     readonly type = UserDataActionTypes.LOAD_COMPLETE;
 
-    constructor(readonly payload: { userData: UserDataState }) {
+    constructor(readonly payload: { userData: UserData }) {
+    }
+}
+
+
+export class SaveUserDataAction implements Action {
+    readonly type = UserDataActionTypes.SAVE;
+
+    constructor(readonly payload: { userData: UserData }) {
+    }
+}
+
+
+export class SaveUserDataCompleteAction implements Action {
+    readonly type = UserDataActionTypes.SAVE_COMPLETE;
+}
+
+
+export class SaveUserDataErrorAction implements Action {
+    readonly type = UserDataActionTypes.SAVE_ERROR;
+
+    constructor(readonly error: any) {
     }
 }
 
@@ -40,4 +64,6 @@ export type LayoutActions =
 
 export type UserDataActions =
     LoadUserDataAction
-    | LoadUserDataCompleteAction;
+    | LoadUserDataCompleteAction
+    | SaveUserDataAction
+    | SaveUserDataCompleteAction;

@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { select, Store } from '@ngrx/store';
 import { Observable } from 'rxjs';
 import { fromEvent } from 'rxjs/observable/fromEvent';
@@ -15,7 +15,7 @@ import { NoteProduceService } from '../shared/note-produce.service';
     templateUrl: './workspace.component.html',
     styleUrls: ['./workspace.component.less'],
 })
-export class NoteWorkspaceComponent {
+export class NoteWorkspaceComponent implements OnInit {
     editorViewMode: Observable<NoteEditorViewModes>;
 
     VIEW_EDITOR_ONLY_MODE = NoteEditorViewModes.EDITOR_ONLY;
@@ -46,6 +46,9 @@ export class NoteWorkspaceComponent {
         this.editorLoaded = this.store.pipe(
             select(state => state.note.editor.loaded),
         );
+    }
+
+    ngOnInit(): void {
     }
 
     addNewNote(): void {

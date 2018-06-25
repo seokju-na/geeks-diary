@@ -41,7 +41,7 @@
             <li *ngFor="let note of notes | async"
                 class="NoteFinder__noteItem">
                 <a gd-note-item
-                   (click)="selectNote(note)"
+                   (click)="toggleNoteSelection(note)"
                    [selected]="note.id === (selectedNote | async)?.id"
                    [note]="note"></a>
             </li>

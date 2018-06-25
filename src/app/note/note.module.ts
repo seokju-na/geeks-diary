@@ -23,6 +23,7 @@ import { noteReducerMap } from './reducers';
 import { NoteCollectionSortingMenu } from './shared/note-collection-sorting.menu';
 import { NoteFsService } from './shared/note-fs.service';
 import { NoteProduceService } from './shared/note-produce.service';
+import { NoteSelectionService } from './shared/note-selection.service';
 import { NoteViewModeSettingMenu } from './shared/note-view-mode-setting.menu';
 import { NoteWorkspaceComponent } from './workspace/workspace.component';
 
@@ -65,6 +66,7 @@ import { NoteWorkspaceComponent } from './workspace/workspace.component';
         NoteProduceService,
         NoteViewModeSettingMenu,
         NoteCollectionSortingMenu,
+        NoteSelectionService,
     ],
     exports: [
         NoteFinderComponent,
