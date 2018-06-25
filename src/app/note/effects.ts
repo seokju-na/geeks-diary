@@ -4,12 +4,11 @@ import { Action, select, Store } from '@ngrx/store';
 import { Observable } from 'rxjs/Observable';
 import { of } from 'rxjs/observable/of';
 import { zip } from 'rxjs/observable/zip';
-import { catchError, debounceTime, map, mergeMap, switchMap, take, tap } from 'rxjs/operators';
+import { catchError, debounceTime, map, mergeMap, switchMap, tap } from 'rxjs/operators';
 import {
     AddNoteAction,
     AddNoteCompleteAction,
-    AddNoteErrorAction,
-    DeselectNoteAction,
+    AddNoteErrorAction, ChangeDateFilterAction,
     GetNoteCollectionCompleteAction,
     InitEditorAction,
     InsertNewSnippetAction,
@@ -24,9 +23,9 @@ import {
     SelectNoteAction,
 } from './actions';
 import { NoteEditorService } from './editor/editor.service';
-import { NoteMetadata } from './models';
 import { NoteStateForFeature, NoteStateWithRoot } from './reducers';
 import { NoteFsService } from './shared/note-fs.service';
+import { NoteSelectionService } from './shared/note-selection.service';
 
 
 @Injectable()
@@ -36,13 +35,6 @@ export class NoteFsEffects {
         ofType(NoteActionTypes.GET_NOTE_COLLECTION),
         switchMap(() => this.noteFsService.readNoteMetadataCollection()),
         map(notes => new GetNoteCollectionCompleteAction({ notes })),
-    );
-
-    @Effect()
-    afterSelectNote: Observable<Action> = this.actions.pipe(
-        ofType(NoteActionTypes.SELECT_NOTE),
-        map((action: SelectNoteAction) =>
-            new LoadNoteContentAction({ note: action.payload.selectedNote })),
     );
 
     @Effect()
@@ -180,41 +172,20 @@ export class NoteEditorEffects {
 
 @Injectable()
 export class NoteFinderEffects {
-    @Effect()
+    @Effect({ dispatch: false })
     selectNoteAtMonth: Observable<Action> = this.actions.pipe(
         ofType(NoteActionTypes.CHANGE_DATE_FILTER),
-        switchMap(() =>
-            this.store.pipe(
-                select(state => state.note),
-                take(1),
-            ),
-        ),
-        map((noteState) => {
-            const notes = noteState.collection.notes;
-
-            const filteredNotes = NoteMetadata.filterByDate(
-                notes,
-                noteState.finder.dateFilter,
-                noteState.finder.dateFilterBy,
-            );
-
-            NoteMetadata.sort(
-                filteredNotes,
-                noteState.finder.sortBy,
-                noteState.finder.sortDirection,
-            );
-
-            if (filteredNotes.length === 0) {
-                return new DeselectNoteAction();
+        tap((action: ChangeDateFilterAction) => {
+            if (!action.payload.ignoreSideEffect) {
+                this.noteSelectionService.applyNoteSelectionByFilterChanges();
             }
-
-            return new SelectNoteAction({ selectedNote: filteredNotes[0] });
         }),
     );
 
     constructor(
         private readonly actions: Actions,
         private store: Store<NoteStateWithRoot>,
+        private noteSelectionService: NoteSelectionService,
     ) {
     }
 }

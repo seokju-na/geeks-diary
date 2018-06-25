@@ -1,20 +1,17 @@
-import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
 import { select, Store } from '@ngrx/store';
+import { Subscription } from 'rxjs';
 import { Observable } from 'rxjs/Observable';
-import { map, mergeMap, take } from 'rxjs/operators';
+import { map, mergeMap } from 'rxjs/operators';
 import { datetime, DateUnits } from '../../../common/datetime';
-import {
-    AddNoteAction,
-    ChangeDateFilterAction,
-    GetNoteCollectionAction,
-    SelectNoteAction,
-} from '../actions';
+import { AddNoteAction, ChangeDateFilterAction, GetNoteCollectionAction } from '../actions';
 import { NoteContributeTable } from '../calendar/calendar.component';
 import { NoteFinderDateFilterTypes, NoteMetadata } from '../models';
 import { NoteFinderState, NoteStateWithRoot } from '../reducers';
 import { NoteCollectionSortingMenu } from '../shared/note-collection-sorting.menu';
 import { NoteFsService } from '../shared/note-fs.service';
 import { NoteProduceService } from '../shared/note-produce.service';
+import { NoteSelectionService } from '../shared/note-selection.service';
 
 
 @Component({
@@ -22,17 +19,20 @@ import { NoteProduceService } from '../shared/note-produce.service';
     templateUrl: './finder.component.html',
     styleUrls: ['./finder.component.less'],
 })
-export class NoteFinderComponent implements OnInit {
+export class NoteFinderComponent implements OnInit, OnDestroy {
     indexDate: Date;
     selectedDate: Date | null = null;
     notes: Observable<NoteMetadata[]>;
     selectedNote: Observable<NoteMetadata>;
     contributeTable: NoteContributeTable;
 
+    private afterSelectLastOpenedNoteSubscription: Subscription;
+
     constructor(
         private store: Store<NoteStateWithRoot>,
         private noteFsService: NoteFsService,
         private noteProduceService: NoteProduceService,
+        private noteSelectionService: NoteSelectionService,
         private sortingMenu: NoteCollectionSortingMenu,
         private changeDetector: ChangeDetectorRef,
     ) {
@@ -40,12 +40,27 @@ export class NoteFinderComponent implements OnInit {
 
     ngOnInit(): void {
         this.notes = this.filteredNotes;
-        this.selectedNote = this.store.pipe(
-            select(state => state.note.collection.selectedNote),
-        );
+        this.selectedNote = this.noteSelectionService.selectedNote;
 
         this.indexDate = datetime.today();
+
         this.store.dispatch(new GetNoteCollectionAction());
+        this.noteSelectionService.selectLastOpenedNote();
+
+        // Subscribe after select last opened note, and navigate index date to selected note.
+        this.afterSelectLastOpenedNoteSubscription =
+            this.noteSelectionService
+                .afterSelectLastOpenedNote()
+                .subscribe((selectedNote) => {
+                    this.indexDate = datetime.copy(new Date(selectedNote.createdDatetime));
+                    this.dispatchMonthFilterChanges(true);
+                });
+    }
+
+    ngOnDestroy(): void {
+        if (this.afterSelectLastOpenedNoteSubscription) {
+            this.afterSelectLastOpenedNoteSubscription.unsubscribe();
+        }
     }
 
     updateIndexDate(distDate: Date): void {
@@ -65,21 +80,8 @@ export class NoteFinderComponent implements OnInit {
         this.dispatchDateFilterChanges();
     }
 
-    selectNote(note: NoteMetadata): void {
-        this.store
-            .pipe(
-                select(state => state.note.collection.selectedNote),
-                take(1),
-            )
-            .subscribe((selectedNote) => {
-                if (selectedNote && selectedNote.id === note.id) {
-                    return;
-                }
-
-                this.store.dispatch(new SelectNoteAction({
-                    selectedNote: note,
-                }));
-            });
+    toggleNoteSelection(note: NoteMetadata): void {
+        this.noteSelectionService.toggleNoteSelection(note);
     }
 
     addNewNote(): void {
@@ -92,10 +94,11 @@ export class NoteFinderComponent implements OnInit {
         this.sortingMenu.open();
     }
 
-    private dispatchMonthFilterChanges(): void {
+    private dispatchMonthFilterChanges(isFromSelectingLastOpenedNote = false): void {
         this.store.dispatch(new ChangeDateFilterAction({
             dateFilter: datetime.copy(this.indexDate),
             dateFilterBy: NoteFinderDateFilterTypes.MONTH,
+            ignoreSideEffect: isFromSelectingLastOpenedNote,
         }));
     }
 
