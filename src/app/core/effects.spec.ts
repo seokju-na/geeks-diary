@@ -1,109 +1,114 @@
-import { fakeAsync, flush, inject, TestBed } from '@angular/core/testing';
+import { fakeAsync, flush, TestBed } from '@angular/core/testing';
 import { Actions } from '@ngrx/effects';
+import { Action, Store, StoreModule } from '@ngrx/store';
+import { ErrorObservable } from 'rxjs/observable/ErrorObservable';
+import { of } from 'rxjs/observable/of';
 import { Subject } from 'rxjs/Subject';
 import { MockActions, MockFsService } from '../../testing/mock';
+import { AppState } from '../app-reducers';
 import {
     LoadUserDataAction,
     LoadUserDataCompleteAction,
-    UserDataActions,
+    SaveUserDataAction,
+    SaveUserDataCompleteAction,
+    SaveUserDataErrorAction,
 } from './actions';
+import { UserDataDummyFactory } from './dummies';
 import { UserDataEffects } from './effects';
-import { FsService } from './fs.service';
-import { createInitialUserDataState, UserDataState } from './reducers';
+import { userDataReducer } from './reducers';
+import { UserDataService } from './user-data.service';
 
 
 describe('app.core.effects.UserDataEffects', () => {
     let userDataEffects: UserDataEffects;
 
-    let mockFsService: MockFsService;
+    let userDataService: UserDataService;
     let mockActions: MockActions;
+    let store: Store<AppState>;
+
+    let callback: jasmine.Spy;
+    let actions = new Subject<Action>();
 
     beforeEach(() => {
         TestBed
             .configureTestingModule({
+                imports: [
+                    StoreModule.forRoot({
+                        userData: userDataReducer,
+                    }),
+                ],
                 providers: [
-                    UserDataEffects,
                     ...MockFsService.providersForTesting,
                     ...MockActions.providersForTesting,
+                    UserDataService,
+                    UserDataEffects,
                 ],
             });
     });
 
-    beforeEach(inject(
-        [UserDataEffects, FsService, Actions],
-        (u: UserDataEffects, f: MockFsService, a: MockActions) => {
-            userDataEffects = u;
-            mockFsService = f;
-            mockActions = a;
-        },
-    ));
+    beforeEach(() => {
+        userDataEffects = TestBed.get(UserDataEffects);
+        userDataService = TestBed.get(UserDataService);
+        mockActions = TestBed.get(Actions);
+        store = TestBed.get(Store);
+
+        callback = jasmine.createSpy('callback');
+        actions = new Subject<Action>();
+
+        mockActions.stream = actions;
+    });
 
     describe('load', () => {
-        it('should create user data file with initial user data state ' +
-            'if data file is not exists.', fakeAsync(() => {
+        it('should return new \'LOAD_COMPLETE\' action, ' +
+            'with user data, on success.', fakeAsync(() => {
 
-            const actions = new Subject<UserDataActions>();
-            mockActions.stream = actions;
+            const userData = new UserDataDummyFactory().create();
+            spyOn(userDataService, 'readUserData').and.returnValue(of(userData));
 
-            const loadCallback = jasmine.createSpy('loadCallback');
-            userDataEffects.load.subscribe(loadCallback);
-
+            userDataEffects.load.subscribe(callback);
             actions.next(new LoadUserDataAction());
             flush();
 
-            mockFsService
-                .expect({
-                    methodName: 'access',
-                    args: [userDataEffects.dataFileName],
-                })
-                .error({} as any);
+            const expected = new LoadUserDataCompleteAction({ userData });
+            expect(callback).toHaveBeenCalledWith(expected);
+        }));
+    });
 
-            mockFsService
-                .expect({
-                    methodName: 'writeFile',
-                    args: [
-                        userDataEffects.dataFileName,
-                        JSON.stringify(createInitialUserDataState()),
-                        'utf8',
-                    ],
-                })
-                .flush();
+    describe('save', () => {
+        it('should return new \'SAVE_USER_DATA_COMPLETE\' action, ' +
+            'and write user data at file, on success.', fakeAsync(() => {
 
-            expect(loadCallback).toHaveBeenCalledWith(new LoadUserDataCompleteAction({
-                userData: createInitialUserDataState(),
-            }));
+            // Initialize states.
+            const userData = new UserDataDummyFactory().create();
+            store.dispatch(new LoadUserDataCompleteAction({ userData }));
+            flush();
+
+            spyOn(userDataService, 'writeUserData').and.returnValue(of(null));
+
+            userDataEffects.save.subscribe(callback);
+            actions.next(new SaveUserDataAction({ userData }));
+            flush();
+
+            expect(userDataService.writeUserData).toHaveBeenCalledWith(userData);
+            expect(callback).toHaveBeenCalledWith(new SaveUserDataCompleteAction());
         }));
 
-        it('should dispatch user data payload which stored in user data file.', fakeAsync(() => {
-            const actions = new Subject<UserDataActions>();
-            mockActions.stream = actions;
-
-            const loadCallback = jasmine.createSpy('loadCallback');
-            userDataEffects.load.subscribe(loadCallback);
-
-            actions.next(new LoadUserDataAction());
+        it('should return new \'SSAVE_USER_DATA_ERROR\' action, on fail.', fakeAsync(() => {
+            // Initialize states.
+            const userData = new UserDataDummyFactory().create();
+            store.dispatch(new LoadUserDataCompleteAction({ userData }));
             flush();
 
-            mockFsService
-                .expect({
-                    methodName: 'access',
-                    args: [userDataEffects.dataFileName],
-                })
-                .flush();
+            const error = new Error('some error');
+            spyOn(userDataService, 'writeUserData')
+                .and.returnValue(ErrorObservable.create(error));
 
-            const userData: UserDataState = {
-                lastOpenedNoteId: 'some cool note',
-            };
+            userDataEffects.save.subscribe(callback);
+            actions.next(new SaveUserDataAction({ userData }));
+            flush();
 
-            mockFsService
-                .expect({
-                    methodName: 'readFile',
-                    args: [userDataEffects.dataFileName, 'utf8'],
-                })
-                .flush(Buffer.from(JSON.stringify(userData), 'utf8'));
-
-            expect(loadCallback).toHaveBeenCalledWith(
-                new LoadUserDataCompleteAction({ userData }));
+            expect(userDataService.writeUserData).toHaveBeenCalledWith(userData);
+            expect(callback).toHaveBeenCalledWith(new SaveUserDataErrorAction(error));
         }));
     });
 });
