@@ -5,6 +5,7 @@ import { LoadingDialog } from './loading-dialog/loading-dialog';
 import { LoadingDialogComponent } from './loading-dialog/loading-dialog.component';
 import { MonacoService } from './monaco.service';
 import { SidebarComponent } from './sidebar/sidebar.component';
+import { UserDataService } from './user-data.service';
 
 
 @NgModule({
@@ -22,6 +23,7 @@ import { SidebarComponent } from './sidebar/sidebar.component';
         FsService,
         MonacoService,
         LoadingDialog,
+        UserDataService,
     ],
     exports: [
         LoadingDialogComponent,
