@@ -7,6 +7,7 @@ import { NoteEditorSnippetFactory } from './snippet/snippet-factory';
 
 
 export enum NoteEditorExtraEventNames {
+    INIT = 'INIT',
     MOVE_FOCUS_OUT_OF_SNIPPETS = 'MOVE_FOCUS_OUT_OF_SNIPPETS',
     SNIPPET_FOCUSED = 'SNIPPET_FOCUSED',
 }
@@ -47,6 +48,8 @@ export class NoteEditorService implements OnDestroy {
 
             return snippetRef;
         });
+
+        this._events.next(new NoteEditorExtraEvent(NoteEditorExtraEventNames.INIT));
     }
 
     dispose(): void {

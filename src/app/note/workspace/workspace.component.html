@@ -7,7 +7,7 @@
     </header>
 
     <section>
-        <div *ngIf="(editorLoaded | async) === false"
+        <div *ngIf="!editorLoaded"
              id="noteEmptyState"
              class="NoteWorkspace__emptyState">
 

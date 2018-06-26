@@ -54,6 +54,7 @@ export class NoteFinderComponent implements OnInit, OnDestroy {
                 .subscribe((selectedNote) => {
                     this.indexDate = datetime.copy(new Date(selectedNote.createdDatetime));
                     this.dispatchMonthFilterChanges(true);
+                    this.changeDetector.detectChanges();
                 });
     }
 
