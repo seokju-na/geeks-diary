@@ -11,7 +11,6 @@ import { Store } from '@ngrx/store';
 import { Observable, Subject } from 'rxjs';
 import { KeyCodes } from '../../../../common/key-codes';
 import {
-    InsertNewSnippetAction,
     MoveFocusToNextSnippetAction,
     MoveFocusToPreviousSnippetAction,
     RemoveSnippetAction,
@@ -19,7 +18,6 @@ import {
 } from '../../actions';
 import { NoteContentSnippetTypes } from '../../models';
 import { NoteStateWithRoot } from '../../reducers';
-import { NoteEditorSnippetFactory } from './snippet-factory';
 
 
 export interface NoteEditorSnippetOutlet {
@@ -138,6 +136,7 @@ export abstract class NoteEditorSnippet implements OnDestroy, AfterViewInit {
     }
 
     protected insertSwitchedSnippetAfter(): void {
+        /*
         let switchedSnippetType: NoteContentSnippetTypes;
 
         switch (this._config.type) {
@@ -157,6 +156,7 @@ export abstract class NoteEditorSnippet implements OnDestroy, AfterViewInit {
         });
 
         this.store.dispatch(action);
+        */
     }
 
     protected handleValueChanged(value: string): void {
