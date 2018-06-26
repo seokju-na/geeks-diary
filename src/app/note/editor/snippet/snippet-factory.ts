@@ -1,7 +1,6 @@
 import { Injectable, Injector, Type } from '@angular/core';
 import * as createUniqueId from 'uuid/v4';
 import { NoteContentSnippet, NoteContentSnippetTypes } from '../../models';
-import { NoteEditorCodeSnippetComponent } from './code-snippet.component';
 import {
     NOTE_EDITOR_SNIPPET_CONFIG,
     NOTE_EDITOR_SNIPPET_REF,
@@ -9,6 +8,7 @@ import {
     NoteEditorSnippetConfig,
     NoteEditorSnippetRef,
 } from './snippet';
+import { NoteEditorCodeSnippetComponent } from './code-snippet.component';
 import { NoteEditorTextSnippetComponent } from './text-snippet.component';
 
 
