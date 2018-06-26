@@ -49,6 +49,7 @@
         "@ngrx/effects": "^5.2.0",
         "@ngrx/store": "^5.2.0",
         "@ngrx/store-devtools": "^5.2.0",
+        "@ngtools/webpack": "1.10.x",
         "@types/codemirror": "^0.0.55",
         "@types/fs-extra": "^5.0.2",
         "@types/highlight.js": "^9.12.3",
