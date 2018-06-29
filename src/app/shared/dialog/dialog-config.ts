@@ -8,6 +8,7 @@ export interface DialogPosition {
 export class DialogConfig<D = any> {
     hasBackdrop = true;
     closeOnEscape = true;
+    disableClose = false;
     width = '';
     height = '';
     minWidth?: number | string;

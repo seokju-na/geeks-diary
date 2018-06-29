@@ -1,0 +1,16 @@
+export enum GitStatus {
+    CURRENT = 0,
+    INDEX_NEW = 1,
+    INDEX_MODIFIED = 2,
+    INDEX_DELETED = 4,
+    INDEX_RENAMED = 8,
+    INDEX_TYPECHANGE = 16,
+    WT_NEW = 128,
+    WT_MODIFIED = 256,
+    WT_DELETED = 512,
+    WT_TYPECHANGE = 1024,
+    WT_RENAMED = 2048,
+    WT_UNREADABLE = 4096,
+    IGNORED = 16384,
+    CONFLICTED = 32768,
+}

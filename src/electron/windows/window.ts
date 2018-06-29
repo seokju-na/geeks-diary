@@ -5,9 +5,9 @@ import * as url from 'url';
 
 
 export class Window extends EventEmitter {
-    browserWindow: Electron.BrowserWindow;
-    options: Electron.BrowserWindowConstructorOptions;
-    templateUrl: string;
+    readonly browserWindow: Electron.BrowserWindow;
+    readonly options: Electron.BrowserWindowConstructorOptions;
+    readonly templateUrl: string;
 
     constructor(templateName: string, options: Electron.BrowserWindowConstructorOptions) {
         super();

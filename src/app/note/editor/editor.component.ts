@@ -1,4 +1,5 @@
 import {
+    ChangeDetectorRef,
     Component,
     ElementRef,
     Input,
@@ -41,6 +42,7 @@ export class NoteEditorComponent implements OnInit, OnDestroy {
     constructor(
         private editorService: NoteEditorService,
         private store: Store<NoteStateWithRoot>,
+        private changeDetector: ChangeDetectorRef,
     ) {
     }
 
@@ -115,6 +117,11 @@ export class NoteEditorComponent implements OnInit, OnDestroy {
 
     private handleExtraEvents(event: NoteEditorExtraEvent): void {
         switch (event.name) {
+            // Detect changes for node 'fs' process.
+            case NoteEditorExtraEventNames.INIT:
+                this.changeDetector.detectChanges();
+                break;
+
             case NoteEditorExtraEventNames.MOVE_FOCUS_OUT_OF_SNIPPETS:
                 if (event.payload.direction === -1) {
                     this.titleTextareaEl.nativeElement.focus();

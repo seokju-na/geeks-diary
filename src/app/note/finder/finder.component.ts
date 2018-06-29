@@ -4,7 +4,7 @@ import { Subscription } from 'rxjs';
 import { Observable } from 'rxjs/Observable';
 import { map, mergeMap } from 'rxjs/operators';
 import { datetime, DateUnits } from '../../../common/datetime';
-import { AddNoteAction, ChangeDateFilterAction, GetNoteCollectionAction } from '../actions';
+import { AddNoteAction, ChangeDateFilterAction } from '../actions';
 import { NoteContributeTable } from '../calendar/calendar.component';
 import { NoteFinderDateFilterTypes, NoteMetadata } from '../models';
 import { NoteFinderState, NoteStateWithRoot } from '../reducers';
@@ -44,9 +44,6 @@ export class NoteFinderComponent implements OnInit, OnDestroy {
 
         this.indexDate = datetime.today();
 
-        this.store.dispatch(new GetNoteCollectionAction());
-        this.noteSelectionService.selectLastOpenedNote();
-
         // Subscribe after select last opened note, and navigate index date to selected note.
         this.afterSelectLastOpenedNoteSubscription =
             this.noteSelectionService
@@ -54,6 +51,7 @@ export class NoteFinderComponent implements OnInit, OnDestroy {
                 .subscribe((selectedNote) => {
                     this.indexDate = datetime.copy(new Date(selectedNote.createdDatetime));
                     this.dispatchMonthFilterChanges(true);
+                    this.changeDetector.detectChanges();
                 });
     }
 

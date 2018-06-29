@@ -1,7 +1,13 @@
-import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
+import {
+    ChangeDetectionStrategy,
+    ChangeDetectorRef,
+    Component,
+    OnDestroy,
+    OnInit,
+} from '@angular/core';
 import { select, Store } from '@ngrx/store';
-import { Observable } from 'rxjs';
-import { filter, map } from 'rxjs/operators';
+import { Subscription } from 'rxjs';
+import { filter } from 'rxjs/operators';
 import { StackViewer } from '../../stack/stack-viewer';
 import { floor10 } from '../../utils/math-extensions';
 import { NoteContentSnippet, NoteContentSnippetTypes } from '../models';
@@ -24,34 +30,45 @@ export interface NotePreviewLanguageInfo {
     styleUrls: ['./language-chart.component.less'],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class NotePreviewLanguageChartComponent implements OnInit {
-    languageChart: Observable<NotePreviewLanguageInfo[]>;
+export class NotePreviewLanguageChartComponent implements OnInit, OnDestroy {
+    languageChart: NotePreviewLanguageInfo[] = [];
+    private storeSubscription: Subscription;
 
     constructor(
         private store: Store<NoteStateWithRoot>,
         private stackViewer: StackViewer,
+        private changeDetector: ChangeDetectorRef,
     ) {
     }
 
     ngOnInit(): void {
-        this.languageChart = this.store.pipe(
-            select(state => state.note.editor),
-            filter(editorState => editorState.loaded),
-            map((editorState) => {
+        this.storeSubscription = this.store
+            .pipe(
+                select(state => state.note.editor),
+                filter(editorState => editorState.loaded),
+            )
+            .subscribe((editorState) => {
                 const codeSnippets = editorState.selectedNoteContent.snippets
                     .filter(snippet => snippet.type === NoteContentSnippetTypes.CODE);
 
-                return this.makeChart(codeSnippets);
-            }),
-        );
+                this.makeChart(codeSnippets);
+            });
     }
 
-    private makeChart(codeSnippets: NoteContentSnippet[]): NotePreviewLanguageInfo[] {
+    ngOnDestroy(): void {
+        if (this.storeSubscription) {
+            this.storeSubscription.unsubscribe();
+        }
+    }
+
+    private makeChart(codeSnippets: NoteContentSnippet[]): void {
         const chart: NotePreviewLanguageInfo[] = [];
         const snippetsCount = codeSnippets.length;
 
         if (snippetsCount === 0) {
-            return [];
+            this.languageChart = [];
+            this.changeDetector.detectChanges();
+            return;
         }
 
         const makePercentDisplay = (percent: number) => `${floor10(percent, -1)}`;
@@ -92,6 +109,7 @@ export class NotePreviewLanguageChartComponent implements OnInit {
 
         chart.sort((a, b) => b.count - a.count);
 
-        return chart;
+        this.languageChart = chart;
+        this.changeDetector.detectChanges();
     }
 }

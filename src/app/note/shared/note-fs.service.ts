@@ -49,6 +49,10 @@ export class NoteFsService {
                         .pipe(filter(data => data !== null)),
                 );
 
+                if (tasks.length === 0) {
+                    return of([]);
+                }
+
                 return zip(...tasks);
             }),
         );

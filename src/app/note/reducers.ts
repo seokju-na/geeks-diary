@@ -90,7 +90,7 @@ export function noteCollectionReducer(
             return {
                 ...state,
                 loaded: true,
-                notes: action.payload.notes,
+                notes: [...action.payload.notes],
             };
 
         case NoteActionTypes.ADD_NOTE:

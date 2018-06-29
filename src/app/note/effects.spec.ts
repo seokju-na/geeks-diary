@@ -17,7 +17,6 @@ import {
     LoadNoteContentCompleteAction,
     RemoveSnippetAction,
     SaveSelectedNoteAction,
-    SelectNoteAction,
     UpdateSnippetContentAction,
     UpdateStacksAction,
     UpdateTitleAction,
@@ -32,6 +31,7 @@ import { NoteEditorSnippetFactory } from './editor/snippet/snippet-factory';
 import { NoteEditorEffects, NoteFsEffects } from './effects';
 import { noteReducerMap, NoteStateWithRoot } from './reducers';
 import { NoteFsService } from './shared/note-fs.service';
+import { NoteSelectionService } from './shared/note-selection.service';
 
 
 describe('app.note.effects.NoteFsEffects', () => {
@@ -40,6 +40,7 @@ describe('app.note.effects.NoteFsEffects', () => {
     let noteFsService: NoteFsService;
     let store: Store<NoteStateWithRoot>;
     let mockActions: MockActions;
+    let noteSelectioNService: NoteSelectionService;
 
     let actions: Subject<Action>;
     let callback: jasmine.Spy;
@@ -55,6 +56,7 @@ describe('app.note.effects.NoteFsEffects', () => {
                 providers: [
                     ...MockActions.providersForTesting,
                     ...MockFsService.providersForTesting,
+                    NoteSelectionService,
                     NoteFsService,
                     NoteFsEffects,
                 ],
@@ -74,6 +76,7 @@ describe('app.note.effects.NoteFsEffects', () => {
     beforeEach(() => {
         actions = new Subject<Action>();
         callback = jasmine.createSpy('callback');
+        noteSelectioNService = TestBed.get(NoteSelectionService);
 
         mockActions.stream = actions;
     });
@@ -159,16 +162,16 @@ describe('app.note.effects.NoteFsEffects', () => {
     });
 
     describe('afterAddNote', () => {
-        it('should return new \'SELECT_NOTE\' action with newly created note.', fakeAsync(() => {
+        it('should ', fakeAsync(() => {
             const note = new NoteMetadataDummyFactory().create();
+
+            spyOn(noteSelectioNService, 'selectNote');
 
             noteFsEffects.afterAddNote.subscribe(callback);
             actions.next(new AddNoteCompleteAction({ note }));
             flush();
 
-            const expected = new SelectNoteAction({ selectedNote: note });
-
-            expect(callback).toHaveBeenCalledWith(expected);
+            expect(noteSelectioNService.selectNote).toHaveBeenCalledWith(note);
         }));
     });
 });

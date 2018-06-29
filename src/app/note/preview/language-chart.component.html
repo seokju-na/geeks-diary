@@ -1,8 +1,7 @@
-<div class="NotePreviewLanguageChart">
-    <div *ngIf="languageChart | async as chart"
-         class="NotePreviewLanguageChart__chart">
+<div *ngIf="languageChart.length > 0" class="NotePreviewLanguageChart">
+    <div class="NotePreviewLanguageChart__chart">
         <ol class="NotePreviewLanguageChart__languageStats">
-            <li *ngFor="let info of chart">
+            <li *ngFor="let info of languageChart">
                 <span [style.background-color]="info.color"
                       class="NotePreviewLanguageChart__colorDot"></span>
                 <span gd-text
@@ -20,7 +19,7 @@
         </ol>
 
         <div class="NotePreviewLanguageChart__graph">
-            <span *ngFor="let info of chart"
+            <span *ngFor="let info of languageChart"
                   [style.width.%]="info.percent"
                   [style.background-color]="info.color"
                   [attr.aria-labe]="info.label"></span>
