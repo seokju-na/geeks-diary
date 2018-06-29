@@ -1,0 +1,63 @@
+<div class="WorkspaceInitDialog">
+    <h1 gd-text size="medium" weight="bold">Setting Workspace</h1>
+
+    <form [formGroup]="initializeForm"
+          (ngSubmit)="initializeWorkspace()"
+          class="WorkspaceInitDialog__initializeForm">
+
+        <fieldset>
+            <input id="createNewRadio"
+                   type="radio"
+                   formControlName="method"
+                   name="method"
+                   [value]="initializeMethods.CREATE_NEW">
+
+            <label gd-text for="createNewRadio">
+                Create new workspace
+            </label>
+        </fieldset>
+
+        <fieldset>
+            <input id="cloneRemoteRadio"
+                   type="radio"
+                   formControlName="method"
+                   name="method"
+                   [value]="initializeMethods.CLONE_REMOTE">
+
+            <label gd-text for="cloneRemoteRadio">
+                Import workspace from remote repository
+            </label>
+        </fieldset>
+
+        <gd-form-field>
+            <input gdFormFieldControl
+                   id="remoteUrlInput"
+                   type="url"
+                   formControlName="remoteUrl"
+                   placeholder="e.g. https://github.com/username/TIL">
+
+            <gd-form-field-error errorName="required">
+                <span gd-text size="small">Remote url required</span>
+            </gd-form-field-error>
+            <gd-form-field-error errorName="connectionError">
+                <span gd-text size="small">Cannot find repository</span>
+            </gd-form-field-error>
+            <gd-form-field-error errorName="authenticationFail">
+                <span gd-text size="small">Cannot find repository</span>
+            </gd-form-field-error>
+        </gd-form-field>
+
+        <div class="WorkspaceInitDialog__actions">
+            <button gd-button
+                    type="submit"
+                    buttonType="primary"
+                    [disabled]="loading"
+                    aria-label="initialize-workspace-button"
+                    cdkFocusInitial>
+                <gd-spinner-content [pending]="loading">
+                    <span gd-text>{{submitButtonString}}</span>
+                </gd-spinner-content>
+            </button>
+        </div>
+    </form>
+</div>

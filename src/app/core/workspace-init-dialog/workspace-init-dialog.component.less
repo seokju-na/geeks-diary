@@ -1,0 +1,93 @@
+&:host {
+    display: block;
+}
+
+
+.WorkspaceInitDialog {
+    width: 100%;
+    padding: var(--size-space-big);
+    background-color: var(--color-white);
+    border-radius: 3.5px;
+    box-shadow: 0 1px 8px 0 rgba(0, 0, 0, .5);
+
+    > h1 {
+        display: block;
+        margin: 0 0 var(--size-space-big) 0;
+    }
+
+    &__form {
+    }
+
+    fieldset {
+        width: 100%;
+        padding: 0;
+        margin: 0 0 var(--size-space-medium) 0;
+        border: none;
+        outline: 0;
+
+        input {
+            display: inline-block;
+            margin: 0 var(--size-space-small) 0 0;
+            outline: 0;
+            border-radius: 50%;
+
+            &:focus {
+                box-shadow: 0 0 2px 0 var(--color-blue-5);
+            }
+        }
+
+        label {
+            display: inline-block;
+            flex: 1;
+        }
+    }
+
+    gd-form-field {
+        display: block;
+        padding-left: 16px;
+        margin-bottom: var(--size-space-medium);
+
+        input {
+            display: block;
+            width: 100%;
+            height: var(--size-box-regular);
+            padding: 0 var(--size-space-regular);
+            border: 1px solid var(--color-gray-4);
+            background-color: var(--color-gray-0);
+            font-size: var(--size-font-small);
+            line-height: var(--size-lineHeight-small);
+            border-radius: 2.5px;
+            outline: 0;
+
+            &:focus {
+                border-color: var(--color-blue-5);
+                box-shadow: 0 0 2px 0 var(--color-blue-5);
+            }
+
+            &:disabled {
+                background-color: var(--color-gray-2);
+                color: var(--color-gray-5);
+            }
+
+            &::placeholder {
+                color: var(--color-gray-5);
+            }
+        }
+
+        &.errorCaught {
+            input {
+                border-color: var(--color-red-5);
+
+                &:focus {
+                    box-shadow: 0 0 2px 0 var(--color-red-5);
+                }
+            }
+        }
+    }
+
+    &__actions {
+        display: flex;
+        justify-content: flex-end;
+        padding-top: var(--size-space-medium);
+    }
+}
