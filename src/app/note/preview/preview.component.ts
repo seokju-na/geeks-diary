@@ -1,5 +1,6 @@
 import {
     ChangeDetectionStrategy,
+    ChangeDetectorRef,
     Component,
     ElementRef,
     OnDestroy,
@@ -10,8 +11,7 @@ import {
 import { select, Store } from '@ngrx/store';
 import { highlightAuto } from 'highlight.js';
 import * as marked from 'marked';
-import { Observable, Subscription } from 'rxjs';
-import { filter, map, share } from 'rxjs/operators';
+import { Subscription } from 'rxjs';
 import { NoteContent } from '../models';
 import { NoteStateWithRoot } from '../reducers';
 
@@ -34,40 +34,32 @@ marked.setOptions({
 })
 export class NotePreviewComponent implements OnInit, OnDestroy {
     @ViewChild('content') contentEl: ElementRef;
-    noteTitle: Observable<string>;
-    editorLoaded: Observable<boolean>;
+    noteTitle = '';
+    editorLoaded = false;
     _parsedContent: string;
 
     private storeSubscription: Subscription;
 
     constructor(
         private store: Store<NoteStateWithRoot>,
+        private changeDetector: ChangeDetectorRef,
     ) {
     }
 
     ngOnInit(): void {
-        this.editorLoaded = this.store.pipe(
-            select(state => state.note.editor),
-            map(editorState => editorState.loaded),
-            share(),
-        );
-
-        this.noteTitle = this.store.pipe(
-            select(state => state.note.editor),
-            filter(editorState => editorState.loaded),
-            map(editorState => editorState.selectedNoteContent.title),
-        );
-
         this.storeSubscription = this.store
-            .pipe(
-                select(state => state.note.editor),
-            )
+            .pipe(select(state => state.note.editor))
             .subscribe((editorState) => {
-                if (editorState.loaded) {
+                this.editorLoaded = editorState.loaded;
+
+                if (this.editorLoaded) {
+                    this.noteTitle = editorState.selectedNoteContent.title;
                     this.parseContent(editorState.selectedNoteContent);
                 } else {
                     this.removeContent();
                 }
+
+                this.changeDetector.detectChanges();
             });
     }
 
