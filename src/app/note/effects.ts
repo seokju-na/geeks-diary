@@ -4,7 +4,7 @@ import { Action, select, Store } from '@ngrx/store';
 import { Observable } from 'rxjs/Observable';
 import { of } from 'rxjs/observable/of';
 import { zip } from 'rxjs/observable/zip';
-import { catchError, debounceTime, map, mergeMap, switchMap, tap } from 'rxjs/operators';
+import { catchError, debounceTime, filter, map, mergeMap, switchMap, tap } from 'rxjs/operators';
 import {
     AddNoteAction,
     AddNoteCompleteAction,
@@ -20,7 +20,6 @@ import {
     SaveSelectedNoteAction,
     SaveSelectedNoteCompleteAction,
     SaveSelectedNoteErrorAction,
-    SelectNoteAction,
 } from './actions';
 import { NoteEditorService } from './editor/editor.service';
 import { NoteStateForFeature, NoteStateWithRoot } from './reducers';
@@ -60,11 +59,11 @@ export class NoteFsEffects {
         ),
     );
 
-    @Effect()
+    @Effect({ dispatch: false })
     afterAddNote: Observable<Action> = this.actions.pipe(
         ofType<AddNoteCompleteAction>(NoteActionTypes.ADD_NOTE_COMPLETE),
-        map((action: AddNoteCompleteAction) =>
-            new SelectNoteAction({ selectedNote: action.payload.note })),
+        tap((action: AddNoteCompleteAction) =>
+            this.noteSelectionService.selectNote(action.payload.note)),
     );
 
     @Effect()
@@ -72,6 +71,10 @@ export class NoteFsEffects {
         ofType<SaveSelectedNoteAction>(NoteActionTypes.SAVE_NOTE),
         mergeMap(() =>
             this.store.pipe(select(state => state.note))),
+        filter(noteState =>
+            !!noteState.collection.selectedNote
+            && !!noteState.editor.selectedNoteContent,
+        ),
         switchMap((noteState: NoteStateForFeature) =>
             zip(
                 this.noteFsService.writeNoteMetadata(noteState.collection.selectedNote),
@@ -87,6 +90,7 @@ export class NoteFsEffects {
         private readonly actions: Actions,
         private store: Store<NoteStateWithRoot>,
         private noteFsService: NoteFsService,
+        private noteSelectionService: NoteSelectionService,
     ) {}
 }
 
