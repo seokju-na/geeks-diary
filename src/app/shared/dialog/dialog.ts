@@ -84,7 +84,9 @@ export class Dialog {
         // When the dialog backdrop is clicked, we want to close it.
         if (config.hasBackdrop) {
             overlayRef.backdropClick().subscribe(() => {
-                dialogRef.close();
+                if (!config.disableClose) {
+                    dialogRef.close();
+                }
             });
         }
 
