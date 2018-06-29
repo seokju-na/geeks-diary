@@ -11,6 +11,7 @@ import { UserDataEffects } from './core/effects';
 import { NoteModule } from './note/note.module';
 import { SharedModule } from './shared/shared.module';
 import { StackModule } from './stack/stack.module';
+import { VcsModule } from './vcs/vcs.module';
 
 
 @NgModule({
