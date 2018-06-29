@@ -26,6 +26,7 @@ import { StackModule } from './stack/stack.module';
         ]),
         NoteModule,
         StackModule,
+        VcsModule,
     ],
     declarations: [
         AppShellComponent,
