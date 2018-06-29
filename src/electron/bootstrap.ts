@@ -1,8 +1,8 @@
+import './globals';
 import { app } from 'electron';
-
+import { logger } from '../common/logger';
 import { appDelegate } from './app-delegate';
 import './dev-extensions';
-import './globals';
 
 
 process.on('uncaughtException', (error) => {
@@ -16,6 +16,7 @@ process.on('uncaughtException', (error) => {
 app.commandLine.appendSwitch('remote-debugging-port', '9229');
 
 app.once('ready', () => {
+    appDelegate.init();
     appDelegate.run();
-    console.log('START! 😸');
+    logger.info('START! 😸');
 });

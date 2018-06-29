@@ -1,14 +1,16 @@
 import { app } from 'electron';
 import * as EventEmitter from 'events';
-
-import { Window } from './windows/window';
+import { GitService } from './services/git.service';
 import { AppWindow } from './windows/app-window';
+import { Window } from './windows/window';
 
 
 class AppDelegate extends EventEmitter {
-    windows: Window[] = [];
+    private readonly windows: Window[] = [];
+    private readonly gitService = new GitService();
 
     init(): void {
+        this.gitService.init();
     }
 
     handleEvents() {
