@@ -23,6 +23,7 @@ import { SpinnerComponent } from './spinner/spinner.component';
 import { TextComponent } from './text/text.component';
 import { TooltipComponent } from './tooltip/tooltip.component';
 import { TooltipDirective } from './tooltip/tooltip.directive';
+import { SpinnerContentComponent } from './spinner-content/spinner-content.component';
 
 
 @NgModule({
@@ -57,6 +58,7 @@ import { TooltipDirective } from './tooltip/tooltip.directive';
         ProgressBarComponent,
         // Spinner
         SpinnerComponent,
+        SpinnerContentComponent,
         // Text
         TextComponent,
         // Tooltip
@@ -100,6 +102,7 @@ import { TooltipDirective } from './tooltip/tooltip.directive';
         ProgressBarComponent,
         // Spinner
         SpinnerComponent,
+        SpinnerContentComponent,
         // Text
         TextComponent,
         // Tooltip
