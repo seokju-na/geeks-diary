@@ -32,7 +32,7 @@ export class FormFieldComponent implements AfterViewInit {
 
     ngAfterViewInit(): void {
         if (!this.control) {
-            throw new Error();
+            throw new Error('Control must provided.');
         }
 
         this.control.statusChanges.subscribe(() => {
