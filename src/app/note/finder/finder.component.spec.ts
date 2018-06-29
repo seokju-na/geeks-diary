@@ -10,11 +10,7 @@ import { MonacoService } from '../../core/monaco.service';
 import { userDataReducer } from '../../core/reducers';
 import { SharedModule } from '../../shared/shared.module';
 import { StackModule } from '../../stack/stack.module';
-import {
-    GetNoteCollectionAction,
-    GetNoteCollectionCompleteAction,
-    SelectNoteAction,
-} from '../actions';
+import { GetNoteCollectionCompleteAction, SelectNoteAction } from '../actions';
 import { NoteCalendarComponent } from '../calendar/calendar.component';
 import { NoteMetadataDummyFactory } from '../dummies';
 import { NoteItemComponent } from '../item/item.component';
@@ -83,10 +79,6 @@ describe('app.note.finder.NoteFinderComponent', () => {
         fixture = TestBed.createComponent(NoteFinderComponent);
         component = fixture.componentInstance;
         fixture.detectChanges();
-    });
-
-    it('should dispatch \'GET_NOTE_COLLECTION\' action on init', () => {
-        expect(store.dispatch).toHaveBeenCalledWith(new GetNoteCollectionAction());
     });
 
     it('should display notes as the month in which the creation date is ' +
