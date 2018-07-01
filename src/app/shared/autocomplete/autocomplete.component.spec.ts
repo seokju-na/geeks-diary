@@ -18,7 +18,7 @@ import {
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { By } from '@angular/platform-browser';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
-import { Subscription } from 'rxjs/Subscription';
+import { Subscription } from 'rxjs';
 import { KeyCodes } from '../../../common/key-codes';
 import {
     dispatchFakeEvent,

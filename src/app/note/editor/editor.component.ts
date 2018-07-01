@@ -9,8 +9,7 @@ import {
 } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { select, Store } from '@ngrx/store';
-import { Subscription } from 'rxjs';
-import { Observable } from 'rxjs/Observable';
+import { Observable, Subscription } from 'rxjs';
 import { UpdateTitleAction } from '../actions';
 import { NoteStateWithRoot } from '../reducers';
 import {

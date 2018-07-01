@@ -1,6 +1,5 @@
 import './globals';
 import { app } from 'electron';
-import { logger } from '../common/logger';
 import { appDelegate } from './app-delegate';
 import './dev-extensions';
 
@@ -18,5 +17,5 @@ app.commandLine.appendSwitch('remote-debugging-port', '9229');
 app.once('ready', () => {
     appDelegate.init();
     appDelegate.run();
-    logger.info('START! 😸');
+    console.log('START! 😸');
 });

@@ -10,9 +10,5 @@
         "testing/",
         "**/*.spec.ts",
         "**/dummies.ts"
-    ],
-    "angularCompilerOptions": {
-        "genDir": "../aot",
-        "skipMetadataEmit": true
-    }
+    ]
 }

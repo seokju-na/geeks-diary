@@ -1,6 +1,6 @@
 import { fakeAsync, flush, inject, TestBed } from '@angular/core/testing';
 import * as path from 'path';
-import { of } from 'rxjs/observable/of';
+import { of } from 'rxjs';
 import { MockFsService } from '../../../testing/mock';
 import { FsService } from '../../core/fs.service';
 import { NoteContentDummyFactory, NoteMetadataDummyFactory } from '../dummies';

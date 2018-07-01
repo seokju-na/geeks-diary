@@ -1,7 +1,6 @@
 import { Injectable } from '@angular/core';
 import * as path from 'path';
-import { Observable } from 'rxjs';
-import { of } from 'rxjs/observable/of';
+import { Observable, of } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
 import { environment } from '../../environments/environment';
 import { FsService } from './fs.service';

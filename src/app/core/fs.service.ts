@@ -1,5 +1,6 @@
 import { Injectable, NgZone } from '@angular/core';
-import { Observable } from 'rxjs/Observable';
+import { Observable } from 'rxjs';
+import { mapTo } from 'rxjs/operators';
 import {
     accessAsObservable,
     ensureDirAsObservable,
@@ -17,7 +18,10 @@ export class FsService {
     }
 
     access(path: string): Observable<void> {
-        return accessAsObservable(path).pipe(enterZone(this.ngZone));
+        return accessAsObservable(path).pipe(
+            mapTo(null),
+            enterZone(this.ngZone),
+        );
     }
 
     readFile(fileName: string, encoding = 'utf8'): Observable<Buffer> {
@@ -33,7 +37,10 @@ export class FsService {
     }
 
     makeDirectory(dirName: string): Observable<void> {
-        return mkdirAsObservable(dirName).pipe(enterZone(this.ngZone));
+        return mkdirAsObservable(dirName).pipe(
+            mapTo(null),
+            enterZone(this.ngZone),
+        );
     }
 
     ensureDirectory(dirName: string): Observable<void> {

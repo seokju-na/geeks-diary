@@ -1,7 +1,7 @@
 import { Overlay, OverlayConfig, OverlayRef } from '@angular/cdk/overlay';
 import { ComponentPortal, ComponentType, PortalInjector } from '@angular/cdk/portal';
 import { ComponentRef, Injectable, InjectionToken, Injector } from '@angular/core';
-import { Subject } from 'rxjs/Subject';
+import { Subject } from 'rxjs';
 import { DialogConfig } from './dialog-config';
 import { DialogContainerComponent } from './dialog-container.component';
 import { DialogRef } from './dialog-ref';

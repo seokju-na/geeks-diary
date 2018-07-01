@@ -7,7 +7,7 @@ import {
     ViewChild,
 } from '@angular/core';
 import { FormControl } from '@angular/forms';
-import { Observable } from 'rxjs/Observable';
+import { Observable } from 'rxjs';
 import {
     AutocompleteTriggerDirective,
 } from '../../shared/autocomplete/autocomplete-trigger.directive';

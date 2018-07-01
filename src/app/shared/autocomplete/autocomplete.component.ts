@@ -54,6 +54,9 @@ export class AutocompleteComponent implements AfterContentInit {
     @Input() displayWith: ((value: any) => string) | null = null;
     @Output() optionSelected = new EventEmitter<AutocompleteSelectedEvent>();
 
+    @Output() readonly opened: EventEmitter<void> = new EventEmitter<void>();
+    @Output() readonly closed: EventEmitter<void> = new EventEmitter<void>();
+
     constructor(private changeDetectorRef: ChangeDetectorRef) {
     }
 

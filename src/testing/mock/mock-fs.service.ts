@@ -1,7 +1,6 @@
 import { Injectable } from '@angular/core';
 import { flush } from '@angular/core/testing';
-import { Observable } from 'rxjs/Observable';
-import { Subject } from 'rxjs/Subject';
+import { Observable, Subject } from 'rxjs';
 import { FsService } from '../../app/core/fs.service';
 
 

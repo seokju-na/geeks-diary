@@ -8,8 +8,7 @@ import {
     OnDestroy,
     Renderer2,
 } from '@angular/core';
-import { Subject } from 'rxjs';
-import { fromEvent } from 'rxjs/observable/fromEvent';
+import { fromEvent, Subject } from 'rxjs';
 import { auditTime, takeUntil } from 'rxjs/operators';
 
 

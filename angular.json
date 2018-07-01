@@ -1,0 +1,90 @@
+{
+    "$schema": "node_modules/@angular/cli/lib/config/schema.json",
+    "version": 1,
+    "projects": {
+        "geeks-diary": {
+            "root": "",
+            "sourceRoot": "src/",
+            "projectType": "application",
+            "prefix": "gd",
+            "schematics": {
+                "@schematics/angular:component": {
+                    "styleext": "less"
+                }
+            },
+            "architect": {
+                "build": {
+                    "builder": "@angular-devkit/build-angular:browser",
+                    "options": {
+                        "outputPath": "dist/app",
+                        "index": "src/index.html",
+                        "main": "src/main.browser.ts",
+                        "tsConfig": "src/tsconfig.app.json",
+                        "polyfills": "src/polyfills.browser.ts",
+                        "assets": [
+                            "src/assets"
+                        ],
+                        "styles": [
+                            "src/styles/styles.less"
+                        ]
+                    },
+                    "configurations": {
+                        "production": {
+                            "optimization": true,
+                            "outputHashing": "all",
+                            "sourceMap": true,
+                            "extractCss": true,
+                            "namedChunks": false,
+                            "aot": true,
+                            "extractLicenses": false,
+                            "vendorChunk": false,
+                            "buildOptimizer": true
+                        }
+                    }
+                },
+                "serve": {
+                    "builder": "@angular-devkit/build-angular:dev-server",
+                    "options": {
+                        "browserTarget": "geeks-diary:build"
+                    },
+                    "configurations": {
+                        "production": {
+                            "browserTarget": "geeks-diary:build:production"
+                        }
+                    }
+                },
+                "test": {
+                    "builder": "@angular-devkit/build-angular:karma",
+                    "options": {
+                        "main": "src/test.ts",
+                        "polyfills": "src/polyfills.browser.ts",
+                        "tsConfig": "src/tsconfig.spec.json",
+                        "karmaConfig": "src/karma.conf.js",
+                        "styles": [
+                            "src/styles.less"
+                        ],
+                        "scripts": [],
+                        "assets": [
+                            "src/assets"
+                        ],
+                        "sourceMap": false,
+                        "codeCoverage": true
+                    }
+                },
+                "lint": {
+                    "builder": "@angular-devkit/build-angular:tslint",
+                    "options": {
+                        "tsConfig": [
+                            "src/tsconfig.app.json",
+                            "src/tsconfig.spec.json"
+                        ],
+                        "exclude": [
+                            "**/node_modules/**"
+                        ]
+                    }
+                }
+            }
+        }
+    },
+    "defaultProject": "geeks-diary"
+}

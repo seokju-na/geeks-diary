@@ -14,7 +14,7 @@ class DebugElementMatcher {
         return this.debugElement.nativeElement;
     }
 
-    toContainsClass(className: string): boolean {
+    toContainsClass(className: string): any {
         const classContained = this.nativeElem.classList.contains(className);
 
         if (this.denied) {
@@ -24,13 +24,13 @@ class DebugElementMatcher {
         return expect(classContained).toBeTruthy();
     }
 
-    toBeDisplayed(): boolean {
+    toBeDisplayed(): any {
         const displayProp = this.nativeElem.style.display;
 
         return expect(displayProp).not.toEqual('none');
     }
 
-    toBeDisabled(): boolean {
+    toBeDisabled(): any {
         return expect((<any>this.nativeElem).disabled).toBe(true);
     }
 

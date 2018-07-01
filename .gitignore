@@ -1,6 +1,7 @@
 .idea/
 node_modules/
 src/assets/vendors/
+coverage/
 dist/
 temp/
 build/

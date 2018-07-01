@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Observable } from 'rxjs/Observable';
+import { Observable } from 'rxjs';
 import { map, startWith } from 'rxjs/operators';
 import * as iconMapJson from '../../assets/vendors/devicon/devicon.json';
 import { SearchModel } from '../../common/search.model';

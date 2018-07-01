@@ -1,18 +1,16 @@
 import { BrowserWindow } from 'electron';
-import * as path from 'path';
 import * as EventEmitter from 'events';
-import * as url from 'url';
 
 
 export class Window extends EventEmitter {
     readonly browserWindow: Electron.BrowserWindow;
     readonly options: Electron.BrowserWindowConstructorOptions;
-    readonly templateUrl: string;
+    readonly url: string;
 
-    constructor(templateName: string, options: Electron.BrowserWindowConstructorOptions) {
+    constructor(url: string, options: Electron.BrowserWindowConstructorOptions) {
         super();
 
-        this.templateUrl = templateName;
+        this.url = url;
         this.options = options;
         this.browserWindow = new BrowserWindow(this.options);
     }
@@ -26,14 +24,7 @@ export class Window extends EventEmitter {
     }
 
     open(): Window {
-        const filename = url.format({
-            protocol: 'file',
-            pathname: path.resolve(process.cwd(), 'dist', this.templateUrl),
-            slashes: true,
-        });
-
-        this.browserWindow.loadURL(filename);
-
+        this.browserWindow.loadURL(this.url);
         return this;
     }
 }

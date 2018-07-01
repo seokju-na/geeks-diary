@@ -1,19 +1,15 @@
 import * as fs from 'fs';
-import { Observable } from 'rxjs/Observable';
-import { bindNodeCallback } from 'rxjs/observable/bindNodeCallback';
+import { bindNodeCallback, Observable } from 'rxjs';
 import { catchError } from 'rxjs/operators';
-import { promisify } from 'util';
 
 
-export const accessAsObservable = bindNodeCallback(fs.access, () => null);
-export const accessAsPromise = promisify(fs.access);
+export const accessAsObservable = bindNodeCallback(fs.access);
 
 export const readFileAsObservable = bindNodeCallback((
     filename: string,
     encoding: string,
     callback: (error: Error, buffer: Buffer) => void,
 ) => fs.readFile(filename, encoding, callback));
-export const readFileAsPromise = promisify(fs.readFile);
 
 
 export const readdirAsObservable = bindNodeCallback((
@@ -22,16 +18,15 @@ export const readdirAsObservable = bindNodeCallback((
 ) => fs.readdir(dirname, callback));
 
 
-export const writeFileAsObservable = bindNodeCallback<void>((
+export const writeFileAsObservable = bindNodeCallback((
     filename: string,
     value: string,
     encoding: string,
     callback: (error: Error) => void,
 ) => fs.writeFile(filename, value, callback));
-export const writeFileAsPromise = promisify(fs.writeFile);
 
 
-export const mkdirAsObservable = bindNodeCallback(fs.mkdir, () => null);
+export const mkdirAsObservable = bindNodeCallback(fs.mkdir);
 
 
 export function ensureDirAsObservable(dirname: string): Observable<void> {

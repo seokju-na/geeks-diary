@@ -1,14 +1,13 @@
 import { Injectable } from '@angular/core';
 import { Actions, Effect, ofType } from '@ngrx/effects';
 import { Action, select, Store } from '@ngrx/store';
-import { Observable } from 'rxjs/Observable';
-import { of } from 'rxjs/observable/of';
-import { zip } from 'rxjs/observable/zip';
+import { Observable, of, zip } from 'rxjs';
 import { catchError, debounceTime, filter, map, mergeMap, switchMap, tap } from 'rxjs/operators';
 import {
     AddNoteAction,
     AddNoteCompleteAction,
-    AddNoteErrorAction, ChangeDateFilterAction,
+    AddNoteErrorAction,
+    ChangeDateFilterAction,
     GetNoteCollectionCompleteAction,
     InitEditorAction,
     InsertNewSnippetAction,

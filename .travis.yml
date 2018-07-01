@@ -17,12 +17,10 @@ install:
 
 branches:
     only:
-        - develop
         - master
 
 script:
-    - npm run tools:copy-vendors
-    - npm run ci:travis
+    - npm run ci
 
 cache:
     yarn: true
