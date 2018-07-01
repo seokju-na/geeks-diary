@@ -1,6 +1,3 @@
-import { logger } from './logger';
-
-
 export type IpcChannelActionHandler<T = any, R = any> = (data?: T) => Promise<R>;
 
 
@@ -54,7 +51,7 @@ export class IpcChannelServer {
             return;
         }
 
-        logger.info(`IpcServer event received: ${request.action}`);
+        console.log(`IpcServer event received: ${request.action}`);
 
         const handler = this.handlers.get(request.action);
         let result = null;
