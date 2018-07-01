@@ -12,6 +12,7 @@ import { NoteFinderComponent } from './note/finder/finder.component';
 import { NoteSelectionService } from './note/shared/note-selection.service';
 import { Dialog } from './shared/dialog/dialog';
 import { GetVcsRepositoryFileStatues } from './vcs/shared/vcs-repository.actions';
+import { VcsManagerComponent } from './vcs/vcs-manager/vcs-manager.component';
 
 
 @Component({
@@ -26,6 +27,12 @@ export class AppShellComponent implements OnInit {
             component: NoteFinderComponent,
             description: 'Notes (⌘+1)',
             iconName: 'folder',
+        },
+        {
+            name: 'vcsManager',
+            component: VcsManagerComponent,
+            description: 'Version Control (⌘+2)',
+            iconName: 'git',
         },
     ];
     sidebarOpened: Observable<boolean>;

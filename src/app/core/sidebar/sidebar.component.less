@@ -20,14 +20,15 @@
     &__tab {
         list-style: none;
         display: block;
+        margin-bottom: var(--size-space-small);
 
         & > button {
-            color: var(--color-gray-7);
+            color: var(--color-gray-8);
         }
 
         &--active {
             & > button {
-                color: var(--color-gray-8);
+                color: var(--color-gray-9);
                 background-color: var(--color-gray-2);
                 box-shadow: 0 0 3px 0 var(--color-gray-5) inset;
             }
@@ -41,9 +42,13 @@
     }
 
     &__container {
-        display: block;
+        display: none;
         width: 100%;
         height: 100%;
+
+        &.show {
+            display: block;
+        }
     }
 
     &--showPanel {
