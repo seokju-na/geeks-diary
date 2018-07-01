@@ -1,8 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Actions, Effect, ofType } from '@ngrx/effects';
 import { Action } from '@ngrx/store';
-import { Observable } from 'rxjs';
-import { of } from 'rxjs/observable/of';
+import { Observable, of } from 'rxjs';
 import { catchError, map, switchMap } from 'rxjs/operators';
 import {
     GetVcsRepositoryFileStatuesComplete,

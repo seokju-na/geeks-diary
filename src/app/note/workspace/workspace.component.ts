@@ -1,8 +1,6 @@
 import { ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
 import { select, Store } from '@ngrx/store';
-import { Observable, Subscription } from 'rxjs';
-import { fromEvent } from 'rxjs/observable/fromEvent';
-import { merge } from 'rxjs/observable/merge';
+import { fromEvent, merge, Observable, Subscription } from 'rxjs';
 import { debounceTime, mapTo, share } from 'rxjs/operators';
 import { NoteEditorViewModes } from '../models';
 import { NoteStateWithRoot } from '../reducers';

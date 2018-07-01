@@ -1,7 +1,6 @@
 import { Injectable, OnDestroy } from '@angular/core';
 import { Repository } from 'nodegit';
-import { Observable } from 'rxjs';
-import { of } from 'rxjs/observable/of';
+import { Observable, of } from 'rxjs';
 import { map, switchMap, tap } from 'rxjs/operators';
 import { GitService } from '../../core/git.service';
 import { WorkspaceService } from '../../core/workspace.service';

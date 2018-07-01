@@ -1,7 +1,6 @@
 import { ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
 import { select, Store } from '@ngrx/store';
-import { Subscription } from 'rxjs';
-import { Observable } from 'rxjs/Observable';
+import { Observable, Subscription } from 'rxjs';
 import { map, mergeMap } from 'rxjs/operators';
 import { datetime, DateUnits } from '../../../common/datetime';
 import { AddNoteAction, ChangeDateFilterAction } from '../actions';

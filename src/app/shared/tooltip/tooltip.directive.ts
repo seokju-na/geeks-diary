@@ -4,7 +4,7 @@
 import { AriaDescriber, FocusMonitor } from '@angular/cdk/a11y';
 import { coerceBooleanProperty } from '@angular/cdk/coercion';
 import {
-    ConnectedPositionStrategy,
+    FlexibleConnectedPositionStrategy,
     HorizontalConnectionPos,
     OriginConnectionPosition,
     Overlay,
@@ -24,8 +24,8 @@ import {
     OnDestroy,
     ViewContainerRef,
 } from '@angular/core';
+import { Subject } from 'rxjs';
 import { filter, take, takeUntil } from 'rxjs/operators';
-import { Subject } from 'rxjs/Subject';
 import { KeyCodes } from '../../../common/key-codes';
 import { TooltipComponent } from './tooltip.component';
 
@@ -236,14 +236,16 @@ export class TooltipDirective implements OnDestroy {
 
     /** Updates the position of the current tooltip. */
     private updatePosition() {
-        const position = this._overlayRef.getConfig().positionStrategy as ConnectedPositionStrategy;
+        const position =
+            this._overlayRef.getConfig().positionStrategy as FlexibleConnectedPositionStrategy;
+
         const origin = this.getOrigin();
         const overlay = this.getOverlayPosition();
 
-        position
-            .withPositions([])
-            .withFallbackPosition(origin.main, overlay.main)
-            .withFallbackPosition(origin.fallback, overlay.fallback);
+        position.withPositions([
+            { ...origin.main, ...overlay.main },
+            { ...origin.fallback, ...overlay.fallback },
+        ]);
     }
 
     /**

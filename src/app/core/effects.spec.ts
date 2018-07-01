@@ -1,10 +1,8 @@
 import { fakeAsync, flush, TestBed } from '@angular/core/testing';
-import { Actions } from '@ngrx/effects';
+import { provideMockActions } from '@ngrx/effects/testing';
 import { Action, Store, StoreModule } from '@ngrx/store';
-import { ErrorObservable } from 'rxjs/observable/ErrorObservable';
-import { of } from 'rxjs/observable/of';
-import { Subject } from 'rxjs/Subject';
-import { MockActions, MockFsService } from '../../testing/mock';
+import { of, Subject, throwError } from 'rxjs';
+import { MockFsService } from '../../testing/mock';
 import { AppState } from '../app-reducers';
 import {
     LoadUserDataAction,
@@ -23,11 +21,15 @@ describe('app.core.effects.UserDataEffects', () => {
     let userDataEffects: UserDataEffects;
 
     let userDataService: UserDataService;
-    let mockActions: MockActions;
     let store: Store<AppState>;
 
     let callback: jasmine.Spy;
-    let actions = new Subject<Action>();
+    let actions: Subject<Action>;
+
+    beforeEach(() => {
+        actions = new Subject<Action>();
+        callback = jasmine.createSpy('callback');
+    });
 
     beforeEach(() => {
         TestBed
@@ -39,7 +41,7 @@ describe('app.core.effects.UserDataEffects', () => {
                 ],
                 providers: [
                     ...MockFsService.providersForTesting,
-                    ...MockActions.providersForTesting,
+                    provideMockActions(() => actions.asObservable()),
                     UserDataService,
                     UserDataEffects,
                 ],
@@ -49,13 +51,7 @@ describe('app.core.effects.UserDataEffects', () => {
     beforeEach(() => {
         userDataEffects = TestBed.get(UserDataEffects);
         userDataService = TestBed.get(UserDataService);
-        mockActions = TestBed.get(Actions);
         store = TestBed.get(Store);
-
-        callback = jasmine.createSpy('callback');
-        actions = new Subject<Action>();
-
-        mockActions.stream = actions;
     });
 
     describe('load', () => {
@@ -101,7 +97,7 @@ describe('app.core.effects.UserDataEffects', () => {
 
             const error = new Error('some error');
             spyOn(userDataService, 'writeUserData')
-                .and.returnValue(ErrorObservable.create(error));
+                .and.returnValue(throwError(error));
 
             userDataEffects.save.subscribe(callback);
             actions.next(new SaveUserDataAction({ userData }));

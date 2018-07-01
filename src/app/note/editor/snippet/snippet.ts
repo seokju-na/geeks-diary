@@ -84,7 +84,7 @@ export abstract class NoteEditorSnippet implements OnDestroy, AfterViewInit {
     protected constructor(injector: Injector) {
         this._ref = injector.get(NOTE_EDITOR_SNIPPET_REF);
         this._config = injector.get(NOTE_EDITOR_SNIPPET_CONFIG);
-        this.store = injector.get(Store);
+        this.store = injector.get<Store<NoteStateWithRoot>>(Store as any);
 
         this._ref.setInstance(this);
     }

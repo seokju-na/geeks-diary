@@ -12,8 +12,9 @@ if (!helpers.runTarget.isTargetAvailable(runTargetName)) {
 
 
 const config = {
+    mode: PROD ? 'production' : 'development',
     name: 'main',
-    devtool: PROD ? 'source-map' : 'cheap-module-source-map',
+    devtool: PROD ? null : 'cheap-module-source-map',
     entry: {
         main: helpers.path.src('main.electron.ts')
     },
@@ -33,10 +34,6 @@ const config = {
                 options: {
                     configFileName: helpers.path.src('tsconfig.electron.json')
                 }
-            },
-            {
-                test: /\.json$/,
-                loader: 'json-loader'
             }
         ]
     },

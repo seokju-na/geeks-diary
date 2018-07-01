@@ -17,10 +17,6 @@ const helpers = {
             return path.resolve(ROOT_PATH, 'dist/', ...paths);
         },
 
-        nodeModules() {
-            return path.resolve(ROOT_PATH, 'node_modules/')
-        },
-
         excludes() {
             return [/node_modules/, /dist/, /assets/];
         }

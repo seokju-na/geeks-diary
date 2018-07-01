@@ -1,6 +1,6 @@
 import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { select, Store } from '@ngrx/store';
-import { Observable } from 'rxjs/Observable';
+import { Observable } from 'rxjs';
 import { filter, take } from 'rxjs/operators';
 import { AppState } from './app-reducers';
 import { LoadUserDataAction } from './core/actions';

@@ -1,6 +1,5 @@
 import { NgZone } from '@angular/core';
-import { Observable } from 'rxjs';
-import { OperatorFunction } from 'rxjs/interfaces';
+import { Observable, OperatorFunction } from 'rxjs';
 
 
 export function toPromise<T = any>(observable: Observable<T>): Promise<T> {

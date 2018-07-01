@@ -1,6 +1,6 @@
 import { Component, Injector, Input, OnInit, Type } from '@angular/core';
 import { select, Store } from '@ngrx/store';
-import { Observable } from 'rxjs/Observable';
+import { Observable } from 'rxjs';
 import { share } from 'rxjs/operators';
 import { AppState } from '../../app-reducers';
 import { ToggleSidebarAction } from '../actions';

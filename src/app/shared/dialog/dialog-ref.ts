@@ -1,7 +1,6 @@
 import { GlobalPositionStrategy, OverlayRef } from '@angular/cdk/overlay';
-import { Observable } from 'rxjs/Observable';
+import { Observable, Subject } from 'rxjs';
 import { filter, take } from 'rxjs/operators';
-import { Subject } from 'rxjs/Subject';
 import { KeyCodes } from '../../../common/key-codes';
 import { DialogPosition } from './dialog-config';
 import { DialogContainerComponent } from './dialog-container.component';

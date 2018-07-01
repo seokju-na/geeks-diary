@@ -1,7 +1,6 @@
 import { Directive, Optional, Self } from '@angular/core';
 import { FormGroupDirective, NgControl, ValidationErrors } from '@angular/forms';
-import { Observable } from 'rxjs/Observable';
-import { combineLatest } from 'rxjs/operators';
+import { combineLatest, Observable } from 'rxjs';
 
 
 @Directive({
@@ -13,10 +12,10 @@ export class FormFieldControlDirective {
     }
 
     get statusChanges(): Observable<any | null> {
-        const statusChanges = this.ngControl.statusChanges;
+        let statusChanges = this.ngControl.statusChanges;
 
         if (this.parentForm) {
-            statusChanges.pipe(combineLatest(this.parentForm.statusChanges));
+            statusChanges = combineLatest(this.parentForm.statusChanges);
         }
 
         return statusChanges;

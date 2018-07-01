@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { select, Store } from '@ngrx/store';
-import { Observable } from 'rxjs/Observable';
+import { Observable } from 'rxjs';
 import { NoteMetadata } from '../models';
 import { NoteStateWithRoot } from '../reducers';
 import { NoteViewModeSettingMenu } from '../shared/note-view-mode-setting.menu';

@@ -1,11 +1,9 @@
-import { fakeAsync, flush, inject, TestBed, tick } from '@angular/core/testing';
-import { Actions } from '@ngrx/effects';
+import { fakeAsync, flush, TestBed, tick } from '@angular/core/testing';
+import { provideMockActions } from '@ngrx/effects/testing';
 import { Action, combineReducers, Store, StoreModule } from '@ngrx/store';
-import { ErrorObservable } from 'rxjs/observable/ErrorObservable';
-import { of } from 'rxjs/observable/of';
-import { Subject } from 'rxjs/Subject';
+import { of, Subject, throwError } from 'rxjs';
 import { createDummyList } from '../../testing/dummy';
-import { MockActions, MockFsService } from '../../testing/mock';
+import { MockFsService } from '../../testing/mock';
 import {
     AddNoteAction,
     AddNoteCompleteAction,
@@ -39,11 +37,15 @@ describe('app.note.effects.NoteFsEffects', () => {
 
     let noteFsService: NoteFsService;
     let store: Store<NoteStateWithRoot>;
-    let mockActions: MockActions;
-    let noteSelectioNService: NoteSelectionService;
+    let noteSelectionService: NoteSelectionService;
 
     let actions: Subject<Action>;
     let callback: jasmine.Spy;
+
+    beforeEach(() => {
+        actions = new Subject<Action>();
+        callback = jasmine.createSpy('callback');
+    });
 
     beforeEach(() => {
         TestBed
@@ -54,8 +56,8 @@ describe('app.note.effects.NoteFsEffects', () => {
                     }),
                 ],
                 providers: [
-                    ...MockActions.providersForTesting,
                     ...MockFsService.providersForTesting,
+                    provideMockActions(() => actions.asObservable()),
                     NoteSelectionService,
                     NoteFsService,
                     NoteFsEffects,
@@ -63,22 +65,11 @@ describe('app.note.effects.NoteFsEffects', () => {
             });
     });
 
-    beforeEach(inject(
-        [NoteFsEffects, NoteFsService, Store, Actions],
-        (nfe: NoteFsEffects, nfs: NoteFsService, s: Store<NoteStateWithRoot>, a: MockActions) => {
-            noteFsEffects = nfe;
-            noteFsService = nfs;
-            store = s;
-            mockActions = a;
-        },
-    ));
-
     beforeEach(() => {
-        actions = new Subject<Action>();
-        callback = jasmine.createSpy('callback');
-        noteSelectioNService = TestBed.get(NoteSelectionService);
-
-        mockActions.stream = actions;
+        noteFsEffects = TestBed.get(NoteFsEffects);
+        noteFsService = TestBed.get(NoteFsService);
+        store = TestBed.get(Store);
+        noteSelectionService = TestBed.get(NoteSelectionService);
     });
 
     describe('getCollection', () => {
@@ -149,7 +140,7 @@ describe('app.note.effects.NoteFsEffects', () => {
             const error = new Error('Some error');
 
             spyOn(noteFsService, 'createNote')
-                .and.returnValue(ErrorObservable.create(error));
+                .and.returnValue(throwError(error));
 
             noteFsEffects.addNote.subscribe(callback);
             actions.next(new AddNoteAction({ metadata: note, content }));
@@ -165,13 +156,13 @@ describe('app.note.effects.NoteFsEffects', () => {
         it('should ', fakeAsync(() => {
             const note = new NoteMetadataDummyFactory().create();
 
-            spyOn(noteSelectioNService, 'selectNote');
+            spyOn(noteSelectionService, 'selectNote');
 
             noteFsEffects.afterAddNote.subscribe(callback);
             actions.next(new AddNoteCompleteAction({ note }));
             flush();
 
-            expect(noteSelectioNService.selectNote).toHaveBeenCalledWith(note);
+            expect(noteSelectionService.selectNote).toHaveBeenCalledWith(note);
         }));
     });
 });
@@ -179,18 +170,21 @@ describe('app.note.effects.NoteFsEffects', () => {
 
 describe('app.note.effects.NoteEditorEffects', () => {
     let noteEditorEffects: NoteEditorEffects;
-
     let noteEditorService: NoteEditorService;
-    let mockActions: MockActions;
 
     let actions: Subject<Action>;
     let callback: jasmine.Spy;
 
     beforeEach(() => {
+        actions = new Subject<Action>();
+        callback = jasmine.createSpy('callback');
+    });
+
+    beforeEach(() => {
         TestBed
             .configureTestingModule({
                 providers: [
-                    ...MockActions.providersForTesting,
+                    provideMockActions(() => actions.asObservable()),
                     NoteEditorSnippetFactory,
                     NoteEditorService,
                     NoteEditorEffects,
@@ -198,20 +192,9 @@ describe('app.note.effects.NoteEditorEffects', () => {
             });
     });
 
-    beforeEach(inject(
-        [NoteEditorEffects, NoteEditorService, Actions],
-        (nee: NoteEditorEffects, nes: NoteEditorService, a: MockActions) => {
-            noteEditorEffects = nee;
-            noteEditorService = nes;
-            mockActions = a;
-        },
-    ));
-
     beforeEach(() => {
-        actions = new Subject<Action>();
-        callback = jasmine.createSpy('callback');
-
-        mockActions.stream = actions;
+        noteEditorEffects = TestBed.get(NoteEditorEffects);
+        noteEditorService = TestBed.get(NoteEditorService);
     });
 
     describe('afterUpdate', () => {

@@ -1,9 +1,7 @@
 import { Injectable, NgZone } from '@angular/core';
 import { remote } from 'electron';
 import { Repository, StatusFile } from 'nodegit';
-import { Observable } from 'rxjs';
-import { fromPromise } from 'rxjs/observable/fromPromise';
-import { of } from 'rxjs/observable/of';
+import { from as fromPromise, Observable, of } from 'rxjs';
 import { catchError, mapTo } from 'rxjs/operators';
 import { IpcChannelClient } from '../../common/ipc-channel';
 import { enterZone } from '../../common/rx-helpers';
