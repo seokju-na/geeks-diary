@@ -68,7 +68,13 @@
                             "src/assets"
                         ],
                         "sourceMap": false,
-                        "codeCoverage": true
+                        "codeCoverage": true,
+                        "codeCoverageExclude": [
+                            "src/test.ts",
+                            "src/polyfills.browser.ts",
+                            "src/environments/**",
+                            "src/testing/**"
+                        ]
                     }
                 },
                 "lint": {
