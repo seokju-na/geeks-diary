@@ -1,0 +1,31 @@
+<div class="VcsManager">
+    <header>
+        <h1 gd-text weight="medium">Version Control</h1>
+        <div class="VcsManager__actions">
+            <button gd-button
+                    buttonType="flat"
+                    title="Sync version"
+                    class="VcsManager__syncButton">
+                <i gd-icon name="refresh"></i>
+            </button>
+        </div>
+    </header>
+
+    <div class="VcsManager__services" role="tablist">
+        <button *ngFor="let tab of serviceTabs"
+                (click)="selectTab(tab)"
+                class="VcsManager__tab"
+                [class.VcsManager__tab--selected]="isTabSelected(tab)"
+                role="tab"
+                type="button">
+            <span gd-text size="small">{{tab.name}}</span>
+            <span *ngIf="tab.value === 'vcs-changes'"
+                  gd-text
+                  size="tiny"
+                  weight="medium"
+                  class="VcsManager__badge">12</span>
+        </button>
+    </div>
+
+    <section class="VcsManager__content"></section>
+</div>

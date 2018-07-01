@@ -22,10 +22,9 @@
 
     <section role="tabpanel" class="Sidebar__panel">
         <div *ngFor="let outlet of outlets"
+             [class.show]="(activeOutletName | async) === outlet.name"
              class="Sidebar__container">
-            <ng-container
-                *ngComponentOutlet="outlet.component; injector: injector"
-                [class.show]="(activeOutletName | async) === outlet.name"></ng-container>
+            <ng-container *ngComponentOutlet="outlet.component; injector: injector"></ng-container>
         </div>
     </section>
 </div>
