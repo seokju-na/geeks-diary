@@ -14,7 +14,7 @@ if (!helpers.runTarget.isTargetAvailable(runTargetName)) {
 const config = {
     mode: PROD ? 'production' : 'development',
     name: 'main',
-    devtool: PROD ? null : 'cheap-module-source-map',
+    devtool: PROD ? false : 'cheap-module-source-map',
     entry: {
         main: helpers.path.src('main.electron.ts')
     },
