@@ -1,0 +1,23 @@
+@import "../style/theming";
+
+@mixin gd-icon-theme($theme) {
+    $primary: map-get($theme, primary);
+    $accent: map-get($theme, accent);
+    $warn: map-get($theme, warn);
+
+    .Icon {
+        &--color {
+            &-primary {
+                color: gd-color($primary);
+            }
+
+            &-accent {
+                color: gd-color($accent);
+            }
+
+            &-wran {
+                color: gd-color($warn);
+            }
+        }
+    }
+}

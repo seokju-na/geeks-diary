@@ -1,0 +1,5 @@
+@import "wizard-theme.component";
+
+@mixin gd-wizard-theme($theme) {
+    @include gd-wizard-component-theme($theme);
+}

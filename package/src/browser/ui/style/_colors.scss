@@ -1,0 +1,7 @@
+@import "palette";
+
+$color-new: map-get($color-green, 500);
+$color-deleted: map-get($color-red, 500);
+$color-modified: map-get($color-yellow, 500);
+$color-renamed: map-get($color-blue, 500);
+$color-conflicted: map-get($color-orange, 500);

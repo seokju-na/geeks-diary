@@ -1,0 +1,20 @@
+{
+    "extends": "../tsconfig.json",
+    "compilerOptions": {
+        "outDir": "../out-tsc/electron",
+        "baseUrl": "./"
+    },
+    "include": [
+        "src/electron/",
+        "src/environments/",
+        "src/libs/",
+        "src/models/"
+    ],
+    "exclude": [
+        "dist/",
+        "src/browser/",
+        "test/",
+        "**/*.spec.ts",
+        "**/dummies.ts"
+    ]
+}

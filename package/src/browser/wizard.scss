@@ -1,0 +1,16 @@
+@import "core/style/core";
+@import "core/all-theme";
+@import "ui/all-theme";
+@import "wizard/all-theme";
+
+.BasicLightTheme {
+    @include gd-wizard-theme($basic-light-theme);
+    @include gd-core-theme($basic-light-theme);
+    @include gd-ui-theme($basic-light-theme);
+}
+
+.BasicDarkTheme {
+    @include gd-wizard-theme($basic-dark-theme);
+    @include gd-core-theme($basic-dark-theme);
+    @include gd-ui-theme($basic-dark-theme);
+}

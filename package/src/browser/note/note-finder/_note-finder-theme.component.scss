@@ -1,0 +1,17 @@
+@import "../../ui/style/theming";
+
+@mixin gd-note-finder-theme($theme) {
+    $background: map-get($theme, background);
+    $foreground: map-get($theme, foreground);
+
+    .NoteFinder {
+        &__title, &__filtering {
+            background-color: gd-color($background, background-highlight);
+            border-bottom: 1px solid gd-color($foreground, divider);
+        }
+
+        &__calendar {
+            border-bottom: 1px solid gd-color($foreground, divider);
+        }
+    }
+}

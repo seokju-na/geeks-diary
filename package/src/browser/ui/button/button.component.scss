@@ -1,0 +1,65 @@
+@import "../style/sizes";
+@import "../style/typography";
+
+.Button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    white-space: nowrap;
+    text-decoration: none;
+    vertical-align: baseline;
+    text-align: center;
+
+    cursor: pointer;
+    outline: none;
+    border: none;
+    margin: 0;
+    height: $button-size;
+    overflow: visible;
+
+    font: {
+        family: $font-family-sans-serif;
+        size: $font-size;
+        weight: $font-weight-normal;
+    }
+    line-height: $line-height-condensed;
+
+    -webkit-app-region: no-drag;
+
+    &[disabled] {
+        cursor: default;
+    }
+
+    & * {
+        cursor: inherit;
+    }
+
+    & > gd-icon:not(.Icon--size-big) {
+        margin-top: 1px;
+    }
+
+    &--type {
+        &-normal, &-primary {
+            padding: 0 $button-size / 3;
+        }
+
+        &-flat {
+            padding: 0 6px;
+        }
+    }
+
+    &--size {
+        &-big {
+            &.Button--type-primary, &.Button--type-normal {
+                padding: 0 $button-size-big / 2 1px $button-size-big / 2;
+                height: $button-size-big;
+                font-size: $font-size-md;
+            }
+
+            &.Button--type-flat {
+                height: 32px;
+            }
+        }
+    }
+}

@@ -1,0 +1,9 @@
+.idea/
+node_modules/
+.nyc_output/
+coverage*
+**/*.http
+**/*.log
+package/dist/
+package/src/assets/vendors/
+.DS_Store*

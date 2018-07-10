@@ -1,0 +1,9 @@
+@import "../style/theming";
+
+@mixin gd-error-theme($theme) {
+    $warn: gd-palette($theme, warn);
+
+    .Error {
+        color: gd-color($warn);
+    }
+}

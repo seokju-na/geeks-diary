@@ -1,0 +1,15 @@
+<button #button
+        class="ButtonToggle__button"
+        type="button"
+        [id]="buttonId"
+        [attr.aria-pressed]="checked"
+        [disabled]="disabled || null"
+        [attr.name]="name || null"
+        [attr.aria-label]="ariaLabel"
+        [attr.aria-labelledby]="ariaLabelledby"
+        (click)="_onButtonClick()">
+
+    <span class="ButtonToggle__content">
+        <ng-content></ng-content>
+    </span>
+</button>

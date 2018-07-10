@@ -1,0 +1,135 @@
+@import "../../ui/style/sizes";
+@import "../../ui/style/typography";
+
+:host {
+}
+
+$calendar-header-size: 30px;
+$calendar-cell-size: 22px;
+$calendar-cell-spacing: 2px;
+$calendar-footer-size: 20px;
+
+.NoteCalendar {
+    padding: $spacing-third;
+
+    &__header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        height: $calendar-header-size;
+        padding: 0 $spacing-half;
+        margin-bottom: $spacing-third;
+    }
+
+    &__title {
+        margin-top: 1px;
+        padding: 0 $spacing;
+    }
+
+    &__actions {
+        display: inline-flex;
+    }
+
+    &__table {
+        display: block;
+        width: 100%;
+        margin-bottom: $spacing-half;
+        padding: 0 $spacing-half;
+        user-select: none;
+        cursor: default;
+
+        & tbody {
+            display: flex;
+            flex-direction: column;
+            width: 100%;
+            border: 0;
+            outline: 0;
+        }
+
+        & tr {
+            display: flex;
+            width: 100%;
+            outline: 0;
+            border: 0;
+
+            & > td {
+                flex: 1;
+                display: inline-flex;
+                padding: $calendar-cell-spacing;
+                border: 0;
+                outline: 0;
+            }
+        }
+    }
+
+    &__weeks {
+        font-size: 10px;
+        line-height: $line-height-condensed;
+
+        & > td {
+            text-align: center;
+            justify-content: center;
+        }
+    }
+
+    &__cell {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 100%;
+        height: $calendar-cell-size;
+        text-decoration: none;
+        cursor: pointer;
+
+        & > label {
+            cursor: inherit;
+        }
+
+        &--blank {
+            visibility: hidden;
+            cursor: default;
+            border: none;
+            background: transparent;
+        }
+
+        &--contributionLevel {
+            &-none {
+            }
+
+            &-low {
+                background-color: #c6e48b;
+                border-color: #c6e48b;
+                color: white;
+            }
+
+            &-medium {
+                background-color: #7bc96f;
+                border-color: #7bc96f;
+                color: white
+            }
+
+            &-high {
+                background-color: #196127;
+                border-color: #196127;
+                color: white;
+            }
+        }
+
+        &--selected {
+            border: 2px solid var(--color-indigo-5);
+        }
+
+    }
+
+    &__selectedDate {
+        display: flex;
+        align-items: center;
+        height: $calendar-footer-size;
+        margin-bottom: $spacing-third;
+        padding: 0 $spacing;
+
+        & > span:first-child {
+            margin-right: $spacing-third;
+        }
+    }
+}

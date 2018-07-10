@@ -1,0 +1,43 @@
+<aside [class.Sidenav--showPanel]="showPanel | async"
+       class="Sidenav">
+
+    <nav>
+        <ul role="tablist" class="Sidenav__tabList">
+            <li *ngFor="let service of services"
+                gdTooltip
+                position="right"
+                [message]="service.description"
+                role="tab"
+                [class.Sidenav__tab--active]="(activeTabId | async) === service.id"
+                class="Sidenav__tab">
+
+                <button gd-flat-button
+                        [bigSize]="true"
+                        [attr.aria-label]="service.name"
+                        [attr.aria-pressed]="(activeTabId | async) === service.id"
+                        (click)="toggleServicePanel(service)">
+
+                    <gd-icon [iconName]="service.iconName"
+                             [bigSize]="true"></gd-icon>
+                </button>
+            </li>
+        </ul>
+    </nav>
+
+    <gd-resizable role="tabpanel"
+                  [minWidth]="175"
+                  [maxWidth]="400"
+                  [attr.aria-hidden]="!(showPanel | async)"
+                  class="Sidenav__panel">
+
+        <div *ngFor="let service of services"
+             [class.Sidenav__panelContainer--show]="(activeTabId | async) === service.id"
+             [attr.aria-hidden]="(activeTabId | async) !== service.id"
+             class="Sidenav__panelContainer">
+
+            <ng-container *ngComponentOutlet="service.outletComponent; injector: _injector"></ng-container>
+        </div>
+
+        <div gdResizableHandler></div>
+    </gd-resizable>
+</aside>

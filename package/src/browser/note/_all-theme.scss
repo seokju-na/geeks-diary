@@ -1,0 +1,9 @@
+@import "note-finder/note-finder-theme.component";
+@import "note-calendar/note-calendar-theme.component";
+@import "note-editor/note-editor-theme.component";
+
+@mixin gd-note-theme($theme) {
+    @include gd-note-finder-theme($theme);
+    @include gd-note-calendar-theme($theme);
+    @include gd-note-editor-theme($theme);
+}

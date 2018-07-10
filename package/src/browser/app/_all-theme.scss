@@ -1,0 +1,7 @@
+@import "app-theme.component";
+@import "sidenav/sidenav-theme.component";
+
+@mixin gd-app-theme($theme) {
+    @include gd-app-component-theme($theme);
+    @include gd-sidenav-theme($theme);
+}

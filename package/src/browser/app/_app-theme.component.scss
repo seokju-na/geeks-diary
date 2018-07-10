@@ -1,0 +1,9 @@
+@import "../ui/style/theming";
+
+@mixin gd-app-component-theme($theme) {
+    $foreground: map-get($theme, foreground);
+
+    .App__ho {
+        border-right: 1px solid gd-color($foreground, divider);
+    }
+}

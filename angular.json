@@ -1,0 +1,129 @@
+{
+    "$schema": "node_modules/@angular/cli/lib/config/schema.json",
+    "version": 1,
+    "projects": {
+        "app": {
+            "root": "",
+            "sourceRoot": "package/src/",
+            "projectType": "application",
+            "prefix": "gd",
+            "schematics": {
+                "@schematics/angular:component": {
+                    "styleext": "scss"
+                }
+            },
+            "architect": {
+                "build": {
+                    "builder": "@angular-devkit/build-angular:browser",
+                    "options": {
+                        "outputPath": "package/dist/browser/app",
+                        "index": "package/src/browser/app.html",
+                        "main": "package/src/browser/app.ts",
+                        "tsConfig": "package/tsconfig.browser.json",
+                        "polyfills": "package/src/browser/polyfills.ts",
+                        "assets": [
+                            "package/src/assets"
+                        ],
+                        "styles": [
+                            "package/src/browser/app.scss"
+                        ]
+                    },
+                    "configurations": {
+                        "production": {
+                            "optimization": true,
+                            "outputHashing": "all",
+                            "sourceMap": true,
+                            "extractCss": true,
+                            "namedChunks": false,
+                            "aot": true,
+                            "extractLicenses": false,
+                            "vendorChunk": false,
+                            "buildOptimizer": true
+                        }
+                    }
+                },
+                "test": {
+                    "builder": "@angular-devkit/build-angular:karma",
+                    "options": {
+                        "main": "package/test/test-browser.ts",
+                        "polyfills": "package/src/browser/polyfills.ts",
+                        "tsConfig": "package/tsconfig.test-browser.json",
+                        "karmaConfig": "package/karma.conf.js",
+                        "styles": [
+                            "package/src/browser/app.scss",
+                            "package/src/browser/wizard.scss"
+                        ],
+                        "scripts": [],
+                        "assets": [
+                            "package/src/assets"
+                        ],
+                        "sourceMap": false,
+                        "codeCoverageExclude": [
+                            "package/test/**",
+                            "package/src/libs/**",
+                            "package/src/environments/**",
+                            "package/src/main-process/**",
+                            "package/src/models/**",
+                            "package/src/browser/polyfills.ts"
+                        ]
+                    }
+                },
+                "lint": {
+                    "builder": "@angular-devkit/build-angular:tslint",
+                    "options": {
+                        "tsConfig": [
+                            "package/tsconfig.browser.json",
+                            "package/tsconfig.test-browser.json"
+                        ],
+                        "exclude": [
+                            "**/node_modules/**"
+                        ]
+                    }
+                }
+            }
+        },
+        "wizard": {
+            "root": "",
+            "sourceRoot": "package/src/",
+            "projectType": "application",
+            "prefix": "gd",
+            "schematics": {
+                "@schematics/angular:component": {
+                    "styleext": "scss"
+                }
+            },
+            "architect": {
+                "build": {
+                    "builder": "@angular-devkit/build-angular:browser",
+                    "options": {
+                        "outputPath": "package/dist/browser/wizard",
+                        "index": "package/src/browser/wizard.html",
+                        "main": "package/src/browser/wizard.ts",
+                        "tsConfig": "package/tsconfig.browser.json",
+                        "polyfills": "package/src/browser/polyfills.ts",
+                        "assets": [
+                            "package/src/assets"
+                        ],
+                        "styles": [
+                            "package/src/browser/wizard.scss"
+                        ]
+                    },
+                    "configurations": {
+                        "production": {
+                            "optimization": true,
+                            "outputHashing": "all",
+                            "sourceMap": true,
+                            "extractCss": true,
+                            "namedChunks": false,
+                            "aot": true,
+                            "extractLicenses": false,
+                            "vendorChunk": false,
+                            "buildOptimizer": true
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "defaultProject": "app"
+}

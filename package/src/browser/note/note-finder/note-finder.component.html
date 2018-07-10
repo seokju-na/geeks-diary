@@ -1,0 +1,33 @@
+<div class="NoteFinder">
+    <div class="NoteFinder__title">
+        <h1 class="Text Text--size-medium Text--weight-semibold">Notes</h1>
+        <div class="NoteFinder__tools">
+            <button gd-flat-button aria-label="Add note">
+                <gd-icon iconName="plus"></gd-icon>
+            </button>
+        </div>
+    </div>
+
+    <div class="NoteFinder__calendar">
+        <gd-note-calendar></gd-note-calendar>
+    </div>
+
+    <div class="NoteFinder__filtering">
+        <gd-button-toggle-group>
+            <gd-button-toggle name="item-detail" [checked]="true">
+                <gd-icon iconName="reorder"></gd-icon>
+            </gd-button-toggle>
+            <gd-button-toggle name="item-simple">
+                <gd-icon iconName="align-justify"></gd-icon>
+            </gd-button-toggle>
+        </gd-button-toggle-group>
+
+        <button gd-flat-button
+                aria-label="Sort notes">
+            <gd-icon iconName="sort"></gd-icon>
+        </button>
+    </div>
+
+    <div class="NoteFinder__notes">
+    </div>
+</div>

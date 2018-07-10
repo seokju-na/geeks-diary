@@ -1,0 +1,5 @@
+@import "title-bar/title-bar-theme";
+
+@mixin gd-core-theme($theme) {
+    @include gd-title-bar-theme($theme);
+}

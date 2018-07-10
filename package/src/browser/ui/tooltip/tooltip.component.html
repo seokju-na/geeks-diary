@@ -1,0 +1,6 @@
+<div class="Tooltip"
+     [@state]="_visibility"
+     (@state.start)="_animationStart()"
+     (@state.done)="_animationDone($event)">
+    {{message}}
+</div>
