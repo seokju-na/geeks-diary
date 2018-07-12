@@ -50,7 +50,7 @@ export class IconComponent implements OnInit {
     get color() {
         return this._color;
     }
-    set color(type: ColorTypes) {
+    set color(type: string) {
         this.resetColorClasses();
 
         const hostEl = this.getHostElement();
@@ -60,7 +60,7 @@ export class IconComponent implements OnInit {
             hostEl.classList.add(className);
         }
 
-        this._color = type;
+        this._color = type as ColorTypes;
     }
 
     @Input() bigSize: boolean = false;

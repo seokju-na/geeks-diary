@@ -25,6 +25,7 @@
     }
     line-height: $line-height-condensed;
 
+    //noinspection CssUnknownProperty
     -webkit-app-region: no-drag;
 
     &[disabled] {
@@ -41,7 +42,7 @@
 
     &--type {
         &-normal, &-primary {
-            padding: 0 $button-size / 3;
+            padding: 0 $button-size / 1.7;
         }
 
         &-flat {
@@ -59,6 +60,28 @@
 
             &.Button--type-flat {
                 height: 32px;
+            }
+        }
+    }
+
+    &--icon {
+        &-left {
+            .Icon {
+                margin-right: $spacing-third;
+            }
+
+            .Text {
+                padding-right: $spacing-third;
+            }
+        }
+
+        &-right {
+            .Icon {
+                margin-left: $spacing-third;
+            }
+
+            .Text {
+                padding-left: $spacing-third;
             }
         }
     }

@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
-import { ExampleDatabase } from '../../libs/database';
 import { Themes, ThemeService } from '../core/theme.service';
+import { workspaceDatabase } from '../core/workspace-database';
 import { NoteFinderComponent } from '../note/note-finder/note-finder.component';
 import { Dialog } from '../ui/dialog/dialog';
 import { AppService } from './shared/app-service.model';
@@ -27,13 +27,7 @@ export class AppComponent implements OnInit {
         private dialog: Dialog,
         private theme: ThemeService,
     ) {
-
-        const db = new ExampleDatabase();
-        db.examples.get(1).then((example) => {
-            if (example) {
-                this.theme.setTheme(example.theme as Themes);
-            }
-        });
+        this.theme.setTheme(workspaceDatabase.cachedInfo.theme as Themes);
     }
 
     async ngOnInit(): Promise<void> {

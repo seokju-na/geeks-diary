@@ -1,5 +1,5 @@
-import { CommonModule, DatePipe } from '@angular/common';
-import { CUSTOM_ELEMENTS_SCHEMA, DebugElement } from '@angular/core';
+import { DatePipe } from '@angular/common';
+import { DebugElement } from '@angular/core';
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
 import { combineReducers, Store, StoreModule } from '@ngrx/store';
@@ -11,7 +11,7 @@ import { NoteStateWithRoot } from '../shared/note.state';
 import { NoteCalendarComponent } from './note-calendar.component';
 
 
-describe('NoteCalendarComponent', () => {
+describe('browser.note.NoteCalendarComponent', () => {
     let component: NoteCalendarComponent;
     let fixture: ComponentFixture<NoteCalendarComponent>;
 

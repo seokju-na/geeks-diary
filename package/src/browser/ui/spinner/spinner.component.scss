@@ -1,0 +1,23 @@
+$spinner-size: 18px;
+
+.Spinner,
+.Spinner:after {
+    border-radius: 50%;
+    width: $spinner-size;
+    height: $spinner-size;
+}
+.Spinner {
+    position: relative;
+    text-indent: -9999em;
+    transform: translateZ(0);
+    animation: spinnerAnimation 1.1s infinite linear;
+}
+
+@keyframes spinnerAnimation {
+    0% {
+        transform: rotate(0deg);
+    }
+    100% {
+        transform: rotate(360deg);
+    }
+}

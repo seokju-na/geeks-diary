@@ -1,5 +1,5 @@
 import { datetime } from '../../../libs/datetime';
-import { SortDirection } from '../../../models/sorting';
+import { SortDirection } from '../../../libs/sorting';
 import { NoteItem } from './note-item.model';
 
 

@@ -7,7 +7,7 @@ import { ResizableHandlerDirective } from './resizable-handler.directive';
 import { ResizableComponent } from './resizable.component';
 
 
-describe('ResizableComponent', () => {
+describe('browser.ui.ResizableComponent', () => {
     let fixture: ComponentFixture<TestResizableComponent>;
 
     const getHost = (): ResizableComponent =>

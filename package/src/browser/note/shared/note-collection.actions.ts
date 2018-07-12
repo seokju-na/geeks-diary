@@ -1,5 +1,5 @@
 import { Action } from '@ngrx/store';
-import { SortDirection } from '../../../models/sorting';
+import { SortDirection } from '../../../libs/sorting';
 import { NoteCollectionSortBy } from './note-collection.state';
 import { NoteItem } from './note-item.model';
 

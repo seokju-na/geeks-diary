@@ -2,8 +2,8 @@ import { enableProdMode } from '@angular/core';
 import { platformBrowserDynamic } from '@angular/platform-browser-dynamic';
 import { environment } from '../environments/environment';
 import { AppModule } from './app/app.module';
+import { workspaceDatabase } from './core/workspace-database';
 import { afterMonacoLoaded } from './utils/after-monaco-loaded';
-import { afterWorkspaceInit } from './utils/after-workspace-init';
 
 
 if (environment.production) {
@@ -12,6 +12,6 @@ if (environment.production) {
 
 
 Promise
-    .all([afterMonacoLoaded(), afterWorkspaceInit()])
+    .all([afterMonacoLoaded(), workspaceDatabase.init()])
     .then(() => platformBrowserDynamic().bootstrapModule(AppModule))
     .catch(error => console.error(error));

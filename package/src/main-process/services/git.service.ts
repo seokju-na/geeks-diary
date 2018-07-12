@@ -1,5 +1,6 @@
 import { Repository, StatusFile } from 'nodegit';
 import * as nodeGit from 'nodegit';
+import { GitError, GitErrorRegexes } from '../../libs/git-errors';
 import { IpcActionHandler } from '../../libs/ipc';
 import { Service } from '../interfaces/service';
 
@@ -47,6 +48,17 @@ export class GitService extends Service {
         return statues;
     }
 
-    handleError(error: any): any {
+    handleError(error: any): GitError | any {
+        const out = error.message;
+
+        if (out) {
+            for (const regex in GitErrorRegexes) {
+                if (out.match(regex)) {
+                    return (GitErrorRegexes as any)[regex];
+                }
+            }
+        }
+
+        return error;
     }
 }

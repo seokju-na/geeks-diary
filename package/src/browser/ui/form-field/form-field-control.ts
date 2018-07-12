@@ -1,14 +1,19 @@
+import { HostBinding } from '@angular/core';
 import { FormGroupDirective, NgControl, ValidationErrors } from '@angular/forms';
 import { combineLatest, Observable } from 'rxjs';
 
 
 export abstract class FormFieldControl {
+    abstract readonly id: string;
+
+    @HostBinding('class.FormFieldControl') private baseClassName = true;
+
     protected constructor(
         public ngControl: NgControl,
         public parentForm?: FormGroupDirective,
     ) {
 
-        if (this.ngControl) {
+        if (!this.ngControl) {
             throw new Error('NgControl muse be provided!');
         }
     }

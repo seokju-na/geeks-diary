@@ -16,6 +16,7 @@
             &-normal {
                 border-radius: 2px;
                 border: 1px solid gd-color($foreground, divider);
+                background-color: gd-color($background, background-highlight);
 
                 &:disabled {
                     border-color: gd-color($background, disabled-button);
@@ -26,7 +27,7 @@
                 &:focus {
                     box-shadow: 0 0 0 2px gd-color($primary, lighter);
 
-                    &:not(.focus-visible) {
+                    &:not(.focus-visible), &.Button--focusHidden {
                         box-shadow: none;
                     }
                 }
@@ -45,7 +46,7 @@
                 &:focus {
                     box-shadow: 0 0 0 2px gd-color($primary, lighter);
 
-                    &:not(.focus-visible) {
+                    &:not(.focus-visible), &.Button--focusHidden {
                         box-shadow: none;
                     }
                 }
@@ -59,7 +60,7 @@
                     border-color: gd-color($background, focused-button);
                     box-shadow: 0 0 2px 0 gd-color($background, focused-button);
 
-                    &:not(.focus-visible) {
+                    &:not(.focus-visible), &.Button--focusHidden {
                         border-color: transparent;
                         box-shadow: none;
                     }

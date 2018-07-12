@@ -1,5 +1,5 @@
-export interface Factory<T, P> {
-    create(type: P, ...extras: any[]): T;
+export interface Factory<T> {
+    create(type: any, ...extras: any[]): T;
 }
 
 
@@ -9,7 +9,7 @@ export abstract class Builder<T> {
 
 
 export abstract class Strategy {
-    abstract execute(...extras: any[]): void;
+    abstract execute(...extras: any[]): any;
 }
 
 

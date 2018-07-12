@@ -1,7 +1,7 @@
-# Mocha opts for testing libs
+# Mocha opts for testing main process
 
 --require ts-node/register
 --require source-map-support/register
 --ui bdd
 --recursive
-package/src/main-process/*.spec.ts
+package/src/main-process/**/*.spec.ts

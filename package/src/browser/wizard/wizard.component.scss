@@ -1,45 +1,17 @@
 @import "../ui/style/sizes";
 
 .Wizard {
-    display: flex;
-    flex-direction: column;
     width: 100%;
     height: 100%;
-    padding-bottom: $spacing-half;
 
     &__container {
-        flex: 1 0 auto;
-        display: flex;
-        width: 100%;
-        min-height: 1px;
-        padding: $spacing-double 0;
-
-        & > section {
-            flex: 1 0 auto;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-        }
     }
 
-    > footer {
-        display: flex;
-        align-items: center;
-        width: 100%;
-        height: 34px;
-        padding: 0 $spacing;
+    &__choosing {
+        padding: $spacing-double 0;
+    }
 
-        > button {
-            margin-right: $spacing-half;
-
-            > gd-icon {
-                margin-right: $spacing-third;
-            }
-
-            > span {
-                padding-right: $spacing-third;
-            }
-        }
+    &__cloning {
+        // flex: 1;
     }
 }

@@ -1,4 +1,4 @@
-import { PropGetter, Strategy } from './common-interfaces';
+import { PropGetter, Strategy } from '../models/common-interfaces';
 
 
 export enum SortDirection {

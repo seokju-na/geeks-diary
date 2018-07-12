@@ -31,6 +31,10 @@ const buttonAttrClassMap = {
 })
 export class ButtonComponent implements OnInit {
     @Input() bigSize: boolean = false;
+    @Input() iconContains: string = 'none';
+
+    /** Remove focus css style if it is 'true'. */
+    @Input() focusHidden = false;
 
     constructor(
         public _elementRef: ElementRef,
@@ -42,14 +46,30 @@ export class ButtonComponent implements OnInit {
 
         hostEl.classList.add('Button');
 
+        // Set class for button type.
         for (const attr of BUTTON_HOST_ATTRIBUTES) {
             if (this._hasHostAttributes(attr)) {
                 hostEl.classList.add(buttonAttrClassMap[attr]);
             }
         }
 
+        // Set class for big size button.
         if (this.bigSize) {
             hostEl.classList.add('Button--size-big');
+        }
+
+        // Set class for icon contains button.
+        if (this.iconContains !== 'none') {
+            if (this.iconContains === 'left') {
+                hostEl.classList.add('Button--icon-left');
+            } else if (this.iconContains === 'right') {
+                hostEl.classList.add('Button--icon-right');
+            }
+        }
+
+        // Set class for focus hidden option.
+        if (this.focusHidden) {
+            hostEl.classList.add('Button--focusHidden');
         }
     }
 

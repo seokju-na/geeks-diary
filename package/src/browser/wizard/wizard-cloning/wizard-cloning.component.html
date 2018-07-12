@@ -1,0 +1,136 @@
+<div fxLayout="column"
+     class="WizardCloning">
+
+    <!--
+    <div fxFlex="none"
+         class="WizardCloning__head">
+        <button gd-flat-button
+                iconContains="left"
+                id="back-step-button"
+                (click)="goToBack()">
+            <gd-icon iconName="arrow-left"></gd-icon>
+            <span class="Text">Back to Previous</span>
+        </button>
+    </div>
+    -->
+
+    <div fxFlex="1 0 auto" fxLayout="column" fxLayoutAlign="space-between"
+         class="WizardCloning__content">
+
+        <div gdArea gdColumns="1fr 5fr" gdGap="5px">
+            <gd-form-field-label gdColumn="1" gdRow="1"
+                                 for="remoteUrlInput">
+                URL:
+            </gd-form-field-label>
+            <gd-form-field gdColumn="2" gdRow="1">
+                <input gdInput
+                       [formControl]="remoteUrl"
+                       id="remoteUrlInput"
+                       type="url">
+
+                <gd-error errorName="required">Remote url required</gd-error>
+            </gd-form-field>
+
+            <gd-form-field-label gdRow="2" gdColumn="1"
+                                 for="directory">
+                Directory:
+            </gd-form-field-label>
+            <gd-form-field gdRow="2" gdColumn="2">
+                <textarea gdInput
+                          [formControl]="workspaceDirectory"
+                          readonly
+                          rows="1"
+                          id="directory"></textarea>
+            </gd-form-field>
+        </div>
+
+
+        <div fxLayout="column">
+            <div fxLayout fxLayoutAlign="center center" fxLayoutGap="10px"
+                 class="WizardCloning__formToggling">
+
+                <button gd-flat-button
+                        iconContains="left"
+                        (click)="toggleAuthForm()"
+                        type="button">
+                    <gd-icon [iconName]="authFormToggled ? 'caret-down' : 'caret-up'"></gd-icon>
+                    <span class="Text">Github Login (Optional)</span>
+                </button>
+
+                <gd-horizontal-line></gd-horizontal-line>
+            </div>
+
+            <form gdArea gdRows="repeat(4, 1fr)" gdColumns="1fr 3fr 2fr" gdGap="5px"
+                  [formGroup]="authenticationForm"
+                  [attr.aria-hidden]="!authFormToggled"
+                  [class.WizardCloning__authenticationForm--show]="authFormToggled"
+                  class="WizardCloning__authenticationForm">
+
+                <gd-form-field-label gdRow="1" gdColumn="1">Auth Type:</gd-form-field-label>
+                <gd-radio-group gdRow="1" gdColumn="2 / 4"
+                                [formControlName]="'type'"
+                                name="type">
+                    <gd-radio-button [value]="BASIC_AUTH_TYPE">
+                        Username and Password
+                    </gd-radio-button>
+
+                    <gd-radio-button [value]="OAUTH2_TOKEN_AUTH_TYPE">
+                        Oauth2 Token
+                    </gd-radio-button>
+                </gd-radio-group>
+
+                <!-- For BASIC authorization -->
+                <gd-form-field-label gdRow="2" gdColumn="1"
+                                     *ngIf="authType === BASIC_AUTH_TYPE"
+                                     for="userNameInput">
+                    Username:
+                </gd-form-field-label>
+                <gd-form-field gdRow="2" gdColumn="2 / 3"
+                               *ngIf="authType === BASIC_AUTH_TYPE">
+                    <input gdInput
+                           formControlName="userName"
+                           id="userNameInput">
+                </gd-form-field>
+
+                <gd-form-field-label gdRow="3" gdColumn="1"
+                                     *ngIf="authType === BASIC_AUTH_TYPE"
+                                     for="passwordInput">
+                    Password:
+                </gd-form-field-label>
+                <gd-form-field gdRow="3" gdColumn="2 / 3"
+                               *ngIf="authType === BASIC_AUTH_TYPE">
+                    <input gdInput
+                           formControlName="password"
+                           type="password"
+                           id="passwordInput">
+                </gd-form-field>
+
+                <!-- For OAUTH2_TOKEN authorization -->
+                <gd-form-field-label gdRow="2" gdColumn="1"
+                                     *ngIf="authType === OAUTH2_TOKEN_AUTH_TYPE"
+                                     for="tokenInput">
+                    Token:
+                </gd-form-field-label>
+                <gd-form-field gdRow="2" gdColumn="2 / 4"
+                               *ngIf="authType === OAUTH2_TOKEN_AUTH_TYPE">
+                    <input gdInput
+                           formControlName="token"
+                           id="tokenInput">
+                </gd-form-field>
+
+                <div fxLayout fxLayoutAlign="start center" fxLayoutGap="10px" gdRow="4" gdColumn="2 / 4">
+                    <button gd-button disabled>Login</button>
+                    <span class="Text Text--caption">Login to github.com...</span>
+                    <gd-error [show]="false">Cannot login to github</gd-error>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div fxLayout fxLayoutAlign="end" fxLayoutGap="10px"
+         class="WizardCloning__actions">
+
+        <button gd-button (click)="goToBack()">Previous</button>
+        <button gd-primary-button>Clone</button>
+    </div>
+</div>

@@ -1,7 +1,7 @@
 @import "../style/theming";
 
 @mixin gd-error-theme($theme) {
-    $warn: gd-palette($theme, warn);
+    $warn: map-get($theme, warn);
 
     .Error {
         color: gd-color($warn);

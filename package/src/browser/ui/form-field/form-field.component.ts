@@ -57,7 +57,6 @@ export class FormFieldComponent implements AfterViewInit {
         }
 
         this.control.statusChanges.subscribe(() => {
-            // Describing order: error, hint
             this.validateError();
             this.changeDetectorRef.markForCheck();
         });

@@ -1,6 +1,7 @@
 @import "../../ui/style/typography";
 
 .TitleBar {
+    //noinspection CssUnknownProperty
     -webkit-app-region: drag;
     display: flex;
     justify-content: center;
@@ -11,7 +12,7 @@
 
     font: {
         size: $font-size;
-        weight: $font-weight-semibold;
+        weight: $font-weight-normal;
     };
-    line-height: $line-height-condensed;
+    line-height: 22px;
 }

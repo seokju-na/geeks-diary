@@ -14,6 +14,8 @@ export enum Themes {
 export class ThemeService {
     private _currentTheme: Themes | null = null;
 
+    static readonly defaultTheme = Themes.BASIC_LIGHT_THEME;
+
     constructor(@Inject(DOCUMENT) private document: any) {
     }
 

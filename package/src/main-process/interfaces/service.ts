@@ -1,4 +1,3 @@
-import { PROP_METADATA } from '../../libs/decorators';
 import { IpcHub } from '../../libs/ipc';
 
 
@@ -8,17 +7,6 @@ export abstract class Service {
     protected constructor(public readonly serviceName: string) {
         this.ipc = new IpcHub(serviceName);
         this.ipc.setErrorHandler(this.handleError.bind(this));
-
-        const actionHandlers = this.constructor[PROP_METADATA];
-
-        if (actionHandlers) {
-            for (const name of Object.keys(actionHandlers)) {
-                const action = actionHandlers[name][0].action;
-                const method = this[name];
-
-                this.ipc.registerActionHandler(action, method.bind(this));
-            }
-        }
     }
 
     abstract init(...di: any[]): void | Promise<void>;

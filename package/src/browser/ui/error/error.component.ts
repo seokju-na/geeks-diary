@@ -35,10 +35,6 @@ export class ErrorComponent {
     }
 
     @HostBinding('class.Error') private className = true;
-    @HostBinding('attr.aria-hidden')
-    private get ariaHiddenAttr() {
-        return this._show.toString();
-    }
 
     private _show: boolean = false;
 

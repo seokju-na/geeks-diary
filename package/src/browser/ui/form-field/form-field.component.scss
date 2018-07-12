@@ -1,3 +1,17 @@
-.FormField {
+@import "../style/typography";
+@import "../style/sizes";
 
+$default-label-size: 70px;
+
+.FormField {
+    &__content {
+        .FormFieldControl {
+            display: block;
+            width: 100%;
+
+            & ~ .Error {
+                margin-top: $spacing-third;
+            }
+        }
+    }
 }

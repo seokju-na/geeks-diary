@@ -1,4 +1,5 @@
-import { makePropDecorator } from './decorators';
+import { IpcMain, IpcRenderer } from 'electron';
+import { makePropDecorator, PROP_METADATA } from './decorators';
 
 
 export type IpcHubActionHandler<T = any, R = any> = (data?: T) => Promise<R>;
@@ -58,7 +59,7 @@ export const IpcActionHandler: IpcActionHandlerDecorator =
  * });
  */
 export class IpcHub {
-    private readonly ipcMain: Electron.IpcMain;
+    private readonly ipcMain: IpcMain;
     private readonly handlers = new Map<string, IpcHubActionHandler>();
     private errorHandler: (error: any) => any;
     private readonly listener: any;
@@ -68,6 +69,17 @@ export class IpcHub {
         this.listener = (event: any, request: IpcHubRequest<any>) =>
             this.handleEvent(event, request);
         this.ipcMain.on(this.namespace, this.listener);
+
+        const actionHandlers = this.constructor[PROP_METADATA];
+
+        if (actionHandlers) {
+            for (const name of Object.keys(actionHandlers)) {
+                const action = actionHandlers[name][0].action;
+                const method = this[name];
+
+                this.registerActionHandler(action, method.bind(this));
+            }
+        }
     }
 
     destroy(): void {
@@ -117,7 +129,7 @@ export class IpcHub {
  * const result = await client.request<RequestDate, ResponseDate>('actionA', data);
  */
 export class IpcHubClient {
-    private readonly ipcRenderer: Electron.IpcRenderer;
+    private readonly ipcRenderer: IpcRenderer;
 
     constructor(readonly namespace: string) {
         this.ipcRenderer = require('electron').ipcRenderer;

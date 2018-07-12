@@ -44,8 +44,12 @@ export class DebugElementMatcher {
         return expect((<any>this.nativeElem).disabled).toBe(true);
     }
 
-    toBeFocused(): boolean {
-        return document.activeElement === this.nativeElem;
+    toBeFocused(): any {
+        return expect(document.activeElement).toEqual(this.nativeElem);
+    }
+
+    toHaveAttribute(name: string, value?: string): any {
+        return expect(this.nativeElem.getAttribute(name)).toEqual(value);
     }
 }
 

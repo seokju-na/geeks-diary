@@ -1,5 +1,7 @@
 @import "wizard-theme.component";
+@import "wizard-cloning/wizard-cloning-theme.component";
 
 @mixin gd-wizard-theme($theme) {
     @include gd-wizard-component-theme($theme);
+    @include gd-wizard-cloning-component-theme($theme);
 }

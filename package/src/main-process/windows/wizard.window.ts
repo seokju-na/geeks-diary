@@ -5,7 +5,7 @@ import { Window } from '../interfaces/window';
 export class WizardWindow extends Window {
     constructor() {
         super('browser/wizard/wizard.html', {
-            width: 640,
+            width: 1000,
             height: 415,
             resizable: false,
             maximizable: false,

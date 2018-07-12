@@ -1,19 +1,41 @@
-<div class="Wizard">
-    <gd-title-bar>Welcome to Geeks Diary</gd-title-bar>
-    <div class="Wizard__container">
-        <section>
-            <gd-icon iconName="plus"></gd-icon>
-            <p>Create a new workspace with git initialized</p>
-            <button gd-button>Create New Workspace</button>
-        </section>
+<div fxLayout="column"
+     class="Wizard">
 
-        <section>
-            <gd-icon iconName="download"></gd-icon>
-            <p>Clone an existing workspace from remote</p>
-            <button gd-button>Clone a Repository</button>
-        </section>
+    <gd-title-bar>Welcome to Geeks Diary</gd-title-bar>
+
+    <div fxFlex="1 0 auto" fxLayout="flex"
+         [ngSwitch]="step"
+         class="Wizard__container">
+
+        <div *ngSwitchCase="'choosing'"
+             fxLayout fxFlex="1 0 auto"
+             class="Wizard__choosing">
+
+            <section fxFlex="1 0 auto" fxLayout="column" fxLayoutAlign="center center">
+                <gd-icon iconName="plus" [bigSize]="true"></gd-icon>
+                <p>Create a new workspace with git initialized</p>
+                <button gd-button>Create New Workspace</button>
+            </section>
+
+            <section fxFlex="1 0 auto" fxLayout="column" fxLayoutAlign="center center">
+                <gd-icon iconName="github" [bigSize]="true"></gd-icon>
+                <p>Clone an existing workspace from Github</p>
+                <button gd-button
+                        (click)="stepTo('cloneRemote')">
+                    Clone a Repository
+                </button>
+            </section>
+        </div>
+
+        <gd-wizard-cloning
+            *ngSwitchCase="'cloneRemote'"
+            fxFlex="1 0 auto"
+            (backStep)="stepTo('choosing')"
+            class="Wizard__cloning"></gd-wizard-cloning>
     </div>
-    <footer>
+
+    <!--
+    <footer *ngIf="step === 'choosing'">
         <button gd-flat-button>
             <gd-icon iconName="cog"></gd-icon>
             <span class="Text">Settings</span>
@@ -24,4 +46,5 @@
             <span class="Text">Get Help</span>
         </button>
     </footer>
+    -->
 </div>

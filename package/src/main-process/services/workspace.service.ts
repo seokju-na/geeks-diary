@@ -1,8 +1,7 @@
-import * as path from 'path';
 import { environment } from '../../environments/environment';
 import { ensureDirAsPromise } from '../../libs/fs';
 import { IpcActionHandler } from '../../libs/ipc';
-import { Workspace } from '../../models/workspace';
+import { GEEKS_DIARY_DIR_PATH, NOTES_DIR_PATH, WORKSPACE_DIR_PATH } from '../../models/workspace';
 import { Service } from '../interfaces/service';
 import { GitService } from './git.service';
 
@@ -30,11 +29,6 @@ const USER_DATA_PATH = environment.getPath('userData');
  */
 export class WorkspaceService extends Service {
     private git: GitService;
-    private workspace: Workspace | null = null;
-
-    readonly workspaceDirPath = path.resolve(USER_DATA_PATH, 'workspace/');
-    readonly geeksDiaryDirPath = path.resolve(this.workspaceDirPath, '.geeks-diary/');
-    readonly notesDirPath = path.resolve(this.geeksDiaryDirPath, 'notes/');
 
     private _initialized = false;
 
@@ -50,36 +44,21 @@ export class WorkspaceService extends Service {
         this.git = git;
 
         if (await this.isWorkspaceExists()) {
-            this.workspace = {
-                workspaceDirPath: this.workspaceDirPath,
-                geeksDiaryDirPath: this.geeksDiaryDirPath,
-                notesDirPath: this.notesDirPath,
-            };
-
             this._initialized = true;
         }
     }
 
-    @IpcActionHandler('getWorkspace')
-    getWorkspace(): Workspace {
-        if (this._initialized) {
-            return this.workspace;
-        }
-
-        return null;
-    }
-
     async isWorkspaceExists(): Promise<boolean> {
-        return this.git.isRepositoryExists(this.workspaceDirPath);
+        return this.git.isRepositoryExists(WORKSPACE_DIR_PATH);
     }
 
     @IpcActionHandler('createNewWorkspace')
     async createNewWorkspace(): Promise<void> {
-        await ensureDirAsPromise(this.workspaceDirPath);
-        await ensureDirAsPromise(this.geeksDiaryDirPath);
-        await ensureDirAsPromise(this.notesDirPath);
+        await ensureDirAsPromise(WORKSPACE_DIR_PATH);
+        await ensureDirAsPromise(GEEKS_DIARY_DIR_PATH);
+        await ensureDirAsPromise(NOTES_DIR_PATH);
 
-        await this.git.createRepository(this.workspaceDirPath);
+        await this.git.createRepository(WORKSPACE_DIR_PATH);
     }
 
     @IpcActionHandler('cloneRemoteWorkspace')

@@ -11,6 +11,8 @@
     "include": [
         "test/",
         "**/*.d.ts",
-        "src/browser/**/*.spec.ts"
+        "src/browser/**/*.spec.ts",
+        "src/libs/",
+        "src/models/"
     ]
 }

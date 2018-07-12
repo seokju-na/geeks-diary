@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Sorting } from '../../../models/sorting';
+import { Sorting } from '../../../libs/sorting';
 
 
 export class NoteCollectionGetListOptions {

@@ -57,14 +57,22 @@ export class CalendarTableRow {
 export class CalendarTable {
     rows: CalendarTableRow[];
 
-    private year: number;
-    private month: number;
+    private _year: number;
+    private _month: number;
+
+    get year(): number {
+        return this._year;
+    }
+
+    get month(): number {
+        return this._month;
+    }
 
     render(year: number, month: number): void {
         this.rows = [];
 
-        this.year = year;
-        this.month = month;
+        this._year = year;
+        this._month = month;
 
         const firstDate = datetime.getFirstDateOfMonth(year, month);
         const dayOfFirstDate = firstDate.getDay();

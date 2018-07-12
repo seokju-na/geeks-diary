@@ -3,7 +3,9 @@ import { OverlayModule } from '@angular/cdk/overlay';
 import { PortalModule } from '@angular/cdk/portal';
 import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
+import { FlexLayoutModule, GridModule } from '@angular/flex-layout';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { AutosizeDirective } from './autosize/autosize.directive';
 import { ButtonComponent } from './button/button.component';
 import { CalendarTableProvider } from './calendar/calendar-table';
 import { DialogContainerComponent } from './dialog/dialog-container.component';
@@ -13,8 +15,10 @@ import {
     DialogContentDirective,
     DialogTitleDirective,
 } from './dialog/dialog-content-directives';
+import { FormFieldLabelComponent } from './form-field/form-field-label.component';
 import { IconComponent } from './icon/icon.component';
 import { InputDirective } from './input/input.directive';
+import { RadioButtonComponent, RadioGroupDirective } from './radio/radio-button.component';
 import { ResizableHandlerDirective } from './resizable/resizable-handler.directive';
 import { ResizableComponent } from './resizable/resizable.component';
 import { SpinnerComponent } from './spinner/spinner.component';
@@ -23,6 +27,7 @@ import { TooltipDirective } from './tooltip/tooltip.directive';
 import { ButtonToggleComponent, ButtonToggleGroupDirective } from './button-toggle/button-toggle.component';
 import { FormFieldComponent } from './form-field/form-field.component';
 import { ErrorComponent } from './error/error.component';
+import { LineDirective } from './line/line.directive';
 
 
 const MODULES = [
@@ -32,10 +37,13 @@ const MODULES = [
     OverlayModule,
     PortalModule,
     A11yModule,
+    FlexLayoutModule,
+    GridModule,
 ];
 
 
 const UI_DECLARATIONS = [
+    AutosizeDirective,
     ButtonComponent,
     ButtonToggleComponent,
     ButtonToggleGroupDirective,
@@ -51,8 +59,12 @@ const UI_DECLARATIONS = [
     TooltipComponent,
     TooltipDirective,
     FormFieldComponent,
+    FormFieldLabelComponent,
     ErrorComponent,
     InputDirective,
+    RadioGroupDirective,
+    RadioButtonComponent,
+    LineDirective,
 ];
 
 

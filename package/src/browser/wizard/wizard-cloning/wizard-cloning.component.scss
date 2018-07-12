@@ -1,0 +1,40 @@
+@import "../../ui/style/sizes";
+@import "../../ui/style/typography";
+
+.WizardCloning {
+    height: 100%;
+    padding: $spacing-double;
+
+    &__content {
+        label {
+            // padding-top: $form-control-label-top-bottom-padding;
+        }
+    }
+
+    &__formToggling {
+        .Button {
+            padding: 2px;
+        }
+    }
+
+    &__authenticationForm {
+        display: none !important;
+        visibility: hidden;
+        padding-top: $spacing-half;
+        padding-left: $spacing-half;
+
+        .RadioButton {
+            margin-right: $spacing + $spacing-half;
+        }
+
+        &--show {
+            display: grid !important;
+            visibility: visible;
+        }
+    }
+
+    &__actions {
+        margin-top: $spacing;
+        // padding: $spacing-half $spacing;
+    }
+}

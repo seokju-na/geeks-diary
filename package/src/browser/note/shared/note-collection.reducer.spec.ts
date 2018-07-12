@@ -1,6 +1,6 @@
 import { createDummies } from '../../../../test/helpers/dummies';
 import { datetime, DateUnits } from '../../../libs/datetime';
-import { SortDirection } from '../../../models/sorting';
+import { SortDirection } from '../../../libs/sorting';
 import { NoteItemDummy } from '../dummies';
 import {
     ChangeSortDirectionAction,
@@ -18,7 +18,7 @@ import {
 } from './note-collection.state';
 
 
-describe('noteCollectionReducer', () => {
+describe('browser.note.noteCollectionReducer', () => {
     describe('LOAD_COLLECTION', () => {
         it('should set loading to true.', () => {
             const state = noteCollectionReducer(

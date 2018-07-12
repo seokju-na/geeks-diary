@@ -7,10 +7,5 @@
         section:first-child {
             border-right: 1px solid gd-color($foreground, divider);
         }
-
-        > footer {
-            // border-top: 1px solid gd-color($foreground, divider);
-            color: gd-color($foreground, secondary-text);
-        }
     }
 }
