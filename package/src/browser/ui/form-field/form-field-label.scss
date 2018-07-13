@@ -1,0 +1,6 @@
+@import "../style/sizes";
+
+.FormFieldLabel {
+    display: inline-block;
+    padding: $form-control-label-top-bottom-padding 0;
+}
