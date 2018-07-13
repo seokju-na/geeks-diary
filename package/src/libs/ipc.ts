@@ -1,5 +1,5 @@
 import { IpcMain, IpcRenderer } from 'electron';
-import { makePropDecorator, PROP_METADATA } from './decorators';
+import { makePropDecorator } from './decorators';
 
 
 export type IpcHubActionHandler<T = any, R = any> = (data?: T) => Promise<R>;
@@ -69,17 +69,6 @@ export class IpcHub {
         this.listener = (event: any, request: IpcHubRequest<any>) =>
             this.handleEvent(event, request);
         this.ipcMain.on(this.namespace, this.listener);
-
-        const actionHandlers = this.constructor[PROP_METADATA];
-
-        if (actionHandlers) {
-            for (const name of Object.keys(actionHandlers)) {
-                const action = actionHandlers[name][0].action;
-                const method = this[name];
-
-                this.registerActionHandler(action, method.bind(this));
-            }
-        }
     }
 
     destroy(): void {
