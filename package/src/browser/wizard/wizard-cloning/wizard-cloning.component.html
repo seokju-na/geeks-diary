@@ -1,40 +1,32 @@
 <div fxLayout="column"
      class="WizardCloning">
 
-    <!--
-    <div fxFlex="none"
-         class="WizardCloning__head">
-        <button gd-flat-button
-                iconContains="left"
-                id="back-step-button"
-                (click)="goToBack()">
-            <gd-icon iconName="arrow-left"></gd-icon>
-            <span class="Text">Back to Previous</span>
-        </button>
-    </div>
-    -->
-
     <div fxFlex="1 0 auto" fxLayout="column" fxLayoutAlign="space-between"
          class="WizardCloning__content">
 
         <div gdArea gdColumns="1fr 5fr" gdGap="5px">
-            <gd-form-field-label gdColumn="1" gdRow="1"
-                                 for="remoteUrlInput">
+            <label gdColumn="1" gdRow="1"
+                   gdFormFieldLabel
+                   for="remote-url-input">
                 URL:
-            </gd-form-field-label>
+            </label>
             <gd-form-field gdColumn="2" gdRow="1">
                 <input gdInput
                        [formControl]="remoteUrl"
-                       id="remoteUrlInput"
+                       id="remote-url-input"
                        type="url">
 
                 <gd-error errorName="required">Remote url required</gd-error>
+                <gd-error errorName="invalidFormat">
+                    Invalid url format
+                </gd-error>
             </gd-form-field>
 
-            <gd-form-field-label gdRow="2" gdColumn="1"
-                                 for="directory">
+            <label gdRow="2" gdColumn="1"
+                   gdFormFieldLabel
+                   for="directory">
                 Directory:
-            </gd-form-field-label>
+            </label>
             <gd-form-field gdRow="2" gdColumn="2">
                 <textarea gdInput
                           [formControl]="workspaceDirectory"
@@ -44,8 +36,17 @@
             </gd-form-field>
         </div>
 
+        <div fxLayout fxLayoutAlign="start center" fxLayoutGap="5px"
+             *ngIf="loginCompleted && !alreadyLogin"
+             class="WizardCloning__loginComplete">
 
-        <div fxLayout="column">
+            <gd-icon iconName="check-circle"></gd-icon>
+            <span class="Text">Github Login Completed</span>
+        </div>
+
+        <div fxLayout="column"
+             *ngIf="!loginCompleted && !alreadyLogin">
+
             <div fxLayout fxLayoutAlign="center center" fxLayoutGap="10px"
                  class="WizardCloning__formToggling">
 
@@ -66,7 +67,8 @@
                   [class.WizardCloning__authenticationForm--show]="authFormToggled"
                   class="WizardCloning__authenticationForm">
 
-                <gd-form-field-label gdRow="1" gdColumn="1">Auth Type:</gd-form-field-label>
+                <label gdRow="1" gdColumn="1"
+                       gdFormFieldLabel>Auth Type:</label>
                 <gd-radio-group gdRow="1" gdColumn="2 / 4"
                                 [formControlName]="'type'"
                                 name="type">
@@ -80,48 +82,61 @@
                 </gd-radio-group>
 
                 <!-- For BASIC authorization -->
-                <gd-form-field-label gdRow="2" gdColumn="1"
-                                     *ngIf="authType === BASIC_AUTH_TYPE"
-                                     for="userNameInput">
+                <label gdRow="2" gdColumn="1"
+                       *ngIf="authType === BASIC_AUTH_TYPE"
+                       gdFormFieldLabel
+                       for="user-name-input">
                     Username:
-                </gd-form-field-label>
+                </label>
                 <gd-form-field gdRow="2" gdColumn="2 / 3"
                                *ngIf="authType === BASIC_AUTH_TYPE">
                     <input gdInput
                            formControlName="userName"
-                           id="userNameInput">
+                           id="user-name-input">
                 </gd-form-field>
 
-                <gd-form-field-label gdRow="3" gdColumn="1"
-                                     *ngIf="authType === BASIC_AUTH_TYPE"
-                                     for="passwordInput">
+                <label gdRow="3" gdColumn="1"
+                       *ngIf="authType === BASIC_AUTH_TYPE"
+                       gdFormFieldLabel
+                       for="password-input">
                     Password:
-                </gd-form-field-label>
+                </label>
                 <gd-form-field gdRow="3" gdColumn="2 / 3"
                                *ngIf="authType === BASIC_AUTH_TYPE">
                     <input gdInput
                            formControlName="password"
                            type="password"
-                           id="passwordInput">
+                           id="password-input">
                 </gd-form-field>
 
                 <!-- For OAUTH2_TOKEN authorization -->
-                <gd-form-field-label gdRow="2" gdColumn="1"
-                                     *ngIf="authType === OAUTH2_TOKEN_AUTH_TYPE"
-                                     for="tokenInput">
+                <label gdRow="2" gdColumn="1"
+                       *ngIf="authType === OAUTH2_TOKEN_AUTH_TYPE"
+                       gdFormFieldLabel
+                       for="token-input">
                     Token:
-                </gd-form-field-label>
+                </label>
                 <gd-form-field gdRow="2" gdColumn="2 / 4"
                                *ngIf="authType === OAUTH2_TOKEN_AUTH_TYPE">
                     <input gdInput
                            formControlName="token"
-                           id="tokenInput">
+                           id="token-input">
                 </gd-form-field>
 
                 <div fxLayout fxLayoutAlign="start center" fxLayoutGap="10px" gdRow="4" gdColumn="2 / 4">
-                    <button gd-button disabled>Login</button>
-                    <span class="Text Text--caption">Login to github.com...</span>
-                    <gd-error [show]="false">Cannot login to github</gd-error>
+                    <button gd-button
+                            (click)="loginToGithub()"
+                            id="login-button">
+                        Login
+                    </button>
+                    <span *ngIf="loginProcessing"
+                          class="Text Text--caption">
+                        Login to github.com...
+                    </span>
+                    <gd-error [show]="loginErrorCaught"
+                              class="WizardCloning__loginFailError">
+                        Cannot login to github.com
+                    </gd-error>
                 </div>
             </form>
         </div>
@@ -130,7 +145,14 @@
     <div fxLayout fxLayoutAlign="end" fxLayoutGap="10px"
          class="WizardCloning__actions">
 
-        <button gd-button (click)="goToBack()">Previous</button>
-        <button gd-primary-button>Clone</button>
+        <button gd-button
+                id="back-step-button"
+                (click)="goToBack()">Previous</button>
+        <button gd-primary-button
+                id="clone-button"
+                [disabled]="cloneProcessing || remoteUrl.invalid"
+                (click)="clone()">
+            {{ cloneProcessing ? 'Cloning...' : 'Clone' }}
+        </button>
     </div>
 </div>

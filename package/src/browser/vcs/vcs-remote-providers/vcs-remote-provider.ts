@@ -1,4 +1,3 @@
-import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { AuthenticationInfo } from '../../../models/authentication-info';
 import { VcsRemoteRepository } from '../../../models/vcs-remote';
@@ -22,7 +21,6 @@ export abstract class VcsRemoteProvider {
     protected constructor(
         public readonly name: string,
         public readonly apiUrl: string,
-        protected http: HttpClient,
     ) {
     }
 
