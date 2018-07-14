@@ -28,7 +28,8 @@
         "test:libs": "npx electron-mocha --opts package/test/test-libs.opts",
         "test:libs:coverage": "npx nyc yarn test:libs",
         "scripts:override-angular-dev-kit": "./scripts/override-angular-dev-kit",
-        "postinstall": "yarn scripts:override-angular-dev-kit"
+        "scripts:build-vendors": "./scripts/build-vendors.sh",
+        "postinstall": "yarn scripts:override-angular-dev-kit && yarn scripts:build-vendors && npx electron-rebuild"
     },
     "author": {
         "name": "Seokju Na",
