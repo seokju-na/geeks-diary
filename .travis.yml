@@ -13,6 +13,7 @@ matrix:
 
 branches:
     only:
+        - develop
         - master
 
 language: node_js
