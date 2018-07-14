@@ -1,6 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Observable } from 'rxjs';
-import { fromPromise } from 'rxjs/internal-compatibility';
+import { from, Observable } from 'rxjs';
 import { IpcHubClient } from '../../libs/ipc';
 
 
@@ -10,20 +9,7 @@ import { IpcHubClient } from '../../libs/ipc';
 export class WorkspaceService {
     private ipcClient = new IpcHubClient('workspace');
 
-    async createNewWorkspace(): Promise<void> {
-        await this.ipcClient.request('createNewWorkspace');
-    }
-
-    cloneRemoteWorkspace(
-        remoteUrl: string,
-        authToken?: string,
-    ): Observable<void> {
-
-        const task = this.ipcClient.request<any, void>(
-            'createNewWorkspace',
-            { remoteUrl, authToken },
-        );
-
-        return fromPromise(task);
+    initWorkspace(): Observable<void> {
+        return from(this.ipcClient.request('initWorkspace'));
     }
 }
