@@ -20,7 +20,7 @@
         "lint": "yarn lint:browser && yarn lint:main-process",
         "lint:browser": "npx ng lint app",
         "lint:main-process": "npx tslint --project package/tsconfig.electron.json",
-        "test": "yarn lint && yarn test:browser && yarn test:main-process && yarn build",
+        "test": "yarn lint && yarn test:browser && yarn test:main-process && yarn test:libs && yarn build",
         "test:browser": "npx ng test app",
         "test:browser:coverage": "npx ng test app --code-coverage=true",
         "test:main-process": "npx electron-mocha --opts package/test/test-main-process.opts",
