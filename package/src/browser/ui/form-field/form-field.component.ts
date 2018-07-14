@@ -19,6 +19,7 @@ import { FormFieldControl } from './form-field-control';
     templateUrl: './form-field.component.html',
     styleUrls: [
         './form-field.component.scss',
+        './form-field-label.scss',
         '../input/input.scss',
     ],
     changeDetection: ChangeDetectionStrategy.OnPush,

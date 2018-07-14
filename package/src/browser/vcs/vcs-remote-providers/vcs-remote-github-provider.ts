@@ -31,8 +31,8 @@ export const REPO_API_URL = (owner, repo) => `${API_URL}/repos/${owner}/${repo}`
 
 
 export class VcsRemoteGithubProvider extends VcsRemoteProvider {
-    constructor(http: HttpClient) {
-        super('github', API_URL, http);
+    constructor(private http: HttpClient) {
+        super('github', API_URL);
     }
 
     authorizeByBasic(username: string, password: string): Observable<AuthenticationInfo> {
@@ -44,11 +44,13 @@ export class VcsRemoteGithubProvider extends VcsRemoteProvider {
                 headers: this.getHeadersWithDefaults(headers),
             })
             .pipe(
-                map(response => this.parseUserResponse(
-                    response,
-                    AuthenticationTypes.BASIC,
+                map(() => ({
+                    type: AuthenticationTypes.BASIC,
                     authorizationHeader,
-                )),
+                    providerName: this.name,
+                    username,
+                    password,
+                } as AuthenticationInfo)),
                 catchError(error => throwError(this.parseAuthorizeError(error))),
             );
     }
@@ -62,11 +64,12 @@ export class VcsRemoteGithubProvider extends VcsRemoteProvider {
                 headers: this.getHeadersWithDefaults(headers),
             })
             .pipe(
-                map(response => this.parseUserResponse(
-                    response,
-                    AuthenticationTypes.OAUTH2_TOKEN,
+                map(() => ({
+                    type: AuthenticationTypes.OAUTH2_TOKEN,
                     authorizationHeader,
-                )),
+                    providerName: this.name,
+                    token,
+                } as AuthenticationInfo)),
                 catchError(error => throwError(this.parseAuthorizeError(error))),
             );
     }
@@ -101,22 +104,6 @@ export class VcsRemoteGithubProvider extends VcsRemoteProvider {
                 map(response => this.parseRepositoryResponse(response)),
                 catchError(error => throwError(this.parseFindRepositoryError(error))),
             );
-    }
-
-    private parseUserResponse(
-        response: GithubUserResponse,
-        type: AuthenticationTypes,
-        authorizationHeader: string,
-    ): AuthenticationInfo {
-
-        return {
-            type,
-            authorizationHeader,
-            providerName: this.name,
-            userName: response.name,
-            displayName: response.name,
-            email: response.email,
-        };
     }
 
     private parseRepositoryResponse(response: GithubRepositoryResponse): VcsRemoteRepository {

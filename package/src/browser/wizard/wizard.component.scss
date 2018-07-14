@@ -4,14 +4,15 @@
     width: 100%;
     height: 100%;
 
-    &__container {
+    header {
+        padding: $spacing-double 0 $spacing 0;
     }
 
     &__choosing {
-        padding: $spacing-double 0;
+        padding: $spacing 0;
     }
 
-    &__cloning {
-        // flex: 1;
+    footer {
+        padding: $spacing 0 $spacing-double 0;
     }
 }

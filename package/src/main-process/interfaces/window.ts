@@ -3,10 +3,15 @@ import { BrowserWindow, BrowserWindowConstructorOptions } from 'electron';
 import { encodePathAsUrl } from '../../libs/path';
 
 
+export enum WindowEvents {
+    CLOSED = 'window.closed',
+}
+
+
 export abstract class Window extends EventEmitter {
-    readonly browserWindow: BrowserWindow;
-    readonly options: BrowserWindowConstructorOptions;
-    readonly url: string;
+    protected readonly win: BrowserWindow;
+    protected readonly options: BrowserWindowConstructorOptions;
+    protected readonly url: string;
 
     protected constructor(
         htmlPath: string,
@@ -17,15 +22,18 @@ export abstract class Window extends EventEmitter {
 
         this.url = encodePathAsUrl(__dirname, htmlPath);
         this.options = { ...options };
-        this.browserWindow = new BrowserWindow(this.options);
+        this.win = new BrowserWindow(this.options);
 
         this.handleEvents();
     }
 
     abstract handleEvents(): void;
 
-    open(): Window {
-        this.browserWindow.loadURL(this.url);
-        return this;
+    open(): void {
+        this.win.loadURL(this.url);
+    }
+
+    close(): void {
+        this.win.close();
     }
 }

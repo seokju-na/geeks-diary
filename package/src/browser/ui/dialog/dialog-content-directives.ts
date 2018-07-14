@@ -7,15 +7,13 @@ let dialogElementUid = 0;
 
 @Directive({
     selector: 'button[gdDialogClose]',
+    host: {
+        '[attr.aria-label]': 'ariaLabel',
+    },
 })
 export class DialogCloseDirective {
     @Input() ariaLabel: string = 'Close dialog';
     @Input() dialogResult: any;
-
-    @HostBinding('attr.aria-label')
-    get ariaLabelAttr() {
-        return this.ariaLabel;
-    }
 
     constructor(private dialogRef: DialogRef<any>) {
     }
@@ -28,7 +26,10 @@ export class DialogCloseDirective {
 
 
 @Directive({
-    selector: '[gdDialogTitle]',
+    selector: 'gd-dialog-title',
+    host: {
+        'class': 'DialogTitle',
+    },
 })
 export class DialogTitleDirective implements OnInit {
     @Input() id = `gd-dialog-title-${dialogElementUid++}`;
@@ -37,8 +38,6 @@ export class DialogTitleDirective implements OnInit {
     private get idName() {
         return this.id;
     }
-
-    @HostBinding('class.DialogTitle') private className = true;
 
     constructor(private dialogRef: DialogRef<any>) {
     }
@@ -59,16 +58,19 @@ export class DialogTitleDirective implements OnInit {
 
 @Directive({
     selector: 'gd-dialog-content',
+    host: {
+        'class': 'DialogContent',
+    },
 })
 export class DialogContentDirective {
-    @HostBinding('class.DialogContent') private className = true;
 }
 
 
 @Directive({
     selector: 'gd-dialog-actions',
+    host: {
+        'class': 'DialogActions',
+    },
 })
 export class DialogActionsDirective {
-    @HostBinding('class.DialogActions') private className = true;
 }
-

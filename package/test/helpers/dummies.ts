@@ -71,3 +71,16 @@ export class TypesDummy<T> extends Dummy<T> {
         return this.types[index];
     }
 }
+
+
+export class EmailDummy extends Dummy<string> {
+    private user = new TextDummy('user');
+
+    constructor(readonly domain = 'test') {
+        super();
+    }
+
+    create(): string {
+        return `${this.user.create()}@${this.domain}.com`;
+    }
+}

@@ -58,9 +58,8 @@ describe('browser.vcs.VcsRemoteGithubProvider', () => {
                 type: AuthenticationTypes.BASIC,
                 authorizationHeader,
                 providerName: 'github',
-                userName: 'user',
-                displayName: 'user',
-                email: 'user@test.com',
+                username: 'user',
+                password: 'password',
             };
 
             expect(callback).toHaveBeenCalledWith(expected);
@@ -117,9 +116,7 @@ describe('browser.vcs.VcsRemoteGithubProvider', () => {
                 type: AuthenticationTypes.OAUTH2_TOKEN,
                 authorizationHeader,
                 providerName: 'github',
-                userName: 'user',
-                displayName: 'user',
-                email: 'user@test.com',
+                token: 'this_is_token',
             };
 
             expect(callback).toHaveBeenCalledWith(expected);

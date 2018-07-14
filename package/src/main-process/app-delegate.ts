@@ -1,17 +1,25 @@
-import { app } from 'electron';
+import { app, session } from 'electron';
 import { EventEmitter } from 'events';
-import { platformMatches, PlatformTypes } from '../libs/platform';
-import { Window } from './interfaces/window';
+import { __DARWIN__ } from '../libs/platform';
+import { Window, WindowEvents } from './interfaces/window';
 import { GitService } from './services/git.service';
-import { WorkspaceService } from './services/workspace.service';
+import { WorkspaceEvents, WorkspaceService } from './services/workspace.service';
 import { AppWindow } from './windows/app.window';
 import { WizardWindow } from './windows/wizard.window';
 
 
+enum AppDelegateEvents {
+    OPEN_WINDOW = 'app.openWindow',
+}
+
+
 class AppDelegate extends EventEmitter {
-    private readonly windows: Window[] = [];
-    private readonly workspace = new WorkspaceService();
-    private readonly git = new GitService();
+    readonly windows: Window[] = [];
+    readonly workspace = new WorkspaceService();
+    readonly git = new GitService();
+
+    currentOpenWindow: Window | null = null;
+    preventQuit: boolean = false;
 
     async run(): Promise<void> {
         await Promise.all([
@@ -20,56 +28,90 @@ class AppDelegate extends EventEmitter {
         ]);
 
         this.handleEvents();
+        this.openDefaultWindow();
+    }
 
+    openDefaultWindow(): void {
         if (this.workspace.initialized) {
-            this.openAppWindow();
+            this.openWindow('app');
         } else {
-            this.openWizardWindow();
+            this.openWindow('wizard');
+        }
+    }
+
+    openWindow(name: 'app' | 'wizard'): void {
+        let win: Window;
+
+        switch (name) {
+            case 'app': win = new AppWindow(); break;
+            case 'wizard': win = new WizardWindow(); break;
+            default: throw new Error('Cannot open window.');
+        }
+
+        win.on(WindowEvents.CLOSED, () => this.removeWindow(win));
+        win.open();
+
+        this.currentOpenWindow = win;
+        this.windows.push(win);
+    }
+
+    closeCurrentWindow(): void {
+        if (this.currentOpenWindow) {
+            this.currentOpenWindow.close();
         }
     }
 
     private handleEvents() {
-        this.on('app.openWindow', () => {
-            this.openAppWindow();
+        this.on(AppDelegateEvents.OPEN_WINDOW, () => {
+            this.openDefaultWindow();
         });
 
         app.on('activate', (event, hasVisibleWindows) => {
             if (!hasVisibleWindows) {
-                this.emit('app.openWindow');
+                this.emit(AppDelegateEvents.OPEN_WINDOW);
             }
         });
 
         app.on('window-all-closed', () => {
-            if (platformMatches(PlatformTypes.WIN32, PlatformTypes.LINUX)) {
+            if (!__DARWIN__ && !this.preventQuit) {
                 app.quit();
             }
         });
-    }
 
-    private openAppWindow(): void {
-        const win = new AppWindow();
-
-        win.on('closed', () => {
-            this.removeWindow(win);
+        /** Prevent links or window.open from opening new windows. */
+        app.on('web-contents-created', (_, contents) => {
+            contents.on('new-window', (event) => {
+                event.preventDefault();
+            });
         });
-        win.open();
 
-        this.windows.push(win);
-    }
-
-    private openWizardWindow(): void {
-        const win = new WizardWindow();
-
-        win.on('closed', () => {
-            this.removeWindow(win);
+        /**
+         * Handle workspace 'CREATED' event.
+         *
+         * It will be handle for once because workspace is initialized
+         * only at first time.
+         * */
+        this.workspace.once(WorkspaceEvents.CREATED, async () => {
+            // Since current window is 'WizardWindow', close it
+            // and open 'AppWindow'.
+            this.closeCurrentWindow();
+            this.openWindow('app');
         });
-        win.open();
 
-        this.windows.push(win);
+        /** Handle session. */
+        session.defaultSession.webRequest.onBeforeSendHeaders((details, callback) => {
+            // Set user agent.
+            details.requestHeaders['User-Agent'] = 'geeks-diary';
+            callback({ cancel: false, requestHeaders: details.requestHeaders });
+        });
     }
 
     private removeWindow(win: Window) {
         const idx = this.windows.findIndex(w => w === win);
+
+        if (win === this.currentOpenWindow) {
+            this.currentOpenWindow = null;
+        }
 
         if (idx !== -1) {
             this.windows.splice(idx, 1);
