@@ -29,7 +29,7 @@ interface IpcActionHandlerDecorator {
 
 
 /**
- * Ipc action hanlder registering decorator.
+ * Ipc action handler registering decorator.
  *
  * @example
  * class SomeService extends Service {
