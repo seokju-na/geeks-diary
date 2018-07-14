@@ -34,7 +34,7 @@ interface IpcActionHandlerDecorator {
  * @example
  * class SomeService extends Service {
  *     @IpcActionHandler('create')
- *     async createSomething(data?: ayn): Promise<Something> {
+ *     async createSomething(data?: any): Promise<Something> {
  *         ...
  *     }
  *     ...
