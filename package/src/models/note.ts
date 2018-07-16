@@ -5,9 +5,8 @@ import { NoteSnippet } from './note-snippet';
 
 /**
  * Interface for note.
- * 이 데이터는 워크스페이스에 저장됩니다.
- * 저장 경로는 다음과 같습니다.
- * e.g. /foo/bar/workspace/.geeks-diary/{uniqueId}.json
+ * Below are the example of file path which note data are saved.
+ * e.g. /foo/bar/workspace/.geeks-diary/notes/{uniqueId}.json
  */
 export interface Note {
     /** Unique note id. Format follows UUID. */
