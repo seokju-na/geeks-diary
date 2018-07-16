@@ -1,7 +1,7 @@
 import { createDummies } from '../../../../test/helpers/dummies';
 import { datetime, DateUnits } from '../../../libs/datetime';
 import { SortDirection } from '../../../libs/sorting';
-import { NoteItemDummy } from '../dummies';
+import { NoteItemDummy, prepareForFilteringNotes, prepareForSortingNotes } from '../dummies';
 import {
     ChangeSortDirectionAction,
     ChangeSortOrderAction,
@@ -16,6 +16,7 @@ import {
     NoteCollectionFilterBy,
     NoteCollectionSortBy,
 } from './note-collection.state';
+import { NoteItem } from './note-item.model';
 
 
 describe('browser.note.noteCollectionReducer', () => {
@@ -41,6 +42,43 @@ describe('browser.note.noteCollectionReducer', () => {
             expect(state.loading).toBe(false);
             expect(state.loaded).toBe(true);
             expect(state.notes).toEqual(notes);
+        });
+
+        it('should filtered and sorted notes are made.', () => {
+            const defaultState = createNoteCollectionInitialState();
+            const notes = createDummies(new NoteItemDummy(), 5);
+
+            prepareForFilteringNotes(
+                notes,
+                ['x', 'o', 'x', 'o', 'o'],
+                {
+                    by: defaultState.filterBy,
+                    value: new Date(
+                        defaultState.selectedMonth.year,
+                        defaultState.selectedMonth.month,
+                    ),
+                },
+            );
+
+            prepareForSortingNotes(
+                notes,
+                ['x', 3, 'x', 1, 2],
+                {
+                    by: defaultState.sortBy,
+                    direction: defaultState.sortDirection,
+                },
+            );
+
+            const state = noteCollectionReducer(
+                undefined,
+                new LoadNoteCollectionCompleteAction({ notes }),
+            );
+
+            expect(state.filteredAndSortedNotes).toEqual([
+                notes[3],
+                notes[4],
+                notes[1],
+            ]);
         });
     });
 
@@ -75,6 +113,32 @@ describe('browser.note.noteCollectionReducer', () => {
             expect(state.filterBy).toEqual(NoteCollectionFilterBy.BY_MONTH);
             expect(state.selectedDate).toBeNull();
         });
+
+        it('should filtered and sorted notes are made.', () => {
+            // Initialize
+            const notes = createDummies(new NoteItemDummy(), 5);
+            const beforeState = noteCollectionReducer(
+                undefined,
+                new LoadNoteCollectionCompleteAction({ notes }),
+            );
+
+            const selectedMonth = datetime.today();
+            datetime.add(selectedMonth, DateUnits.MONTH, 3);
+
+            prepareForFilteringNotes(
+                notes,
+                ['x', 'x', 'o', 'o', 'x'],
+                { by: NoteCollectionFilterBy.BY_MONTH, value: selectedMonth },
+            );
+
+            const state = noteCollectionReducer(
+                beforeState,
+                new SelectMonthFilterAction({ date: selectedMonth }),
+            );
+
+            expect(state.filteredAndSortedNotes).toContain(notes[2]);
+            expect(state.filteredAndSortedNotes).toContain(notes[3]);
+        });
     });
 
     describe('SELECT_DATE_FILTER', () => {
@@ -103,9 +167,48 @@ describe('browser.note.noteCollectionReducer', () => {
 
             expect(state.filterBy).toEqual(NoteCollectionFilterBy.BY_DATE);
         });
+
+        it('should filtered and sorted notes are made.', () => {
+            // Initialize
+            const notes = createDummies(new NoteItemDummy(), 5);
+            const beforeState = noteCollectionReducer(
+                undefined,
+                new LoadNoteCollectionCompleteAction({ notes }),
+            );
+
+            const selectedDate = datetime.today();
+            datetime.add(selectedDate, DateUnits.DAY, -3);
+
+            prepareForFilteringNotes(
+                notes,
+                ['o', 'x', 'o', 'x', 'o'],
+                { by: NoteCollectionFilterBy.BY_DATE, value: selectedDate },
+            );
+
+            const state = noteCollectionReducer(
+                beforeState,
+                new SelectDateFilterAction({ date: selectedDate }),
+            );
+
+            expect(state.filteredAndSortedNotes).toContain(notes[0]);
+            expect(state.filteredAndSortedNotes).toContain(notes[2]);
+            expect(state.filteredAndSortedNotes).toContain(notes[4]);
+        });
     });
 
     describe('CHANGE_SORT_ORDER', () => {
+        let notes: NoteItem[];
+
+        const defaultDirection = createNoteCollectionInitialState().sortDirection;
+        const loadNotes = () => noteCollectionReducer(
+            undefined,
+            new LoadNoteCollectionCompleteAction({ notes }),
+        );
+
+        beforeEach(() => {
+            notes = createDummies(new NoteItemDummy(), 5);
+        });
+
         it('should set sort order.', () => {
             const state = noteCollectionReducer(
                 undefined,
@@ -114,9 +217,90 @@ describe('browser.note.noteCollectionReducer', () => {
 
             expect(state.sortBy).toEqual(NoteCollectionSortBy.TITLE);
         });
+
+        it('should sort notes well by \'CREATED\'.', () => {
+            const sortBy = NoteCollectionSortBy.CREATED;
+
+            prepareForSortingNotes(
+                notes,
+                [5, 3, 4, 1, 2],
+                { by: sortBy, direction: defaultDirection },
+            );
+
+            const state = noteCollectionReducer(
+                loadNotes(),
+                new ChangeSortOrderAction({ sortBy }),
+            );
+
+            expect(state.filteredAndSortedNotes).toEqual([
+                notes[3],
+                notes[4],
+                notes[1],
+                notes[2],
+                notes[0],
+            ]);
+        });
+
+        it('should sort notes well by \'UPDATED\'.', () => {
+            const sortBy = NoteCollectionSortBy.UPDATED;
+
+            prepareForSortingNotes(
+                notes,
+                [3, 2, 1, 5, 4],
+                { by: sortBy, direction: defaultDirection },
+            );
+
+            const state = noteCollectionReducer(
+                loadNotes(),
+                new ChangeSortOrderAction({ sortBy }),
+            );
+
+            expect(state.filteredAndSortedNotes).toEqual([
+                notes[2],
+                notes[1],
+                notes[0],
+                notes[4],
+                notes[3],
+            ]);
+        });
+
+        it('should sort notes well by \'TITLE\'.', () => {
+            const sortBy = NoteCollectionSortBy.TITLE;
+
+            prepareForSortingNotes(
+                notes,
+                [5, 4, 3, 2, 1],
+                { by: sortBy, direction: defaultDirection },
+            );
+
+            const state = noteCollectionReducer(
+                loadNotes(),
+                new ChangeSortOrderAction({ sortBy }),
+            );
+
+            expect(state.filteredAndSortedNotes).toEqual([
+                notes[4],
+                notes[3],
+                notes[2],
+                notes[1],
+                notes[0],
+            ]);
+        });
     });
 
     describe('CHANGE_SORT_DIRECTION', () => {
+        let notes: NoteItem[];
+
+        const defaultSortBy = createNoteCollectionInitialState().sortBy;
+        const loadNotes = () => noteCollectionReducer(
+            undefined,
+            new LoadNoteCollectionCompleteAction({ notes }),
+        );
+
+        beforeEach(() => {
+            notes = createDummies(new NoteItemDummy(), 5);
+        });
+
         it('should set sort direction.', () => {
             const state = noteCollectionReducer(
                 undefined,
@@ -124,6 +308,52 @@ describe('browser.note.noteCollectionReducer', () => {
             );
 
             expect(state.sortDirection).toEqual(SortDirection.ASC);
+        });
+
+        it('should sort notes well on \'ASC\' direction.', () => {
+            const direction = SortDirection.ASC;
+
+            prepareForSortingNotes(
+                notes,
+                [1, 3, 2, 5, 4],
+                { by: defaultSortBy, direction },
+            );
+
+            const state = noteCollectionReducer(
+                loadNotes(),
+                new ChangeSortDirectionAction({ sortDirection: direction }),
+            );
+
+            expect(state.filteredAndSortedNotes).toEqual([
+                notes[0],
+                notes[2],
+                notes[1],
+                notes[4],
+                notes[3],
+            ]);
+        });
+
+        it('should sort notes well on \'DESC\' direction.', () => {
+            const direction = SortDirection.DESC;
+
+            prepareForSortingNotes(
+                notes,
+                [3, 4, 5, 1, 2],
+                { by: defaultSortBy, direction },
+            );
+
+            const state = noteCollectionReducer(
+                loadNotes(),
+                new ChangeSortDirectionAction({ sortDirection: direction }),
+            );
+
+            expect(state.filteredAndSortedNotes).toEqual([
+                notes[3],
+                notes[4],
+                notes[0],
+                notes[1],
+                notes[2],
+            ]);
         });
     });
 });

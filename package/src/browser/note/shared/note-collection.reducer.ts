@@ -1,5 +1,10 @@
+import { withFilteredAndSortedNotes } from './note-collection-state.adapter';
 import { NoteCollectionActions, NoteCollectionActionTypes } from './note-collection.actions';
-import { createNoteCollectionInitialState, NoteCollectionFilterBy, NoteCollectionState } from './note-collection.state';
+import {
+    createNoteCollectionInitialState,
+    NoteCollectionFilterBy,
+    NoteCollectionState,
+} from './note-collection.state';
 
 
 export function noteCollectionReducer(
@@ -15,15 +20,15 @@ export function noteCollectionReducer(
             };
 
         case NoteCollectionActionTypes.LOAD_COLLECTION_COMPLETE:
-            return {
+            return withFilteredAndSortedNotes({
                 ...state,
                 loading: false,
                 loaded: true,
                 notes: [...action.payload.notes],
-            };
+            });
 
         case NoteCollectionActionTypes.SELECT_DATE_FILTER:
-            return {
+            return withFilteredAndSortedNotes({
                 ...state,
                 filterBy: NoteCollectionFilterBy.BY_DATE,
                 selectedDate: {
@@ -31,10 +36,10 @@ export function noteCollectionReducer(
                     month: action.payload.date.getMonth(),
                     date: action.payload.date.getDate(),
                 },
-            };
+            });
 
         case NoteCollectionActionTypes.SELECT_MONTH_FILTER:
-            return {
+            return withFilteredAndSortedNotes({
                 ...state,
                 filterBy: NoteCollectionFilterBy.BY_MONTH,
                 selectedMonth: {
@@ -42,19 +47,19 @@ export function noteCollectionReducer(
                     month: action.payload.date.getMonth(),
                 },
                 selectedDate: null,
-            };
+            });
 
         case NoteCollectionActionTypes.CHANGE_SORT_ORDER:
-            return {
+            return withFilteredAndSortedNotes({
                 ...state,
                 sortBy: action.payload.sortBy,
-            };
+            });
 
         case NoteCollectionActionTypes.CHANGE_SORT_DIRECTION:
-            return {
+            return withFilteredAndSortedNotes({
                 ...state,
                 sortDirection: action.payload.sortDirection,
-            };
+            });
 
         default:
             return state;
