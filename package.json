@@ -29,7 +29,7 @@
         "test:libs:coverage": "npx nyc yarn test:libs",
         "scripts:override-angular-dev-kit": "./scripts/override-angular-dev-kit",
         "scripts:build-vendors": "./scripts/build-vendors.sh",
-        "postinstall": "yarn scripts:override-angular-dev-kit && yarn scripts:build-vendors && npx electron-rebuild"
+        "postinstall": "yarn scripts:override-angular-dev-kit && yarn scripts:build-vendors"
     },
     "author": {
         "name": "Seokju Na",
@@ -57,11 +57,14 @@
         "devicon-2.2": "^2.2.0",
         "dexie": "^2.0.4",
         "file-url": "^2.0.2",
+        "get-md-title": "^1.0.4",
         "line-awesome": "icons8/line-awesome",
         "lodash.kebabcase": "^4.1.1",
         "monaco-editor": "^0.13.1",
         "nodegit": "^0.22.2",
         "octicons": "^7.3.0",
+        "remarkable": "^1.7.1",
+        "remarkable-meta": "^1.0.1",
         "rxjs": "^6.2.1",
         "typeface-open-sans": "^0.0.54",
         "zone.js": "^0.8.26"
@@ -77,6 +80,7 @@
         "@types/jasminewd2": "^2.0.3",
         "@types/node": "^10.5.1",
         "@types/nodegit": "^0.22.3",
+        "@types/remarkable": "^1.7.0",
         "awesome-typescript-loader": "^5.2.0",
         "chai": "^4.1.2",
         "codelyzer": "^4.4.2",
