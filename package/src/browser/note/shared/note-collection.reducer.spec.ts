@@ -1,10 +1,11 @@
 import { createDummies } from '../../../../test/helpers/dummies';
+import { sampleWithout } from '../../../../test/helpers/sampling';
 import { datetime, DateUnits } from '../../../libs/datetime';
 import { SortDirection } from '../../../libs/sorting';
 import { NoteItemDummy, prepareForFilteringNotes, prepareForSortingNotes } from '../dummies';
 import {
     ChangeSortDirectionAction,
-    ChangeSortOrderAction,
+    ChangeSortOrderAction, ChangeViewModeAction,
     LoadNoteCollectionAction,
     LoadNoteCollectionCompleteAction,
     SelectDateFilterAction,
@@ -15,11 +16,14 @@ import {
     createNoteCollectionInitialState,
     NoteCollectionFilterBy,
     NoteCollectionSortBy,
+    NoteCollectionViewModes,
 } from './note-collection.state';
 import { NoteItem } from './note-item.model';
 
 
 describe('browser.note.noteCollectionReducer', () => {
+    const defaultState = createNoteCollectionInitialState();
+
     describe('LOAD_COLLECTION', () => {
         it('should set loading to true.', () => {
             const state = noteCollectionReducer(
@@ -45,7 +49,6 @@ describe('browser.note.noteCollectionReducer', () => {
         });
 
         it('should filtered and sorted notes are made.', () => {
-            const defaultState = createNoteCollectionInitialState();
             const notes = createDummies(new NoteItemDummy(), 5);
 
             prepareForFilteringNotes(
@@ -354,6 +357,22 @@ describe('browser.note.noteCollectionReducer', () => {
                 notes[1],
                 notes[2],
             ]);
+        });
+    });
+
+    describe('CHANGE_VIEW_MODE', () => {
+        it('should set view mode.', () => {
+            const viewMode = sampleWithout<NoteCollectionViewModes>(
+                NoteCollectionViewModes,
+                [defaultState.viewMode],
+            );
+
+            const state = noteCollectionReducer(
+                defaultState,
+                new ChangeViewModeAction({ viewMode }),
+            );
+
+            expect(state.viewMode).toEqual(viewMode);
         });
     });
 });

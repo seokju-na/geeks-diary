@@ -61,6 +61,12 @@ export function noteCollectionReducer(
                 sortDirection: action.payload.sortDirection,
             });
 
+        case NoteCollectionActionTypes.CHANGE_VIEW_MODE:
+            return {
+                ...state,
+                viewMode: action.payload.viewMode,
+            };
+
         default:
             return state;
     }

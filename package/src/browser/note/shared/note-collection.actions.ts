@@ -1,6 +1,6 @@
 import { Action } from '@ngrx/store';
 import { SortDirection } from '../../../libs/sorting';
-import { NoteCollectionSortBy } from './note-collection.state';
+import { NoteCollectionSortBy, NoteCollectionViewModes } from './note-collection.state';
 import { NoteItem } from './note-item.model';
 
 
@@ -14,6 +14,8 @@ export enum NoteCollectionActionTypes {
 
     CHANGE_SORT_ORDER = '[NoteCollection] Change sort order',
     CHANGE_SORT_DIRECTION = '[NoteCollection] Change sort direction',
+
+    CHANGE_VIEW_MODE = '[NoteCollection] Change view mode',
 }
 
 
@@ -70,6 +72,14 @@ export class ChangeSortDirectionAction implements Action {
 }
 
 
+export class ChangeViewModeAction implements Action {
+    readonly type = NoteCollectionActionTypes.CHANGE_VIEW_MODE;
+
+    constructor(readonly payload: { viewMode: NoteCollectionViewModes }) {
+    }
+}
+
+
 export type NoteCollectionActions =
     LoadNoteCollectionAction
     | LoadNoteCollectionCompleteAction
@@ -77,4 +87,5 @@ export type NoteCollectionActions =
     | SelectMonthFilterAction
     | SelectDateFilterAction
     | ChangeSortOrderAction
-    | ChangeSortDirectionAction;
+    | ChangeSortDirectionAction
+    | ChangeViewModeAction;
