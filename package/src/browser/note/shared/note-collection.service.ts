@@ -1,27 +1,40 @@
-import { Injectable } from '@angular/core';
-import { Store } from '@ngrx/store';
+import { Injectable, OnDestroy } from '@angular/core';
+import { select, Store } from '@ngrx/store';
 import * as path from 'path';
+import { Observable, Subject, Subscription } from 'rxjs';
+import { filter, map, switchMap, take } from 'rxjs/operators';
 import { toPromise } from '../../../libs/rx';
 import { Note } from '../../../models/note';
 import { FsService } from '../../core/fs.service';
 import { WorkspaceService } from '../../core/workspace.service';
-import { NoteModule } from '../note.module';
-import { LoadNoteCollectionAction, LoadNoteCollectionCompleteAction } from './note-collection.actions';
+import {
+    DeselectNoteAction,
+    LoadNoteCollectionAction,
+    LoadNoteCollectionCompleteAction,
+    SelectNoteAction,
+} from './note-collection.actions';
 import { getNoteLabel, NoteItem } from './note-item.model';
 import { NoteParser } from './note-parser';
 import { NoteStateWithRoot } from './note.state';
 
 
-@Injectable({
-    providedIn: NoteModule,
-})
-export class NoteCollectionService {
+@Injectable()
+export class NoteCollectionService implements OnDestroy {
+    private toggleNoteSelectionSubscription = Subscription.EMPTY;
+    private readonly _toggleNoteSelection = new Subject<NoteItem>();
+
     constructor(
         private store: Store<NoteStateWithRoot>,
         private parser: NoteParser,
         private fs: FsService,
         private workspace: WorkspaceService,
     ) {
+
+        this.subscribeToggles();
+    }
+
+    ngOnDestroy(): void {
+        this.toggleNoteSelectionSubscription.unsubscribe();
     }
 
     /**
@@ -67,21 +80,69 @@ export class NoteCollectionService {
         }));
     }
 
-    getSelectedNote(): void {
+    getFilteredAndSortedNoteList(waitForInitial: boolean = true): Observable<NoteItem[]> {
+        return this.store.pipe(
+            select(state => state.note.collection),
+            filter(state => waitForInitial
+                ? state.loaded
+                : true,
+            ),
+            select(state => state.filteredAndSortedNotes),
+        );
     }
 
-    toggleNoteSelection(): void {
+    getSelectedNote(waitForInitial: boolean = true): Observable<NoteItem | null> {
+        return this.store.pipe(
+            select(state => state.note.collection),
+            filter(state => waitForInitial
+                ? state.loaded
+                : true,
+            ),
+            select(state => state.selectedNote),
+        );
     }
 
-    selectNote(): void {
+    toggleNoteSelection(note: NoteItem): void {
+        this._toggleNoteSelection.next(note);
+    }
+
+    selectNote(note: NoteItem): void {
+        this.store.dispatch(new SelectNoteAction({ note }));
     }
 
     deselectNote(): void {
+        this.store.dispatch(new DeselectNoteAction());
     }
 
     createNewNote(): void {
     }
 
     deleteNote(): void {
+    }
+
+    private subscribeToggles(): void {
+        this.toggleNoteSelectionSubscription =
+            this._toggleNoteSelection.asObservable().pipe(
+                switchMap(note =>
+                    this.getSelectedNote(false).pipe(
+                        take(1),
+                        map(selectedNote => ([selectedNote, note])),
+                    ),
+                ),
+            ).subscribe(([selectedNote, note]) =>
+                this.handleNoteSelectionToggling(selectedNote, note),
+            );
+    }
+
+    private handleNoteSelectionToggling(
+        selectedNote: NoteItem,
+        note: NoteItem,
+    ): void {
+
+        if (selectedNote && selectedNote.id === note.id) {
+            this.deselectNote();
+        } else {
+            this.selectNote(note);
+        }
     }
 }
