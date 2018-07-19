@@ -1,0 +1,11 @@
+@import "../../ui/style/sizes";
+
+.NoteList {
+    overflow-y: scroll;
+    width: 100%;
+    min-height: 1px;
+
+    &__emptyState {
+        padding: $spacing-triple $spacing;
+    }
+}
