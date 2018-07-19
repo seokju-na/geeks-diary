@@ -2,7 +2,6 @@ import { Injectable } from '@angular/core';
 import * as os from 'os';
 import { Note } from '../../../models/note';
 import { NoteSnippetTypes } from '../../../models/note-snippet';
-import { NoteModule } from '../note.module';
 import { NoteContent, NoteSnippetContent } from './note-content.model';
 import getMdTitle = require('get-md-title');
 import Remarkable = require('remarkable');
@@ -20,9 +19,7 @@ const md = new Remarkable();
 md.use(require('remarkable-meta'));
 
 
-@Injectable({
-    providedIn: NoteModule,
-})
+@Injectable()
 export class NoteParser {
     generateNoteContent(note: Note, contentRawValue: string): NoteContent {
         if (!contentRawValue) {
