@@ -5,8 +5,11 @@
     $foreground: map-get($theme, foreground);
 
     .NoteFinder {
-        &__title, &__filtering {
+        &__title {
             background-color: gd-color($background, background-highlight);
+        }
+
+        &__title, gd-note-list-tools {
             border-bottom: 1px solid gd-color($foreground, divider);
         }
 
