@@ -3,11 +3,17 @@
 @mixin gd-note-calendar-theme($theme) {
     $background: map-get($theme, background);
     $foreground: map-get($theme, foreground);
+    $primary: map-get($theme, primary);
 
     .NoteCalendar {
         &__cell {
             border: 1px solid gd-color($foreground, divider);
             background-color: gd-color($background, background-highlight);
+
+            &--selected {
+                border: 1px solid gd-color($primary);
+                box-shadow: 0 0 0 1px gd-color($primary);
+            }
         }
     }
 }

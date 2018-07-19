@@ -6,19 +6,26 @@
 
         <div class="NoteCalendar__actions">
             <button gd-flat-button
+                    id="decrease-month-button"
                     aria-label="Decrease month"
+                    (click)="decreaseMonth()"
                     class="NoteCalendar__navButton">
                 <gd-icon iconName="angle-left"></gd-icon>
             </button>
 
             <button gd-flat-button
+                    id="go-to-today-button"
                     aria-label="Go to today"
+                    (click)="goToToday()"
                     class="NoteCalendar__goToTodayButton">
                 <gd-icon iconName="calendar-check-o"></gd-icon>
             </button>
 
             <button gd-flat-button
+                    id="increase-month-button"
                     aria-label="Increase month"
+                    (click)="increaseMonth()"
+                    [disabled]="disableIncreasingMonth | async"
                     class="NoteCalendar__navButton">
                 <gd-icon iconName="angle-right"></gd-icon>
             </button>
@@ -38,10 +45,11 @@
         </tr>
         <tr *ngFor="let row of calendar.rows">
             <td *ngFor="let cell of row.cells">
-                <a [attr.datetime]="cell.id"
+                <a [attr.datetime]="cell.label"
                    [attr.aria-selected]="isCellSelected(cell)"
                    [class.NoteCalendar__cell--blank]="cell.isBlank()"
                    [class.NoteCalendar__cell--selected]="isCellSelected(cell)"
+                   (click)="selectDateCell(cell)"
                    type="button"
                    class="NoteCalendar__cell">
 
@@ -59,7 +67,7 @@
         <span class="Text Text--weight-semibold">Date Selection : </span>
         <span *ngIf="selectedDate | async as dateSelection; else noDateSelection"
               class="Text Text--size-small Text--weight-light">
-            {{ dateSelection | date:'y/MM/DD' }}
+            {{ dateSelection | date:'y/MM/dd' }}
         </span>
         <ng-template #noDateSelection>
             <span class="Text Text--size-small Text--weight-light Text--italic Text--caption">
