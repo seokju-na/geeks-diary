@@ -67,6 +67,18 @@ export function noteCollectionReducer(
                 viewMode: action.payload.viewMode,
             };
 
+        case NoteCollectionActionTypes.SELECT_NOTE:
+            return {
+                ...state,
+                selectedNote: { ...action.payload.note },
+            };
+
+        case NoteCollectionActionTypes.DESELECT_NOTE:
+            return {
+                ...state,
+                selectedNote: null,
+            };
+
         default:
             return state;
     }

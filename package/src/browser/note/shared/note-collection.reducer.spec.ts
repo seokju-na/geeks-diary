@@ -5,17 +5,21 @@ import { SortDirection } from '../../../libs/sorting';
 import { NoteItemDummy, prepareForFilteringNotes, prepareForSortingNotes } from '../dummies';
 import {
     ChangeSortDirectionAction,
-    ChangeSortOrderAction, ChangeViewModeAction,
+    ChangeSortOrderAction,
+    ChangeViewModeAction,
+    DeselectNoteAction,
     LoadNoteCollectionAction,
     LoadNoteCollectionCompleteAction,
     SelectDateFilterAction,
     SelectMonthFilterAction,
+    SelectNoteAction,
 } from './note-collection.actions';
 import { noteCollectionReducer } from './note-collection.reducer';
 import {
     createNoteCollectionInitialState,
     NoteCollectionFilterBy,
     NoteCollectionSortBy,
+    NoteCollectionState,
     NoteCollectionViewModes,
 } from './note-collection.state';
 import { NoteItem } from './note-item.model';
@@ -373,6 +377,40 @@ describe('browser.note.noteCollectionReducer', () => {
             );
 
             expect(state.viewMode).toEqual(viewMode);
+        });
+    });
+
+    describe('SELECT_NOTE', () => {
+        it('should set selected note.', () => {
+            const note = new NoteItemDummy().create();
+            const state = noteCollectionReducer(
+                undefined,
+                new SelectNoteAction({ note }),
+            );
+
+            expect(state.selectedNote).toEqual(note);
+        });
+    });
+
+    describe('DESELECT_NOTE', () => {
+        let note: NoteItem;
+        let beforeState: NoteCollectionState;
+
+        beforeEach(() => {
+            note = new NoteItemDummy().create();
+            beforeState = noteCollectionReducer(
+                undefined,
+                new SelectNoteAction({ note }),
+            );
+        });
+
+        it('should set selected note as null.', () => {
+            const state = noteCollectionReducer(
+                beforeState,
+                new DeselectNoteAction(),
+            );
+
+            expect(state.selectedNote).toEqual(null);
         });
     });
 });

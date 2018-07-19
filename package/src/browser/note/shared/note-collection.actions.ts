@@ -16,6 +16,9 @@ export enum NoteCollectionActionTypes {
     CHANGE_SORT_DIRECTION = '[NoteCollection] Change sort direction',
 
     CHANGE_VIEW_MODE = '[NoteCollection] Change view mode',
+
+    SELECT_NOTE = '[NoteCollection] Select note',
+    DESELECT_NOTE = '[NoteCollection] Deselect note',
 }
 
 
@@ -80,6 +83,19 @@ export class ChangeViewModeAction implements Action {
 }
 
 
+export class SelectNoteAction implements Action {
+    readonly type = NoteCollectionActionTypes.SELECT_NOTE;
+
+    constructor(readonly payload: { note: NoteItem }) {
+    }
+}
+
+
+export class DeselectNoteAction implements Action {
+    readonly type = NoteCollectionActionTypes.DESELECT_NOTE;
+}
+
+
 export type NoteCollectionActions =
     LoadNoteCollectionAction
     | LoadNoteCollectionCompleteAction
@@ -88,4 +104,6 @@ export type NoteCollectionActions =
     | SelectDateFilterAction
     | ChangeSortOrderAction
     | ChangeSortDirectionAction
-    | ChangeViewModeAction;
+    | ChangeViewModeAction
+    | SelectNoteAction
+    | DeselectNoteAction;
