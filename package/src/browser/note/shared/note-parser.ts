@@ -56,6 +56,9 @@ export class NoteParser {
         let startLine;
         let endLine;
 
+        // We only need content token.
+        // Occasionally, content token does not have 'lines' property.
+        // Therefore, ensure token validation by checking 'lines' property.
         const tokens = _tokens.filter(token =>
             !!token.lines && !!(<any>token).content);
 
