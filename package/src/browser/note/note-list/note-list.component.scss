@@ -1,7 +1,7 @@
 @import "../../ui/style/sizes";
 
 .NoteList {
-    overflow-y: scroll;
+    overflow-y: auto;
     width: 100%;
     min-height: 1px;
 
