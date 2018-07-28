@@ -1,18 +1,22 @@
 import { fakeAsync, flush, TestBed } from '@angular/core/testing';
 import { combineReducers, Store, StoreModule } from '@ngrx/store';
+import * as path from 'path';
 import { of } from 'rxjs';
 import { createDummies } from '../../../../test/helpers/dummies';
-import { FsMatchObject, MockFsService } from '../../../../test/mocks/browser/mock-fs.service';
+import { FsMatchLiterals, FsMatchObject, MockFsService } from '../../../../test/mocks/browser/mock-fs.service';
+import { makeContentFileName, Note } from '../../../models/note';
 import { FsService } from '../../core/fs.service';
 import { WORKSPACE_CONFIGS, WorkspaceConfigs, WorkspaceService } from '../../core/workspace.service';
 import { NoteDummy, NoteItemDummy } from '../dummies';
 import {
+    AddNoteAction,
     DeselectNoteAction,
     LoadNoteCollectionAction,
     LoadNoteCollectionCompleteAction,
     SelectNoteAction,
 } from './note-collection.actions';
 import { NoteCollectionService } from './note-collection.service';
+import { NoteError, NoteErrorCodes } from './note-errors';
 import { NoteParser } from './note-parser';
 import { noteReducerMap } from './note.reducer';
 import { NoteStateWithRoot } from './note.state';
@@ -184,5 +188,104 @@ describe('browser.note.NoteCollectionService', () => {
 
             expect(store.dispatch).toHaveBeenCalledWith(new DeselectNoteAction());
         });
+    });
+
+    describe('createNewNote', () => {
+        const title = 'This is note';
+        const contentFileName = makeContentFileName(new Date().getTime(), title);
+
+        const getContentFilePath = (label?: string): string => {
+            if (label) {
+                return path.resolve(workspaceConfigs.rootDirPath, label, contentFileName);
+            }
+
+            return path.resolve(workspaceConfigs.rootDirPath, contentFileName);
+        };
+
+        it('should throw \'CONTENT_FILE_EXISTS\' error if content ' +
+            'file already exists.', fakeAsync(() => {
+            const label = 'javascript/angular';
+            const filePath = getContentFilePath(label);
+
+            const callback = jasmine.createSpy('create new note spy');
+
+            collection
+                .createNewNote(title, label)
+                .then(() => {})
+                .catch(callback);
+
+            mockFs
+                .expect({
+                    methodName: 'isPathExists',
+                    args: [filePath],
+                })
+                .flush(true);
+
+            const expected = new NoteError(NoteErrorCodes.CONTENT_FILE_EXISTS);
+
+            expect(callback).toHaveBeenCalledWith(expected);
+        }));
+
+        it('should throw \'OUTSIDE_WORKSPACE\' error if save file ' +
+            'path is outside of workspace.', fakeAsync(() => {
+            const label = '../../outside';
+            const callback = jasmine.createSpy('create new note spy');
+
+            collection.createNewNote(title, label).catch(callback);
+
+            flush();
+
+            const expected = new NoteError(NoteErrorCodes.OUTSIDE_WORKSPACE);
+
+            expect(callback).toHaveBeenCalledWith(expected);
+        }));
+
+        it('should dispatch \'ADD_NOTE\' action after create new note.', fakeAsync(() => {
+            spyOn(store, 'dispatch');
+
+            const filePath = getContentFilePath();
+
+            const callback = jasmine.createSpy('create new note spy');
+            collection.createNewNote(title).then(callback);
+
+            // Pass content file path exists.
+            mockFs
+                .expect({
+                    methodName: 'isPathExists',
+                    args: [filePath],
+                })
+                .flush(false);
+
+            // First, create note.
+            const stub = mockFs
+                .expect<void>({
+                    methodName: 'writeFile',
+                    args: [FsMatchLiterals.ANY, FsMatchLiterals.ANY],
+                });
+
+            const noteSaveData =
+                 JSON.parse(stub.matchObj.args[1] as string) as Note;
+
+            expect(noteSaveData.id).toBeDefined();
+            expect(noteSaveData.title).toEqual(title);
+            expect(noteSaveData.stackIds).toEqual([]);
+            expect(noteSaveData.createdDatetime).toBeDefined();
+            expect(noteSaveData.updatedDatetime).toBeDefined();
+
+            stub.flush();
+
+            // Second, create content file.
+            mockFs
+                .expect<void>({
+                    methodName: 'writeFile',
+                    args: [filePath, FsMatchLiterals.ANY],
+                })
+                .flush();
+
+            // Last, dispatch 'ADD_NOTE' action.
+            const actual = (<jasmine.Spy>store.dispatch).calls.mostRecent().args[0];
+
+            expect(actual instanceof AddNoteAction).toBe(true);
+        }));
     });
 });

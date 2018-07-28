@@ -1,20 +1,26 @@
 import { Injectable, OnDestroy } from '@angular/core';
 import { select, Store } from '@ngrx/store';
 import * as path from 'path';
-import { Observable, Subject, Subscription } from 'rxjs';
+import { Observable, Subject, Subscription, zip } from 'rxjs';
 import { filter, map, switchMap, take } from 'rxjs/operators';
+import { isOutsidePath } from '../../../libs/path';
 import { toPromise } from '../../../libs/rx';
-import { Note } from '../../../models/note';
+import { uuid } from '../../../libs/uuid';
+import { makeContentFileName, Note } from '../../../models/note';
+import { NoteSnippetTypes } from '../../../models/note-snippet';
 import { FsService } from '../../core/fs.service';
 import { WorkspaceService } from '../../core/workspace.service';
 import {
+    AddNoteAction,
     DeselectNoteAction,
     LoadNoteCollectionAction,
     LoadNoteCollectionCompleteAction,
     SelectNoteAction,
 } from './note-collection.actions';
+import { NoteError, NoteErrorCodes } from './note-errors';
 import { getNoteLabel, NoteItem } from './note-item.model';
 import { NoteParser } from './note-parser';
+import { convertToNoteSnippets } from './note-parsing.models';
 import { NoteStateWithRoot } from './note.state';
 
 
@@ -114,7 +120,78 @@ export class NoteCollectionService implements OnDestroy {
         this.store.dispatch(new DeselectNoteAction());
     }
 
-    createNewNote(): void {
+    async createNewNote(title: string, directory: string = ''): Promise<void> {
+        const rootDirPath = this.workspace.configs.rootDirPath;
+
+        const createdAt = new Date().getTime();
+
+        const contentFileName = makeContentFileName(createdAt, title);
+        const contentFilePath = path.resolve(
+            rootDirPath,
+            directory,
+            contentFileName,
+        );
+
+        if (isOutsidePath(contentFilePath, rootDirPath)) {
+            throw new NoteError(NoteErrorCodes.OUTSIDE_WORKSPACE);
+        }
+
+        if (await toPromise(this.fs.isPathExists(contentFilePath))) {
+            throw new NoteError(NoteErrorCodes.CONTENT_FILE_EXISTS);
+        }
+
+        const content = {
+            snippets: [{
+                type: NoteSnippetTypes.TEXT,
+                value: 'Write some content...',
+            }],
+        };
+
+        const result = this.parser.parseNoteContent(content, {
+            metadata: {
+                title,
+                date: new Date(createdAt).toString(),
+                stacks: [],
+            },
+        });
+
+        const id = uuid();
+        const noteFileName = `${id}.json`;
+        const noteFilePath = path.resolve(
+            this.workspace.configs.notesDirPath,
+            noteFileName,
+        );
+
+        const note: Note = {
+            id,
+            title,
+            snippets: convertToNoteSnippets(result.parsedSnippets),
+            createdDatetime: createdAt,
+            updatedDatetime: createdAt,
+            stackIds: [],
+            contentFileName,
+            contentFilePath,
+        };
+        const contentRawValue = result.contentRawValue;
+
+        await toPromise(zip(
+            this.fs.writeFile(noteFilePath, JSON.stringify(note)),
+            this.fs.writeFile(contentFilePath, contentRawValue),
+        ));
+
+        // Dispatch 'ADD_NOTE' action.
+        let noteItem: NoteItem = {
+            ...note,
+            fileName: noteFileName,
+            filePath: noteFilePath,
+        };
+        const label = getNoteLabel(note, rootDirPath);
+
+        if (label) {
+            noteItem = { ...noteItem, label };
+        }
+
+        this.store.dispatch(new AddNoteAction({ note: noteItem }));
     }
 
     deleteNote(): void {
