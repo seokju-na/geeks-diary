@@ -1,6 +1,6 @@
 import { Injectable, NgZone } from '@angular/core';
-import { Observable } from 'rxjs';
-import { mapTo } from 'rxjs/operators';
+import { Observable, of } from 'rxjs';
+import { catchError, mapTo } from 'rxjs/operators';
 import {
     accessAsObservable,
     ensureDirAsObservable,
@@ -22,6 +22,14 @@ export class FsService {
     access(path: string): Observable<void> {
         return accessAsObservable(path).pipe(
             mapTo(null),
+            enterZone(this.ngZone),
+        );
+    }
+
+    isPathExists(path: string): Observable<boolean> {
+        return accessAsObservable(path).pipe(
+            mapTo(true),
+            catchError(() => of(false)),
             enterZone(this.ngZone),
         );
     }
