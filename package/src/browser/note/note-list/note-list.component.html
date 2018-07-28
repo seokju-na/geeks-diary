@@ -8,9 +8,9 @@
     </div>
 
     <gd-note-item
-        *ngFor="let note of notes | async; let i = index"
+        *ngFor="let note of notes | async;"
         [note]="note"
-        [active]="activeItemIndex === i"
+        [active]="isActiveItem(note)"
         [selected]="(selectedNote | async)?.id === note.id"
         (selectionChange)="selectNote($event)"></gd-note-item>
 </div>

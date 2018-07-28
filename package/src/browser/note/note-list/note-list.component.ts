@@ -75,8 +75,17 @@ export class NoteListComponent implements OnInit, AfterViewInit {
         this.collection.toggleNoteSelection(event.source.note);
     }
 
-    get activeItemIndex(): number | null {
-        return this._focusKeyManager.activeItemIndex;
+    isActiveItem(note: NoteItem): boolean {
+        if (!this._focusKeyManager.activeItem) {
+            return false;
+        }
+
+        // The reason for not simply comparing the active item index values
+        // ​​here is that 'ExpressionChangedAfterItHasBeenCheckedError' occurs.
+        //
+        // The QueryList change is applied and the note value of the input
+        // is compared to prevent the problem from occurring.
+        return this._focusKeyManager.activeItem.note === note;
     }
 
     @HostListener('keydown', ['$event'])
