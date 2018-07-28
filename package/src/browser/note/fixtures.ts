@@ -1,16 +1,20 @@
 import { Note } from '../../models/note';
 import { NoteSnippet, NoteSnippetTypes } from '../../models/note-snippet';
 import { NoteDummy } from './dummies';
-import { NoteSnippetContent } from './shared/note-content.model';
+import { NoteSnippetParseResult } from './shared/note-parsing.models';
 
 
 const noteDummy = new NoteDummy();
 
 
-interface NoteFixture {
+export interface NoteFixture {
     note?: Note;
-    snippetContents?: NoteSnippetContent[];
+    title?: string;
+    stackIds?: string[];
+    parsedSnippets: NoteSnippetParseResult[];
+    createdDatetime?: number;
     contentRawValue?: string;
+    parsedContentRawValue?: string;
 }
 
 
@@ -65,7 +69,9 @@ export function basicFixture(): NoteFixture {
             title: 'Title',
             snippets: [snippet1, snippet2, snippet3],
         },
-        snippetContents: [
+        title: 'Title',
+        stackIds: [],
+        parsedSnippets: [
             { ...snippet1, value: snippet1Value },
             { ...snippet2, value: snippet2Value },
             { ...snippet3, value: snippet3Value },
@@ -101,12 +107,16 @@ export function textSnippetsOnlyFixture(): NoteFixture {
         '\n' +
         '## seoul';
 
+    const note = {
+        ...noteDummy.create(),
+        snippets: [snippet1],
+    };
+
     return {
-        note: {
-            ...noteDummy.create(),
-            snippets: [snippet1],
-        },
-        snippetContents: [
+        note,
+        title: note.title,
+        stackIds: [...note.stackIds],
+        parsedSnippets: [
             { ...snippet1, value: snippet1Value },
         ],
         contentRawValue,
@@ -155,12 +165,16 @@ export function codeSnippetsOnlyFixture(): NoteFixture {
         'maybe\n' +
         '```';
 
+    const note = {
+        ...noteDummy.create(),
+        snippets: [snippet1],
+    };
+
     return {
-        note: {
-            ...noteDummy.create(),
-            snippets: [snippet1, snippet2],
-        },
-        snippetContents: [
+        note,
+        title: note.title,
+        stackIds: [...note.stackIds],
+        parsedSnippets: [
             { ...snippet1, value: snippet1Value },
             { ...snippet2, value: snippet2Value },
         ],
@@ -229,7 +243,9 @@ export function frontMatterFixture(): NoteFixture {
             stackIds: ['javascript', 'typescript'],
             snippets: [snippet1, snippet2, snippet3],
         },
-        snippetContents: [
+        title: 'Real Title',
+        stackIds: ['javascript', 'typescript'],
+        parsedSnippets: [
             { ...snippet1, value: snippet1Value },
             { ...snippet2, value: snippet2Value },
             { ...snippet3, value: snippet3Value },
@@ -298,7 +314,9 @@ export function frontMatterNoTitleFixture(): NoteFixture {
             stackIds: ['javascript', 'typescript'],
             snippets: [snippet1, snippet2, snippet3],
         },
-        snippetContents: [
+        title: 'Title',
+        stackIds: ['javascript', 'typescript'],
+        parsedSnippets: [
             { ...snippet1, value: snippet1Value },
             { ...snippet2, value: snippet2Value },
             { ...snippet3, value: snippet3Value },
@@ -362,7 +380,9 @@ export function frontMatterInvalidDateFixture(): NoteFixture {
             title: 'Title',
             snippets: [snippet1, snippet2, snippet3],
         },
-        snippetContents: [
+        title: 'Title',
+        stackIds: [],
+        parsedSnippets: [
             { ...snippet1, value: snippet1Value },
             { ...snippet2, value: snippet2Value },
             { ...snippet3, value: snippet3Value },

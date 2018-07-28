@@ -1,26 +1,44 @@
 import { Injectable } from '@angular/core';
 import * as os from 'os';
-import { Note } from '../../../models/note';
+import * as Remarkable from 'remarkable';
+import * as yaml from 'js-yaml';
+import { Note, NoteMetadata } from '../../../models/note';
 import { NoteSnippetTypes } from '../../../models/note-snippet';
 import { NoteContent, NoteSnippetContent } from './note-content.model';
-import getMdTitle = require('get-md-title');
-import Remarkable = require('remarkable');
+import {
+    NoteContentParseResult,
+    NoteContentRawValueParseResult,
+    NoteSnippetParseResult,
+} from './note-parsing.models';
+import remarkableMetaPlugin = require('remarkable-meta');
 
 
-interface NoteContentRawValueParseResult {
-    title: string;
-    stackIds: string[];
-    snippets: NoteSnippetContent[];
-    createdDatetime?: number;
+const getMdTitle = require('get-md-title') as (content: string) =>
+    { text: string } | undefined;
+
+
+export class NoteContentParsingOptions {
+    readonly indent?: number = 4;
+    readonly lineSpacing?: number = 2;
+    readonly metadata?: NoteMetadata | null = null;
 }
 
 
-const md = new Remarkable();
-md.use(require('remarkable-meta'));
+const isEmptyLine = (line: string) => line.trim() === '';
+const getLastLine = (lines: string[]) => lines[lines.length - 1];
+const numToArray = (count: number) => {
+    const arr = [];
+    for (let i = 0; i < count; i++) {
+        arr.push(i + 1);
+    }
+    return arr;
+};
 
 
 @Injectable()
 export class NoteParser {
+    private markdownParser: Remarkable;
+
     generateNoteContent(note: Note, contentRawValue: string): NoteContent {
         if (!contentRawValue) {
             return null;
@@ -34,11 +52,20 @@ export class NoteParser {
             const endIndex = snippet.endLineNumber - 1;
 
             const value = lines.slice(startIndex, endIndex + 1).join(os.EOL);
-
-            snippets.push({
-                ...snippet,
+            let snippetContent: NoteSnippetContent = {
+                type: snippet.type,
                 value,
-            });
+            };
+
+            if (snippet.type === NoteSnippetTypes.CODE) {
+                snippetContent = {
+                    ...snippetContent,
+                    codeLanguageId: snippet.codeLanguageId,
+                    codeFileName: snippet.codeFileName,
+                };
+            }
+
+            snippets.push(snippetContent);
         }
 
         return {
@@ -47,10 +74,10 @@ export class NoteParser {
         };
     }
 
-    private _parseTokens = function* parseLine(
+    private _parseTokens = function* parseTokens(
         lines: string[],
         _tokens: Remarkable.Token[],
-    ): IterableIterator<NoteSnippetContent> {
+    ): IterableIterator<NoteSnippetParseResult> {
         let start = 0;
         let end = 0;
         let startLine;
@@ -108,15 +135,36 @@ export class NoteParser {
     };
 
     parseNoteContentRawValue(contentRawValue: string): NoteContentRawValueParseResult {
-        const snippets: NoteSnippetContent[] = [];
+        this.initMarkdownParser();
+
+        const snippets = [];
         const lines = contentRawValue.split('\n');
-        const tokens = md.parse(contentRawValue, { breaks: true });
-        const metadata = (<any>md).meta;
+        const tokens = this.markdownParser.parse(contentRawValue, { breaks: true });
 
         for (const snippet of this._parseTokens(lines, tokens)) {
             snippets.push(snippet);
         }
 
+        /**
+         * When parsing the Markdown text, the Front matter data is parsed
+         * together by the plugin named 'remarkable-meta'.
+         *
+         * The data is stored in the 'meta' property, but is not typed in
+         * Typescript.
+         *
+         * See
+         *  https://github.com/eugeneware/remarkable-meta
+         */
+        const metadata = (<any>this.markdownParser).meta as NoteMetadata;
+
+        /**
+         * 'get-md-title' fetches the first header of the Markdown content
+         * as the first header.
+         *
+         * We will use note title by priority.
+         *  1. The title stated in Front matter
+         *  2. First header of content
+         */
         const firstHeaderTitle = getMdTitle(contentRawValue);
         const title = metadata.title
             ? metadata.title
@@ -136,14 +184,77 @@ export class NoteParser {
 
         return {
             title,
-            snippets: [...snippets],
+            parsedSnippets: [...snippets],
             stackIds: stacks,
             createdDatetime,
         };
     }
 
-    // TODO: Test and implement this method.
-    makeContentToRawValue(content: NoteContent): string {
-        return null;
+    parseNoteContent(
+        content: NoteContent,
+        options?: NoteContentParsingOptions,
+    ): NoteContentParseResult {
+        const opts = {
+            ...(new NoteContentParsingOptions()),
+            ...options,
+        };
+
+        let metadataLines: string[];
+
+        if (opts.metadata) {
+            const metadata = yaml.safeDump(opts.metadata, {
+                indent: opts.indent,
+            });
+
+            metadataLines = metadata.split(os.EOL);
+
+            // If last line is empty, discard last line.
+            if (isEmptyLine(getLastLine(metadataLines))) {
+                metadataLines = metadataLines.slice(0, metadataLines.length - 1);
+            }
+        }
+
+        let str = '';
+        const nl = os.EOL;
+        const lineSpacing = numToArray(opts.lineSpacing)
+            .reduce(sum => `${sum}${nl}`, nl);
+
+        // Add front matter to note content raw value if exists.
+        if (metadataLines) {
+            str +=
+                `---${nl}` +
+                `${metadataLines.join(nl)}${nl}` +
+                `---${nl}` +
+                `${nl}`;
+        }
+
+        // Add each snippet value to note content raw value.
+        for (const snippet of content.snippets) {
+            str += `${snippet.value}${lineSpacing}`;
+        }
+
+        // Parse tokens to get parsed snippet.
+        const parsedSnippets = [];
+
+        this.initMarkdownParser();
+        const tokens = this.markdownParser.parse(str, { breaks: true });
+
+        for (const parsedSnippet of this._parseTokens(str.split(nl), tokens)) {
+            parsedSnippets.push(parsedSnippet);
+        }
+
+        return {
+            parsedSnippets,
+            contentRawValue: str,
+        };
+    }
+
+    private initMarkdownParser(): void {
+        if (this.markdownParser) {
+            this.markdownParser = null;
+        }
+
+        this.markdownParser = new Remarkable();
+        this.markdownParser.use(remarkableMetaPlugin);
     }
 }

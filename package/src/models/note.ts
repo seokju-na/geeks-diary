@@ -45,5 +45,19 @@ export function makeContentFileName(
     title: string,
 ): string {
 
-    return `${datetime.shortFormat(new Date(createdDatetime))}-${kebabCase(title)}`;
+    return `${datetime.shortFormat(new Date(createdDatetime))}-${kebabCase(title)}.md`;
+}
+
+
+/**
+ * Front matter data which stored in note content file.
+ * Formatted with yaml.
+ *
+ * Use generic properties to integrate with other services.
+ * (e.g. Jekyll)
+ */
+export interface NoteMetadata {
+    readonly title?: string;
+    readonly date?: string;
+    readonly stacks?: string[];
 }

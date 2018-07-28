@@ -29,7 +29,7 @@ export class NoteDummy extends Dummy<Note> {
     create(): Note {
         const title = this.title.create();
         const createdDatetime = this.createdDatetime.create();
-        const contentFileName = `${makeContentFileName(createdDatetime, title)}.md`;
+        const contentFileName = makeContentFileName(createdDatetime, title);
 
         return {
             id: this.id.create(),
@@ -56,7 +56,7 @@ export class NoteItemDummy extends Dummy<NoteItem> {
     create(): NoteItem {
         const title = _title.create();
         const createdDatetime = _createdDatetime.create();
-        const contentFileName = `${makeContentFileName(createdDatetime, title)}.md`;
+        const contentFileName = makeContentFileName(createdDatetime, title);
         const fileName = _fileName.create();
 
         return {

@@ -33,7 +33,15 @@ describe('browser.note.NoteParser', () => {
             );
 
             expect(result.noteId).toEqual(fixture.note.id);
-            expect(result.snippets).toEqual(fixture.snippetContents);
+
+            result.snippets.forEach((snippet, index) => {
+                const target = fixture.parsedSnippets[index];
+
+                expect(snippet.type).toEqual(target.type);
+                expect(snippet.value).toEqual(target.value);
+                expect(snippet.codeLanguageId).toEqual(target.codeLanguageId);
+                expect(snippet.codeFileName).toEqual(target.codeFileName);
+            });
         });
 
         it('text snippets only fixture', () => {
@@ -44,7 +52,15 @@ describe('browser.note.NoteParser', () => {
             );
 
             expect(result.noteId).toEqual(fixture.note.id);
-            expect(result.snippets).toEqual(fixture.snippetContents);
+
+            result.snippets.forEach((snippet, index) => {
+                const target = fixture.parsedSnippets[index];
+
+                expect(snippet.type).toEqual(target.type);
+                expect(snippet.value).toEqual(target.value);
+                expect(snippet.codeLanguageId).toEqual(target.codeLanguageId);
+                expect(snippet.codeFileName).toEqual(target.codeFileName);
+            });
         });
 
         it('code snippets only fixture', () => {
@@ -55,7 +71,15 @@ describe('browser.note.NoteParser', () => {
             );
 
             expect(result.noteId).toEqual(fixture.note.id);
-            expect(result.snippets).toEqual(fixture.snippetContents);
+
+            result.snippets.forEach((snippet, index) => {
+                const target = fixture.parsedSnippets[index];
+
+                expect(snippet.type).toEqual(target.type);
+                expect(snippet.value).toEqual(target.value);
+                expect(snippet.codeLanguageId).toEqual(target.codeLanguageId);
+                expect(snippet.codeFileName).toEqual(target.codeFileName);
+            });
         });
     });
 
@@ -64,21 +88,21 @@ describe('browser.note.NoteParser', () => {
             const fixture = basicFixture();
             const result = parser.parseNoteContentRawValue(fixture.contentRawValue);
 
-            expect(result.snippets).toEqual(fixture.snippetContents);
+            expect(result.parsedSnippets).toEqual(fixture.parsedSnippets);
         });
 
         it('text snippets only fixture', () => {
             const fixture = textSnippetsOnlyFixture();
             const result = parser.parseNoteContentRawValue(fixture.contentRawValue);
 
-            expect(result.snippets).toEqual(fixture.snippetContents);
+            expect(result.parsedSnippets).toEqual(fixture.parsedSnippets);
         });
 
         it('code snippets only fixture', () => {
             const fixture = codeSnippetsOnlyFixture();
             const result = parser.parseNoteContentRawValue(fixture.contentRawValue);
 
-            expect(result.snippets).toEqual(fixture.snippetContents);
+            expect(result.parsedSnippets).toEqual(fixture.parsedSnippets);
         });
 
         describe('front matter', () => {
@@ -91,7 +115,7 @@ describe('browser.note.NoteParser', () => {
                 expect(result.title).toEqual(fixture.note.title);
                 expect(result.stackIds).toEqual(fixture.note.stackIds);
                 expect(result.createdDatetime).toEqual(fixture.note.createdDatetime);
-                expect(result.snippets).toEqual(fixture.snippetContents);
+                expect(result.parsedSnippets).toEqual(fixture.parsedSnippets);
             });
 
             it('should set title from first header if title is not exists in ' +
@@ -104,7 +128,7 @@ describe('browser.note.NoteParser', () => {
                 expect(result.title).toEqual(fixture.note.title);
                 expect(result.stackIds).toEqual(fixture.note.stackIds);
                 expect(result.createdDatetime).toEqual(fixture.note.createdDatetime);
-                expect(result.snippets).toEqual(fixture.snippetContents);
+                expect(result.parsedSnippets).toEqual(fixture.parsedSnippets);
             });
 
             it('should created datetime to be null if date is invalid which ' +
@@ -115,7 +139,7 @@ describe('browser.note.NoteParser', () => {
                 );
 
                 expect(result.createdDatetime).toEqual(null);
-                expect(result.snippets).toEqual(fixture.snippetContents);
+                expect(result.parsedSnippets).toEqual(fixture.parsedSnippets);
             });
         });
     });
