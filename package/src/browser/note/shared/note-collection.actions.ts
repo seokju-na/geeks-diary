@@ -19,6 +19,8 @@ export enum NoteCollectionActionTypes {
 
     SELECT_NOTE = '[NoteCollection] Select note',
     DESELECT_NOTE = '[NoteCollection] Deselect note',
+
+    ADD_NOTE = '[NoteCollection] Add note',
 }
 
 
@@ -96,6 +98,14 @@ export class DeselectNoteAction implements Action {
 }
 
 
+export class AddNoteAction implements Action {
+    readonly type = NoteCollectionActionTypes.ADD_NOTE;
+
+    constructor(readonly payload: { note: NoteItem }) {
+    }
+}
+
+
 export type NoteCollectionActions =
     LoadNoteCollectionAction
     | LoadNoteCollectionCompleteAction
@@ -106,4 +116,5 @@ export type NoteCollectionActions =
     | ChangeSortDirectionAction
     | ChangeViewModeAction
     | SelectNoteAction
-    | DeselectNoteAction;
+    | DeselectNoteAction
+    | AddNoteAction;

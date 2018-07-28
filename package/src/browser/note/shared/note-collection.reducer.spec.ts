@@ -4,6 +4,7 @@ import { datetime, DateUnits } from '../../../libs/datetime';
 import { SortDirection } from '../../../libs/sorting';
 import { NoteItemDummy, prepareForFilteringNotes, prepareForSortingNotes } from '../dummies';
 import {
+    AddNoteAction,
     ChangeSortDirectionAction,
     ChangeSortOrderAction,
     ChangeViewModeAction,
@@ -411,6 +412,30 @@ describe('browser.note.noteCollectionReducer', () => {
             );
 
             expect(state.selectedNote).toEqual(null);
+        });
+    });
+
+    describe('ADD_NOTE', () => {
+        const dummy = new NoteItemDummy();
+        let beforeNotes: NoteItem[];
+        let beforeState: NoteCollectionState;
+
+        beforeEach(() => {
+            beforeNotes = createDummies(dummy, 10);
+            beforeState = noteCollectionReducer(
+                undefined,
+                new LoadNoteCollectionCompleteAction({ notes: beforeNotes }),
+            );
+        });
+
+        it('should add note.', () => {
+            const newNote = dummy.create();
+            const state = noteCollectionReducer(
+                beforeState,
+                new AddNoteAction({ note: newNote }),
+            );
+
+            expect(state.notes.includes(newNote)).toBe(true);
         });
     });
 });

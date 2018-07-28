@@ -79,6 +79,15 @@ export function noteCollectionReducer(
                 selectedNote: null,
             };
 
+        case NoteCollectionActionTypes.ADD_NOTE:
+            const notes = [...state.notes];
+            notes.push(action.payload.note);
+
+            return withFilteredAndSortedNotes({
+                ...state,
+                notes,
+            });
+
         default:
             return state;
     }
