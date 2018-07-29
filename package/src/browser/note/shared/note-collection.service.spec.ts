@@ -255,6 +255,15 @@ describe('browser.note.NoteCollectionService', () => {
                 })
                 .flush(false);
 
+            // Ensure directory
+            const baseDir = path.dirname(filePath);
+            mockFs
+                .expect<void>({
+                    methodName: 'ensureDirectory',
+                    args: [baseDir],
+                })
+                .flush();
+
             // First, create note.
             const stub = mockFs
                 .expect<void>({

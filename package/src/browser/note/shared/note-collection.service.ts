@@ -175,6 +175,13 @@ export class NoteCollectionService implements OnDestroy {
         };
         const contentRawValue = result.contentRawValue;
 
+        /**
+         * Make sure to ensure the directory where content file will saved.
+         */
+        await toPromise(
+            this.fs.ensureDirectory(path.dirname(contentFilePath)),
+        );
+
         await toPromise(zip(
             this.fs.writeJsonFile<Note>(noteFilePath, note),
             this.fs.writeFile(contentFilePath, contentRawValue),
