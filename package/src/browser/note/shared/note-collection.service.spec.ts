@@ -3,7 +3,7 @@ import { combineReducers, Store, StoreModule } from '@ngrx/store';
 import * as path from 'path';
 import { of } from 'rxjs';
 import { createDummies } from '../../../../test/helpers/dummies';
-import { FsMatchLiterals, FsMatchObject, MockFsService } from '../../../../test/mocks/browser/mock-fs.service';
+import { FsMatchLiterals, FsMatchObject, FsStub, MockFsService } from '../../../../test/mocks/browser/mock-fs.service';
 import { makeContentFileName, Note } from '../../../models/note';
 import { FsService } from '../../core/fs.service';
 import { WORKSPACE_CONFIGS, WorkspaceConfigs, WorkspaceService } from '../../core/workspace.service';
@@ -94,7 +94,7 @@ describe('browser.note.NoteCollectionService', () => {
             const notesFileNames = noteItems.map(item => item.fileName);
 
             mockFs
-                .expect({
+                .expect<string[]>({
                     methodName: 'readDirectory',
                     args: [workspaceConfigs.notesDirPath],
                 })
@@ -102,13 +102,12 @@ describe('browser.note.NoteCollectionService', () => {
 
             // 3) Change notes to note items.
             const matchObjList: FsMatchObject[] = noteItems.map(item => ({
-                methodName: 'readFile',
+                methodName: 'readJsonFile',
                 args: [item.filePath],
             }));
 
-            mockFs.expectMany(matchObjList).forEach((stub, index) => {
-                const data = JSON.stringify(notes[index]);
-                stub.flush(Buffer.from(data));
+            mockFs.expectMany<Note>(matchObjList).forEach((stub, index) => {
+                (stub as FsStub<Note>).flush(notes[index]);
             });
 
             // 4) Dispatch 'LOAD_COLLECTION_COMPLETE' action.
@@ -215,7 +214,7 @@ describe('browser.note.NoteCollectionService', () => {
                 .catch(callback);
 
             mockFs
-                .expect({
+                .expect<boolean>({
                     methodName: 'isPathExists',
                     args: [filePath],
                 })
@@ -250,7 +249,7 @@ describe('browser.note.NoteCollectionService', () => {
 
             // Pass content file path exists.
             mockFs
-                .expect({
+                .expect<boolean>({
                     methodName: 'isPathExists',
                     args: [filePath],
                 })
@@ -259,12 +258,11 @@ describe('browser.note.NoteCollectionService', () => {
             // First, create note.
             const stub = mockFs
                 .expect<void>({
-                    methodName: 'writeFile',
+                    methodName: 'writeJsonFile',
                     args: [FsMatchLiterals.ANY, FsMatchLiterals.ANY],
                 });
 
-            const noteSaveData =
-                 JSON.parse(stub.matchObj.args[1] as string) as Note;
+            const noteSaveData = stub.matchObj.args[1] as Note;
 
             expect(noteSaveData.id).toBeDefined();
             expect(noteSaveData.title).toEqual(title);

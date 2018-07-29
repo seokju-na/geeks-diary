@@ -55,30 +55,31 @@ export class NoteCollectionService implements OnDestroy {
 
         // 2) Get all notes.
         const noteFileNames = await toPromise(this.fs.readDirectory(notesDirPath));
-        const readingNotes = [];
+        const readingNotes: Promise<Note | null>[] = [];
 
         noteFileNames.forEach((fileName) => {
             const filePath = path.resolve(notesDirPath, fileName);
-            readingNotes.push(toPromise(this.fs.readFile(filePath)));
+            readingNotes.push(toPromise(this.fs.readJsonFile<Note>(filePath)));
         });
 
         // 3) Change notes to note items.
         const results = await Promise.all(readingNotes);
-        const noteItems: NoteItem[] = results.map((result, index) => {
-            const note = JSON.parse(result.toString()) as Note;
-            const noteItem: NoteItem = {
-                ...note,
-                fileName: noteFileNames[index],
-                filePath: path.resolve(notesDirPath, noteFileNames[index]),
-            };
-            const label = getNoteLabel(note, this.workspace.configs.rootDirPath);
+        const noteItems: NoteItem[] = results
+            .filter(note => note !== null)
+            .map((note: Note, index) => {
+                const noteItem: NoteItem = {
+                    ...note,
+                    fileName: noteFileNames[index],
+                    filePath: path.resolve(notesDirPath, noteFileNames[index]),
+                };
+                const label = getNoteLabel(note, this.workspace.configs.rootDirPath);
 
-            if (label) {
-                return { ...noteItem, label };
-            } else {
-                return noteItem;
-            }
-        });
+                if (label) {
+                    return { ...noteItem, label };
+                } else {
+                    return noteItem;
+                }
+            });
 
         // 4) Dispatch 'LOAD_COLLECTION_COMPLETE' action.
         this.store.dispatch(new LoadNoteCollectionCompleteAction({
@@ -175,7 +176,7 @@ export class NoteCollectionService implements OnDestroy {
         const contentRawValue = result.contentRawValue;
 
         await toPromise(zip(
-            this.fs.writeFile(noteFilePath, JSON.stringify(note)),
+            this.fs.writeJsonFile<Note>(noteFilePath, note),
             this.fs.writeFile(contentFilePath, contentRawValue),
         ));
 

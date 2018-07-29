@@ -4,7 +4,7 @@ import { Observable, Subject } from 'rxjs';
 import { FsService } from '../../../src/browser/core/fs.service';
 
 
-class FsStub<R> {
+export class FsStub<R> {
     constructor(
         readonly matchObj: FsMatchObject,
         private readonly stream: Subject<R>,
@@ -105,13 +105,6 @@ export class MockFsService extends FsService {
         this.attachments = [];
     }
 
-    access(path: string): Observable<void> {
-        return this.createAttachment<void>(
-            'access',
-            [path],
-        );
-    }
-
     isPathExists(path: string): Observable<boolean> {
         return this.createAttachment<boolean>(
             'isPathExists',
@@ -119,9 +112,16 @@ export class MockFsService extends FsService {
         );
     }
 
-    readFile(fileName: string): Observable<Buffer> {
-        return this.createAttachment<Buffer>(
+    readFile(fileName: string): Observable<string> {
+        return this.createAttachment<string>(
             'readFile',
+            [fileName],
+        );
+    }
+
+    readJsonFile<T>(fileName: string): Observable<T | null> {
+        return this.createAttachment<T | null>(
+            'readJsonFile',
             [fileName],
         );
     }
@@ -140,10 +140,10 @@ export class MockFsService extends FsService {
         );
     }
 
-    makeDirectory(dirName: string): Observable<void> {
+    writeJsonFile<T>(fileName: string, value: T): Observable<void> {
         return this.createAttachment<void>(
-            'makeDirectory',
-            [dirName],
+            'writeJsonFile',
+            [fileName, value],
         );
     }
 
@@ -192,7 +192,7 @@ export class MockFsService extends FsService {
         ) || null;
     }
 
-    private createAttachment<R>(methodName: string, args: string[]): Observable<R> {
+    private createAttachment<R>(methodName: string, args: any[]): Observable<R> {
         const matchObj: FsMatchObject = { methodName, args };
         const stream = new Subject<R>();
 
