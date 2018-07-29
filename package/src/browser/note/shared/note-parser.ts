@@ -194,7 +194,7 @@ export class NoteParser {
         content: NoteContent,
         options?: NoteContentParsingOptions,
     ): NoteContentParseResult {
-        const opts = {
+        const opts: NoteContentParsingOptions = {
             ...(new NoteContentParsingOptions()),
             ...options,
         };
