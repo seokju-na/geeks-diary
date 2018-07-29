@@ -18,6 +18,7 @@ import {
 import { FormFieldLabelDirective } from './form-field/form-field-label.directive';
 import { IconComponent } from './icon/icon.component';
 import { InputDirective } from './input/input.directive';
+import { Menu } from './menu/menu';
 import { RadioButtonComponent, RadioGroupDirective } from './radio/radio-button.component';
 import { ResizableHandlerDirective } from './resizable/resizable-handler.directive';
 import { ResizableComponent } from './resizable/resizable.component';
@@ -81,6 +82,7 @@ const UI_DECLARATIONS = [
     ],
     providers: [
         CalendarTableProvider,
+        Menu,
     ],
     exports: [
         ...MODULES,

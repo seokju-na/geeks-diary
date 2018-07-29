@@ -1,4 +1,11 @@
-import { ChangeDetectionStrategy, Component, ElementRef, Input, OnInit, ViewEncapsulation } from '@angular/core';
+import {
+    ChangeDetectionStrategy,
+    Component,
+    ElementRef,
+    Input,
+    OnInit,
+    ViewEncapsulation,
+} from '@angular/core';
 
 
 const BUTTON_HOST_ATTRIBUTES = [

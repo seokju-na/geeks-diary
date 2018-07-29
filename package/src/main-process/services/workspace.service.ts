@@ -1,4 +1,4 @@
-import { ensureDirAsPromise } from '../../libs/fs';
+import { ensureDir } from 'fs-extra';
 import { IpcActionHandler } from '../../libs/ipc';
 import {
     GEEKS_DIARY_DIR_PATH,
@@ -44,9 +44,9 @@ export class WorkspaceService extends Service {
 
     @IpcActionHandler('initWorkspace')
     async initWorkspace(): Promise<void> {
-        await ensureDirAsPromise(WORKSPACE_DIR_PATH);
-        await ensureDirAsPromise(GEEKS_DIARY_DIR_PATH);
-        await ensureDirAsPromise(NOTES_DIR_PATH);
+        await ensureDir(WORKSPACE_DIR_PATH);
+        await ensureDir(GEEKS_DIARY_DIR_PATH);
+        await ensureDir(NOTES_DIR_PATH);
 
         if (!await this.git.isRepositoryExists(WORKSPACE_DIR_PATH)) {
             await this.git.createRepository(WORKSPACE_DIR_PATH);

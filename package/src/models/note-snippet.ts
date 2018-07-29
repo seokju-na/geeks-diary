@@ -1,13 +1,11 @@
-export enum NoteSnippetType {
+export enum NoteSnippetTypes {
     TEXT = 'TEXT',
     CODE = 'CODE',
 }
 
 
 export interface NoteSnippet {
-    /** Unique note snippet id. Format follows UUID. */
-    readonly id: string;
-    readonly type: NoteSnippetType;
+    readonly type: NoteSnippetTypes;
 
     /** Line number where snippet starts. */
     readonly startLineNumber: number;

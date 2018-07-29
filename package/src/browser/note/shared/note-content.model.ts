@@ -1,12 +1,20 @@
-import { NoteSnippet } from '../../../models/note-snippet';
-import { NoteItem } from './note-item.model';
+import { NoteSnippetTypes } from '../../../models/note-snippet';
 
 
 export interface NoteContent {
-    readonly note: NoteItem;
+    readonly noteId?: string;
+    readonly snippets: NoteSnippetContent[];
 }
 
 
-export interface NoteSnippetContent extends NoteSnippet {
+export interface NoteSnippetContent {
+    readonly type: NoteSnippetTypes;
+
     readonly value: string;
+
+    /** Language id which code snippet contains. */
+    readonly codeLanguageId?: string;
+
+    /** File name which code snippet contains. */
+    readonly codeFileName?: string;
 }

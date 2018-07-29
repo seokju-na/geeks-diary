@@ -1,11 +1,12 @@
 import { DatePipe } from '@angular/common';
 import { DebugElement } from '@angular/core';
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { async, ComponentFixture, fakeAsync, flush, TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
 import { combineReducers, Store, StoreModule } from '@ngrx/store';
 import { expectDebugElement } from '../../../../test/helpers/expect-debug-element';
 import { datetime, DateUnits } from '../../../libs/datetime';
 import { UIModule } from '../../ui/ui.module';
+import { SelectMonthFilterAction } from '../shared/note-collection.actions';
 import { noteReducerMap } from '../shared/note.reducer';
 import { NoteStateWithRoot } from '../shared/note.state';
 import { NoteCalendarComponent } from './note-calendar.component';
@@ -29,12 +30,7 @@ describe('browser.note.NoteCalendarComponent', () => {
             const dateSelection = fixture.debugElement.query(
                 By.css('.NoteCalendar__selectedDate > span:nth-child(2)'));
 
-            expectDebugElement(dateSelection).toContainText(datePipe.transform(selectedDate, 'y/MM/DD'));
-        } else {
-            const noDateSelection = fixture.debugElement.query(
-                By.css('.NoteCalendar__selectedDate > span:nth-child(3)'));
-
-            expect(noDateSelection).not.toBeNull();
+            expectDebugElement(dateSelection).toContainText(datePipe.transform(selectedDate, 'y/MM/dd'));
         }
 
         const maxDays = datetime.getDaysInMonth(year, month);
@@ -102,36 +98,108 @@ describe('browser.note.NoteCalendarComponent', () => {
     beforeEach(() => {
         store = TestBed.get(Store);
         datePipe = TestBed.get(DatePipe);
+
+        spyOn(store, 'dispatch').and.callThrough();
     });
 
-    beforeEach(() => {
+    beforeEach(fakeAsync(() => {
         fixture = TestBed.createComponent(NoteCalendarComponent);
         component = fixture.componentInstance;
+        flush();
         fixture.detectChanges();
+    }));
+
+    it('should render this month as default.', () => {
+        const today = datetime.today();
+        validateCalendar(today.getFullYear(), today.getMonth());
     });
 
-    describe('date navigation', () => {
-        it('should render calendar when after selected month changed from store.', () => {
-            const previousMonth = datetime.today();
-            datetime.add(previousMonth, DateUnits.MONTH, -1);
+    it('should render calendar when selected month changed.', () => {
+        const target = datetime.today();
+        datetime.add(target, DateUnits.MONTH, -3);
 
-            // store.dispatch();
-            fixture.detectChanges();
-        });
+        store.dispatch(new SelectMonthFilterAction({
+            date: target,
+        }));
+        fixture.detectChanges();
 
-        it('should render calendar when month increases.', () => {
-        });
-
-        it('should render calendar when month decreases.', () => {
-        });
-
-        it('should render calendar when index goes to today.', () => {
-        });
+        validateCalendar(target.getFullYear(), target.getMonth());
     });
 
-    describe('date selection', () => {
+    it('should render calendar when month increases.', fakeAsync(() => {
+        // Set to previous month.
+        const previousMonth = datetime.today();
+        datetime.add(previousMonth, DateUnits.MONTH, -1);
+        store.dispatch(new SelectMonthFilterAction({
+            date: previousMonth,
+        }));
+        flush();
+        fixture.detectChanges();
+
+        const nextMonth = datetime.copy(previousMonth);
+        datetime.add(nextMonth, DateUnits.MONTH, 1);
+
+        const increaseButton = fixture.debugElement.query(
+            By.css('button#increase-month-button'),
+        );
+        increaseButton.nativeElement.click();
+        fixture.detectChanges();
+
+        flush();
+        fixture.detectChanges();
+
+        validateCalendar(nextMonth.getFullYear(), nextMonth.getMonth());
+    }));
+
+    it('should increase month button is disabled when current ' +
+        'calendar is this month.', () => {
+        // For default, current calendar is this month.
+        const increaseButton = fixture.debugElement.query(
+            By.css('button#increase-month-button'),
+        );
+
+        expectDebugElement(increaseButton).toBeDisabled();
     });
 
-    describe('note contribution', () => {
-    });
+    it('should render calendar when month decreases.', fakeAsync(() => {
+        const previousMonth = datetime.today();
+        datetime.add(previousMonth, DateUnits.MONTH, -1);
+
+        const decreaseButton = fixture.debugElement.query(
+            By.css('button#decrease-month-button'),
+        );
+        decreaseButton.nativeElement.click();
+        fixture.detectChanges();
+
+        flush();
+        fixture.detectChanges();
+
+        validateCalendar(previousMonth.getFullYear(), previousMonth.getMonth());
+    }));
+
+    it('should render calendar when index goes to today.', fakeAsync(() => {
+        // Go to previous month.
+        const previousMonth = datetime.today();
+        datetime.add(previousMonth, DateUnits.MONTH, -1);
+
+        const decreaseButton = fixture.debugElement.query(
+            By.css('button#decrease-month-button'),
+        );
+        decreaseButton.nativeElement.click();
+        fixture.detectChanges();
+
+        const goToTodayButton = fixture.debugElement.query(
+            By.css('button#go-to-today-button'),
+        );
+
+        goToTodayButton.nativeElement.click();
+        fixture.detectChanges();
+
+        flush();
+        fixture.detectChanges();
+
+        const today = datetime.today();
+
+        validateCalendar(today.getFullYear(), today.getMonth());
+    }));
 });

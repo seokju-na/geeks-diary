@@ -28,6 +28,7 @@ export interface NoteCollectionState {
 
     readonly selectedNote: NoteItem;
     readonly notes: NoteItem[];
+    readonly filteredAndSortedNotes: NoteItem[];
 
     readonly filterBy: NoteCollectionFilterBy;
     readonly sortBy: NoteCollectionSortBy;
@@ -50,6 +51,7 @@ export function createNoteCollectionInitialState(): NoteCollectionState {
         loaded: false,
         selectedNote: null,
         notes: [],
+        filteredAndSortedNotes: [],
         filterBy: NoteCollectionFilterBy.BY_MONTH,
         sortBy: NoteCollectionSortBy.CREATED,
         sortDirection: SortDirection.DESC,
