@@ -1,4 +1,6 @@
 import { Component, OnInit } from '@angular/core';
+import { Dialog } from '../../ui/dialog/dialog';
+import { CreateNewNoteDialogComponent } from '../create-new-note-dialog/create-new-note-dialog.component';
 
 
 @Component({
@@ -8,10 +10,15 @@ import { Component, OnInit } from '@angular/core';
 })
 export class NoteFinderComponent implements OnInit {
 
-    constructor() {
+    constructor(private dialog: Dialog) {
     }
 
     ngOnInit(): void {
     }
 
+    openCreateNewNoteDialog(): void {
+        this.dialog.open(CreateNewNoteDialogComponent, {
+            disableBackdropClickClose: true,
+        });
+    }
 }

@@ -6,7 +6,9 @@
 
         <h1 class="Text Text--size-medium Text--weight-semibold">Notes</h1>
         <div class="NoteFinder__tools">
-            <button gd-flat-button aria-label="Add note">
+            <button gd-flat-button
+                    (click)="openCreateNewNoteDialog()"
+                    aria-label="Create new note">
                 <gd-icon iconName="plus"></gd-icon>
             </button>
         </div>
