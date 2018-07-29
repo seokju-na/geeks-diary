@@ -10,7 +10,12 @@ let uniqueId = 0;
 
 export class DialogRef<T, R = any> {
     componentInstance: T;
-    disableClose: boolean | undefined = this._containerInstance._config.disableClose;
+
+    disableBackdropClickClose: boolean | undefined =
+        this._containerInstance._config.disableBackdropClickClose;
+
+    disableEscapeKeyDownClose: boolean | undefined =
+        this._containerInstance._config.disableEscapeKeyDownClose;
 
     private readonly _afterOpen = new Subject<void>();
     private readonly _afterClosed = new Subject<R | undefined>();
@@ -52,7 +57,8 @@ export class DialogRef<T, R = any> {
         });
 
         _overlayRef.keydownEvents()
-            .pipe(filter(event => event.keyCode === ESCAPE && !this.disableClose))
+            .pipe(filter(event =>
+                event.keyCode === ESCAPE && !this.disableEscapeKeyDownClose))
             .subscribe(() => this.close());
     }
 
