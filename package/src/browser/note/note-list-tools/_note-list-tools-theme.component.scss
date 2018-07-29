@@ -1,0 +1,10 @@
+@import "../../ui/style/theming";
+
+@mixin gd-note-list-tools-theme($theme) {
+    $background: map-get($theme, background);
+    $foreground: map-get($theme, foreground);
+
+    .NoteListTools {
+        background-color: gd-color($background, background-highlight);
+    }
+}

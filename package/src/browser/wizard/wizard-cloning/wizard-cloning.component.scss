@@ -1,5 +1,6 @@
 @import "../../ui/style/sizes";
 @import "../../ui/style/typography";
+@import "../../ui/style/colors";
 
 .WizardCloning {
     height: 100%;
@@ -8,6 +9,12 @@
     &__content {
         label {
             // padding-top: $form-control-label-top-bottom-padding;
+        }
+    }
+
+    &__loginComplete {
+        gd-icon {
+            color: $color-new;
         }
     }
 

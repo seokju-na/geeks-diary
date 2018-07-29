@@ -56,6 +56,10 @@
                 border: 1px solid transparent;
                 border-radius: 7.5%;
 
+                &:disabled {
+                    color: gd-color($foreground, disabled-button);
+                }
+
                 &:focus {
                     border-color: gd-color($background, focused-button);
                     box-shadow: 0 0 2px 0 gd-color($background, focused-button);

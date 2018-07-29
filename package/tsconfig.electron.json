@@ -15,6 +15,7 @@
         "src/browser/",
         "test/",
         "**/*.spec.ts",
-        "**/dummies.ts"
+        "**/dummies.ts",
+        "**/fixtures.ts"
     ]
 }

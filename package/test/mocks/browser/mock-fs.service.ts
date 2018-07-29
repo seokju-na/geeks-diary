@@ -4,9 +4,9 @@ import { Observable, Subject } from 'rxjs';
 import { FsService } from '../../../src/browser/core/fs.service';
 
 
-class FsStub<R> {
+export class FsStub<R> {
     constructor(
-        readonly name: string,
+        readonly matchObj: FsMatchObject,
         private readonly stream: Subject<R>,
         private mockFsService: MockFsService,
     ) {
@@ -14,13 +14,13 @@ class FsStub<R> {
 
     flush(data?: R): void {
         this.stream.next(data);
-        this.mockFsService._deleteStub(this.name);
+        this.mockFsService._deleteStub<R>(this);
         flush();
     }
 
     error(error: any): void {
         this.stream.error(error);
-        this.mockFsService._deleteStub(this.name);
+        this.mockFsService._deleteStub<R>(this);
         flush();
     }
 }
@@ -28,10 +28,46 @@ class FsStub<R> {
 
 export interface FsMatchObject {
     methodName: string;
-    args: string[];
+    args: any[];
 }
 
 
+export enum FsMatchLiterals {
+    ANY = '__ANY__',
+}
+
+
+interface FsStubAndStreamMap<R> {
+    readonly matchObj: FsMatchObject;
+    readonly stream: Subject<R>;
+}
+
+
+/**
+ * Mock for fs service. (browser.core.fsService)
+ **
+ * @example
+ * TestBed.configureTestingModule({
+ *     providers: [...MockFsService.providersForTesting],
+ * });
+ *
+ * @example
+ * let mockFs: MockFsService;
+ *
+ * ...
+ *
+ * it('some spec', fakeAsync(() => {
+ *     ...
+ *     const stub = mockFs.expect({
+ *         methodName: 'writeFile',
+ *         args: ['a.json', someValue],
+ *     });
+ *
+ *     stub.flush(); // This make flush in fake async zone.
+ *
+ *     ...
+ * }));
+ */
 @Injectable()
 export class MockFsService extends FsService {
     static providersForTesting = [
@@ -41,16 +77,16 @@ export class MockFsService extends FsService {
         },
     ];
 
-    private stubMap = new Map<string, Subject<any>>();
+    private attachments: FsStubAndStreamMap<any>[] = [];
 
     expect<R = any>(matchObj: FsMatchObject): FsStub<R> {
-        const stubName = this.getStubName(matchObj);
+        const stub: FsStubAndStreamMap<R> = this.findAttachment(matchObj);
 
-        if (!this.stubMap.has(stubName)) {
-            throw new Error(`Cannot find matched stub: ${stubName}`);
+        if (!stub) {
+            throw new Error(`Cannot find matched stub: ${matchObj.methodName}, ${matchObj.args}`);
         }
 
-        return new FsStub<R>(stubName, this.stubMap.get(stubName), this);
+        return new FsStub<R>(stub.matchObj, stub.stream, this);
     }
 
     expectMany<R = any>(matchObjList: FsMatchObject[]): FsStub<R>[] {
@@ -62,77 +98,106 @@ export class MockFsService extends FsService {
     }
 
     verify(): void {
-        if (this.stubMap.size > 0) {
-            this.stubMap.clear();
-            throw new Error(`${this.stubMap.size} not verified stubs left.`);
+        if (this.attachments.length > 0) {
+            throw new Error(`${this.attachments.length} not verified stubs left.`);
         }
 
-        this.stubMap.clear();
-        this.stubMap = null;
+        this.attachments = [];
     }
 
-    access(path: string): Observable<void> {
-        return this.createStubItem<void>(
-            'access',
+    isPathExists(path: string): Observable<boolean> {
+        return this.createAttachment<boolean>(
+            'isPathExists',
             [path],
         );
     }
 
-    readFile(fileName: string): Observable<Buffer> {
-        return this.createStubItem<Buffer>(
+    readFile(fileName: string): Observable<string> {
+        return this.createAttachment<string>(
             'readFile',
             [fileName],
         );
     }
 
+    readJsonFile<T>(fileName: string): Observable<T | null> {
+        return this.createAttachment<T | null>(
+            'readJsonFile',
+            [fileName],
+        );
+    }
+
     readDirectory(dirName: string): Observable<string[]> {
-        return this.createStubItem<string[]>(
+        return this.createAttachment<string[]>(
             'readDirectory',
             [dirName],
         );
     }
 
     writeFile(fileName: string, value: string): Observable<void> {
-        return this.createStubItem<void>(
+        return this.createAttachment<void>(
             'writeFile',
             [fileName, value],
         );
     }
 
-    makeDirectory(dirName: string): Observable<void> {
-        return this.createStubItem<void>(
-            'makeDirectory',
-            [dirName],
+    writeJsonFile<T>(fileName: string, value: T): Observable<void> {
+        return this.createAttachment<void>(
+            'writeJsonFile',
+            [fileName, value],
         );
     }
 
     ensureDirectory(dirName: string): Observable<void> {
-        return this.createStubItem<void>(
+        return this.createAttachment<void>(
             'ensureDirectory',
             [dirName],
         );
     }
 
-    _deleteStub(stubName: string): void {
-        if (!this.stubMap.has(stubName)) {
-            return;
-        }
+    _deleteStub<R>(stub: FsStub<R>): void {
+        const attach = this.findAttachment(stub.matchObj);
 
-        this.stubMap.get(stubName).complete();
-        this.stubMap.delete(stubName);
+        if (attach) {
+            attach.stream.complete();
+
+            const index = this.attachments.indexOf(attach);
+
+            if (index !== -1) {
+                this.attachments.splice(index, 1);
+            }
+        }
     }
 
-    private createStubItem<R>(methodName: string, args: string[]): Observable<R> {
+    private findAttachment<R>(matchObj: FsMatchObject): FsStubAndStreamMap<R> | null {
+        const matchArgs = (source: FsMatchObject, dist: FsMatchObject): boolean => {
+            let allMatched = true;
+
+            for (let i = 0; i < source.args.length; i++) {
+                if (dist.args[i] === FsMatchLiterals.ANY) {
+                    continue;
+                }
+
+                if (source.args[i] !== dist.args[i]) {
+                    allMatched = false;
+                    break;
+                }
+            }
+
+            return allMatched;
+        };
+
+        return this.attachments.find(stub =>
+            stub.matchObj.methodName === matchObj.methodName
+            && matchArgs(stub.matchObj, matchObj),
+        ) || null;
+    }
+
+    private createAttachment<R>(methodName: string, args: any[]): Observable<R> {
         const matchObj: FsMatchObject = { methodName, args };
-        const stubName = this.getStubName(matchObj);
         const stream = new Subject<R>();
 
-        this.stubMap.set(stubName, stream);
+        this.attachments.push({ matchObj, stream });
 
         return stream.asObservable();
-    }
-
-    private getStubName(matchObj: FsMatchObject): string {
-        return `${matchObj.methodName}-${JSON.stringify(matchObj.args)}`;
     }
 }

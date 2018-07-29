@@ -3,6 +3,7 @@ import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { CoreModule } from '../core/core.module';
 import { UIModule } from '../ui/ui.module';
+import { VcsModule } from '../vcs/vcs.module';
 import { WizardComponent } from './wizard.component';
 import { WizardCloningComponent } from './wizard-cloning/wizard-cloning.component';
 
@@ -13,6 +14,7 @@ import { WizardCloningComponent } from './wizard-cloning/wizard-cloning.componen
         BrowserAnimationsModule,
         CoreModule,
         UIModule,
+        VcsModule,
     ],
     declarations: [
         WizardComponent,

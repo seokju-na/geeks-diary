@@ -4,7 +4,8 @@ export type DialogRole = 'dialog' | 'alertdialog';
 export class DialogConfig<D = any> {
     id?: string;
     autoFocus?: boolean = true;
-    disableClose?: boolean = false;
+    disableBackdropClickClose?: boolean = false;
+    disableEscapeKeyDownClose?: boolean = false;
     hasBackdrop?: boolean = true;
     minWidth?: string;
     minHeight?: string;

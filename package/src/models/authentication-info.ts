@@ -9,8 +9,10 @@ export interface AuthenticationInfo {
     readonly authorizationHeader: string;
     readonly providerName: string;
 
-    /** User info */
-    readonly userName: string;
-    readonly displayName: string;
-    readonly email?: string;
+    /** BASIC */
+    readonly username?: string;
+    readonly password?: string;
+
+    /** OAUTH2_TOKEN */
+    readonly token?: string;
 }

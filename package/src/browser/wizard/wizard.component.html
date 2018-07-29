@@ -3,6 +3,10 @@
 
     <gd-title-bar>Welcome to Geeks Diary</gd-title-bar>
 
+    <header *ngIf="step === 'choosing'">
+        <!-- TODO: Add logo -->
+    </header>
+
     <div fxFlex="1 0 auto" fxLayout="flex"
          [ngSwitch]="step"
          class="Wizard__container">
@@ -14,13 +18,18 @@
             <section fxFlex="1 0 auto" fxLayout="column" fxLayoutAlign="center center">
                 <gd-icon iconName="plus" [bigSize]="true"></gd-icon>
                 <p>Create a new workspace with git initialized</p>
-                <button gd-button>Create New Workspace</button>
+                <button gd-button
+                        id="create-new-repository-button"
+                        (click)="createNewWorkspace()">
+                    Create New Workspace
+                </button>
             </section>
 
             <section fxFlex="1 0 auto" fxLayout="column" fxLayoutAlign="center center">
                 <gd-icon iconName="github" [bigSize]="true"></gd-icon>
                 <p>Clone an existing workspace from Github</p>
                 <button gd-button
+                        id="clone-remote-button"
                         (click)="stepTo('cloneRemote')">
                     Clone a Repository
                 </button>
@@ -31,20 +40,19 @@
             *ngSwitchCase="'cloneRemote'"
             fxFlex="1 0 auto"
             (backStep)="stepTo('choosing')"
+            (cloneComplete)="createNewWorkspace()"
             class="Wizard__cloning"></gd-wizard-cloning>
     </div>
 
-    <!--
-    <footer *ngIf="step === 'choosing'">
-        <button gd-flat-button>
-            <gd-icon iconName="cog"></gd-icon>
-            <span class="Text">Settings</span>
-        </button>
+    <footer fxLayout fxLayoutAlign="center center"
+            *ngIf="step === 'choosing'">
 
-        <button gd-flat-button>
-            <gd-icon iconName="info-circle"></gd-icon>
-            <span class="Text">Get Help</span>
-        </button>
+        <gd-button-toggle-group [formControl]="themeControl">
+            <gd-button-toggle
+                *ngFor="let option of themeOptions"
+                [value]="option.value">
+                {{ option.name }}
+            </gd-button-toggle>
+        </gd-button-toggle-group>
     </footer>
-    -->
 </div>

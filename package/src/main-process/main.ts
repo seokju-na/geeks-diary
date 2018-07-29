@@ -4,6 +4,8 @@ import './dev-extensions';
 
 
 process.on('uncaughtException', (error) => {
+    appDelegate.preventQuit = true;
+
     console.error('Uncaught Exception: ', error.toString());
 
     if (error.stack) {

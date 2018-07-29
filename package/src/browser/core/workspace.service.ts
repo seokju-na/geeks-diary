@@ -1,29 +1,38 @@
-import { Injectable } from '@angular/core';
-import { Observable } from 'rxjs';
-import { fromPromise } from 'rxjs/internal-compatibility';
+import { Inject, Injectable, InjectionToken, Optional } from '@angular/core';
+import { from, Observable } from 'rxjs';
 import { IpcHubClient } from '../../libs/ipc';
+import { GEEKS_DIARY_DIR_PATH, NOTES_DIR_PATH, WORKSPACE_DIR_PATH } from '../../models/workspace';
+import { CoreModule } from './core.module';
+
+
+export class WorkspaceConfigs {
+    rootDirPath?: string = WORKSPACE_DIR_PATH;
+    geeksDiaryDirPath?: string = GEEKS_DIARY_DIR_PATH;
+    notesDirPath?: string = NOTES_DIR_PATH;
+}
+
+
+export const WORKSPACE_CONFIGS = new InjectionToken<WorkspaceConfigs>('WorkspaceConfigs');
 
 
 @Injectable({
-    providedIn: 'root',
+    providedIn: CoreModule,
 })
 export class WorkspaceService {
     private ipcClient = new IpcHubClient('workspace');
+    readonly configs: WorkspaceConfigs;
 
-    async createNewWorkspace(): Promise<void> {
-        await this.ipcClient.request('createNewWorkspace');
+    constructor(
+        @Optional() @Inject(WORKSPACE_CONFIGS) configs: WorkspaceConfigs,
+    ) {
+
+        this.configs = {
+            ...(new WorkspaceConfigs()),
+            ...configs,
+        };
     }
 
-    cloneRemoteWorkspace(
-        remoteUrl: string,
-        authToken?: string,
-    ): Observable<void> {
-
-        const task = this.ipcClient.request<any, void>(
-            'createNewWorkspace',
-            { remoteUrl, authToken },
-        );
-
-        return fromPromise(task);
+    initWorkspace(): Observable<void> {
+        return from(this.ipcClient.request('initWorkspace'));
     }
 }

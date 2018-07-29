@@ -235,7 +235,6 @@ export class RadioButtonComponent implements AfterViewInit, OnInit, OnDestroy {
     get value(): any {
         return this._value;
     }
-
     set value(value: any) {
         if (this._value !== value) {
             this._value = value;

@@ -16,8 +16,8 @@ export class NoteEditorComponent implements OnInit {
     ) {
     }
 
-    async ngOnInit(): Promise<void> {
-        await this.collection.load();
+    ngOnInit(): void {
+        this.collection.load();
     }
 
 }

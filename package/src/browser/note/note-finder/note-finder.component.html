@@ -1,8 +1,14 @@
-<div class="NoteFinder">
-    <div class="NoteFinder__title">
+<div fxLayout="column"
+     class="NoteFinder">
+
+    <div fxLayout fxLayoutAlign="space-between center"
+         class="NoteFinder__title">
+
         <h1 class="Text Text--size-medium Text--weight-semibold">Notes</h1>
         <div class="NoteFinder__tools">
-            <button gd-flat-button aria-label="Add note">
+            <button gd-flat-button
+                    (click)="openCreateNewNoteDialog()"
+                    aria-label="Create new note">
                 <gd-icon iconName="plus"></gd-icon>
             </button>
         </div>
@@ -12,22 +18,6 @@
         <gd-note-calendar></gd-note-calendar>
     </div>
 
-    <div class="NoteFinder__filtering">
-        <gd-button-toggle-group>
-            <gd-button-toggle name="item-detail" [checked]="true">
-                <gd-icon iconName="reorder"></gd-icon>
-            </gd-button-toggle>
-            <gd-button-toggle name="item-simple">
-                <gd-icon iconName="align-justify"></gd-icon>
-            </gd-button-toggle>
-        </gd-button-toggle-group>
-
-        <button gd-flat-button
-                aria-label="Sort notes">
-            <gd-icon iconName="sort"></gd-icon>
-        </button>
-    </div>
-
-    <div class="NoteFinder__notes">
-    </div>
+    <gd-note-list-tools></gd-note-list-tools>
+    <gd-note-list fxLayout fxFlex="1 0 auto"></gd-note-list>
 </div>

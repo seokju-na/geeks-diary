@@ -1,5 +1,5 @@
 import { environment } from '../../environments/environment';
-import { Window } from '../interfaces/window';
+import { Window, WindowEvents } from '../interfaces/window';
 
 
 export class AppWindow extends Window {
@@ -19,12 +19,23 @@ export class AppWindow extends Window {
     }
 
     handleEvents(): void {
-        this.browserWindow.once('ready-to-show', () => {
-            this.browserWindow.show();
+        this.win.once('ready-to-show', () => {
+            this.win.show();
         });
 
-        this.browserWindow.on('closed', () => {
-            this.emit('closed');
+        this.win.on('closed', () => {
+            this.emit(WindowEvents.CLOSED);
+        });
+
+        this.win.webContents.on('did-finish-load', () => {
+            if (!environment.production) {
+                this.win.webContents.openDevTools();
+            }
+
+            // Disable zooming.
+            if (environment.production) {
+                this.win.webContents.setVisualZoomLevelLimits(1, 1);
+            }
         });
     }
 }

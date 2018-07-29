@@ -17,4 +17,5 @@ textarea.Input {
     padding: $form-control-label-top-bottom-padding - 1 $input-padding;
     height: auto;
     resize: none;
+    overflow: hidden;
 }

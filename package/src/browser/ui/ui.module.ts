@@ -15,9 +15,10 @@ import {
     DialogContentDirective,
     DialogTitleDirective,
 } from './dialog/dialog-content-directives';
-import { FormFieldLabelComponent } from './form-field/form-field-label.component';
+import { FormFieldLabelDirective } from './form-field/form-field-label.directive';
 import { IconComponent } from './icon/icon.component';
 import { InputDirective } from './input/input.directive';
+import { Menu } from './menu/menu';
 import { RadioButtonComponent, RadioGroupDirective } from './radio/radio-button.component';
 import { ResizableHandlerDirective } from './resizable/resizable-handler.directive';
 import { ResizableComponent } from './resizable/resizable.component';
@@ -59,7 +60,7 @@ const UI_DECLARATIONS = [
     TooltipComponent,
     TooltipDirective,
     FormFieldComponent,
-    FormFieldLabelComponent,
+    FormFieldLabelDirective,
     ErrorComponent,
     InputDirective,
     RadioGroupDirective,
@@ -81,6 +82,7 @@ const UI_DECLARATIONS = [
     ],
     providers: [
         CalendarTableProvider,
+        Menu,
     ],
     exports: [
         ...MODULES,

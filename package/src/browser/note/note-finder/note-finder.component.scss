@@ -1,21 +1,12 @@
 @import "../../ui/style/sizes";
 
-:host {
-    display: block;
-}
-
 .NoteFinder {
-    display: flex;
-    flex-direction: column;
     width: 100%;
     height: 100%;
 
-    &__title, &__filtering {
-        display: flex;
+    &__title {
         width: 100%;
-        height: 34px;
-        align-items: center;
-        justify-content: space-between;
+        height: $box-size;
         padding: 0 $spacing-half;
     }
 

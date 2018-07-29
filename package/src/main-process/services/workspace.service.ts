@@ -1,27 +1,17 @@
-import { environment } from '../../environments/environment';
-import { ensureDirAsPromise } from '../../libs/fs';
+import { ensureDir } from 'fs-extra';
 import { IpcActionHandler } from '../../libs/ipc';
-import { GEEKS_DIARY_DIR_PATH, NOTES_DIR_PATH, WORKSPACE_DIR_PATH } from '../../models/workspace';
+import {
+    GEEKS_DIARY_DIR_PATH,
+    NOTES_DIR_PATH,
+    WORKSPACE_DIR_PATH,
+} from '../../models/workspace';
 import { Service } from '../interfaces/service';
 import { GitService } from './git.service';
 
 
-/**
- * Workspace directory structure.
- *
- * @code
- * .
- * ├── .geeks-diary/             - Geeks diary workspace configurations.
- * |   ├── notes/                - Notes directory.
- * |   |   ├── {noteId}.json     - Note file.
- * |   |   └── ...other notes
- * |   ├── assets/               - Assets imported in note.
- * |   └── workspace.json        - Workspace configuration file.
- * └── ...other files
- */
-
-
-const USER_DATA_PATH = environment.getPath('userData');
+export enum WorkspaceEvents {
+    CREATED = 'workspace.created',
+}
 
 
 /**
@@ -52,19 +42,22 @@ export class WorkspaceService extends Service {
         return this.git.isRepositoryExists(WORKSPACE_DIR_PATH);
     }
 
-    @IpcActionHandler('createNewWorkspace')
-    async createNewWorkspace(): Promise<void> {
-        await ensureDirAsPromise(WORKSPACE_DIR_PATH);
-        await ensureDirAsPromise(GEEKS_DIARY_DIR_PATH);
-        await ensureDirAsPromise(NOTES_DIR_PATH);
+    @IpcActionHandler('initWorkspace')
+    async initWorkspace(): Promise<void> {
+        await ensureDir(WORKSPACE_DIR_PATH);
+        await ensureDir(GEEKS_DIARY_DIR_PATH);
+        await ensureDir(NOTES_DIR_PATH);
 
-        await this.git.createRepository(WORKSPACE_DIR_PATH);
-    }
+        if (!await this.git.isRepositoryExists(WORKSPACE_DIR_PATH)) {
+            await this.git.createRepository(WORKSPACE_DIR_PATH);
+        }
 
-    @IpcActionHandler('cloneRemoteWorkspace')
-    async cloneRemoteWorkspace(): Promise<void> {
+        this._initialized = true;
+        this.emit(WorkspaceEvents.CREATED);
     }
 
     handleError(error: any): any {
+        // TODO: Handle error
+        return error;
     }
 }

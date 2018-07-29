@@ -17,6 +17,7 @@
         "src/main-process/",
         "test/",
         "**/*.spec.ts",
-        "**/dummies.ts"
+        "**/dummies.ts",
+        "**/fixtures.ts"
     ]
 }
