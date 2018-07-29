@@ -10,6 +10,7 @@ import { noteReducerMap } from './shared/note.reducer';
 import { NoteItemComponent } from './note-item/note-item.component';
 import { NoteListComponent } from './note-list/note-list.component';
 import { NoteListToolsComponent } from './note-list-tools/note-list-tools.component';
+import { CreateNewNoteDialogComponent } from './create-new-note-dialog/create-new-note-dialog.component';
 
 
 @NgModule({
@@ -24,9 +25,11 @@ import { NoteListToolsComponent } from './note-list-tools/note-list-tools.compon
         NoteItemComponent,
         NoteListComponent,
         NoteListToolsComponent,
+        CreateNewNoteDialogComponent,
     ],
     entryComponents: [
         NoteFinderComponent,
+        CreateNewNoteDialogComponent,
     ],
     providers: [
         NoteCollectionService,
