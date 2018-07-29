@@ -1,4 +1,5 @@
 import * as kebabCase from 'lodash.kebabcase';
+import * as path from 'path';
 import { datetime } from '../libs/datetime';
 import { NoteSnippet } from './note-snippet';
 
@@ -60,4 +61,19 @@ export interface NoteMetadata {
     readonly title?: string;
     readonly date?: string;
     readonly stacks?: string[];
+}
+
+
+export function getNoteLabel(
+    note: Note,
+    basePath: string,
+): string | null {
+
+    const relative = path.relative(basePath, note.contentFilePath);
+
+    if (relative !== note.contentFileName) {
+        return relative.replace(`/${note.contentFileName}`, '');
+    } else {
+        return null;
+    }
 }

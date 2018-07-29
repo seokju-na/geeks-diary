@@ -1,8 +1,15 @@
-import * as path from 'path';
-import { Note } from '../../../models/note';
+export interface NoteItem {
+    /** Unique note id. Format follows UUID. */
+    readonly id: string;
+    readonly title: string;
+    readonly stackIds: string[];
 
+    readonly contentFileName: string;
+    readonly contentFilePath: string;
 
-export interface NoteItem extends Note {
+    readonly createdDatetime: number;
+    readonly updatedDatetime: number;
+
     readonly label?: string;
 
     /**
@@ -16,19 +23,4 @@ export interface NoteItem extends Note {
      * e.g. /foo/bar/workspace/.geeks-diary/notes/{some-unique-id}.json
      */
     readonly filePath: string;
-}
-
-
-export function getNoteLabel(
-    note: Note,
-    basePath: string,
-): string | null {
-
-    const relative = path.relative(basePath, note.contentFilePath);
-
-    if (relative !== note.contentFileName) {
-        return relative.replace(`/${note.contentFileName}`, '');
-    } else {
-        return null;
-    }
 }

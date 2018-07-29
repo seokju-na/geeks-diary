@@ -6,7 +6,7 @@ import { filter, map, switchMap, take } from 'rxjs/operators';
 import { isOutsidePath } from '../../../libs/path';
 import { toPromise } from '../../../libs/rx';
 import { uuid } from '../../../libs/uuid';
-import { makeContentFileName, Note } from '../../../models/note';
+import { getNoteLabel, makeContentFileName, Note } from '../../../models/note';
 import { NoteSnippetTypes } from '../../../models/note-snippet';
 import { FsService } from '../../core/fs.service';
 import { WorkspaceService } from '../../core/workspace.service';
@@ -18,7 +18,7 @@ import {
     SelectNoteAction,
 } from './note-collection.actions';
 import { NoteError, NoteErrorCodes } from './note-errors';
-import { getNoteLabel, NoteItem } from './note-item.model';
+import { NoteItem } from './note-item.model';
 import { NoteParser } from './note-parser';
 import { convertToNoteSnippets } from './note-parsing.models';
 import { NoteStateWithRoot } from './note.state';
@@ -68,7 +68,13 @@ export class NoteCollectionService implements OnDestroy {
             .filter(note => note !== null)
             .map((note: Note, index) => {
                 const noteItem: NoteItem = {
-                    ...note,
+                    id: note.id,
+                    title: note.title,
+                    createdDatetime: note.createdDatetime,
+                    updatedDatetime: note.updatedDatetime,
+                    stackIds: note.stackIds,
+                    contentFileName: note.contentFileName,
+                    contentFilePath: note.contentFilePath,
                     fileName: noteFileNames[index],
                     filePath: path.resolve(notesDirPath, noteFileNames[index]),
                 };
@@ -189,7 +195,13 @@ export class NoteCollectionService implements OnDestroy {
 
         // Dispatch 'ADD_NOTE' action.
         let noteItem: NoteItem = {
-            ...note,
+            id: note.id,
+            title: note.title,
+            stackIds: note.stackIds,
+            createdDatetime: note.createdDatetime,
+            updatedDatetime: note.updatedDatetime,
+            contentFileName: note.contentFileName,
+            contentFilePath: note.contentFilePath,
             fileName: noteFileName,
             filePath: noteFilePath,
         };

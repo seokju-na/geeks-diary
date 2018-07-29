@@ -1,10 +1,15 @@
 import * as path from 'path';
-import { DatetimeDummy, Dummy, StringIdDummy, TextDummy } from '../../../test/helpers/dummies';
+import {
+    DatetimeDummy,
+    Dummy,
+    StringIdDummy,
+    TextDummy,
+} from '../../../test/helpers/dummies';
 import { datetime, DateUnits } from '../../libs/datetime';
 import { SortDirection } from '../../libs/sorting';
-import { makeContentFileName, Note } from '../../models/note';
+import { getNoteLabel, makeContentFileName, Note } from '../../models/note';
 import { NoteCollectionFilterBy, NoteCollectionSortBy } from './shared/note-collection.state';
-import { getNoteLabel, NoteItem } from './shared/note-item.model';
+import { NoteItem } from './shared/note-item.model';
 
 
 const _id = new StringIdDummy('NoteId');
@@ -62,7 +67,6 @@ export class NoteItemDummy extends Dummy<NoteItem> {
         return {
             id: _id.create(),
             title,
-            snippets: [],
             stackIds: [],
             contentFileName,
             contentFilePath: path.resolve(this.workspacePath, contentFileName),
@@ -77,15 +81,20 @@ export class NoteItemDummy extends Dummy<NoteItem> {
         const label = getNoteLabel(note, this.workspacePath);
         const fileName = _fileName.create();
 
-        const item: any = {
-            ...note,
+        const item: NoteItem = {
+            id: note.id,
+            title: note.title,
+            stackIds: note.stackIds,
+            createdDatetime: note.createdDatetime,
+            updatedDatetime: note.updatedDatetime,
+            contentFileName: note.contentFileName,
+            contentFilePath: note.contentFilePath,
             fileName: `${fileName}.json`,
             filePath: path.resolve(this.notesPath, `${fileName}.json`),
         };
 
         if (label) {
-            item.label = label;
-            return item;
+            return { ...item, label };
         } else {
             return item;
         }
