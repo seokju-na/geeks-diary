@@ -9,6 +9,8 @@
                     id="decrease-month-button"
                     aria-label="Decrease month"
                     (click)="decreaseMonth()"
+                    gdTooltip
+                    message="Previous month"
                     class="NoteCalendar__navButton">
                 <gd-icon iconName="angle-left"></gd-icon>
             </button>
@@ -17,6 +19,8 @@
                     id="go-to-today-button"
                     aria-label="Go to today"
                     (click)="goToToday()"
+                    gdTooltip
+                    message="Go to today"
                     class="NoteCalendar__goToTodayButton">
                 <gd-icon iconName="calendar-check-o"></gd-icon>
             </button>
@@ -26,6 +30,8 @@
                     aria-label="Increase month"
                     (click)="increaseMonth()"
                     [disabled]="disableIncreasingMonth | async"
+                    gdTooltip
+                    message="Next month"
                     class="NoteCalendar__navButton">
                 <gd-icon iconName="angle-right"></gd-icon>
             </button>

@@ -1,8 +1,9 @@
 <div class="App">
     <gd-title-bar></gd-title-bar>
-    <div class="App__container">
-        <gd-sidenav [services]="appServices" class="Sidenav__aside"></gd-sidenav>
-        <main class="App__content">
+    <div fxLayout class="App__container">
+        <gd-sidenav [services]="appServices"
+                    class="Sidenav__aside"></gd-sidenav>
+        <main fxFlex="1 1 auto" class="App__content">
             <gd-note-editor></gd-note-editor>
         </main>
     </div>

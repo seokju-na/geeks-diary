@@ -13,4 +13,8 @@
     &__title > h1 {
         padding: 0 $spacing-half;
     }
+
+    gd-note-list {
+        overflow-y: auto;
+    }
 }

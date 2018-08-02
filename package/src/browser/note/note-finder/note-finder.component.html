@@ -1,13 +1,15 @@
 <div fxLayout="column"
      class="NoteFinder">
 
-    <div fxLayout fxLayoutAlign="space-between center"
+    <div fxFlex="none" fxLayout fxLayoutAlign="space-between center"
          class="NoteFinder__title">
 
         <h1 class="Text Text--size-medium Text--weight-semibold">Notes</h1>
         <div class="NoteFinder__tools">
             <button gd-flat-button
                     (click)="openCreateNewNoteDialog()"
+                    gdTooltip
+                    message="Create new note"
                     aria-label="Create new note">
                 <gd-icon iconName="plus"></gd-icon>
             </button>
@@ -19,5 +21,5 @@
     </div>
 
     <gd-note-list-tools></gd-note-list-tools>
-    <gd-note-list fxLayout fxFlex="1 0 auto"></gd-note-list>
+    <gd-note-list fxLayout fxFlex="1 1 auto"></gd-note-list>
 </div>
