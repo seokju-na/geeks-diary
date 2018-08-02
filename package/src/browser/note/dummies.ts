@@ -1,14 +1,22 @@
+import { EventEmitter } from '@angular/core';
 import * as path from 'path';
 import {
+    createDummies,
     DatetimeDummy,
     Dummy,
     StringIdDummy,
     TextDummy,
+    TypesDummy,
 } from '../../../test/helpers/dummies';
 import { datetime, DateUnits } from '../../libs/datetime';
 import { SortDirection } from '../../libs/sorting';
 import { getNoteLabel, makeContentFileName, Note } from '../../models/note';
+import { NoteSnippetTypes } from '../../models/note-snippet';
+import { NoteSnippetEditor } from './note-snippet-editors/note-snippet-editor';
+import { NoteSnippetEditorConfig } from './note-snippet-editors/note-snippet-editor-config';
+import { NoteSnippetEditorEvent } from './note-snippet-editors/note-snippet-editor-events';
 import { NoteCollectionFilterBy, NoteCollectionSortBy } from './shared/note-collection.state';
+import { NoteContent, NoteSnippetContent } from './shared/note-content.model';
 import { NoteItem } from './shared/note-item.model';
 
 
@@ -234,4 +242,66 @@ export function prepareForSortingNotes(
 
         increasing++;
     } while (index !== -1 && order > 0 && order <= maxOrder);
+}
+
+
+export class NoteSnippetContentDummy extends Dummy<NoteSnippetContent> {
+    private type = new TypesDummy<NoteSnippetTypes>([
+        NoteSnippetTypes.TEXT,
+        NoteSnippetTypes.CODE,
+    ]);
+    private value = new TextDummy('SnippetValue');
+    private codeLanguageId = new TextDummy('CodeLanguage');
+    private codeFileName = new TextDummy('CodeFileName');
+
+    create(type: NoteSnippetTypes = this.type.create()): NoteSnippetContent {
+        const result: NoteSnippetContent = {
+            type,
+            value: this.value.create(),
+        };
+
+        if (type === NoteSnippetTypes.CODE) {
+            return {
+                ...result,
+                codeLanguageId: this.codeLanguageId.create(),
+                codeFileName: this.codeFileName.create(),
+            };
+        } else {
+            return result;
+        }
+    }
+}
+
+
+export class NoteContentDummy extends Dummy<NoteContent> {
+    private snippet = new NoteSnippetContentDummy();
+
+    create(snippetCount: number = 5): NoteContent {
+        return {
+            snippets: createDummies(this.snippet, snippetCount),
+        };
+    }
+}
+
+
+export class NoteSnippetEditorDummy extends Dummy<NoteSnippetEditor> {
+    private content = new NoteSnippetContentDummy();
+
+    create(): NoteSnippetEditor {
+        return {
+            _editor: null,
+            content: this.content.create(),
+            config: new NoteSnippetEditorConfig(),
+            events: new EventEmitter<NoteSnippetEditorEvent>(),
+            initialize() {},
+            focus: jasmine.createSpy('focus spy'),
+            blur: jasmine.createSpy('blur spy'),
+            getRawValue: jasmine.createSpy('get raw value spy'),
+            setRawValue: jasmine.createSpy('set raw value spy'),
+            isCurrentPositionTop: jasmine.createSpy('is current position top spy'),
+            isCurrentPositionBottom: jasmine.createSpy('is current position bottom spy'),
+            setPositionToTop: jasmine.createSpy('set position to top spy'),
+            setPositionToBottom: jasmine.createSpy('set position to bottom spy'),
+        } as any;
+    }
 }
