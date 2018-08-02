@@ -16,17 +16,5 @@ getTestBed().initTestEnvironment(
     platformBrowserDynamicTesting(),
 );
 
-
-if ((<any>window).MONACO) {
-    runTest();
-} else {
-    (<any>window).REGISTER_MONACO_INIT_CALLBACK(() => {
-        runTest();
-    });
-}
-
-
-function runTest(): void {
-    const context = require.context('../src/browser', true, /\.spec\.ts$/);
-    context.keys().map(context);
-}
+const context = require.context('../src/browser', true, /\.spec\.ts$/);
+context.keys().map(context);
