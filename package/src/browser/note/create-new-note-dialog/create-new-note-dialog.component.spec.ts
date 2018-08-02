@@ -16,7 +16,7 @@ import { NoteError, NoteErrorCodes } from '../shared/note-errors';
 import { CreateNewNoteDialogComponent } from './create-new-note-dialog.component';
 
 
-describe('CreateNewNoteDialogComponent', () => {
+describe('browser.note.CreateNewNoteDialogComponent', () => {
     let component: CreateNewNoteDialogComponent;
     let fixture: ComponentFixture<CreateNewNoteDialogComponent>;
 
