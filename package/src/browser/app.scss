@@ -4,6 +4,8 @@
 @import "ui/all-theme";
 @import "note/all-theme";
 
+@import "~codemirror/lib/codemirror.css";
+
 .BasicLightTheme {
     @include gd-app-theme($basic-light-theme);
     @include gd-note-theme($basic-light-theme);

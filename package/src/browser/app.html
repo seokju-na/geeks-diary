@@ -3,47 +3,6 @@
 <head>
     <meta charset="utf-8">
     <title>Geeks Diary</title>
-
-    <script>
-        // Monaco uses a custom amd loader that over-rides node's require.
-        // Keep a reference to node's require so we can restore it after executing the amd loader file.
-        const nodeRequire = global.require;
-    </script>
-    <script src="assets/vendors/monaco-editor/vs/loader.js"></script>
-    <script>
-        // Save Monaco's amd require and restore Node's require
-        const amdRequire = global.require;
-        global.require = nodeRequire;
-    </script>
-    <script>
-        // require node modules before loader.js comes in
-        const path = require('path');
-        function uriFromPath(_path) {
-            let pathName = path.resolve(_path).replace(/\\/g, '/');
-            if (pathName.length > 0 && pathName.charAt(0) !== '/') {
-                pathName = '/' + pathName;
-            }
-            return encodeURI('file://' + pathName);
-        }
-        amdRequire.config({
-            baseUrl: uriFromPath(path.join(__dirname, 'assets/vendors/monaco-editor/'))
-        });
-
-        let monacoInitCallbacks = [];
-
-        // workaround monaco-css not understanding the environment
-        self.module = undefined;
-        // workaround monaco-typescript not understanding the environment
-        self.process.browser = true;
-        amdRequire(['vs/editor/editor.main'], function() {
-            window.MONACO = monaco;
-            monacoInitCallbacks.forEach(c => c());
-        });
-
-        window.REGISTER_MONACO_INIT_CALLBACK = (callback) => {
-            monacoInitCallbacks.push(callback);
-        };
-    </script>
 </head>
 <body>
     <gd-app></gd-app>

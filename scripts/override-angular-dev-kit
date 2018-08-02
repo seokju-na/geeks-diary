@@ -10,8 +10,6 @@ const writeFileAsync = promisify(writeFile);
 
 const WEBPACK_BROWSER_CONFIG = 'node_modules/@angular-devkit/build-angular/src/angular-cli-files/models/webpack-configs/browser.js';
 const WEBPACK_TEST_CONFIG = 'node_modules/@angular-devkit/build-angular/src/angular-cli-files/models/webpack-configs/test.js';
-const KARMA_CONTEXT_PAGE = 'node_modules/@angular-devkit/build-angular/src/angular-cli-files/plugins/karma-context.html';
-const KARMA_DEBUG_PAGE = 'node_modules/@angular-devkit/build-angular/src/angular-cli-files/plugins/karma-debug.html';
 
 const addDefinePlugin = `new (require("webpack")).DefinePlugin({'process.env': {NODE_ENV:JSON.stringify(process.env.NODE_ENV||'development')}}),`;
 
@@ -37,15 +35,6 @@ async function overrideAngularDevKit() {
     testResult = testResult.replace(/target: "electron-renderer",/g, '');
     testResult = testResult.replace(/return {/g, 'return { target: "electron-renderer",');
     await writeFileAsync(WEBPACK_TEST_CONFIG, testResult, 'utf8');
-
-    // Replace karma context page.
-    const karmaContextPage = await readFileAsync(
-        path.join(__dirname, '../package/test/karma-context-page.html'),
-        'utf8',
-    );
-
-    await writeFileAsync(KARMA_CONTEXT_PAGE, karmaContextPage.toString(), 'utf8');
-    await writeFileAsync(KARMA_DEBUG_PAGE, karmaContextPage.toString(), 'utf8');
 }
 
 

@@ -302,6 +302,10 @@
   version "4.1.4"
   resolved "https://registry.yarnpkg.com/@types/chai/-/chai-4.1.4.tgz#5ca073b330d90b4066d6ce18f60d57f2084ce8ca"
 
+"@types/codemirror@^0.0.58":
+  version "0.0.58"
+  resolved "https://registry.yarnpkg.com/@types/codemirror/-/codemirror-0.0.58.tgz#48b23cc6179f143dc3a4eb175f3c1f2c11808529"
+
 "@types/events@*":
   version "1.2.0"
   resolved "https://registry.yarnpkg.com/@types/events/-/events-1.2.0.tgz#81a6731ce4df43619e5c8c945383b3e62a89ea86"
@@ -1578,6 +1582,16 @@ codelyzer@^4.4.2:
     semver-dsl "^1.0.1"
     source-map "^0.5.7"
     sprintf-js "^1.1.1"
+
+codemirror-markdown-list-autoindent@^1.0.1:
+  version "1.0.1"
+  resolved "https://registry.yarnpkg.com/codemirror-markdown-list-autoindent/-/codemirror-markdown-list-autoindent-1.0.1.tgz#712ec4a9cc636f5070d40253f74fa353a56f0092"
+  dependencies:
+    codemirror "^5.x"
+
+codemirror@^5.39.2, codemirror@^5.x:
+  version "5.39.2"
+  resolved "https://registry.yarnpkg.com/codemirror/-/codemirror-5.39.2.tgz#778aa13b55ebf280745c309cb1b148e3fc06f698"
 
 collection-visit@^1.0.0:
   version "1.0.0"
@@ -4643,10 +4657,6 @@ mocha@^5.2.0:
     minimatch "3.0.4"
     mkdirp "0.5.1"
     supports-color "5.4.0"
-
-monaco-editor@^0.13.1:
-  version "0.13.1"
-  resolved "https://registry.yarnpkg.com/monaco-editor/-/monaco-editor-0.13.1.tgz#6b9ce20e4d1c945042d256825eb133cb23315a52"
 
 move-concurrently@^1.0.1:
   version "1.0.1"
