@@ -1,7 +1,33 @@
-<div class="NoteEditor">
-    <div class="NoteEditor__emptyState">
+<div fxLayout="column"
+     class="NoteEditor">
+
+    <div *ngIf="false"
+         fxLayout fxLayoutAlign="center center"
+         class="NoteEditor__emptyState">
         <span class="Text Text--size-large Text--weight-semibold">No Note Selected</span>
     </div>
 
-    <div class="NoteEditor__header"></div>
+    <div fxFlex="none" fxLayout fxLayoutAlign="start center"
+         class="NoteEditor__header"></div>
+
+    <div fxFlex="1 1 auto"
+         class="NoteEditor__snippets">
+
+        <div *ngFor="let outlet of (snippetOutlets | async)"
+             [ngSwitch]="outlet.content.type"
+             class="NoteEditor__snippet">
+
+            <gd-note-text-snippet-editor
+                #snippet
+                *ngSwitchCase="snippetTypes.TEXT"
+                [content]="outlet.content"
+                [config]="outlet.config"></gd-note-text-snippet-editor>
+
+            <gd-note-code-snippet-editor
+                #snippet
+                *ngSwitchCase="snippetTypes.CODE"
+                [content]="outlet.content"
+                [config]="outlet.config"></gd-note-code-snippet-editor>
+        </div>
+    </div>
 </div>
