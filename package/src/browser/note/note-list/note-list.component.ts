@@ -2,7 +2,7 @@ import { FocusKeyManager } from '@angular/cdk/a11y';
 import { AfterViewInit, Component, HostListener, OnInit, QueryList, ViewChildren } from '@angular/core';
 import { Store } from '@ngrx/store';
 import { Observable, Subscription } from 'rxjs';
-import { share, tap } from 'rxjs/operators';
+import { tap } from 'rxjs/operators';
 import { NoteItemComponent, NoteItemSelectionChange } from '../note-item/note-item.component';
 import { NoteCollectionService } from '../shared/note-collection.service';
 import { NoteItem } from '../shared/note-item.model';
@@ -27,15 +27,13 @@ export class NoteListComponent implements OnInit, AfterViewInit {
             }),
         );
 
-    readonly selectedNote: Observable<NoteItem | null> = this.collection
-        .getSelectedNote().pipe(share());
-
     initialLoaded = false;
     isEmpty = false;
 
     _focusKeyManager: FocusKeyManager<NoteItemComponent>;
     @ViewChildren(NoteItemComponent) noteItemQueryList: QueryList<NoteItemComponent>;
 
+    _selectedNote: NoteItem | null = null;
     private selectedNoteSubscription = Subscription.EMPTY;
 
     constructor(
@@ -46,15 +44,19 @@ export class NoteListComponent implements OnInit, AfterViewInit {
     }
 
     ngOnInit(): void {
-        this.selectedNoteSubscription = this.selectedNote.subscribe((selectedNote) => {
-            if (selectedNote && this._focusKeyManager) {
-                const index = this.getIndexOfNote(selectedNote);
+        this.selectedNoteSubscription = this.collection
+            .getSelectedNote()
+            .subscribe((selectedNote) => {
+                this._selectedNote = selectedNote;
 
-                if (index !== -1) {
-                    this._focusKeyManager.updateActiveItem(index);
+                if (selectedNote && this._focusKeyManager) {
+                    const index = this.getIndexOfNote(selectedNote);
+
+                    if (index !== -1) {
+                        this._focusKeyManager.updateActiveItem(index);
+                    }
                 }
-            }
-        });
+            });
     }
 
     ngAfterViewInit(): void {
