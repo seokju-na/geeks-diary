@@ -4,7 +4,6 @@
 @import "note-item/note-item-theme.component.scss";
 @import "note-list/note-list-theme.component.scss";
 @import "note-editor/note-editor-theme.component";
-@import "note-snippet-editors/note-snippet-editor-theme";
 
 @mixin gd-note-theme($theme) {
     @include gd-note-finder-theme($theme);
@@ -13,5 +12,4 @@
     @include gd-note-item-theme($theme);
     @include gd-note-list-theme($theme);
     @include gd-note-editor-theme($theme);
-    @include gd-note-snippet-editor-theme($theme);
 }

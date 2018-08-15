@@ -5,8 +5,6 @@ import { UIModule } from '../ui/ui.module';
 import { NoteEditorComponent } from './note-editor/note-editor.component';
 import { NoteFinderComponent } from './note-finder/note-finder.component';
 import { NoteCalendarComponent } from './note-calendar/note-calendar.component';
-import { NoteCodeSnippetEditorComponent } from './note-snippet-editors/note-code-snippet-editor.component';
-import { NoteTextSnippetEditorComponent } from './note-snippet-editors/note-text-snippet-editor.component';
 import { NoteCollectionService } from './shared/note-collection.service';
 import { NoteContentEffects } from './shared/note-content.effects';
 import { NoteEditorService } from './shared/note-editor.service';
@@ -34,8 +32,6 @@ import { CreateNewNoteDialogComponent } from './create-new-note-dialog/create-ne
         NoteListComponent,
         NoteListToolsComponent,
         CreateNewNoteDialogComponent,
-        NoteTextSnippetEditorComponent,
-        NoteCodeSnippetEditorComponent,
     ],
     entryComponents: [
         NoteFinderComponent,

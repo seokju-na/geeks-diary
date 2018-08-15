@@ -1,3 +1,4 @@
 export class NoteSnippetEditorConfig {
-    readonly indent?: number = 4;
+    /** Value for snippet editor. */
+    value: string;
 }

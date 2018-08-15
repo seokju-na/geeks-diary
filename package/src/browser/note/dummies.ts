@@ -1,4 +1,3 @@
-import { EventEmitter } from '@angular/core';
 import * as path from 'path';
 import {
     createDummies,
@@ -12,9 +11,6 @@ import { datetime, DateUnits } from '../../libs/datetime';
 import { SortDirection } from '../../libs/sorting';
 import { getNoteLabel, makeContentFileName, Note } from '../../models/note';
 import { NoteSnippetTypes } from '../../models/note-snippet';
-import { NoteSnippetEditor } from './note-snippet-editors/note-snippet-editor';
-import { NoteSnippetEditorConfig } from './note-snippet-editors/note-snippet-editor-config';
-import { NoteSnippetEditorEvent } from './note-snippet-editors/note-snippet-editor-events';
 import { NoteCollectionFilterBy, NoteCollectionSortBy } from './shared/note-collection.state';
 import { NoteContent, NoteSnippetContent } from './shared/note-content.model';
 import { NoteItem } from './shared/note-item.model';
@@ -283,7 +279,7 @@ export class NoteContentDummy extends Dummy<NoteContent> {
     }
 }
 
-
+/*
 export class NoteSnippetEditorDummy extends Dummy<NoteSnippetEditor> {
     private content = new NoteSnippetContentDummy();
 
@@ -305,3 +301,4 @@ export class NoteSnippetEditorDummy extends Dummy<NoteSnippetEditor> {
         } as any;
     }
 }
+*/

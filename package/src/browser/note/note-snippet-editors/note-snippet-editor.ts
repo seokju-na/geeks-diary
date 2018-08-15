@@ -1,33 +1,16 @@
-import { BACKSPACE, DOWN_ARROW, ENTER, UP_ARROW } from '@angular/cdk/keycodes';
-import { EventEmitter, OnDestroy, OnInit } from '@angular/core';
-import { NoteSnippetContent } from '../shared/note-content.model';
-import { NoteSnippetEditorConfig } from './note-snippet-editor-config';
-import { NoteSnippetEditorEvent, NoteSnippetEditorEventNames } from './note-snippet-editor-events';
+import { BACKSPACE } from '@angular/cdk/keycodes';
+import { HostBinding, OnDestroy, OnInit } from '@angular/core';
 
 
 /**
  * Abstraction of note snippet editor.
+ * Generic T should be instance of editor which you will be implement.
  */
 export abstract class NoteSnippetEditor<T = any> implements OnInit, OnDestroy {
-    abstract _editor: T;
+    abstract editor: T;
 
-    /**
-     * Note snippet content use to initialize editor component.
-     *
-     * This is will not affect to editor any behaviours after component
-     * initialized.
-     */
-    abstract content: NoteSnippetContent;
-
-    /**
-     * Note snippet editor configuration use to initialize editor component.
-     *
-     * This is will not affect to editor any behaviours after component
-     * initialized.
-     */
-    abstract config: NoteSnippetEditorConfig;
-
-    abstract readonly events: EventEmitter<NoteSnippetEditorEvent>;
+    /** ID for the snippet editor DOM element. */
+    @HostBinding('id') _id: string;
 
     ngOnInit(): void {
         this.initialize();
@@ -83,34 +66,9 @@ export abstract class NoteSnippetEditor<T = any> implements OnInit, OnDestroy {
         switch (event.keyCode) {
             case BACKSPACE:
                 if (this.getRawValue().trim() === '') {
-                    this.emitEvent(NoteSnippetEditorEventNames.REMOVE_THIS);
+                    //
                 }
                 break;
-
-            case UP_ARROW:
-                if (this.isCurrentPositionTop()) {
-                    this.emitEvent(NoteSnippetEditorEventNames.MOVE_FOCUS_TO_PREVIOUS);
-                }
-                break;
-
-            case DOWN_ARROW:
-                if (this.isCurrentPositionBottom()) {
-                    this.emitEvent(NoteSnippetEditorEventNames.MOVE_FOCUS_TO_NEXT);
-                }
-                break;
-
-            case ENTER:
-                if (event.shiftKey) {
-                    event.preventDefault();
-
-                    this.emitEvent(
-                        NoteSnippetEditorEventNames.INSERT_NEW_SNIPPET_AFTER_THIS,
-                    );
-                }
         }
-    }
-
-    protected emitEvent(name: NoteSnippetEditorEventNames): void {
-        this.events.emit(new NoteSnippetEditorEvent(name, this));
     }
 }

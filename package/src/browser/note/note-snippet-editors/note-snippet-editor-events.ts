@@ -1,6 +1,3 @@
-import { NoteSnippetEditor } from './note-snippet-editor';
-
-
 export enum NoteSnippetEditorEventNames {
     INSERT_NEW_SNIPPET_AFTER_THIS = 'INSERT_NEW_SNIPPET_AFTER_THIS',
     REMOVE_THIS = 'REMOVE_THIS',
@@ -12,10 +9,15 @@ export enum NoteSnippetEditorEventNames {
 }
 
 
-export class NoteSnippetEditorEvent {
-    constructor(
-        public readonly name: NoteSnippetEditorEventNames,
-        public readonly source: NoteSnippetEditor,
-    ) {
-    }
+interface NoteSnippetEditorEvent {
+    readonly name: NoteSnippetEditorEventNames;
 }
+
+
+export class InsertNewSnippetAfterThisEvent implements NoteSnippetEditorEvent {
+    readonly name = NoteSnippetEditorEventNames.INSERT_NEW_SNIPPET_AFTER_THIS;
+}
+
+
+export type NoteSnippetEditorEvents =
+    InsertNewSnippetAfterThisEvent;
