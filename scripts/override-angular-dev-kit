@@ -2,7 +2,6 @@
 
 const { readFile, writeFile } = require('fs');
 const { promisify } = require('util');
-const path = require('path');
 
 
 const readFileAsync = promisify(readFile);
