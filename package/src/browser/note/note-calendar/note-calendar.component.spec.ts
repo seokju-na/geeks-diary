@@ -4,6 +4,7 @@ import { async, ComponentFixture, fakeAsync, flush, TestBed } from '@angular/cor
 import { By } from '@angular/platform-browser';
 import { combineReducers, Store, StoreModule } from '@ngrx/store';
 import { expectDebugElement } from '../../../../test/helpers/expect-debug-element';
+import { fastTestSetup } from '../../../../test/helpers/fast-test-setup';
 import { datetime, DateUnits } from '../../../libs/datetime';
 import { UIModule } from '../../ui/ui.module';
 import { SelectMonthFilterAction } from '../shared/note-collection.actions';
@@ -78,8 +79,10 @@ describe('browser.note.NoteCalendarComponent', () => {
         return cell;
     };
 
-    beforeEach(async(() => {
-        TestBed
+    fastTestSetup();
+
+    beforeAll(async () => {
+        await TestBed
             .configureTestingModule({
                 imports: [
                     UIModule,
@@ -93,7 +96,7 @@ describe('browser.note.NoteCalendarComponent', () => {
                 ],
             })
             .compileComponents();
-    }));
+    });
 
     beforeEach(() => {
         store = TestBed.get(Store);

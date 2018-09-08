@@ -1,7 +1,8 @@
 import { CUSTOM_ELEMENTS_SCHEMA, DebugElement } from '@angular/core';
-import { async, ComponentFixture, fakeAsync, flush, TestBed, tick } from '@angular/core/testing';
+import { ComponentFixture, fakeAsync, flush, TestBed, tick } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
 import { throwError } from 'rxjs';
+import { fastTestSetup } from '../../../test/helpers/fast-test-setup';
 import { MockDialog } from '../../../test/mocks/browser/mock-dialog';
 import { ConfirmDialog } from '../core/confirm-dialog/confirm-dialog';
 import { CoreModule } from '../core/core.module';
@@ -21,8 +22,10 @@ describe('browser.wizard.WizardComponent', () => {
     let theme: ThemeService;
     let confirmDialog: ConfirmDialog;
 
-    beforeEach(async(() => {
-        TestBed
+    fastTestSetup();
+
+    beforeAll(async () => {
+        await TestBed
             .configureTestingModule({
                 imports: [
                     CoreModule,
@@ -35,7 +38,7 @@ describe('browser.wizard.WizardComponent', () => {
                 schemas: [CUSTOM_ELEMENTS_SCHEMA],
             })
             .compileComponents();
-    }));
+    });
 
     beforeEach(() => {
         workspace = TestBed.get(WorkspaceService);

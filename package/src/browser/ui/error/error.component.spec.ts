@@ -1,5 +1,6 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { expectDebugElement } from '../../../../test/helpers/expect-debug-element';
+import { fastTestSetup } from '../../../../test/helpers/fast-test-setup';
 import { ErrorComponent } from './error.component';
 
 
@@ -7,13 +8,15 @@ describe('browser.ui.ErrorComponent', () => {
     let component: ErrorComponent;
     let fixture: ComponentFixture<ErrorComponent>;
 
-    beforeEach(async(() => {
-        TestBed
+    fastTestSetup();
+
+    beforeAll(async () => {
+        await TestBed
             .configureTestingModule({
                 declarations: [ErrorComponent],
             })
             .compileComponents();
-    }));
+    });
 
     beforeEach(() => {
         fixture = TestBed.createComponent(ErrorComponent);

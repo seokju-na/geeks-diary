@@ -1,8 +1,9 @@
-import { async, ComponentFixture, fakeAsync, flush, TestBed } from '@angular/core/testing';
+import { ComponentFixture, fakeAsync, flush, TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
 import { of, throwError } from 'rxjs';
 import { dispatchFakeEvent } from '../../../../test/helpers/dispatch-event';
 import { expectDebugElement } from '../../../../test/helpers/expect-debug-element';
+import { fastTestSetup } from '../../../../test/helpers/fast-test-setup';
 import { typeInElement } from '../../../../test/helpers/type-in-element';
 import { MockDialog } from '../../../../test/mocks/browser/mock-dialog';
 import { GitError, GitErrorCodes } from '../../../libs/git';
@@ -26,8 +27,10 @@ describe('browser.wizard.WizardCloningComponent', () => {
     let vcsRemote: VcsRemoteService;
     let confirmDialog: ConfirmDialog;
 
-    beforeEach(async(() => {
-        TestBed
+    fastTestSetup();
+
+    beforeAll(async () => {
+        await TestBed
             .configureTestingModule({
                 imports: [
                     CoreModule,
@@ -42,7 +45,7 @@ describe('browser.wizard.WizardCloningComponent', () => {
                 declarations: [WizardCloningComponent],
             })
             .compileComponents();
-    }));
+    });
 
     beforeEach(() => {
         vcsRemote = TestBed.get(VcsRemoteService);

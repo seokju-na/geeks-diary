@@ -1,11 +1,12 @@
 import { FocusableOption } from '@angular/cdk/a11y';
 import { ENTER, SPACE } from '@angular/cdk/keycodes';
 import { DatePipe } from '@angular/common';
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
 import { combineReducers, Store, StoreModule } from '@ngrx/store';
 import { dispatchFakeEvent, dispatchKeyboardEvent } from '../../../../test/helpers/dispatch-event';
 import { expectDebugElement } from '../../../../test/helpers/expect-debug-element';
+import { fastTestSetup } from '../../../../test/helpers/fast-test-setup';
 import { NoteItemDummy } from '../dummies';
 import { NoteItem } from '../shared/note-item.model';
 import { noteReducerMap } from '../shared/note.reducer';
@@ -22,8 +23,10 @@ describe('browser.note.NoteItemComponent', () => {
     let store: Store<NoteStateWithRoot>;
     let datePipe: DatePipe;
 
-    beforeEach(async(() => {
-        TestBed
+    fastTestSetup();
+
+    beforeAll(async () => {
+        await TestBed
             .configureTestingModule({
                 imports: [
                     StoreModule.forRoot({
@@ -34,7 +37,7 @@ describe('browser.note.NoteItemComponent', () => {
                 declarations: [NoteItemComponent],
             })
             .compileComponents();
-    }));
+    });
 
     beforeEach(() => {
         note = new NoteItemDummy().create();

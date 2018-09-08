@@ -1,8 +1,9 @@
 import { DebugElement } from '@angular/core';
-import { async, ComponentFixture, fakeAsync, flush, TestBed } from '@angular/core/testing';
+import { ComponentFixture, fakeAsync, flush, TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
 import * as path from 'path';
 import { expectDebugElement } from '../../../../test/helpers/expect-debug-element';
+import { fastTestSetup } from '../../../../test/helpers/fast-test-setup';
 import { typeInElement } from '../../../../test/helpers/type-in-element';
 import { MockDialogRef } from '../../../../test/mocks/browser/mock-dialog-ref';
 import { makeContentFileName } from '../../../models/note';
@@ -29,16 +30,15 @@ describe('browser.note.CreateNewNoteDialogComponent', () => {
         notesDirPath: '/test/workspace/.geeks-diary/notes/',
     };
 
-    beforeEach(() => {
+    fastTestSetup();
+
+    beforeAll(async() => {
         collection = jasmine.createSpyObj('collection', [
             'createNewNote',
         ]);
-
         mockDialogRef = new MockDialogRef();
-    });
 
-    beforeEach(async(() => {
-        TestBed
+        await TestBed
             .configureTestingModule({
                 imports: [
                     UIModule,
@@ -54,7 +54,7 @@ describe('browser.note.CreateNewNoteDialogComponent', () => {
                 ],
             })
             .compileComponents();
-    }));
+    });
 
     beforeEach(() => {
         fixture = TestBed.createComponent(CreateNewNoteDialogComponent);

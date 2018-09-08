@@ -1,6 +1,7 @@
-import { async, ComponentFixture, fakeAsync, flush, TestBed } from '@angular/core/testing';
+import { ComponentFixture, fakeAsync, flush, TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
 import { combineReducers, Store, StoreModule } from '@ngrx/store';
+import { fastTestSetup } from '../../../../test/helpers/fast-test-setup';
 import { sampleWithout } from '../../../../test/helpers/sampling';
 import { MockMenu } from '../../../../test/mocks/browser/mock-menu';
 import { SortDirection } from '../../../libs/sorting';
@@ -30,8 +31,10 @@ describe('browser.note.NoteListToolsComponent', () => {
     let store: Store<NoteStateWithRoot>;
     let mockMenu: MockMenu;
 
-    beforeEach(async(() => {
-        TestBed
+    fastTestSetup();
+
+    beforeAll(async () => {
+        await TestBed
             .configureTestingModule({
                 imports: [
                     StoreModule.forRoot({
@@ -46,7 +49,7 @@ describe('browser.note.NoteListToolsComponent', () => {
                 declarations: [NoteListToolsComponent],
             })
             .compileComponents();
-    }));
+    });
 
     beforeEach(() => {
         store = TestBed.get(Store);

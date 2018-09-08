@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { By } from '@angular/platform-browser';
+import { fastTestSetup } from '../../../../test/helpers/fast-test-setup';
 import { typeInElement } from '../../../../test/helpers/type-in-element';
 import { ErrorComponent } from '../error/error.component';
 import { InputDirective } from '../input/input.directive';
@@ -11,9 +12,6 @@ import { FormFieldComponent } from './form-field.component';
 describe('browser.ui.FormFieldComponent', () => {
     let fixture: ComponentFixture<TestFormFieldComponent>;
     let component: TestFormFieldComponent;
-
-    const getFormEl = (): HTMLFormElement =>
-        fixture.debugElement.query(By.css('form')).nativeElement;
 
     const getHeroNameInputEl = (): HTMLInputElement =>
         fixture.debugElement.query(By.css('#heroNameInput')).nativeElement;
@@ -33,8 +31,10 @@ describe('browser.ui.FormFieldComponent', () => {
         return expect((<ErrorComponent>error.componentInstance).errorName).toEqual(errorName);
     };
 
-    beforeEach(async(() => {
-        TestBed
+    fastTestSetup();
+
+    beforeAll(async () => {
+        await TestBed
             .configureTestingModule({
                 imports: [
                     FormsModule,
@@ -48,7 +48,7 @@ describe('browser.ui.FormFieldComponent', () => {
                 ],
             })
             .compileComponents();
-    }));
+    });
 
     beforeEach(() => {
         fixture = TestBed.createComponent(TestFormFieldComponent);

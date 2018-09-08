@@ -1,10 +1,11 @@
 import { DOWN_ARROW, ENTER, SPACE, UP_ARROW } from '@angular/cdk/keycodes';
-import { async, ComponentFixture, fakeAsync, flush, TestBed } from '@angular/core/testing';
+import { ComponentFixture, fakeAsync, flush, TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
 import { combineReducers, StoreModule } from '@ngrx/store';
 import { Subject } from 'rxjs';
 import { dispatchKeyboardEvent } from '../../../../test/helpers/dispatch-event';
 import { createDummies } from '../../../../test/helpers/dummies';
+import { fastTestSetup } from '../../../../test/helpers/fast-test-setup';
 import { UIModule } from '../../ui/ui.module';
 import { NoteItemDummy } from '../dummies';
 import { NoteItemComponent } from '../note-item/note-item.component';
@@ -91,7 +92,9 @@ describe('browser.note.NoteListComponent', () => {
         fixture.detectChanges();
     };
 
-    beforeEach(() => {
+    fastTestSetup();
+
+    beforeAll(async () => {
         notesStream = new Subject<NoteItem[]>();
         selectedNoteStream = new Subject<NoteItem | null>();
 
@@ -106,10 +109,8 @@ describe('browser.note.NoteListComponent', () => {
 
         (<jasmine.Spy>collection.getSelectedNote)
             .and.callFake(() => selectedNoteStream.asObservable());
-    });
 
-    beforeEach(async(() => {
-        TestBed
+        await TestBed
             .configureTestingModule({
                 imports: [
                     StoreModule.forRoot({
@@ -126,7 +127,7 @@ describe('browser.note.NoteListComponent', () => {
                 ],
             })
             .compileComponents();
-    }));
+    });
 
     beforeEach(() => {
         fixture = TestBed.createComponent(NoteListComponent);
