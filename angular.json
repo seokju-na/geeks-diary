@@ -2,6 +2,48 @@
     "$schema": "node_modules/@angular/cli/lib/config/schema.json",
     "version": 1,
     "projects": {
+        "wizard": {
+            "root": "",
+            "sourceRoot": "package/src/",
+            "projectType": "application",
+            "prefix": "gd",
+            "schematics": {
+                "@schematics/angular:component": {
+                    "styleext": "scss"
+                }
+            },
+            "architect": {
+                "build": {
+                    "builder": "@angular-devkit/build-angular:browser",
+                    "options": {
+                        "outputPath": "package/dist/browser/wizard",
+                        "index": "package/src/browser/wizard.html",
+                        "main": "package/src/browser/wizard.ts",
+                        "tsConfig": "package/tsconfig.browser.json",
+                        "polyfills": "package/src/browser/polyfills.ts",
+                        "assets": [
+                            "package/src/assets"
+                        ],
+                        "styles": [
+                            "package/src/browser/wizard.scss"
+                        ]
+                    },
+                    "configurations": {
+                        "production": {
+                            "optimization": true,
+                            "outputHashing": "all",
+                            "sourceMap": true,
+                            "extractCss": true,
+                            "namedChunks": false,
+                            "aot": true,
+                            "extractLicenses": false,
+                            "vendorChunk": false,
+                            "buildOptimizer": true
+                        }
+                    }
+                }
+            }
+        },
         "app": {
             "root": "",
             "sourceRoot": "package/src/",
@@ -78,48 +120,6 @@
                         "exclude": [
                             "**/node_modules/**"
                         ]
-                    }
-                }
-            }
-        },
-        "wizard": {
-            "root": "",
-            "sourceRoot": "package/src/",
-            "projectType": "application",
-            "prefix": "gd",
-            "schematics": {
-                "@schematics/angular:component": {
-                    "styleext": "scss"
-                }
-            },
-            "architect": {
-                "build": {
-                    "builder": "@angular-devkit/build-angular:browser",
-                    "options": {
-                        "outputPath": "package/dist/browser/wizard",
-                        "index": "package/src/browser/wizard.html",
-                        "main": "package/src/browser/wizard.ts",
-                        "tsConfig": "package/tsconfig.browser.json",
-                        "polyfills": "package/src/browser/polyfills.ts",
-                        "assets": [
-                            "package/src/assets"
-                        ],
-                        "styles": [
-                            "package/src/browser/wizard.scss"
-                        ]
-                    },
-                    "configurations": {
-                        "production": {
-                            "optimization": true,
-                            "outputHashing": "all",
-                            "sourceMap": true,
-                            "extractCss": true,
-                            "namedChunks": false,
-                            "aot": true,
-                            "extractLicenses": false,
-                            "vendorChunk": false,
-                            "buildOptimizer": true
-                        }
                     }
                 }
             }
