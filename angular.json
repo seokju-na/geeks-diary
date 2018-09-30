@@ -38,7 +38,8 @@
                             "aot": true,
                             "extractLicenses": false,
                             "vendorChunk": false,
-                            "buildOptimizer": true
+                            "buildOptimizer": true,
+                            "progress": false
                         }
                     }
                 }
@@ -80,7 +81,8 @@
                             "aot": true,
                             "extractLicenses": false,
                             "vendorChunk": false,
-                            "buildOptimizer": true
+                            "buildOptimizer": true,
+                            "progress": false
                         }
                     }
                 },
@@ -96,6 +98,7 @@
                             "src/browser/wizard.scss"
                         ],
                         "scripts": [],
+                        "progress": false,
                         "assets": [
                             "src/assets"
                         ],
