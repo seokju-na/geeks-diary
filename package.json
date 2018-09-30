@@ -1,6 +1,6 @@
 {
     "name": "geeks-diary",
-    "version": "1.0.0-beta.0",
+    "version": "1.0.0-beta",
     "description": "TIL writing tool for geeks",
     "private": true,
     "repository": {
