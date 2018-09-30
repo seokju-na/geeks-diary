@@ -1,0 +1,15 @@
+@import "./tooltip-sizes";
+@import "../style/typography";
+
+.Tooltip {
+    color: white;
+    border-radius: 2px;
+    margin: $tooltip-margin;
+    max-width: 300px;
+    padding: ($tooltip-target-height - $font-size-sm) / 2 $tooltip-horizontal-padding;
+    overflow: hidden;
+    text-overflow: ellipsis;
+
+    font-size: $font-size-sm;
+    line-height: $line-height-condensed;
+}

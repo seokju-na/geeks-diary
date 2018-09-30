@@ -1,0 +1,24 @@
+@import "../style/theming";
+
+@mixin gd-ui-form-field-theme($theme) {
+    $warn: map-get($theme, warn);
+
+    .FormField {
+        &--invalid {
+            .Input {
+                border: 1px solid gd-color($warn);
+                //noinspection CssUnknownProperty
+                caret-color: gd-color($warn);
+
+                &:focus {
+                    border-color: gd-color($warn);
+                    box-shadow: 0 0 0 1px gd-color($warn);
+                }
+            }
+        }
+    }
+
+    .FormFieldError {
+        color: gd-color($warn);
+    }
+}

@@ -1,0 +1,14 @@
+@import "../style/theming";
+
+@mixin gd-ui-spinner-theme($theme) {
+    $foreground: map-get($theme, foreground);
+    $background: map-get($theme, background);
+
+    .Spinner:not(.Spinner--contrast) div:after {
+        background: gd-color($foreground, secondary-text);
+    }
+
+    .Spinner--contrast div:after {
+        // background: gd-color($foreground, selected-disabled-button);
+    }
+}

@@ -1,0 +1,24 @@
+@import "./dialog-sizes";
+
+gd-dialog-container {
+    position: relative;
+
+    display: block;
+    border-radius: $dialog-border-radius;
+    overflow: hidden;
+    outline: none;
+
+    width: inherit;
+    height: inherit;
+    min-height: inherit;
+    max-height: inherit;
+}
+
+.DialogHeader {
+}
+
+.DialogContent {
+}
+
+.DialogActions {
+}

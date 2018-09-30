@@ -1,8 +1,0 @@
-@import "../../ui/style/theming";
-
-@mixin gd-wizard-cloning-component-theme($theme) {
-    $foreground: map-get($theme, foreground);
-
-    .WizardCloning {
-    }
-}

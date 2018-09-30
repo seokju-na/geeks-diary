@@ -1,0 +1,3 @@
+describe('browser.shared.confirmDialog', () => {
+
+});

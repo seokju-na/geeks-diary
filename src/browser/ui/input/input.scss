@@ -1,0 +1,17 @@
+@import "../style/typography";
+@import "../form-field/form-field-sizes";
+
+.Input {
+    outline: 0;
+    padding: 0 $form-control-size / 3.2;
+    height: $form-control-size;
+    border-radius: 2.5px;
+    font-size: $font-size;
+    line-height: $line-height;
+}
+
+textarea.Input {
+    padding: $form-control-top-bottom-padding - 1 $form-control-size / 3.2;
+    resize: none;
+    overflow: hidden;
+}
