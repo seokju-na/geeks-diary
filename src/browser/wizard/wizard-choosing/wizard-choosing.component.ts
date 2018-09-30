@@ -3,6 +3,7 @@ import { FormControl } from '@angular/forms';
 import { from } from 'rxjs';
 import { debounceTime, distinctUntilChanged, switchMap, tap } from 'rxjs/operators';
 import { environment } from '../../../core/environment';
+import { WorkspaceError } from '../../../core/workspace';
 import { WORKSPACE_DATABASE, WorkspaceDatabase, WorkspaceService } from '../../shared';
 import { ConfirmDialog } from '../../shared/confirm-dialog';
 import { Themes, ThemeService } from '../../ui/style';
@@ -43,4 +44,19 @@ export class WizardChoosingComponent implements OnInit {
         ).subscribe();
     }
 
+    createNewWorkspace(): void {
+        this.workspace.initWorkspace().subscribe(
+            () => {
+            },
+            error => this.handleInitWorkspaceFail(error),
+        );
+    }
+
+    private handleInitWorkspaceFail(error: any): void {
+        this.confirmDialog.open({
+            title: 'Workspace Error',
+            isAlert: true,
+            body: (error as WorkspaceError).message,
+        });
+    }
 }
