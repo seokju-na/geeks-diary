@@ -100,7 +100,7 @@ export class GitError extends Error {
 function getDescriptionForError(code: GitErrorCodes): string {
     switch (code) {
         case GitErrorCodes.AUTHENTICATION_FAIL:
-            return 'Authentication Failed';
+            return 'Authentication failed. Please check your credential.';
 
         default:
             return 'Unknown Error';
