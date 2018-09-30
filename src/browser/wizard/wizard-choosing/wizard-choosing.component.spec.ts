@@ -13,7 +13,7 @@ import { UiModule } from '../../ui/ui.module';
 import { WizardChoosingComponent } from './wizard-choosing.component';
 
 
-describe('WizardChoosingComponent', () => {
+describe('browser.wizard.wizardChoosing.WizardChoosingComponent', () => {
     let fixture: ComponentFixture<WizardChoosingComponent>;
     let component: WizardChoosingComponent;
 
