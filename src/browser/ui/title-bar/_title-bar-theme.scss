@@ -1,0 +1,11 @@
+@import "../style/theming";
+
+@mixin gd-ui-title-bar-theme($theme) {
+    $background: map-get($theme, background);
+    $foreground: map-get($theme, foreground);
+
+    .TitleBar {
+        background-color: gd-color($background, background-highlight);
+        border-bottom: 1px solid gd-color($foreground, divider);
+    }
+}

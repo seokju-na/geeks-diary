@@ -1,0 +1,11 @@
+@import "../../ui/style/theming";
+
+@mixin gd-wizard-choosing-theme($theme) {
+    $foreground: map-get($theme, foreground);
+
+    .WizardChoosing__title {
+        svg path {
+            fill: gd-color($foreground, text);
+        }
+    }
+}

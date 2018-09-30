@@ -1,0 +1,21 @@
+{
+    "extends": "./tsconfig.json",
+    "compilerOptions": {
+        "outDir": "dist/out-tsc/browser",
+        "baseUrl": "src/"
+    },
+    "include": [
+        "src/assets/",
+        "src/browser/",
+        "src/core/",
+        "src/libs/"
+    ],
+    "exclude": [
+        "dist/",
+        "src/main-process/",
+        "test/",
+        "**/*.spec.ts",
+        "**/dummies.ts",
+        "**/fixtures.ts"
+    ]
+}

@@ -1,0 +1,17 @@
+@import "~@angular/cdk/overlay-prebuilt.css";
+@import "~@angular/cdk/a11y-prebuilt.css";
+
+@import "ui/style/core";
+@import "ui/style/themes/basic-dark-theme";
+@import "ui/style/themes/basic-light-theme";
+@import "ui/all-theme";
+
+@include ui-core();
+
+.BasicLightTheme {
+    @include ui-all-theme($basic-light-theme);
+}
+
+.BasicDarkTheme {
+    @include ui-all-theme($basic-dark-theme);
+}

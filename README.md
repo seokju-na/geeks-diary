@@ -7,7 +7,7 @@ TIL writing tool for geek.
 
 Geek's Diary is [Electron](https://electronjs.org)-based app. It is written [Typescript](http://www.typescriptlang.org/) and uses [Angular](https://angular.io).
 
-**In-Development**
+**Under-Development**
 
 
 ## Development

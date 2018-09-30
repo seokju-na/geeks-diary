@@ -1,0 +1,23 @@
+@import "./button/button-theme";
+@import "./dialog/dialog-theme";
+@import "./form-field/form-field-theme";
+@import "./input/input-theme";
+@import "./tooltip/tooltip-theme";
+@import "./title-bar/title-bar-theme";
+@import "./spinner/spinner-theme";
+@import "./button-toggle/button-toggle-theme";
+@import "./radio/radio-theme";
+@import "./line/line-theme";
+
+@mixin ui-all-theme($theme) {
+    @include gd-ui-button-theme($theme);
+    @include gd-ui-dialog-theme($theme);
+    @include gd-ui-form-field-theme($theme);
+    @include gd-ui-input-theme($theme);
+    @include gd-ui-tooltip-theme($theme);
+    @include gd-ui-title-bar-theme($theme);
+    @include gd-ui-spinner-theme($theme);
+    @include gd-ui-button-toggle-theme($theme);
+    @include gd-ui-radio-theme($theme);
+    @include gd-ui-line-theme($theme);
+}
