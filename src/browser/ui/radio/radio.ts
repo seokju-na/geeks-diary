@@ -53,11 +53,8 @@ let uniqueId = 0;
     },
 })
 export class RadioGroupDirective implements AfterContentInit, ControlValueAccessor {
-    _controlValueAccessorChangeFn: (value: any) => void = () => {
-    };
-
-    onTouched: () => any = () => {
-    };
+    _controlValueAccessorChangeFn: (value: any) => void = () => {};
+    onTouched: () => any = () => {};
 
     @Output() readonly change: EventEmitter<RadioChange> = new EventEmitter<RadioChange>();
 
@@ -243,8 +240,7 @@ export class RadioButtonComponent implements AfterViewInit, OnInit, OnDestroy {
 
     @ViewChild('input') _inputElement: ElementRef;
 
-    private removeUniqueSelectionListener: () => void = () => {
-    };
+    private removeUniqueSelectionListener: () => void = () => {};
 
     constructor(
         @Optional() radioGroup: RadioGroupDirective,

@@ -54,7 +54,7 @@ describe('browser.utils.domStyle', () => {
 
             expect(element.getAttribute('style'))
                 .toEqual('padding-top:20px;overflow:hidden;');
-        })
+        });
     });
 
     describe('removeDomStyle', () => {

@@ -1,4 +1,6 @@
-type StyleObj = { [key: string]: string };
+interface StyleObj {
+    [key: string]: string;
+}
 
 
 function _isStyleObjEmpty(styleObj: StyleObj): boolean {

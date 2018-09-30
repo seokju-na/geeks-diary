@@ -33,7 +33,7 @@ describe('browser.ui.datetime.CalendarTable', () => {
             throw new Error(errors.join(', '));
         }
     }
-    
+
     beforeEach(() => {
         calendar = new CalendarTable();
     });

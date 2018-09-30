@@ -8,7 +8,7 @@ export interface AppLayoutSidenavOutlet {
     iconName: string;
     shortcut: string;
     description: string;
-    outletComponent: Type<any>,
+    outletComponent: Type<any>;
 }
 
 

@@ -320,7 +320,7 @@ export class TooltipDirective implements OnDestroy {
                 takeUntil(this._destroyed),
             ).subscribe(() => {
                 if (this._tooltipInstance) {
-                    this._overlayRef!.updatePosition();
+                    this._overlayRef.updatePosition();
                 }
             });
         }
