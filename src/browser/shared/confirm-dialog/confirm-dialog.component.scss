@@ -1,0 +1,7 @@
+@import "../../ui/style/spacing";
+
+gd-dialog-header {
+    gd-icon ~ [gdDialogTitle] {
+        margin-left: $spacing-half;
+    }
+}
