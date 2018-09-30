@@ -16,7 +16,7 @@
         ]
     },
     "exclude": [
-        "package/dist/",
+        "dist/",
         "build/",
         "node_modules/"
     ]

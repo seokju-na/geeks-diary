@@ -1,0 +1,21 @@
+@import "../style/theming";
+
+@mixin gd-ui-line-theme($theme) {
+    $foreground: map-get($theme, foreground);
+
+    .Line {
+        display: block;
+        margin: 0;
+        outline: 0;
+        border: none;
+        background-color: gd-color($foreground, divider);
+
+        &--horizontal {
+            height: 1px;
+        }
+
+        &--vertical {
+            width: 1px;
+        }
+    }
+}

@@ -1,0 +1,7 @@
+@import "./wizard-theme";
+@import "./wizard-choosing/wizard-choosing-theme";
+
+@mixin gd-wizard-all-theme($theme) {
+    @include gd-wizard-theme($theme);
+    @include gd-wizard-choosing-theme($theme);
+}

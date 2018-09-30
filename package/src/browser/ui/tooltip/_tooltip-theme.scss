@@ -1,7 +1,0 @@
-@import "../style/theming";
-
-@mixin gd-tooltip-theme($theme) {
-    .Tooltip {
-        background: gd-color($color-grey, 700);
-    }
-}

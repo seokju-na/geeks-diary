@@ -1,0 +1,25 @@
+@import "../../ui/style/spacing";
+
+:host {
+    flex: 1 0 auto;
+    display: flex;
+    flex-direction: column !important;
+}
+
+.WizardChoosing {
+    &__title {
+        padding: $spacing-double 0 $spacing 0;
+
+        svg {
+            width: 160px;
+        }
+    }
+
+    &__sections {
+        padding: $spacing 0;
+    }
+
+    &__footer {
+        padding: $spacing 0 $spacing-double 0;
+    }
+}

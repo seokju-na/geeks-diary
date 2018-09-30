@@ -1,0 +1,4 @@
+@import "../style/typography";
+
+$form-control-size: 28px;
+$form-control-top-bottom-padding: ($form-control-size - ($font-size * $line-height)) / 2;
