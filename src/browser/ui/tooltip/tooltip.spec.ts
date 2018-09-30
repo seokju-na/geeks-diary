@@ -139,11 +139,11 @@ describe('browser.ui.tooltip', () => {
     }));
 
     it('should not show tooltip if message is not present or empty', () => {
-        component.tooltip.message = undefined!;
+        component.tooltip.message = undefined;
         fixture.detectChanges();
         component.tooltip.show();
 
-        component.tooltip.message = null!;
+        component.tooltip.message = null;
         fixture.detectChanges();
         component.tooltip.show();
 
