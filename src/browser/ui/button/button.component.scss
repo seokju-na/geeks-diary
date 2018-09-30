@@ -85,4 +85,8 @@
     width: $button-size;
     min-width: 0;
     padding: 0;
+
+    .Button__wrapper {
+        margin-top: 1px; // Comport with font-family.
+    }
 }
