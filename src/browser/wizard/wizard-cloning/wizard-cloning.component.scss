@@ -1,0 +1,45 @@
+@import "../../ui/style/typography";
+@import "../../ui/style/spacing";
+@import "../../ui/style/palette";
+
+:host {
+    flex: 1 0 auto;
+    display: flex;
+}
+
+.WizardCloning {
+    width: 100%;
+    height: 100%;
+    padding: $spacing-double;
+
+    &__content {
+        margin-bottom: $spacing;
+    }
+
+    &__loginCompleted {
+        gd-icon {
+            color: map-get($color-green, 500);
+        }
+
+        span {
+            display: inline-block;
+            line-height: $line-height-condensed;
+        }
+    }
+
+    &__authenticationForm {
+        height: 0;
+        visibility: hidden;
+        overflow: hidden;
+
+        &--show {
+            height: auto;
+            visibility: visible;
+            overflow: visible;
+        }
+    }
+
+    &__loginFailError {
+        margin-left: $spacing;
+    }
+}

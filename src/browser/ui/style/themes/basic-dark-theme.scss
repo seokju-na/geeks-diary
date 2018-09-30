@@ -1,0 +1,6 @@
+@import "../theming";
+
+$basic-dark-primary: gd-palette($color-blue);
+$basic-dark-accent: gd-palette($color-purple, A200, A100, A400);
+
+$basic-dark-theme: gd-dark-theme($basic-dark-primary, $basic-dark-accent);

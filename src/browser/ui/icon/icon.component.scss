@@ -1,0 +1,21 @@
+@import "~line-awesome/dist/css/line-awesome.min.css";
+@import "./icon-sizes";
+
+.Icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: inherit;
+    width: $icon-size;
+    height: $icon-size;
+    font-size: $icon-size;
+    line-height: 1;
+
+    &--size {
+        &-big {
+            width: $icon-size-big;
+            height: $icon-size-big;
+            font-size: $icon-size-big;
+        }
+    }
+}

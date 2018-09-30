@@ -1,6 +1,0 @@
-@import "../../ui/style/theming";
-
-$basic-light-primary: gd-palette($color-blue);
-$basic-light-accent: gd-palette($color-purple, A200, A100, A400);
-
-$basic-light-theme: gd-light-theme($basic-light-primary, $basic-light-accent);
