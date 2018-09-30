@@ -7,6 +7,9 @@ let uniqueId = 0;
 
 @Directive({
     selector: '[gdDialogTitle]',
+    host: {
+        'class': 'DialogTitle',
+    },
 })
 export class DialogTitleDirective implements OnInit {
     @Input() id = `gd-dialog-title-${uniqueId++}`;
