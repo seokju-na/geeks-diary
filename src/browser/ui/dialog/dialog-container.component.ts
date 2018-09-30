@@ -1,18 +1,14 @@
-import { animate, AnimationEvent, state, style, transition, trigger } from '@angular/animations';
+import { AnimationEvent, state, style, trigger } from '@angular/animations';
 import { FocusTrapFactory } from '@angular/cdk/a11y';
-import {
-    BasePortalOutlet,
-    ComponentPortal,
-    PortalHostDirective,
-    TemplatePortal,
-} from '@angular/cdk/portal';
+import { BasePortalOutlet, ComponentPortal, PortalHostDirective, TemplatePortal } from '@angular/cdk/portal';
 import { DOCUMENT } from '@angular/common';
 import {
     ChangeDetectorRef,
     Component,
     ComponentRef,
     ElementRef,
-    EmbeddedViewRef, HostListener,
+    EmbeddedViewRef,
+    HostListener,
     Inject,
     OnDestroy,
     ViewChild,
@@ -31,7 +27,6 @@ import { DialogConfig } from './dialog-config';
         trigger('dialog', [
             state('enter', style({ opacity: 1 })),
             state('exit, void', style({ opacity: 0 })),
-            transition('* => *', animate(255)),
         ]),
     ],
     host: {
