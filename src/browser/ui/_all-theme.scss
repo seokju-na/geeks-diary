@@ -9,7 +9,7 @@
 @import "./radio/radio-theme";
 @import "./line/line-theme";
 
-@mixin ui-all-theme($theme) {
+@mixin gd-ui-all-theme($theme) {
     @include gd-ui-button-theme($theme);
     @include gd-ui-dialog-theme($theme);
     @include gd-ui-form-field-theme($theme);
