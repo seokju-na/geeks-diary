@@ -102,7 +102,6 @@
                         "assets": [
                             "src/assets"
                         ],
-                        "sourceMap": false,
                         "codeCoverageExclude": [
                             "test/**",
                             "**/dummies.ts",
