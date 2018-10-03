@@ -1,5 +1,5 @@
 import { AnimationEvent, state, style, trigger } from '@angular/animations';
-import { FocusTrapFactory } from '@angular/cdk/a11y';
+import { FocusTrap, FocusTrapFactory } from '@angular/cdk/a11y';
 import { BasePortalOutlet, ComponentPortal, PortalHostDirective, TemplatePortal } from '@angular/cdk/portal';
 import { DOCUMENT } from '@angular/common';
 import {
@@ -48,7 +48,7 @@ export class DialogContainerComponent extends BasePortalOutlet implements OnDest
     _state: 'void' | 'enter' | 'exit' = 'enter';
     _ariaLabelledBy: string;
 
-    private _focusTrap = this.focusTrapFactory.create(this.elementRef.nativeElement);
+    private _focusTrap: FocusTrap;
     private _elementFocusedBeforeDialogWasOpened: HTMLElement | null = null;
 
     constructor(
@@ -101,7 +101,7 @@ export class DialogContainerComponent extends BasePortalOutlet implements OnDest
     @HostListener('@dialog.done', ['$event'])
     _onAnimationDone(event: AnimationEvent) {
         if (event.toState === 'enter') {
-            this.autoFocusFirstTabbableElement();
+            this.trapFocus();
             this._afterEnter.next();
         }
 
@@ -111,10 +111,11 @@ export class DialogContainerComponent extends BasePortalOutlet implements OnDest
         }
     }
 
-    private autoFocusFirstTabbableElement() {
-        // If were to attempt to focus immediately, then the content of the dialog would not yet be
-        // ready in instances where change detection has to run first. To deal with this, we simply
-        // wait for the microtask queue to be empty.
+    private trapFocus(): void {
+        if (!this._focusTrap) {
+            this._focusTrap = this.focusTrapFactory.create(this.elementRef.nativeElement);
+        }
+
         if (this.config.autoFocus) {
             this._focusTrap.focusInitialElementWhenReady().then((hasMovedFocus) => {
                 // If we didn't find any focusable elements inside the dialog, focus the
