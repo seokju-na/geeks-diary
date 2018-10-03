@@ -10,6 +10,7 @@ import { FormFieldModule } from './form-field';
 import { IconModule } from './icon';
 import { InputModule } from './input';
 import { LineModule } from './line';
+import { MenuModule } from './menu';
 import { RadioModule } from './radio';
 import { ResizableModule } from './resizable';
 import { SpinnerModule } from './spinner';
@@ -45,6 +46,7 @@ const UI_MODULES = [
     ButtonToggleModule,
     LineModule,
     TextFieldModule,
+    MenuModule,
 ];
 
 
