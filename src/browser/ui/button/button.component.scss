@@ -3,7 +3,7 @@
 @import "../style/spacing";
 @import "./button-sizes";
 
-.Button {
+.Button, .FlatButton, .IconButton {
     @include button-reset();
 
     position: relative;
@@ -13,8 +13,6 @@
     justify-content: center;
 
     margin: 0;
-    padding: 0 $button-size / 1.7;
-    min-width: 85px;
     height: $button-size;
     overflow: visible;
 
@@ -33,6 +31,19 @@
     //noinspection CssUnknownProperty
     -webkit-app-region: no-drag;
 
+    &:disabled {
+        cursor: default;
+    }
+
+    & * {
+        cursor: inherit;
+    }
+}
+
+.Button {
+    padding: 0 $button-size / 1.7;
+    min-width: 85px;
+
     &__wrapper {
         display: inline-flex;
         align-items: center;
@@ -44,14 +55,6 @@
         left: 50%;
         top: 50%;
         transform: translate(-50%, -50%);
-    }
-
-    &:disabled {
-        cursor: default;
-    }
-
-    & * {
-        cursor: inherit;
     }
 
     &--showSpinner {
@@ -74,6 +77,10 @@
             .Icon { margin-left: $spacing-third; }
         }
     }
+
+    &--size-big {
+        height: $button-size-big;
+    }
 }
 
 .FlatButton {
@@ -86,7 +93,7 @@
     min-width: 0;
     padding: 0;
 
-    .Button__wrapper {
-        margin-top: 1px; // Comport with font-family.
+    &.Button--size-big {
+        width: $button-size-big;
     }
 }
