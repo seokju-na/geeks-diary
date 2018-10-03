@@ -1,0 +1,12 @@
+<div class="NoteList">
+    <div fxLayout fxLayoutAlign="center center" *ngIf="isEmpty" class="NoteList__emptyState">
+        No Notes
+    </div>
+
+    <gd-note-item
+        *ngFor="let note of notes | async;"
+        [note]="note"
+        [active]="isActiveItem(note)"
+        [selected]="(selectedNote | async)?.id === note.id"
+        (selectionChange)="selectNote($event)"></gd-note-item>
+</div>

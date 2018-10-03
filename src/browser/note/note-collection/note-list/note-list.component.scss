@@ -1,0 +1,16 @@
+@import "../../../ui/style/spacing";
+@import "../../../ui/style/typography";
+
+.NoteList {
+    overflow-y: auto;
+    width: 100%;
+    min-height: 1px;
+
+    &__emptyState {
+        padding: $spacing-triple $spacing;
+        font: {
+            size: $font-size-md;
+            weight: $font-weight-semiBold;
+        };
+    }
+}

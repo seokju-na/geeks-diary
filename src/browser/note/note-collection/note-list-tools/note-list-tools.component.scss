@@ -1,0 +1,12 @@
+@import "../../../ui/style/spacing";
+@import "./not-list-tools-sizes";
+
+:host {
+    display: block;
+}
+
+.NoteListTools {
+    width: 100%;
+    height: $note-list-tools-size;
+    padding: 0 $spacing-half;
+}

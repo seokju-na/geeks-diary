@@ -1,22 +1,27 @@
-import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
+import { StoreModule } from '@ngrx/store';
+import { UiModule } from '../ui/ui.module';
 import { NoteCollectionModule } from './note-collection';
-import { NoteEditorModule, NoteEditorService } from './note-editor';
+import { NoteEditorModule } from './note-editor';
+import { NoteSharedModule } from './note-shared';
+import { noteReducerMap } from './note.reducer';
 
 
 @NgModule({
     imports: [
-        CommonModule,
+        UiModule,
         NoteEditorModule,
         NoteCollectionModule,
+        NoteSharedModule,
+        StoreModule.forFeature('note', noteReducerMap),
     ],
     declarations: [],
     providers: [
-        NoteEditorService,
     ],
     exports: [
         NoteEditorModule,
         NoteCollectionModule,
+        NoteSharedModule,
     ],
 })
 export class NoteModule {
