@@ -1,18 +1,18 @@
 import { Directive, Input } from '@angular/core';
 
 
-export type DialogActionsAlign = 'center' | 'left' | 'right';
+export type DialogActionsAlign = 'start' | 'center' | 'end';
 
 
 @Directive({
     selector: 'gd-dialog-actions',
     host: {
         'class': 'DialogActions',
-        '[class.DialogActions--align-left]': 'align === "left"',
-        '[class.DialogActions--align-right]': 'align === "right"',
+        '[class.DialogActions--align-start]': 'align === "start"',
+        '[class.DialogActions--align-end]': 'align === "end"',
         '[class.DialogActions--align-center]': 'align === "center"',
     },
 })
 export class DialogActionsDirective {
-    @Input() align: DialogActionsAlign = 'left';
+    @Input() align: DialogActionsAlign = 'start';
 }
