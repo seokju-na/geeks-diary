@@ -7,7 +7,7 @@
     {{ data.body }}
 </gd-dialog-content>
 
-<gd-dialog-actions align="right">
+<gd-dialog-actions align="end">
     <button *ngIf="data.isAlert" gd-button (click)="closeWith()">
         {{ data.alertButtonString }}
     </button>

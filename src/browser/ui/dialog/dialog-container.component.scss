@@ -47,8 +47,12 @@ gd-dialog-container {
     display: flex;
     flex-wrap: wrap;
 
+    button + button {
+        margin-left: $spacing-half;
+    }
+
     &--align {
-        &-left {
+        &-start {
             justify-content: flex-start;
         }
 
@@ -56,7 +60,7 @@ gd-dialog-container {
             justify-content: center;
         }
 
-        &-right {
+        &-end {
             justify-content: flex-end;
         }
     }
