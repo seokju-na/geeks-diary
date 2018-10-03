@@ -9,6 +9,7 @@ let uniqueId = 0;
     selector: '[gdDialogTitle]',
     host: {
         'class': 'DialogTitle',
+        '[id]': 'id',
     },
 })
 export class DialogTitleDirective implements OnInit {
