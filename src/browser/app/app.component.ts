@@ -25,6 +25,6 @@ export class AppComponent implements OnInit {
     }
 
     ngOnInit(): void {
-        this.collection.load();
+        this.collection.loadOnce();
     }
 }

@@ -40,10 +40,10 @@ export class NoteCollectionService implements OnDestroy {
     }
 
     /**
-     * Load all notes and dispatch load note events.
+     * Load all notes and dispatch loadOnce note events.
      * @returns {Promise<void>}
      */
-    async load(): Promise<void> {
+    async loadOnce(): Promise<void> {
         const notesDirPath = this.workspace.configs.notesDirPath;
 
         // 1) Dispatch 'LOAD_COLLECTION' action.

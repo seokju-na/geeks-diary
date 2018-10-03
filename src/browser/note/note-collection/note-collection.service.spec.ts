@@ -85,7 +85,7 @@ describe('browser.note.noteCollection.NoteCollectionService', () => {
 
             // Call method.
             const callback = jasmine.createSpy('callback');
-            collection.load().then(callback);
+            collection.loadOnce().then(callback);
 
             // 1) Dispatch 'LOAD_COLLECTION' action.
             expect(store.dispatch).toHaveBeenCalledWith(
