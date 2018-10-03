@@ -6,12 +6,20 @@
 @import "ui/style/themes/basic-light-theme";
 @import "ui/all-theme";
 
+@import "app/all-theme";
+
+@import "note/all-theme";
+
 @include ui-core();
 
 .BasicLightTheme {
-    @include ui-all-theme($basic-light-theme);
+    @include gd-app-all-theme($basic-light-theme);
+    @include gd-ui-all-theme($basic-light-theme);
+    @include gd-note-all-theme($basic-light-theme);
 }
 
 .BasicDarkTheme {
-    @include ui-all-theme($basic-dark-theme);
+    @include gd-app-all-theme($basic-dark-theme);
+    @include gd-ui-all-theme($basic-dark-theme);
+    @include gd-note-all-theme($basic-dark-theme);
 }

@@ -1,0 +1,11 @@
+@import "../../../ui/style/theming";
+
+@mixin gd-note-list-theme($theme) {
+    $foreground: map-get($theme, foreground);
+
+    .NoteList {
+        gd-note-item {
+            border-bottom: 1px solid gd-color($foreground, divider);
+        }
+    }
+}

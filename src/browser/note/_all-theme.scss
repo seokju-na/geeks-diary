@@ -1,0 +1,5 @@
+@import "./note-collection/all-theme";
+
+@mixin gd-note-all-theme($theme) {
+    @include gd-note-collection-all-theme($theme);
+}

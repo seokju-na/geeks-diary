@@ -1,0 +1,44 @@
+<form [formGroup]="createNewNoteFormGroup" (submit)="createNewNote()">
+    <gd-dialog-header>
+        <h1 gdDialogTitle>Create New Note</h1>
+    </gd-dialog-header>
+
+    <gd-dialog-content>
+        <div gdArea gdColumns="1fr 5fr" gdGap="5px">
+            <label gdColumn="1" gdRow="1" gdFormFieldLabel for="note-title-input">Title:</label>
+            <gd-form-field id="note-title-input-form-field" gdColumn="2" gdRow="1">
+                <input gdInput formControlName="title" cdkFocusInitial id="note-title-input">
+
+                <gd-form-field-error errorName="required">Title is required</gd-form-field-error>
+                <gd-form-field-error errorName="contentFileExists">File already exists</gd-form-field-error>
+            </gd-form-field>
+
+            <label gdColumn="1" gdRow="2" gdFormFieldLabel for="note-label-input">Label:</label>
+            <gd-form-field id="note-label-input-form-field" gdColumn="2" gdRow="2">
+                <input gdInput formControlName="label" id="note-label-input">
+                <gd-form-field-error errorName="outsideWorkspace">
+                    Cannot create file outside of workspace
+                </gd-form-field-error>
+            </gd-form-field>
+
+            <label gdColumn="1" gdRow="3" gdFormFieldLabel for="file-path-textarea">File Path:</label>
+            <gd-form-field gdColumn="2" gdRow="3">
+                <textarea gdInput [formControl]="filePathControl" readonly gdAutosize [minRows]="2"
+                          id="file-path-textarea"></textarea>
+            </gd-form-field>
+        </div>
+    </gd-dialog-content>
+
+    <gd-dialog-actions align="end">
+        <button gd-button type="button" id="create-new-note-cancel-button" (click)="close()"
+                aria-label="Cancel button">
+            Cancel
+        </button>
+        <button gd-button color="primary" id="create-new-note-button"
+                [disabled]="createNewNoteProcessing || createNewNoteFormGroup.invalid"
+                [showSpinner]="createNewNoteProcessing"
+                aria-label="Create new note button">
+            Create
+        </button>
+    </gd-dialog-actions>
+</form>

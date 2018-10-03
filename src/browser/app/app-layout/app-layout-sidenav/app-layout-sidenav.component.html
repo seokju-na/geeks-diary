@@ -1,9 +1,6 @@
-<aside [class.AppLayoutSidenav--showPanel]="showPanel | async"
-       class="AppLayoutSidenav">
-
+<aside [class.AppLayoutSidenav--showPanel]="showPanel | async" class="AppLayoutSidenav">
     <nav class="AppLayoutSidenav__nav">
-        <ul role="tablist"
-            class="AppLayoutSidenav__tabList">
+        <ul role="tablist" class="AppLayoutSidenav__tabList">
             <li *ngFor="let outlet of outlets"
                 role="tab"
                 [gdTooltip]="outlet.description"
@@ -13,14 +10,15 @@
                 <button gd-icon-button
                         [attr.aria-label]="outlet.name"
                         [attr.aria-pressed]="(activeTabId | async) === outlet.id"
+                        [bigSize]="true"
                         (click)="toggleServicePanel(outlet.id)">
-                    <gd-icon [name]="outlet.iconName"></gd-icon>
+                    <gd-icon [name]="outlet.iconName" [bigSize]="true"></gd-icon>
                 </button>
             </li>
         </ul>
     </nav>
 
-    <gd-resizable-content role="tabpanel" class="AppLayoutSidenav__panel">
+    <gd-resizable-content role="tabpanel" [minWidth]="200" [maxWidth]="375" class="AppLayoutSidenav__panel">
         <div *ngFor="let outlet of outlets"
              [class.AppLayoutSidenav__panelWrapper--show]="(activeTabId | async) === outlet.id"
              [attr.aria-hidden]="(activeTabId | async) !== outlet.id"

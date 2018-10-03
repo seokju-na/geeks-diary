@@ -1,2 +1,58 @@
+@import "../../../ui/style/spacing";
+@import "./app-layout-sidenav-sizes";
+
+:host {
+    display: block;
+    width: fit-content;
+}
+
 .AppLayoutSidenav {
+    display: flex;
+    height: 100%;
+
+    &__nav {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: space-between;
+        width: $app-layout-sidenav-nav-size;
+        height: 100%;
+    }
+
+    &__tabList {
+        margin: 0;
+        padding: $spacing - 2px 0;
+    }
+
+    &__tab {
+        list-style: none;
+        display: block;
+        margin: 0 0 $spacing-half 0;
+    }
+
+    &__panel {
+        display: none;
+        visibility: hidden;
+        width: $app-layout-sidenav-panel-initial-size;
+        height: 100%;
+    }
+
+    &__panelWrapper {
+        display: none;
+        visibility: hidden;
+        width: 100%;
+        height: 100%;
+
+        &--show {
+            display: block;
+            visibility: visible;
+        }
+    }
+
+    &--showPanel {
+        .AppLayoutSidenav__panel {
+            display: inline-block;
+            visibility: visible;
+        }
+    }
 }
