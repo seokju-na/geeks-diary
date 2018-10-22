@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { FlexLayoutModule, GridModule } from '@angular/flex-layout';
 import { ReactiveFormsModule } from '@angular/forms';
+import { AutocompleteModule } from './autocomplete';
 import { ButtonModule } from './button';
 import { ButtonToggleModule } from './button-toggle';
 import { DialogModule } from './dialog';
@@ -32,6 +33,7 @@ const CDK_MODULES = [
 ];
 
 const UI_MODULES = [
+    AutocompleteModule,
     DialogModule,
     FormFieldModule,
     InputModule,
