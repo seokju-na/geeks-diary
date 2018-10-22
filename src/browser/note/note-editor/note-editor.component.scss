@@ -1,2 +1,49 @@
+@import "../../ui/style/spacing";
+@import "../../ui/style/typography";
+
+:host {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    height: 100%;
+}
+
 .NoteEditor {
+    &__scrollable {
+        overflow-y: auto;
+        scroll-behavior: smooth;
+        padding-bottom: $spacing-triple;
+    }
+
+    &__titleEdit {
+        min-height: min-content;
+        padding: $spacing;
+    }
+
+    &__titleTextarea {
+        padding-bottom: $spacing;
+
+        > textarea {
+            display: block;
+            width: 100%;
+            resize: none;
+            padding: $spacing-half;
+            outline: 0;
+            font-size: $font-size-md;
+            font-weight: $font-weight-semiBold;
+            border: 1px solid transparent;
+            border-radius: 5px;
+            overflow: hidden;
+            background: transparent;
+            color: inherit;
+        }
+    }
+
+    &__snippetsContainer {
+    }
+
+    &__snippetsList {
+        padding: 0 $spacing;
+        height: fit-content;
+    }
 }

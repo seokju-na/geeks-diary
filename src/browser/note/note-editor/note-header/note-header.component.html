@@ -1,0 +1,19 @@
+<header fxLayout fxLayoutAlign="start center" class="NoteHeader">
+    <div *ngIf="noteSelectionExists" fxLayout fxLayoutAlign="start center" fxFlex="1 1 auto" class="NoteHeader__title">
+        <h1 id="selected-note-title">{{ selectedNote.title }}</h1>
+    </div>
+
+    <div *ngIf="noteSelectionExists" fxLayout fxLayoutAlign="start center" class="NoteHeader__toolbar">
+        <button gd-icon-button aria-label="Change editor view mode">
+            <gd-icon name="eye"></gd-icon>
+        </button>
+        <button gd-icon-button aria-label="View history of note">
+            <gd-icon name="history"></gd-icon>
+        </button>
+        <button gd-icon-button aria-label="More works for note">
+            <gd-icon name="ellipsis-v"></gd-icon>
+        </button>
+
+        <button gd-button color="primary">Publish</button>
+    </div>
+</header>
