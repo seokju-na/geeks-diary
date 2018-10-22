@@ -49,12 +49,19 @@ describe('browser.note.noteCollection.NoteItemComponent', () => {
         expectDom(titleEl).toContainText(note.title);
     });
 
-    it('should render created datetime well.', () => {
-        const createdAt = datePipe.transform(
-            new Date(note.createdDatetime),
-            'MMM d, y HH:mm',
-        );
+    it('should render \'(Untitled Note)\' if note has not title.', () => {
+        component.note = {
+            ...noteDummy.create(),
+            title: '',
+        };
+        fixture.detectChanges();
 
+        const titleEl = fixture.debugElement.query(By.css('.NoteItem__title')).nativeElement as HTMLElement;
+        expectDom(titleEl).toContainText('(Untitled Note)');
+    });
+
+    it('should render created datetime well.', () => {
+        const createdAt = datePipe.transform(new Date(note.createdDatetime), 'MMM d, y h:mm a');
         const createdDatetimeEl = fixture.debugElement.query(
             By.css('time.NoteItem__createdAt'),
         ).nativeElement as HTMLElement;
