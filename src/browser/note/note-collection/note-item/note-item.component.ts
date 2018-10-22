@@ -2,12 +2,13 @@ import { FocusableOption } from '@angular/cdk/a11y';
 import { ENTER, SPACE } from '@angular/cdk/keycodes';
 import {
     ChangeDetectionStrategy,
+    ChangeDetectorRef,
     Component,
+    DoCheck,
     ElementRef,
     EventEmitter,
     HostListener,
     Input,
-    OnInit,
     Output,
     ViewEncapsulation,
 } from '@angular/core';
@@ -38,21 +39,32 @@ export class NoteItemSelectionChange {
     },
 
 })
-export class NoteItemComponent implements OnInit, FocusableOption {
+export class NoteItemComponent implements DoCheck, FocusableOption {
     @Input() note: NoteItem;
     @Input() active: boolean;
     @Input() selected: boolean;
 
     @Output() readonly selectionChange = new EventEmitter<NoteItemSelectionChange>();
 
-    constructor(public _elementRef: ElementRef<HTMLElement>) {
+    noteTitle: string;
+
+    constructor(
+        public _elementRef: ElementRef<HTMLElement>,
+        private changeDetector: ChangeDetectorRef,
+    ) {
     }
 
     get tabIndex(): string {
         return this.active ? '0' : '-1';
     }
 
-    ngOnInit(): void {
+    ngDoCheck(): void {
+        if (!this.note.title) {
+            this.noteTitle = '(Untitled Note)';
+            this.changeDetector.markForCheck();
+        } else {
+            this.noteTitle = this.note.title;
+        }
     }
 
     focus(): void {
