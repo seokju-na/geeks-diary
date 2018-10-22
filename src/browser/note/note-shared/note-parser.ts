@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core';
+import * as hljs from 'highlight.js';
 import * as yaml from 'js-yaml';
 import { EOL } from 'os';
 import * as Remarkable from 'remarkable';
@@ -43,6 +44,7 @@ export class NoteParser {
             if (snippet.type === NoteSnippetTypes.CODE) {
                 snippetContent = {
                     ...snippetContent,
+                    value: lines.slice(startIndex + 1, endIndex).join(EOL), // Remove first and last line.
                     codeLanguageId: snippet.codeLanguageId,
                     codeFileName: snippet.codeFileName,
                 };
@@ -138,6 +140,8 @@ export class NoteParser {
         }
 
         let str = '';
+        let startLine: number;
+        let endLine: number;
         const nl = EOL;
         const lineSpacing = numToArray(opts.lineSpacing)
             .reduce(sum => `${sum}${nl}`, nl);
@@ -151,19 +155,40 @@ export class NoteParser {
                 `${nl}`;
         }
 
+        // Parse tokens to get parsed snippet.
+        const parsedSnippets: NoteSnippetParseResult[] = [];
+
+        startLine = endLine = str.split(EOL).length;
+
         // Add each snippet value to note content raw value.
         for (const snippet of content.snippets) {
-            str += `${snippet.value}${lineSpacing}`;
-        }
+            if (snippet.type === NoteSnippetTypes.CODE) {
+                str += '```';
 
-        // Parse tokens to get parsed snippet.
-        const parsedSnippets = [];
+                if (snippet.codeLanguageId) {
+                    str += snippet.codeLanguageId;
+                }
 
-        this.initMarkdownParser();
-        const tokens = this.markdownParser.parse(str, { breaks: true });
+                str += '\n';
+                endLine += 1; // Add 1 line.
+            }
 
-        for (const parsedSnippet of parseTokens(str.split(nl), tokens)) {
-            parsedSnippets.push(parsedSnippet);
+            str += snippet.value;
+            endLine += snippet.value.split(EOL).length - 1;
+
+            if (snippet.type === NoteSnippetTypes.CODE) {
+                str += '\n```';
+                endLine += 1;
+            }
+
+            parsedSnippets.push({
+                ...snippet,
+                startLineNumber: startLine,
+                endLineNumber: endLine,
+            });
+
+            str += lineSpacing;
+            startLine = endLine = endLine + opts.lineSpacing + 1;
         }
 
         return {
@@ -172,12 +197,44 @@ export class NoteParser {
         };
     }
 
+    convertSnippetContentToHtml(snippet: NoteSnippetContent): string {
+        this.initMarkdownParser();
+
+        let value: string;
+
+        if (snippet.type === NoteSnippetTypes.CODE) {
+            value = (snippet.codeLanguageId ? `\`\`\`${snippet.codeLanguageId}\n` : '```\n')
+                + snippet.value
+                + '\n```';
+        } else if (snippet.type === NoteSnippetTypes.TEXT) {
+            value = snippet.value;
+        }
+
+        return this.markdownParser.render(value);
+    }
+
     private initMarkdownParser(): void {
         if (this.markdownParser) {
             this.markdownParser = null;
         }
 
-        this.markdownParser = new Remarkable();
+        this.markdownParser = new Remarkable({
+            highlight: (str, lang) => {
+                if (lang && hljs.getLanguage(lang)) {
+                    try {
+                        return hljs.highlight(lang, str).value;
+                    } catch (err) {
+                    }
+                }
+
+                try {
+                    return hljs.highlightAuto(str).value;
+                } catch (err) {
+                }
+
+                return ''; // use external default escaping
+            },
+        });
         this.markdownParser.use(remarkableMetaPlugin);
     }
 }
@@ -203,7 +260,7 @@ function* parseTokens(lines: string[], _tokens: Remarkable.Token[]): IterableIte
 
                 yield {
                     type: NoteSnippetTypes.TEXT,
-                    value: lines.slice(startLine, endLine).join('\n'),
+                    value: lines.slice(startLine, endLine).join(EOL),
                     startLineNumber: startLine + 1,
                     endLineNumber: endLine,
                 };
@@ -213,7 +270,7 @@ function* parseTokens(lines: string[], _tokens: Remarkable.Token[]): IterableIte
 
             yield {
                 type: NoteSnippetTypes.CODE,
-                value: lines.slice(...tokens[i].lines).join('\n'),
+                value: lines.slice(startLine + 1, endLine - 1).join(EOL), // Remove first and last line.
                 startLineNumber: startLine + 1,
                 endLineNumber: endLine,
                 codeLanguageId: (<any>tokens[i]).params,
@@ -231,7 +288,7 @@ function* parseTokens(lines: string[], _tokens: Remarkable.Token[]): IterableIte
 
                 yield {
                     type: NoteSnippetTypes.TEXT,
-                    value: lines.slice(startLine, endLine).join('\n'),
+                    value: lines.slice(startLine, endLine).join(EOL),
                     startLineNumber: startLine + 1,
                     endLineNumber: endLine,
                 };
@@ -241,16 +298,19 @@ function* parseTokens(lines: string[], _tokens: Remarkable.Token[]): IterableIte
 }
 
 
+/** Check if line is empty. */
 function isEmptyLine(line: string): boolean {
     return line.trim() === '';
 }
 
 
+/** Get last element of lines. */
 function getLastLine(lines: string[]): string {
     return lines[lines.length - 1];
 }
 
 
+/** Simple convert number to array. */
 function numToArray(count: number): number[] {
     const arr = [];
     for (let i = 0; i < count; i++) {

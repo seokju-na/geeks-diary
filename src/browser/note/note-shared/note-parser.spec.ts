@@ -62,6 +62,13 @@ describe('browser.note.NoteParser', () => {
             });
 
             expect(result.contentRawValue).toEqual(basicFixture.contentParsedValue);
+
+            result.parsedSnippets.forEach((parsedSnippet, index) => {
+                const snippet = basicFixture.afterNote.snippets[index];
+
+                expect(parsedSnippet.startLineNumber).toEqual(snippet.startLineNumber);
+                expect(parsedSnippet.endLineNumber).toEqual(snippet.endLineNumber);
+            });
         });
     });
 });
