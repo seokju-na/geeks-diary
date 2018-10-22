@@ -58,7 +58,7 @@ export class VcsRemoteService {
         const opts = {
             ...(new VcsRemoteLoginOptions()),
             ...options,
-        };
+        } as VcsRemoteLoginOptions;
 
         return this._provider.authorizeByBasic(username, password).pipe(
             switchMap(authInfo => opts.instanceLogin
@@ -77,7 +77,7 @@ export class VcsRemoteService {
         const opts = {
             ...(new VcsRemoteLoginOptions()),
             ...options,
-        };
+        } as VcsRemoteLoginOptions;
 
         return this._provider.authorizeByOauth2Token(token).pipe(
             switchMap(authInfo => opts.instanceLogin
