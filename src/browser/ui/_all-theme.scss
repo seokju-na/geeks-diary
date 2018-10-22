@@ -1,3 +1,4 @@
+@import "./autocomplete/autocomplete-theme";
 @import "./button/button-theme";
 @import "./dialog/dialog-theme";
 @import "./form-field/form-field-theme";
@@ -10,6 +11,7 @@
 @import "./line/line-theme";
 
 @mixin gd-ui-all-theme($theme) {
+    @include gd-ui-autocomplete-theme($theme);
     @include gd-ui-button-theme($theme);
     @include gd-ui-dialog-theme($theme);
     @include gd-ui-form-field-theme($theme);
