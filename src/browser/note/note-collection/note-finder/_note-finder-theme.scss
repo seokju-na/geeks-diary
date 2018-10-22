@@ -7,9 +7,6 @@
     .NoteFinder {
         &__title {
             background-color: gd-color($background, background-highlight);
-        }
-
-        &__title {
             border-bottom: 1px solid gd-color($foreground, divider);
         }
 
