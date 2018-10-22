@@ -1,3 +1,4 @@
+import { DatePipe } from '@angular/common';
 import { fakeAsync, flush, TestBed } from '@angular/core/testing';
 import { combineReducers, Store, StoreModule } from '@ngrx/store';
 import * as path from 'path';
@@ -51,6 +52,7 @@ describe('browser.note.noteCollection.NoteCollectionService', () => {
                     }),
                 ],
                 providers: [
+                    DatePipe,
                     ...MockFsService.providers(),
                     { provide: WORKSPACE_DEFAULT_CONFIG, useValue: workspaceConfig },
                     WorkspaceService,

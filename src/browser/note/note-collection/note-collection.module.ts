@@ -1,3 +1,4 @@
+import { DatePipe } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { SharedModule } from '../../shared';
 import { UiModule } from '../../ui/ui.module';
@@ -31,6 +32,7 @@ import { NoteListToolsComponent } from './note-list-tools/note-list-tools.compon
         CreateNewNoteDialogComponent,
     ],
     providers: [
+        DatePipe,
         NoteCollectionService,
         NoteListSortingMenu,
     ],
