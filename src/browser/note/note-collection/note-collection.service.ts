@@ -1,3 +1,4 @@
+import { DatePipe } from '@angular/common';
 import { Injectable, OnDestroy } from '@angular/core';
 import { select, Store } from '@ngrx/store';
 import * as path from 'path';
@@ -31,6 +32,7 @@ export class NoteCollectionService implements OnDestroy {
         private parser: NoteParser,
         private fs: FsService,
         private workspace: WorkspaceService,
+        private datePipe: DatePipe,
     ) {
         this.subscribeToggles();
     }
@@ -137,7 +139,7 @@ export class NoteCollectionService implements OnDestroy {
         const result = this.parser.parseNoteContent(content, {
             metadata: {
                 title,
-                date: new Date(createdAt).toString(),
+                date: this.datePipe.transform(new Date(), 'E, d MMM yyyy HH:mm:ss Z'),
                 stacks: [],
             },
         });
