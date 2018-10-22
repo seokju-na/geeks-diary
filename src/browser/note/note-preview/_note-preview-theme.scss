@@ -1,0 +1,128 @@
+@import "../../ui/style/theming";
+@import "../../ui/style/typography";
+
+@mixin gd-note-preview-theme($theme) {
+    $background: map-get($theme, background);
+    $foreground: map-get($theme, foreground);
+    $primary: map-get($theme, primary);
+
+    .NotePreview {
+        background-color: gd-color($background, background-highlight);
+
+        &__title {
+            border-bottom: 1px solid gd-color($foreground, divider);
+
+            > h1 {
+                user-select: text !important;
+            }
+        }
+
+        &__snippetHtml {
+            > pre {
+                margin: 0;
+            }
+
+            > * {
+                user-select: text !important;
+            }
+        }
+
+        &__snippet--code {
+            background-color: gd-color($background, background);
+
+            .hljs-comment,
+            .hljs-quote {
+                color: gd-color($color-green, 800);
+                font-style: italic;
+            }
+
+            .hljs-keyword,
+            .hljs-selector-tag,
+            .hljs-subst {
+                color: gd-color($primary);
+                font-weight: $font-weight-bold;
+            }
+
+            .hljs-number,
+            .hljs-literal,
+            .hljs-variable,
+            .hljs-template-variable,
+            .hljs-tag .hljs-attr {
+                color: gd-color($primary, darker);
+            }
+
+            .hljs-string,
+            .hljs-doctag {
+                color: map-get($color-deep-orange, 600);
+            }
+
+            .hljs-title,
+            .hljs-section,
+            .hljs-selector-id {
+                color: gd-color($foreground, text);
+                font-weight: $font-weight-semiBold;
+            }
+
+            .hljs-subst {
+                font-weight: $font-weight-normal;
+            }
+
+            .hljs-type,
+            .hljs-class .hljs-title {
+                // TODO
+                color: #458;
+                font-weight: bold;
+            }
+
+            .hljs-tag,
+            .hljs-name,
+            .hljs-attribute {
+                // TODO
+                color: #000080;
+                font-weight: normal;
+            }
+
+            .hljs-regexp,
+            .hljs-link {
+                // TODO
+                color: #009926;
+            }
+
+            .hljs-symbol,
+            .hljs-bullet {
+                // TODO
+                color: #990073;
+            }
+
+            .hljs-built_in,
+            .hljs-builtin-name {
+                color: gd-color($foreground, secondary-text);
+            }
+
+            .hljs-meta {
+                // TODO
+                color: #999;
+                font-weight: bold;
+            }
+
+            .hljs-deletion {
+                // TODO
+                background: #fdd;
+            }
+
+            .hljs-addition {
+                // TODO
+                background: #dfd;
+            }
+
+            .hljs-emphasis {
+                // TODO
+                font-style: italic;
+            }
+
+            .hljs-strong {
+                font-weight: $font-weight-bold;
+            }
+        }
+    }
+}

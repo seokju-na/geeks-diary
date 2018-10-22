@@ -1,0 +1,58 @@
+@import "../../ui/style/theming";
+@import "../../ui/style/typography";
+@import "../../ui/style/spacing";
+
+@mixin gd-note-snippet-code-mirror-editor-theme($theme) {
+    $primary: map-get($theme, primary);
+    $foreground: map-get($theme, foreground);
+    $background: map-get($theme, background);
+
+    .CodeMirror {
+        color: inherit;
+        height: auto;
+        background-color: inherit;
+
+        font: {
+            family: inherit;
+            weight: $font-weight-semiBold;
+            size: $font-size;
+        };
+        line-height: $line-height;
+
+        pre {
+            padding: 0 $spacing-half;
+        }
+
+        span.cm-def {
+            color: inherit;
+        }
+
+        span.cm-header {
+            font-weight: $font-weight-semiBold;
+            color: gd-color($primary);
+        }
+
+        &-gutters {
+            border-right: 1px solid gd-color($foreground, divider);
+            background-color: gd-color($background, background-highlight);
+        }
+
+        &-lineNumber {
+            color: gd-color($foreground, secondary-text);
+        }
+
+        &-cursor {
+            border-left: 1px solid gd-color($foreground, secondary-text);
+        }
+
+        &-selected {
+            background: none;
+        }
+
+        &-focused {
+            .CodeMirror-selected {
+                background: gd-color($primary, lighter);
+            }
+        }
+    }
+}

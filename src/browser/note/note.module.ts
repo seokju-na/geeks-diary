@@ -1,8 +1,10 @@
 import { NgModule } from '@angular/core';
+import { EffectsModule } from '@ngrx/effects';
 import { StoreModule } from '@ngrx/store';
 import { UiModule } from '../ui/ui.module';
 import { NoteCollectionModule } from './note-collection';
-import { NoteEditorModule } from './note-editor';
+import { NoteContentEffects, NoteEditorEffects, NoteEditorModule } from './note-editor';
+import { NotePreviewModule } from './note-preview';
 import { NoteSharedModule } from './note-shared';
 import { noteReducerMap } from './note.reducer';
 
@@ -13,7 +15,12 @@ import { noteReducerMap } from './note.reducer';
         NoteEditorModule,
         NoteCollectionModule,
         NoteSharedModule,
+        NotePreviewModule,
         StoreModule.forFeature('note', noteReducerMap),
+        EffectsModule.forFeature([
+            NoteContentEffects,
+            NoteEditorEffects,
+        ]),
     ],
     declarations: [],
     providers: [
@@ -21,6 +28,7 @@ import { noteReducerMap } from './note.reducer';
     exports: [
         NoteEditorModule,
         NoteCollectionModule,
+        NotePreviewModule,
         NoteSharedModule,
     ],
 })
