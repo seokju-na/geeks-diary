@@ -1,0 +1,24 @@
+@import "../style/theming";
+
+@mixin gd-ui-autocomplete-theme($theme) {
+    $background: map-get($theme, background);
+    $foreground: map-get($theme, foreground);
+    $primary: map-get($theme, primary);
+
+    .Autocomplete {
+        &__panel {
+            background-color: gd-color($background, background-highlight);
+        }
+    }
+
+    .AutocompleteItem {
+        &:hover:not(.AutocompleteItem--active) {
+            background-color: gd-color($background, background);
+        }
+
+        &--active {
+            background-color: gd-color($primary);
+            color: gd-color($primary, default-contrast);
+        }
+    }
+}

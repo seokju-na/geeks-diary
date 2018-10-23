@@ -96,4 +96,9 @@ export class CalendarTable {
             this.rows.push(weekRow);
         }
     }
+
+    renderThisMonth(): void {
+        const now = new Date();
+        this.render(now.getFullYear(), now.getMonth());
+    }
 }

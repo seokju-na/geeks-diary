@@ -3,11 +3,13 @@ import { ColorTheme } from '../style';
 
 
 export const BUTTON_HOST_ATTRIBUTES = [
+    'gd-button',
     'gd-icon-button',
     'gd-flat-button',
 ];
 
 export const BUTTON_HOST_ATTRIBUTE_CLASS_NAME_MAP = {
+    'gd-button': 'Button',
     'gd-icon-button': 'IconButton',
     'gd-flat-button': 'FlatButton',
 };
@@ -49,7 +51,8 @@ export abstract class ButtonBase<T extends HTMLElement> {
     /** Icon contains position. */
     @Input() iconContains: ButtonIconContainsPosition = null;
 
-    @HostBinding('class.Button') private baseClass = true;
+    /** Whether if button is big size. */
+    @Input() bigSize: boolean = false;
 
     @HostBinding('class.Button--showSpinner')
     private get showSpinnerClass() {
@@ -69,6 +72,11 @@ export abstract class ButtonBase<T extends HTMLElement> {
     @HostBinding('class.Button--iconContains-right')
     private get iconContainsRightClass() {
         return this.iconContains === 'right';
+    }
+
+    @HostBinding('class.Button--size-big')
+    private get bigSizeClass() {
+        return this.bigSize;
     }
 
     get hostElement(): T {

@@ -1,0 +1,14 @@
+.StackChip {
+    display: inline-flex;
+    cursor: inherit;
+
+    &__wrapper {
+        display: block;
+        width: 16px;
+        height: 16px;
+
+        > img {
+            display: block;
+        }
+    }
+}

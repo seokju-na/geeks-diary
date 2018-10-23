@@ -2,7 +2,7 @@ import { app, session } from 'electron';
 import { EventEmitter } from 'events';
 import { __DARWIN__ } from '../libs/platform';
 import { GitService } from './services/git.service';
-import { WorkspaceService } from './services/workspace.service';
+import { WorkspaceEvents, WorkspaceService } from './services/workspace.service';
 import { AppWindow } from './windows';
 import { Window, WindowEvents } from './windows/window';
 import { WizardWindow } from './windows/wizard.window';
@@ -60,6 +60,12 @@ class AppDelegate extends EventEmitter {
         this.windows.push(win);
     }
 
+    closeCurrentWindow(): void {
+        if (this.currentOpenWindow) {
+            this.currentOpenWindow.close();
+        }
+    }
+
     private removeWindow(win: Window) {
         const idx = this.windows.findIndex(w => w === win);
 
@@ -101,6 +107,19 @@ class AppDelegate extends EventEmitter {
             contents.on('new-window', (event) => {
                 event.preventDefault();
             });
+        });
+
+        /**
+         * Handle workspace 'CREATED' event.
+         *
+         * It will be handle for once because workspace is initialized
+         * only at first time.
+         * */
+        this.workspace.once(WorkspaceEvents.CREATED, async () => {
+            // Since current window is 'WizardWindow', close it
+            // and open 'AppWindow'.
+            this.closeCurrentWindow();
+            this.openWindow('app');
         });
 
         // Handle session

@@ -26,7 +26,7 @@ export class DialogRef<T, R = any> {
     constructor(
         public _overlayRef: OverlayRef,
         public _containerInstance: DialogContainerComponent,
-        readonly id: string = `tu-dialog-${uniqueId++}`,
+        readonly id: string = `gd-dialog-${uniqueId++}`,
     ) {
 
         if (this._containerInstance.config.hasBackdrop) {

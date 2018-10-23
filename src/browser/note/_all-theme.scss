@@ -1,0 +1,9 @@
+@import "./note-collection/all-theme";
+@import "./note-editor/all-theme";
+@import "./note-preview/all-theme";
+
+@mixin gd-note-all-theme($theme) {
+    @include gd-note-collection-all-theme($theme);
+    @include gd-note-editor-all-theme($theme);
+    @include gd-note-preview-theme($theme);
+}

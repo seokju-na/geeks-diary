@@ -3,6 +3,7 @@ import { NgModule } from '@angular/core';
 import { AuthenticationDatabaseProvider } from './authentication-database';
 import { ConfirmDialogModule } from './confirm-dialog';
 import { FsService } from './fs.service';
+import { GitService } from './git.service';
 import { WorkspaceDatabaseProvider } from './workspace-database';
 import { WorkspaceService } from './workspace.service';
 
@@ -18,6 +19,7 @@ import { WorkspaceService } from './workspace.service';
         WorkspaceService,
         WorkspaceDatabaseProvider,
         AuthenticationDatabaseProvider,
+        GitService,
     ],
     exports: [
         ConfirmDialogModule,

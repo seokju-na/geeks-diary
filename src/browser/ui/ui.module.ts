@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { FlexLayoutModule, GridModule } from '@angular/flex-layout';
 import { ReactiveFormsModule } from '@angular/forms';
+import { AutocompleteModule } from './autocomplete';
 import { ButtonModule } from './button';
 import { ButtonToggleModule } from './button-toggle';
 import { DialogModule } from './dialog';
@@ -10,6 +11,7 @@ import { FormFieldModule } from './form-field';
 import { IconModule } from './icon';
 import { InputModule } from './input';
 import { LineModule } from './line';
+import { MenuModule } from './menu';
 import { RadioModule } from './radio';
 import { ResizableModule } from './resizable';
 import { SpinnerModule } from './spinner';
@@ -31,6 +33,7 @@ const CDK_MODULES = [
 ];
 
 const UI_MODULES = [
+    AutocompleteModule,
     DialogModule,
     FormFieldModule,
     InputModule,
@@ -45,6 +48,7 @@ const UI_MODULES = [
     ButtonToggleModule,
     LineModule,
     TextFieldModule,
+    MenuModule,
 ];
 
 

@@ -10,11 +10,11 @@
 @include ui-core();
 
 .BasicLightTheme {
-    @include ui-all-theme($basic-light-theme);
+    @include gd-ui-all-theme($basic-light-theme);
     @include gd-wizard-all-theme($basic-light-theme);
 }
 
 .BasicDarkTheme {
-    @include ui-all-theme($basic-dark-theme);
+    @include gd-ui-all-theme($basic-dark-theme);
     @include gd-wizard-all-theme($basic-dark-theme);
 }

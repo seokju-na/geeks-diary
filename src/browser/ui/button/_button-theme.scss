@@ -6,54 +6,53 @@
     $background: map-get($theme, background);
     $foreground: map-get($theme, foreground);
 
-    .Button {
+    .Button, .FlatButton, .IconButton {
         color: inherit;
         background: transparent;
+    }
+
+    .Button {
         border-radius: 2px;
 
-        &--color {
-            &-normal {
-                border: 1px solid gd-color($foreground, divider);
-                background-color: gd-color($background, background-highlight);
+        &.Button--color-normal {
+            border: 1px solid gd-color($foreground, divider);
+            background-color: gd-color($background, background-highlight);
 
-                &:disabled, &[disabled="true"] {
-                    border-color: gd-color($background, disabled-button);
-                    color: gd-color($foreground, disabled-button);
-                    background-color: gd-color($background, disabled-button);
-                }
-
-                &:focus {
-                    box-shadow: 0 0 0 2px gd-color($primary, lighter);
-
-                    &:not(.focus-visible), &.Button--focusHidden {
-                        box-shadow: none;
-                    }
-                }
+            &:disabled, &[disabled="true"] {
+                border-color: gd-color($background, disabled-button);
+                color: gd-color($foreground, disabled-button);
+                background-color: gd-color($background, disabled-button);
             }
 
-            &-primary {
-                color: gd-color($primary, default-contrast);
-                background-color: gd-color($primary, default);
+            &:focus {
+                box-shadow: 0 0 0 2px gd-color($primary, lighter);
 
-                &:disabled, &[disabled="true"] {
-                    color: gd-color($foreground, disabled-button);
-                    background-color: gd-color($background, disabled-button);
+                &:not(.focus-visible), &.Button--focusHidden {
+                    box-shadow: none;
                 }
+            }
+        }
 
-                &:focus {
-                    box-shadow: 0 0 0 2px gd-color($primary, lighter);
+        &.Button--color-primary {
+            color: gd-color($primary, default-contrast);
+            background-color: gd-color($primary, default);
 
-                    &:not(.focus-visible), &.Button--focusHidden {
-                        box-shadow: none;
-                    }
+            &:disabled, &[disabled="true"] {
+                color: gd-color($foreground, disabled-button);
+                background-color: gd-color($background, disabled-button);
+            }
+
+            &:focus {
+                box-shadow: 0 0 0 2px gd-color($primary, lighter);
+
+                &:not(.focus-visible), &.Button--focusHidden {
+                    box-shadow: none;
                 }
             }
         }
     }
 
     .FlatButton {
-        color: inherit;
-        background: transparent;
         border-radius: 2px;
         border: none;
 

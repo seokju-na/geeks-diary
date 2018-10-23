@@ -86,6 +86,9 @@
 
     <div fxLayout fxLayoutAlign="end" fxLayoutGap="10px" class="WizardCloning__actions">
         <button gd-button id="back-step-button" (click)="goToBack()">Previous</button>
-        <button gd-button id="clone-button" color="primary" [disabled]="" [showSpinner]="">Clone</button>
+        <button gd-button id="clone-button" color="primary" [disabled]="remoteUrlFormControl.invalid || cloneProcessing"
+                (click)="clone()" [showSpinner]="cloneProcessing">
+            Clone
+        </button>
     </div>
 </div>
