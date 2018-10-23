@@ -1,0 +1,85 @@
+@import "../../../ui/style/spacing";
+@import "../../../ui/style/typography";
+@import "./note-calendar-sizes";
+
+.NoteCalendar {
+    &__nav {
+        padding: $spacing-third $spacing-half;
+    }
+
+    &__title {
+        margin: 0;
+        padding: 0 $spacing-half;
+
+        font: {
+            size: $font-size;
+            weight: $font-weight-normal;
+        };
+        line-height: $line-height-condensed;
+    }
+
+    &__table {
+        border: none;
+        padding: 0 $spacing-half;
+
+        thead, tbody {
+            display: block;
+        }
+
+        tr {
+            display: flex;
+            width: 100%;
+
+            > td {
+                flex: 1;
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
+                padding: $note-calendar-cell-spacing;
+                border: 0;
+                outline: 0;
+                text-align: center;
+            }
+        }
+
+        thead > tr {
+            font-size: $font-size-sm;
+            line-height: $line-height-condensed;
+        }
+    }
+
+    &__cell {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 100%;
+        height: $note-calendar-cell-size;
+        text-decoration: none;
+        cursor: pointer;
+
+        > label {
+            cursor: inherit;
+        }
+
+        &--blank {
+            visibility: hidden;
+            cursor: default;
+            border: none;
+            background: transparent;
+        }
+    }
+
+    &__selectedDate {
+        display: flex;
+        align-items: center;
+        padding: $spacing-half $spacing $spacing $spacing;
+
+        > span:nth-child(1) {
+            margin-right: $spacing-third;
+        }
+
+        > span:nth-child(2) {
+            font-weight: $font-weight-semiBold;
+        }
+    }
+}

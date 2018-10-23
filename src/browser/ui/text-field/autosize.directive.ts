@@ -103,13 +103,6 @@ export class AutosizeDirective implements AfterViewInit, DoCheck, OnDestroy {
         textareaClone.style.minHeight = '';
         textareaClone.style.maxHeight = '';
 
-        // In Firefox it happens that textarea elements are always bigger than the specified amount
-        // of rows. This is because Firefox tries to add extra space for the horizontal scrollbar.
-        // As a workaround that removes the extra space for the scrollbar, we can just set overflow
-        // to hidden. This ensures that there is no invalid calculation of the line height.
-        // See Firefox bug report: https://bugzilla.mozilla.org/show_bug.cgi?id=33654
-        textareaClone.style.overflow = 'hidden';
-
         textarea.parentNode.appendChild(textareaClone);
         this.cachedLineHeight = textareaClone.clientHeight;
         textarea.parentNode.removeChild(textareaClone);
@@ -148,7 +141,7 @@ export class AutosizeDirective implements AfterViewInit, DoCheck, OnDestroy {
         textarea.placeholder = '';
 
         // Use the scrollHeight to know how large the textarea *would* be if fit its entire value.
-        textarea.style.height = `${textarea.offsetHeight}px`;
+        textarea.style.height = `${textarea.scrollHeight + 2}px`; // 2 is for border.
         textarea.style.overflow = '';
         textarea.placeholder = placeholderText;
 

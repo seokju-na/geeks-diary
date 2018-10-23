@@ -1,4 +1,5 @@
 @import "../style/typography";
+@import "./title-bar-sizes";
 
 .TitleBar {
     //noinspection CssUnknownProperty
@@ -7,7 +8,7 @@
     justify-content: center;
     flex-grow: 0;
     flex-shrink: 0;
-    height: 22px; // Darwin
+    height: $title-bar-darwin-size;
     zoom: 1;
 
     font: {

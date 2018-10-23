@@ -14,7 +14,11 @@ import {
     typeInElement,
 } from '../../../../test/helpers';
 import { MockDialog } from '../../../../test/mocks/browser';
+import { GitError, GitErrorCodes } from '../../../core/git';
 import { VcsAuthenticationTypes, VcsError, VcsErrorCodes } from '../../../core/vcs';
+import { WORKSPACE_DIR_PATH } from '../../../core/workspace';
+import { SharedModule, WorkspaceService } from '../../shared';
+import { ConfirmDialogComponent, ConfirmDialogData } from '../../shared/confirm-dialog';
 import { Dialog } from '../../ui/dialog';
 import { RadioButtonComponent } from '../../ui/radio';
 import { UiModule } from '../../ui/ui.module';
@@ -28,6 +32,7 @@ describe('browser.wizard.wizardCloning.WizardCloningComponent', () => {
     let component: WizardCloningComponent;
 
     let vcsRemote: VcsRemoteService;
+    let workspace: WorkspaceService;
     let mockDialog: MockDialog;
     let mockLocation: SpyLocation;
 
@@ -86,6 +91,10 @@ describe('browser.wizard.wizardCloning.WizardCloningComponent', () => {
         (loginButtonDe.nativeElement as HTMLButtonElement).click();
     }
 
+    function clickCloneButton(): void {
+        getCloneButtonEl().click();
+    }
+
     fastTestSetup();
 
     beforeAll(async () => {
@@ -99,6 +108,7 @@ describe('browser.wizard.wizardCloning.WizardCloningComponent', () => {
             .configureTestingModule({
                 imports: [
                     UiModule,
+                    SharedModule,
                     VcsModule,
                     NoopModule,
                     RouterTestingModule.withRoutes([
@@ -118,6 +128,7 @@ describe('browser.wizard.wizardCloning.WizardCloningComponent', () => {
 
     beforeEach(() => {
         vcsRemote = TestBed.get(VcsRemoteService);
+        workspace = TestBed.get(WorkspaceService);
         mockDialog = TestBed.get(Dialog);
         mockLocation = TestBed.get(Location);
 
@@ -296,5 +307,62 @@ describe('browser.wizard.wizardCloning.WizardCloningComponent', () => {
         beforeEach(() => {
             fixture.detectChanges();
         });
+
+        it('should clone button to be disabled if remote url input is invalid.', () => {
+            typeInElement('this_is_invalid_remote_url', getRemoteUrlInputEl());
+            getRemoteUrlInputEl().blur();
+            fixture.detectChanges();
+
+            expect(getCloneButtonEl().disabled).toBe(true);
+        });
+
+        it('should show authentication error with alert dialog when clone failed.', fakeAsync(() => {
+            const url = 'https://github.com/owner/repo.git';
+            const remoteUrlInputEl = getRemoteUrlInputEl();
+
+            typeInElement(url, remoteUrlInputEl);
+            remoteUrlInputEl.blur();
+            fixture.detectChanges();
+
+            const error = new GitError(GitErrorCodes.AUTHENTICATION_FAIL);
+
+            spyOn(vcsRemote, 'cloneRepository').and.returnValue(throwError(error));
+
+            clickCloneButton();
+            flush();
+
+            expect(vcsRemote.cloneRepository).toHaveBeenCalledWith(url, WORKSPACE_DIR_PATH);
+
+            const alertDialogRef = mockDialog.getByComponent<ConfirmDialogComponent,
+                ConfirmDialogData,
+                void>(
+                ConfirmDialogComponent,
+            );
+
+            expect(alertDialogRef).toBeDefined();
+            expect(alertDialogRef.config.data.isAlert).toBe(true);
+            expect(alertDialogRef.config.data.body).toEqual(error.errorDescription);
+        }));
+
+        it('should call init workspace after clone complete.', fakeAsync(() => {
+            const url = 'https://github.com/owner/repo.git';
+            const remoteUrlInputEl = getRemoteUrlInputEl();
+
+            typeInElement(url, remoteUrlInputEl);
+            remoteUrlInputEl.blur();
+            fixture.detectChanges();
+
+            spyOn(vcsRemote, 'cloneRepository').and.returnValue(of(null));
+            spyOn(workspace, 'initWorkspace').and.returnValue(of(null));
+
+
+            getCloneButtonEl().click();
+            fixture.detectChanges();
+
+            flush();
+
+            expect(vcsRemote.cloneRepository).toHaveBeenCalledWith(url, WORKSPACE_DIR_PATH);
+            expect(workspace.initWorkspace).toHaveBeenCalled();
+        }));
     });
 });

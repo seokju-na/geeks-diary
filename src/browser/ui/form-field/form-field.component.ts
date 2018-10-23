@@ -5,6 +5,7 @@ import {
     Component,
     ContentChild,
     ContentChildren,
+    ElementRef,
     QueryList,
     ViewEncapsulation,
 } from '@angular/core';
@@ -40,6 +41,7 @@ export class FormFieldComponent implements AfterViewInit {
     private _errorCaught = false;
 
     constructor(
+        public elementRef: ElementRef<HTMLElement>,
         private changeDetector: ChangeDetectorRef,
     ) {
     }

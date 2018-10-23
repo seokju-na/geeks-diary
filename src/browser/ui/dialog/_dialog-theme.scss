@@ -1,2 +1,15 @@
+@import "../style/theming";
+
 @mixin gd-ui-dialog-theme($theme) {
+    $background: map-get($theme, background);
+    $foreground: map-get($theme, foreground);
+
+    gd-dialog-container {
+        background: gd-color($background, dialog);
+        color: gd-color($foreground, text);
+    }
+
+    .DialogHeader {
+        border-bottom: 1px solid gd-color($foreground, divider);
+    }
 }

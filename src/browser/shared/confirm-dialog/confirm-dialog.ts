@@ -14,7 +14,9 @@ export class ConfirmDialog {
             ConfirmDialogData,
             boolean>(
             ConfirmDialogComponent,
-            { data },
+            {
+                data: { ...new ConfirmDialogData(), ...data },
+            },
         );
     }
 }

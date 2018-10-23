@@ -1,4 +1,4 @@
-import { Component, Inject, OnInit, Optional } from '@angular/core';
+import { Component, Inject, Optional } from '@angular/core';
 import { DIALOG_DATA, DialogRef } from '../../ui/dialog';
 import { ConfirmDialogData } from './confirm-dialog-data';
 
@@ -8,7 +8,7 @@ import { ConfirmDialogData } from './confirm-dialog-data';
     templateUrl: './confirm-dialog.component.html',
     styleUrls: ['./confirm-dialog.component.scss'],
 })
-export class ConfirmDialogComponent implements OnInit {
+export class ConfirmDialogComponent {
 
     constructor(
         @Optional() @Inject(DIALOG_DATA) public data: ConfirmDialogData,
@@ -16,7 +16,7 @@ export class ConfirmDialogComponent implements OnInit {
     ) {
     }
 
-    ngOnInit() {
+    closeWith(result?: boolean): void {
+        this.dialogRef.close(result);
     }
-
 }

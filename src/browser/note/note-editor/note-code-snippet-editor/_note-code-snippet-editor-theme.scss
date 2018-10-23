@@ -1,0 +1,61 @@
+@import "../../../ui/style/theming";
+@import "../../../ui/style/spacing";
+
+@mixin gd-note-code-snippet-editor-theme($theme) {
+    $primary: map-get($theme, primary);
+    $background: map-get($theme, background);
+    $foreground: map-get($theme, foreground);
+
+    .NoteCodeSnippetEditor {
+        &__header {
+            border: 1px solid gd-color($foreground, divider);
+            background-color: gd-color($background, background-highlight);
+        }
+
+        &__wrapper {
+            border-left: 1px solid gd-color($foreground, divider);
+            border-right: 1px solid gd-color($foreground, divider);
+            border-bottom: 1px solid gd-color($foreground, divider);
+            border-bottom-left-radius: 4px;
+            border-bottom-right-radius: 4px;
+            overflow: hidden;
+        }
+
+        span.cm-keyword {
+            color: gd-color($primary);
+        }
+
+        span.cm-type, span.cm-property, span.cm-builtin {
+            color: gd-color($foreground, secondary-text);
+        }
+
+        span.cm-number {
+            color: gd-color($primary, darker);
+        }
+
+        span.cm-comment {
+            color: gd-color($color-green, 800);
+        }
+
+        span.cm-string {
+            color: map-get($color-deep-orange, 600);
+        }
+
+        span.cm-variable-2 {
+            color: gd-color($primary, darker);
+        }
+
+        span.cm-atom {
+            color: map-get($color-cyan, 600);
+        }
+
+        &--focused {
+            .NoteCodeSnippetEditor__wrapper {
+            }
+        }
+
+        .CodeMirror-activeline-background {
+            background: gd-color($background, background-highlight, .65);
+        }
+    }
+}

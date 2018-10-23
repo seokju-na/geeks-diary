@@ -1,3 +1,5 @@
+@import "../style/spacing";
+@import "../style/typography";
 @import "./dialog-sizes";
 
 gd-dialog-container {
@@ -10,15 +12,60 @@ gd-dialog-container {
 
     width: inherit;
     height: inherit;
+    min-width: inherit;
+    max-width: inherit;
     min-height: inherit;
     max-height: inherit;
 }
 
 .DialogHeader {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    height: $dialog-header-size;
+    padding: 1px $spacing 0 $spacing;
+    border-bottom: 1px solid;
+}
+
+.DialogTitle {
+    margin: 0;
+    font-size: $font-size;
+    font-weight: $font-weight-semiBold;
+    line-height: $line-height-condensed;
 }
 
 .DialogContent {
+    display: block;
+    margin: 0;
+    padding: $spacing;
+    max-height: 60vh;
+    overflow: auto;
 }
 
 .DialogActions {
+    padding: $spacing-half $spacing $spacing $spacing;
+    display: flex;
+    flex-wrap: wrap;
+
+    button + button {
+        margin-left: $spacing-half;
+    }
+
+    &--align {
+        &-start {
+            justify-content: flex-start;
+        }
+
+        &-center {
+            justify-content: center;
+        }
+
+        &-end {
+            justify-content: flex-end;
+        }
+    }
+}
+
+.DialogBackdrop {
+    background: rgba(0, 0, 0, .5);
 }

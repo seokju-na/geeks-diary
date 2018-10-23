@@ -1,0 +1,27 @@
+@import "../../ui/style/spacing";
+@import "../../ui/style/theming";
+
+@mixin gd-note-editor-theme($theme) {
+    $background: map-get($theme, background);
+    $foreground: map-get($theme, foreground);
+
+    .NoteEditor {
+        &__titleTextarea {
+            border-bottom: 1px solid gd-color($foreground, divider);
+
+            > textarea {
+                &:focus {
+                    border: 1px solid gd-color($foreground, divider) !important;
+                }
+
+                &::placeholder {
+                    color: gd-color($foreground, secondary-text);
+                }
+            }
+        }
+    }
+
+    .NoteSnippetEditorPane {
+        margin-bottom: $spacing;
+    }
+}

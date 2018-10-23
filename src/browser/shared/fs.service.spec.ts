@@ -1,3 +1,0 @@
-describe('browser.shared.FsService', () => {
-
-});

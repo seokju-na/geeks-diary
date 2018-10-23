@@ -2,7 +2,7 @@ import { Inject, Injectable } from '@angular/core';
 import { from, Observable, of } from 'rxjs';
 import { mapTo, switchMap } from 'rxjs/operators';
 import { VcsAuthenticationInfo } from '../../../core/vcs';
-import { AUTHENTICATION_DATABASE, AuthenticationDatabase } from '../../shared';
+import { AUTHENTICATION_DATABASE, AuthenticationDatabase, GitService } from '../../shared';
 import { VcsRemoteProvider } from './vcs-remote-provider';
 import { VcsRemoteProviderFactory, VcsRemoteProviderType } from './vcs-remote-provider-factory';
 
@@ -24,6 +24,7 @@ export class VcsRemoteService {
     constructor(
         private providerFactory: VcsRemoteProviderFactory,
         @Inject(AUTHENTICATION_DATABASE) private authDB: AuthenticationDatabase,
+        private git: GitService,
     ) {
     }
 
@@ -57,7 +58,7 @@ export class VcsRemoteService {
         const opts = {
             ...(new VcsRemoteLoginOptions()),
             ...options,
-        };
+        } as VcsRemoteLoginOptions;
 
         return this._provider.authorizeByBasic(username, password).pipe(
             switchMap(authInfo => opts.instanceLogin
@@ -76,13 +77,31 @@ export class VcsRemoteService {
         const opts = {
             ...(new VcsRemoteLoginOptions()),
             ...options,
-        };
+        } as VcsRemoteLoginOptions;
 
         return this._provider.authorizeByOauth2Token(token).pipe(
             switchMap(authInfo => opts.instanceLogin
                 ? of(authInfo)
                 : this.storeInAuthInfoDB(authInfo),
             ),
+        );
+    }
+
+    cloneRepository(url: string, localPath: string): Observable<void> {
+        const getLastAuth = async (): Promise<VcsAuthenticationInfo | null> => {
+            if (await this.isAuthenticationInfoExists()) {
+                return this.authDB.authentications.toCollection().last();
+            }
+
+            return null;
+        };
+
+        return from(getLastAuth()).pipe(
+            switchMap(authInfo => this.git.cloneRepository(
+                url,
+                localPath,
+                authInfo,
+            )),
         );
     }
 

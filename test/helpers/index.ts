@@ -8,3 +8,4 @@ export * from './form-field';
 export * from './dummies';
 export * from './sampling';
 export * from './noop';
+export * from './expect-dom';

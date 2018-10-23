@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
-import { fastTestSetup } from '../../../../test/helpers';
+import { expectDom, fastTestSetup } from '../../../../test/helpers';
 import { ButtonModule } from './button.module';
 
 
@@ -43,9 +43,6 @@ describe('browser.ui.button', () => {
         component = fixture.componentInstance;
     });
 
-    describe('gd-button', () => {
-    });
-
     describe('gd-icon-button', () => {
         let iconButtonEl: HTMLButtonElement;
 
@@ -55,12 +52,8 @@ describe('browser.ui.button', () => {
             ).nativeElement as HTMLButtonElement;
         });
 
-        it('should host element contain \'Button\' class.', () => {
-            expect(iconButtonEl.classList.contains('Button')).toBe(true);
-        });
-
         it('should host element contain \'IconButton\' class.', () => {
-            expect(iconButtonEl.classList.contains('IconButton')).toBe(true);
+            expectDom(iconButtonEl).toContainClasses('IconButton');
         });
     });
 
@@ -73,12 +66,8 @@ describe('browser.ui.button', () => {
             ).nativeElement as HTMLButtonElement;
         });
 
-        it('should host element contain \'Button\' class.', () => {
-            expect(flatButtonEl.classList.contains('Button')).toBe(true);
-        });
-
         it('should host element contain \'FlatButton\' class.', () => {
-            expect(flatButtonEl.classList.contains('FlatButton')).toBe(true);
+            expectDom(flatButtonEl).toContainClasses('FlatButton');
         });
     });
 });

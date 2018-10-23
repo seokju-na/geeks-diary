@@ -1,25 +1,30 @@
 import { Location } from '@angular/common';
 import { SpyLocation } from '@angular/common/testing';
-import { ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
+import { ComponentFixture, fakeAsync, flush, TestBed, tick } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
 import { RouterTestingModule } from '@angular/router/testing';
+import { of, throwError } from 'rxjs';
 import { fastTestSetup, NoopComponent, NoopModule, sample, sampleWithout } from '../../../../test/helpers';
 import { MockDialog } from '../../../../test/mocks/browser';
-import { WorkspaceInfo } from '../../../core/workspace';
-import { SharedModule, WORKSPACE_DATABASE, WorkspaceDatabase } from '../../shared';
+import { WorkspaceError, WorkspaceErrorCodes, WorkspaceInfo } from '../../../core/workspace';
+import { SharedModule, WORKSPACE_DATABASE, WorkspaceDatabase, WorkspaceService } from '../../shared';
+import { ConfirmDialogComponent, ConfirmDialogData } from '../../shared/confirm-dialog';
 import { ButtonToggleComponent } from '../../ui/button-toggle';
+import { Dialog } from '../../ui/dialog';
 import { Themes, ThemeService } from '../../ui/style';
 import { UiModule } from '../../ui/ui.module';
 import { WizardChoosingComponent } from './wizard-choosing.component';
 
 
-describe('WizardChoosingComponent', () => {
+describe('browser.wizard.wizardChoosing.WizardChoosingComponent', () => {
     let fixture: ComponentFixture<WizardChoosingComponent>;
     let component: WizardChoosingComponent;
 
     let mockLocation: SpyLocation;
     let theme: ThemeService;
+    let workspace: WorkspaceService;
     let workspaceDB: WorkspaceDatabase;
+    let mockDialog: MockDialog;
 
     const getCloningAnchorEl = (): HTMLAnchorElement =>
         fixture.debugElement.query(By.css('#clone-remote-button')).nativeElement as HTMLAnchorElement;
@@ -31,6 +36,11 @@ describe('WizardChoosingComponent', () => {
 
     function setCurrentTheme(_theme: Themes): void {
         spyOnProperty(theme, 'currentTheme', 'get').and.returnValue(_theme);
+    }
+
+    function clickCreateNewWorkspaceButton(): void {
+        const button = fixture.debugElement.query(By.css('#create-new-repository-button'));
+        (button.nativeElement as HTMLButtonElement).click();
     }
 
     fastTestSetup();
@@ -61,13 +71,47 @@ describe('WizardChoosingComponent', () => {
     beforeEach(() => {
         mockLocation = TestBed.get(Location);
         theme = TestBed.get(ThemeService);
+        workspace = TestBed.get(WorkspaceService);
         workspaceDB = TestBed.get(WORKSPACE_DATABASE);
+        mockDialog = TestBed.get(Dialog);
 
         fixture = TestBed.createComponent(WizardChoosingComponent);
         component = fixture.componentInstance;
     });
 
     describe('create new workspace', () => {
+        it('should init workspace when click create new workspace button.', fakeAsync(() => {
+            fixture.detectChanges();
+
+            spyOn(workspace, 'initWorkspace').and.returnValue(of(null));
+
+            clickCreateNewWorkspaceButton();
+            flush();
+
+            expect(workspace.initWorkspace).toHaveBeenCalled();
+        }));
+
+        it('should open alert dialog if workspace error has caught when click create new '
+            + 'workspace button.', fakeAsync(() => {
+            fixture.detectChanges();
+
+            const error = new WorkspaceError(WorkspaceErrorCodes.WORKSPACE_ALREADY_EXISTS);
+
+            spyOn(workspace, 'initWorkspace').and.returnValue(throwError(error));
+
+            clickCreateNewWorkspaceButton();
+            flush();
+
+            const alertDialogRef = mockDialog.getByComponent<ConfirmDialogComponent,
+                ConfirmDialogData,
+                void>(
+                ConfirmDialogComponent,
+            );
+
+            expect(alertDialogRef).toBeDefined();
+            expect(alertDialogRef.config.data.isAlert).toBe(true);
+            expect(alertDialogRef.config.data.body).toEqual(error.message);
+        }));
     });
 
     describe('clone remote', () => {

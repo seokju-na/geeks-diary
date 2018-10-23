@@ -20,7 +20,7 @@
     <section fxFlex="1 0 auto" fxLayout="column" fxLayoutAlign="center center">
         <gd-icon name="plus" [bigSize]="true"></gd-icon>
         <p>Create a new workspace with git initialized</p>
-        <button gd-button id="create-new-repository-button">
+        <button gd-button (click)="createNewWorkspace()" id="create-new-repository-button">
             Create New Workspace
         </button>
     </section>

@@ -21,15 +21,15 @@ export class DialogConfig<D = any> {
     disableEscapeKeyDownClose?: boolean = false;
 
     /** Whether the dialog has a background. */
-    hasBackdrop?: boolean = false;
+    hasBackdrop?: boolean = true;
 
     width?: string = '';
     maxWidth?: string = '80vw';
-    minWidth?: string = '';
+    minWidth?: string = '250px';
 
     height?: string = '';
     maxHeight?: string = '';
-    minHeight?: string = '';
+    minHeight?: string = '85px';
 
     position?: DialogPosition;
 
