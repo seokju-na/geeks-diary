@@ -1,6 +1,7 @@
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { EffectsModule } from '@ngrx/effects';
 import { StoreModule } from '@ngrx/store';
 import { StoreDevtoolsModule } from '@ngrx/store-devtools';
 import { NoteModule } from '../note';
@@ -17,6 +18,7 @@ import { appReducer } from './app.reducer';
         UiModule,
         StoreModule.forRoot(appReducer),
         StoreDevtoolsModule.instrument(),
+        EffectsModule.forRoot([]),
         AppLayoutModule,
         NoteModule,
     ],
