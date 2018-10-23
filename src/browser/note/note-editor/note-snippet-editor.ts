@@ -228,6 +228,10 @@ export abstract class NoteSnippetEditor<T = any> implements OnInit {
     }
 
     protected onValueChanged(): void {
+        this.emitEvent(new NoteSnippetEditorValueChangedEvent(
+            this._ref,
+            { value: this.getRawValue() },
+        ));
     }
 
     protected emitEvent(event: NoteSnippetEditorEvent): void {
