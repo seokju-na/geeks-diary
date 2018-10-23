@@ -68,22 +68,21 @@ describe('browser.note.noteEditor.NoteEditorService', () => {
                 basicFixture.content,
             ).subscribe(callback);
 
-            const stubs = mockFs.expectMany([
-                {
-                    methodName: 'writeJsonFile',
-                    args: [basicFixture.noteItem.filePath, FsMatchLiterals.ANY],
-                },
-                {
-                    methodName: 'writeFile',
-                    args: [
-                        basicFixture.note.contentFilePath,
-                        basicFixture.contentParsedValue,
-                    ],
-                },
-            ]);
-
-            stubs[0].flush();
-            stubs[1].flush();
+            mockFs
+                .expectMany([
+                    {
+                        methodName: 'writeJsonFile',
+                        args: [basicFixture.noteItem.filePath, FsMatchLiterals.ANY],
+                    },
+                    {
+                        methodName: 'writeFile',
+                        args: [
+                            basicFixture.note.contentFilePath,
+                            FsMatchLiterals.ANY,
+                        ],
+                    },
+                ])
+                .forEach(stub => stub.flush());
 
             expect(callback).toHaveBeenCalled();
             subscription.unsubscribe();
