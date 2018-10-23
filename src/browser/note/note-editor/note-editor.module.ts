@@ -2,7 +2,6 @@ import { DatePipe } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { StackModule } from '../../stack';
 import { UiModule } from '../../ui/ui.module';
-import { NoteCodeSnippetActionDialog } from './note-code-snippet-action-dialog/note-code-snippet-action-dialog';
 import { NoteCodeSnippetEditorComponent } from './note-code-snippet-editor/note-code-snippet-editor.component';
 import { NoteEditorComponent } from './note-editor.component';
 import { NoteEditorService } from './note-editor.service';
@@ -32,7 +31,6 @@ import { NoteHeaderComponent } from './note-header/note-header.component';
         DatePipe,
         NoteEditorService,
         NoteSnippetListManager,
-        NoteCodeSnippetActionDialog,
     ],
     exports: [
         NoteEditorComponent,
