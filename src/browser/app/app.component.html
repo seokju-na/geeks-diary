@@ -2,7 +2,17 @@
     <gd-title-bar></gd-title-bar>
     <div fxLayout fxFlex="1 0 auto" class="App__container">
         <gd-app-layout-sidenav fxFlex="0 0 auto" [outlets]="sidenavOutlets" class="App__aside"></gd-app-layout-sidenav>
-        <main fxFlex="1 0 auto" class="App__content">
+        <main fxFlex="1 1 auto" fxLayout="column"
+              [class.App__content--show]="noteContentLoaded | async" class="App__content">
+            <gd-note-header></gd-note-header>
+            <div fxLayout class="App__sections">
+                <section>
+                    <gd-note-editor></gd-note-editor>
+                </section>
+                <section>
+                    <gd-note-preview></gd-note-preview>
+                </section>
+            </div>
         </main>
     </div>
 </div>
