@@ -1,7 +1,6 @@
 import { Component, ElementRef, OnDestroy, OnInit, ViewChild, ViewContainerRef } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { Subscription } from 'rxjs';
-import { NoteCodeSnippetActionDialog } from './note-code-snippet-action-dialog/note-code-snippet-action-dialog';
 import { NoteSnippetListManager } from './note-snippet-list-manager';
 
 
@@ -22,7 +21,6 @@ export class NoteEditorComponent implements OnInit, OnDestroy {
     constructor(
         private snippetListManager: NoteSnippetListManager,
         private viewContainerRef: ViewContainerRef,
-        private dialog: NoteCodeSnippetActionDialog,
     ) {
     }
 
@@ -41,10 +39,6 @@ export class NoteEditorComponent implements OnInit, OnDestroy {
 
     ngOnDestroy(): void {
         this.listTopFocusOutSubscription.unsubscribe();
-    }
-
-    open(): void {
-        this.dialog.open({ actionType: 'create' });
     }
 
     moveFocusToSnippetEditor(event: KeyboardEvent): void {
