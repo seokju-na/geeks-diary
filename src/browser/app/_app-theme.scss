@@ -1,0 +1,13 @@
+@import "../ui/style/theming";
+
+@mixin gd-app-theme($theme) {
+    $foreground: map-get($theme, foreground);
+
+    .App {
+        &__sections {
+            > section:first-child {
+                border-right: 1px solid gd-color($foreground, divider);
+            }
+        }
+    }
+}

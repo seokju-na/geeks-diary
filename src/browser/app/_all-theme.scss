@@ -1,5 +1,7 @@
+@import "./app-theme";
 @import "./app-layout/app-layout-sidenav/app-layout-sidenav-theme";
 
 @mixin gd-app-all-theme($theme) {
+    @include gd-app-theme($theme);
     @include gd-app-layout-sidenav-theme($theme);
 }
