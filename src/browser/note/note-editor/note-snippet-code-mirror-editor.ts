@@ -50,7 +50,7 @@ import 'codemirror/mode/vb/vb.js';
 import 'codemirror/mode/vbscript/vbscript.js';
 import 'codemirror/mode/xml/xml.js';
 import 'codemirror/mode/yaml/yaml.js';
-import { NoteSnippetEditor } from './note-snippet-editor';
+import { NoteSnippetEditor, NoteSnippetEditorBlurredEvent, NoteSnippetEditorFocusedEvent } from './note-snippet-editor';
 
 
 export type CodeMirrorEditor = CodeMirror.Editor;
@@ -161,12 +161,12 @@ export abstract class NoteSnippetCodeMirrorEditor extends NoteSnippetEditor<Code
 
         this.focusEventListener = () => {
             this.handleFocus(true);
-            // this.emitEvent(NoteSnippetEditorEventNames.FOCUSED);
+            this.emitEvent(new NoteSnippetEditorFocusedEvent(this._ref));
         };
 
         this.blurEventListener = () => {
             this.handleFocus(false);
-            // this.emitEvent(NoteSnippetEditorEventNames.BLURRED);
+            this.emitEvent(new NoteSnippetEditorBlurredEvent(this._ref));
         };
 
         this._editor.on('change', this.changeEventListener);
