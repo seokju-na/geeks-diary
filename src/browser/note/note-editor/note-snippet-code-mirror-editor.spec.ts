@@ -4,7 +4,10 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { dispatchKeyboardEvent, fastTestSetup } from '../../../../test/helpers';
 import { CodeMirrorEditorConfiguration, NoteSnippetCodeMirrorEditor } from './note-snippet-code-mirror-editor';
 import {
-    NoteSnippetEditorConfig, NoteSnippetEditorMoveFocusToNextEvent,
+    NoteSnippetEditorBlurredEvent,
+    NoteSnippetEditorConfig,
+    NoteSnippetEditorFocusedEvent,
+    NoteSnippetEditorMoveFocusToNextEvent,
     NoteSnippetEditorMoveFocusToPreviousEvent,
     NoteSnippetEditorRef,
     NoteSnippetEditorRemoveThisEvent,
@@ -188,6 +191,40 @@ describe('browser.note.noteEditor.NoteSnippetCodeMirrorEditor', () => {
             expect(callback).toHaveBeenCalledWith(
                 new NoteSnippetEditorMoveFocusToNextEvent(component._ref),
             );
+            subscription.unsubscribe();
+        });
+    });
+
+    /**
+     * TODO : Hack code mirror editor focus mechanism.
+     */
+    xdescribe('handle focus', () => {
+        it('should fire \'FOCUSED\' event when editor focused.', () => {
+            const callback = jasmine.createSpy('events callback');
+            const subscription = component._ref.events.asObservable().subscribe(callback);
+
+            spyOn(component, 'handleFocus');
+
+            fixture.detectChanges();
+            component._editor.getInputField().focus();
+
+            expect(callback).toHaveBeenCalledWith(new NoteSnippetEditorFocusedEvent(component._ref));
+            expect(component.handleFocus).toHaveBeenCalledWith(true);
+            subscription.unsubscribe();
+        });
+
+        it('should fire \'BLURRED\' event when editor blurred.', () => {
+            fixture.detectChanges();
+            component._editor.focus();
+
+            const callback = jasmine.createSpy('events callback');
+            const subscription = component._ref.events.asObservable().subscribe(callback);
+
+            spyOn(component, 'handleFocus');
+            (document.activeElement as HTMLElement).blur();
+
+            expect(callback).toHaveBeenCalledWith(new NoteSnippetEditorBlurredEvent(component._ref));
+            expect(component.handleFocus).toHaveBeenCalledWith(false);
             subscription.unsubscribe();
         });
     });
