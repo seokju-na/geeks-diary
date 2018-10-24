@@ -17,6 +17,8 @@ export enum NoteEditorActionTypes {
     MOVE_FOCUS_TO_NEXT_SNIPPET = '[NoteEditor] Move focus to next snippet',
     SAVE_NOTE_CONTENT_COMPLETE = '[NoteEditor] Save note content complete',
     SAVE_NOTE_CONTENT_ERROR = '[NoteEditor] Save note content error',
+    FOCUS_SNIPPET = '[NoteEditor] Focus snippet',
+    BLUR_SNIPPET = '[NoteEditor] Blur snippet',
 }
 
 
@@ -121,6 +123,19 @@ export class SaveNoteContentErrorAction implements Action {
 }
 
 
+export class FocusSnippetAction implements Action {
+    readonly type = NoteEditorActionTypes.FOCUS_SNIPPET;
+
+    constructor(readonly payload: { index: number }) {
+    }
+}
+
+
+export class BlurSnippetAction implements Action {
+    readonly type = NoteEditorActionTypes.BLUR_SNIPPET;
+}
+
+
 export type NoteEditorAction =
     InitNoteEditorAction
     | LoadNoteContentAction
@@ -134,4 +149,6 @@ export type NoteEditorAction =
     | MoveFocusToPreviousSnippetAction
     | MoveFocusToNextSnippetAction
     | SaveNoteContentCompleteAction
-    | SaveNoteContentErrorAction;
+    | SaveNoteContentErrorAction
+    | FocusSnippetAction
+    | BlurSnippetAction;

@@ -142,6 +142,18 @@ export function noteEditorReducer(
                 action.payload.patch,
             );
 
+        case NoteEditorActionTypes.FOCUS_SNIPPET:
+            return {
+                ...state,
+                activeSnippetIndex: action.payload.index,
+            };
+
+        case NoteEditorActionTypes.BLUR_SNIPPET:
+            return {
+                ...state,
+                activeSnippetIndex: null,
+            };
+
         default:
             return state;
     }
