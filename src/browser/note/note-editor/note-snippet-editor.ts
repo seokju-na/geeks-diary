@@ -29,6 +29,8 @@ export enum NoteSnippetEditorEventNames {
     MOVE_FOCUS_TO_PREVIOUS = 'noteSnippetEditorMoveFocusToPrevious',
     MOVE_FOCUS_TO_NEXT = 'noteSnippetEditorMoveFocusToNext',
     VALUE_CHANGED = 'noteSnippetEditorValueChanged',
+    FOCUSED = 'noteSnippetEditorFocused',
+    BLURRED = 'noteSnippetEditorBlurred',
 }
 
 
@@ -37,7 +39,9 @@ export type NoteSnippetEditorEvent =
     | NoteSnippetEditorSwitchSnippetAfterThisEvent
     | NoteSnippetEditorMoveFocusToPreviousEvent
     | NoteSnippetEditorMoveFocusToNextEvent
-    | NoteSnippetEditorValueChangedEvent;
+    | NoteSnippetEditorValueChangedEvent
+    | NoteSnippetEditorFocusedEvent
+    | NoteSnippetEditorBlurredEvent;
 
 
 interface NoteSnippetEditorEventInterface {
@@ -86,6 +90,22 @@ export class NoteSnippetEditorValueChangedEvent implements NoteSnippetEditorEven
         public readonly source: NoteSnippetEditorRef<any>,
         public readonly payload: { value: string },
     ) {
+    }
+}
+
+
+export class NoteSnippetEditorFocusedEvent implements NoteSnippetEditorEventInterface {
+    readonly name = NoteSnippetEditorEventNames.FOCUSED;
+
+    constructor(public readonly source: NoteSnippetEditorRef<any>) {
+    }
+}
+
+
+export class NoteSnippetEditorBlurredEvent implements NoteSnippetEditorEventInterface {
+    readonly name = NoteSnippetEditorEventNames.BLURRED;
+
+    constructor(public readonly source: NoteSnippetEditorRef<any>) {
     }
 }
 
