@@ -1,146 +1,136 @@
-import { IpcMain, IpcRenderer } from 'electron';
+ import { IpcMain, IpcRenderer } from 'electron';
 import { makePropDecorator } from './decorators';
 
 
-type IpcHubActionHandler<T = any, R = any> = (data?: T) => Promise<R>;
+type IpcActionHandler<T, R> = (data?: T) => Promise<R>;
 
-
-export interface IpcRequest<T> {
-    action: string;
-    data?: T;
+export interface IpcAction<D> {
+    name: string;
+    data?: D;
 }
 
-
-export interface IpcResponse<R = any> {
+export interface IpcActionResponse<R = any> {
     result?: R;
     error?: any;
 }
 
-
-function getResponseChannelName(namespace: string, action: string): string {
-    return `${namespace}-${action}-response`;
-}
-
-
-interface IpcActionHandlerDecorator {
-    (action: string): any;
-    new (action: string): any;
+function makeResponseChannelName(namespace: string, actionName: string): string {
+    return `${namespace}-${actionName}-response`;
 }
 
 
 /**
- * Ipc action handler registering decorator.
+ * Decorator for registering action handler in specific class.
  *
  * @example
- * class SomeService extends Service {
+ * class SomeService {
+ *     ...
+ *
  *     @IpcActionHandler('create')
- *     async createSomething(data?: any): Promise<Something> {
+ *     async createSomething(data?: RequestData): Promise<ResponseData> {
  *         ...
  *     }
- *     ...
  * }
  */
-export const IpcActionHandler: IpcActionHandlerDecorator =
-    makePropDecorator('IpcActionHandler', (action: string) => ({ action }));
+export const IpcActionHandler: {
+    (actionName: string): any;
+    new(actionName: string): any;
+} = makePropDecorator('IpcActionHandler', (actionName: string) => ({ actionName }));
 
 
 /**
- * Ipc hub used in main process.
- *
- * When action requested, handle the request and send response
- * which generated from registered handler.
+ * Ipc action server used in main process.
+ * When action is requested, handle the action and response result or error which generated from registered handlers.
  *
  * @example
- * const hub = new IpcServer('serviceName');
+ * const server = new IpcActionServer('service-id');
  *
- * hub.registerActionHandler('actionA', async (data) => {
+ * server.setActionHandler<string, string>('actionA', async (data: string) => {
  *     const result = await someAsyncTask(data);
- *     return result;
+ *     return result as string;
  * });
  */
-export class IpcServer {
-    private readonly ipcMain: IpcMain;
-    private readonly handlers = new Map<string, IpcHubActionHandler>();
-    private errorHandler: (error: any) => any;
-    private readonly listener: any;
+export class IpcActionServer {
+    readonly ipc: IpcMain;
 
-    constructor(readonly namespace: string) {
-        this.ipcMain = require('electron').ipcMain;
-        this.listener = (event: any, request: IpcRequest<any>) =>
-            this.handleEvent(event, request);
-        this.ipcMain.on(this.namespace, this.listener);
+    // private readonly actionHandler
+    private readonly actionHandlers = new Map<string, IpcActionHandler<any, any>>();
+    private actionErrorHandler: (error: any) => any;
+    private readonly actionListener: any;
+
+    constructor(public readonly namespace: string) {
+        this.ipc = require('electron').ipcMain;
+
+        this.actionListener = (event: any, action: IpcAction<any>) => this.handleIpcEvent(event, action);
+        this.ipc.on(this.namespace, this.actionListener);
     }
 
     destroy(): void {
-        this.handlers.clear();
-        this.ipcMain.removeListener(this.namespace, this.listener);
+        this.actionHandlers.clear();
+        this.ipc.removeListener(this.namespace, this.actionListener);
     }
 
-    registerActionHandler(action: string, handler: IpcHubActionHandler): void {
-        this.handlers.set(action, handler);
+    setActionHandler<D, R>(actionName: string, handler: IpcActionHandler<D, R>): this {
+        this.actionHandlers.set(actionName, handler);
+        return this;
     }
 
-    setErrorHandler(handler: (error: any) => any): void {
-        this.errorHandler = handler;
+    setActionErrorHandler(handler: (error: any) => any): this {
+        this.actionErrorHandler = handler;
+        return this;
     }
 
-    private async handleEvent(event: any, request: IpcRequest<any>): Promise<void> {
-        const responseChannelName = getResponseChannelName(this.namespace, request.action);
-
-        if (!this.handlers.has(request.action)) {
+    private async handleIpcEvent(event: any, action: IpcAction<any>): Promise<void> {
+        if (!this.actionHandlers.has(action.name)) {
             return;
         }
 
-        const handler = this.handlers.get(request.action);
+        const handler = this.actionHandlers.get(action.name);
+
         let result = null;
         let error = null;
 
         try {
-            result = await handler(request.data);
+            result = await handler(action.data);
         } catch (err) {
-            if (this.errorHandler) {
-                error = this.errorHandler(err);
-            } else {
-                error = err;
-            }
+            error = this.actionErrorHandler ? this.actionErrorHandler(err) : err;
         }
 
-        event.sender.send(responseChannelName, { result, error });
+        event.sender.send(makeResponseChannelName(this.namespace, action.name), { result, error } as IpcActionResponse);
     }
 }
 
 
 /**
- * Ipc hub client used in renderer process.
+ * Ipc action client used in renderer process.
  *
  * @example
- * const client = new IpcClient('serviceName');
- * const result = await client.request<RequestDate, ResponseDate>('actionA', data);
+ * const client = new IpcActionClient('service-id');
+ * const result = await client.performAction<RequestData, ResponseData>('actionA', data);
  */
-export class IpcClient {
-    private readonly ipcRenderer: IpcRenderer;
+export class IpcActionClient {
+    readonly ipc: IpcRenderer;
 
-    constructor(readonly namespace: string) {
-        this.ipcRenderer = require('electron').ipcRenderer;
+    constructor(public readonly namespace: string) {
+        this.ipc = require('electron').ipcRenderer;
     }
 
-    request<T, R>(action: string, data?: T): Promise<R> {
+    /** Send action to server which handles ipc main. */
+    performAction<D, R>(actionName: string, data?: D): Promise<R> {
         return new Promise<R>((resolve, reject) => {
-            const responseChannelName = getResponseChannelName(this.namespace, action);
-            const request: IpcRequest<T> = { action, data };
+            const channelName = makeResponseChannelName(this.namespace, actionName);
+            const action: IpcAction<D> = { name: actionName, data };
 
-            this.ipcRenderer.once(
-                responseChannelName,
-                (event: any, response: IpcResponse) => {
-                    if (response.error) {
-                        reject(response.error);
-                    } else {
-                        resolve(response.result);
-                    }
-                },
-            );
+            // Listen for response event for once.
+            this.ipc.once(channelName, (event: any, response: IpcActionResponse<R>) => {
+                if (response.error) {
+                    reject(response.error);
+                } else {
+                    resolve(response.result);
+                }
+            });
 
-            this.ipcRenderer.send(this.namespace, request);
+            this.ipc.send(this.namespace, action);
         });
     }
 }

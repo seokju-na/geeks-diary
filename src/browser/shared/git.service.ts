@@ -2,12 +2,12 @@ import { Injectable } from '@angular/core';
 import { from, Observable } from 'rxjs';
 import { GitCloneOptions } from '../../core/git';
 import { VcsAuthenticationInfo } from '../../core/vcs';
-import { IpcClient } from '../../libs/ipc';
+import { IpcActionClient } from '../../libs/ipc';
 
 
 @Injectable()
 export class GitService {
-    private ipcClient = new IpcClient('git');
+    private ipcClient = new IpcActionClient('git');
 
     cloneRepository(
         url: string,
@@ -15,7 +15,7 @@ export class GitService {
         authentication?: VcsAuthenticationInfo,
     ): Observable<void> {
 
-        const task = this.ipcClient.request<GitCloneOptions, void>(
+        const task = this.ipcClient.performAction<GitCloneOptions, void>(
             'cloneRepository',
             { url, localPath, authentication },
         );
