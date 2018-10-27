@@ -46,7 +46,6 @@ export class NoteTextSnippetEditorComponent extends NoteSnippetCodeMirrorEditor 
                 Tab: 'autoIndentMarkdownList',
                 'Shift-Tab': 'autoUnindentMarkdownList',
             },
-
         };
     }
 
