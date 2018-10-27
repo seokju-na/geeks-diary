@@ -1,3 +1,4 @@
+import { ipcRenderer } from 'electron';
 import { ComponentFixture, getTestBed, TestBed } from '@angular/core/testing';
 
 
@@ -34,6 +35,13 @@ export function fastTestSetup(): void {
     afterEach(() => {
         testBedApi._activeFixtures.forEach((fixture: ComponentFixture<any>) => fixture.destroy());
         testBedApi._instantiated = false;
+
+        // Remove all ipc listeners because memory leaks happens if we keep it.
+        // Note that it's not clean and it does not match the subject of this function.
+        // But I dit this things because it could solve the problem effectively.
+        ipcRenderer.removeAllListeners('git');
+        ipcRenderer.removeAllListeners('workspace');
+        ipcRenderer.removeAllListeners('menu');
     });
 
     afterAll(() => {
