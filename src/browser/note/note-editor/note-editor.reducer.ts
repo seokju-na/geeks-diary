@@ -14,7 +14,7 @@ export function withNoteSnippetContentInsertion(
     const snippets = [...state.selectedNoteContent.snippets];
 
     // Insert new snippet after index.
-    snippets.splice(index + 1, 0, snippetContent);
+    snippets.splice(index, 0, snippetContent);
 
     return {
         ...state,
@@ -141,6 +141,18 @@ export function noteEditorReducer(
                 action.payload.index,
                 action.payload.patch,
             );
+
+        case NoteEditorActionTypes.FOCUS_SNIPPET:
+            return {
+                ...state,
+                activeSnippetIndex: action.payload.index,
+            };
+
+        case NoteEditorActionTypes.BLUR_SNIPPET:
+            return {
+                ...state,
+                activeSnippetIndex: null,
+            };
 
         default:
             return state;

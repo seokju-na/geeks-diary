@@ -11,10 +11,10 @@
     min-height: 100%;
     overflow-y: auto;
     scroll-behavior: smooth;
-    padding: $spacing;
+    padding: $spacing ($spacing + $spacing-half);
 
     &__title {
-        padding: 0 $spacing;
+        padding: $spacing 0;
 
         > h1 {
             margin: 0;

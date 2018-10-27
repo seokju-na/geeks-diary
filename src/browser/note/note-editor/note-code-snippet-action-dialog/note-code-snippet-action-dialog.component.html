@@ -1,0 +1,38 @@
+<form (submit)="submit()" [formGroup]="manipulatingFormGroup">
+    <gd-dialog-header>
+        <h1 gdDialogTitle>{{ dialogTitle }}</h1>
+    </gd-dialog-header>
+
+    <gd-dialog-content>
+        <div gdArea gdColumns="1fr 5fr" gdGap="5px">
+            <label gdColumn="1" gdRow="1" gdFormFieldLabel for="note-code-snippet-action-language-input">
+                Language:
+            </label>
+            <gd-form-field gdColumn="2" gdRow="1">
+                <input gdInput [gdAutocompleteTrigger]="languagePanel" formControlName="language"
+                       id="note-code-snippet-action-language-input" cdkFocusInitial>
+            </gd-form-field>
+
+            <label gdColumn="1" gdRow="2" gdFormFieldLabel for="note-code-snippet-action-file-name-input">
+                File name:
+            </label>
+            <gd-form-field gdColumn="2" gdRow="2">
+                <input gdInput formControlName="fileName" id="note-code-snippet-action-file-name-input">
+            </gd-form-field>
+        </div>
+    </gd-dialog-content>
+
+    <gd-dialog-actions align="end">
+        <button gd-button aria-label="Cancel button" (click)="closeThisDialog()" type="button">Cancel</button>
+        <button gd-button color="primary" aria-label="Action">
+            {{ actionButtonString }}
+        </button>
+    </gd-dialog-actions>
+</form>
+
+<gd-autocomplete #languagePanel="gdAutocomplete">
+    <gd-autocomplete-item *ngFor="let stack of languageStacks" [value]="stack.name">
+        <gd-stack-chip [stack]="stack"></gd-stack-chip>
+        <span style="padding: 0 5px;">{{ stack.name }}</span>
+    </gd-autocomplete-item>
+</gd-autocomplete>
