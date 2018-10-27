@@ -4,6 +4,7 @@ import { AuthenticationDatabaseProvider } from './authentication-database';
 import { ConfirmDialogModule } from './confirm-dialog';
 import { FsService } from './fs.service';
 import { GitService } from './git.service';
+import { MenuService } from './menu.service';
 import { WorkspaceDatabaseProvider } from './workspace-database';
 import { WorkspaceService } from './workspace.service';
 
@@ -20,6 +21,7 @@ import { WorkspaceService } from './workspace.service';
         WorkspaceDatabaseProvider,
         AuthenticationDatabaseProvider,
         GitService,
+        MenuService,
     ],
     exports: [
         ConfirmDialogModule,

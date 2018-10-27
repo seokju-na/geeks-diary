@@ -3,6 +3,8 @@ import { NoteContentDummy, NoteSnippetContentDummy } from './dummies';
 import { NoteSnippetContent } from './note-content.model';
 import {
     AppendSnippetAction,
+    BlurSnippetAction,
+    FocusSnippetAction,
     InsertSnippetAction,
     LoadNoteContentAction,
     LoadNoteContentCompleteAction,
@@ -61,14 +63,14 @@ describe('browser.note.noteEditor.noteEditorReducer', () => {
             beforeState = ensureNoteContentLoaded(5);
         });
 
-        it('should insert snippet after index', () => {
+        it('should insert snippet at index', () => {
             const snippet = new NoteSnippetContentDummy().create();
             const state = noteEditorReducer(
                 beforeState,
                 new InsertSnippetAction({ index: 3, snippet }),
             );
 
-            expect(state.selectedNoteContent.snippets[4]).toEqual(snippet);
+            expect(state.selectedNoteContent.snippets[3]).toEqual(snippet);
         });
     });
 
@@ -128,6 +130,33 @@ describe('browser.note.noteEditor.noteEditorReducer', () => {
             );
 
             expect(state.selectedNoteContent.snippets[3].value).toEqual('new value');
+        });
+    });
+
+    describe('FOCUS_SNIPPET', () => {
+        let beforeState: NoteEditorState;
+
+        beforeEach(() => {
+            beforeState = ensureNoteContentLoaded(5);
+        });
+
+        it('should set active snippet index as focused snippet index.', () => {
+            const state = noteEditorReducer(beforeState, new FocusSnippetAction({ index: 2 }));
+            expect(state.activeSnippetIndex).toEqual(2);
+        });
+    });
+
+    describe('BLUR_SNIPPET', () => {
+        let beforeState: NoteEditorState;
+
+        beforeEach(() => {
+            beforeState = ensureNoteContentLoaded(5);
+            beforeState = noteEditorReducer(beforeState, new FocusSnippetAction({ index: 0 }));
+        });
+
+        it('should set active snippet index as null.', () => {
+            const state = noteEditorReducer(beforeState, new BlurSnippetAction());
+            expect(state.activeSnippetIndex).toBeNull();
         });
     });
 });

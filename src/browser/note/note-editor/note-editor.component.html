@@ -4,8 +4,7 @@
     <div class="NoteEditor__titleEdit">
         <div class="NoteEditor__titleTextarea">
             <textarea #titleTextarea gdAutosize rows="1" [formControl]="titleInputControl"
-                      placeholder="Untitled Note" (keydown.arrowdown)="moveFocusToSnippetEditor($event)"
-                      (keydown.enter)="moveFocusToSnippetEditor($event)"></textarea>
+                      placeholder="Untitled Note" (keydown)="moveFocusToSnippetEditor($event)"></textarea>
         </div>
     </div>
 
