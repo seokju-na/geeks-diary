@@ -1,11 +1,8 @@
 import { app, session } from 'electron';
 import { EventEmitter } from 'events';
 import { __DARWIN__ } from '../libs/platform';
-import { GitService } from './services/git.service';
-import { WorkspaceEvents, WorkspaceService } from './services/workspace.service';
-import { AppWindow } from './windows';
-import { Window, WindowEvents } from './windows/window';
-import { WizardWindow } from './windows/wizard.window';
+import { GitService, MenuService, WorkspaceEvents, WorkspaceService } from './services';
+import { AppWindow, Window, WindowEvents, WizardWindow } from './windows';
 
 
 enum AppDelegateEvents {
@@ -20,6 +17,7 @@ class AppDelegate extends EventEmitter {
     // Services
     readonly git = new GitService();
     readonly workspace = new WorkspaceService();
+    readonly menu = new MenuService();
 
     currentOpenWindow: Window | null = null;
     preventQuit: boolean = false;
@@ -79,8 +77,10 @@ class AppDelegate extends EventEmitter {
     }
 
     private async initializeServices(): Promise<void> {
+        this.git.init();
+        this.menu.init();
+
         await Promise.all([
-            this.git.init(),
             this.workspace.init(this.git),
         ]);
     }
@@ -107,6 +107,12 @@ class AppDelegate extends EventEmitter {
             contents.on('new-window', (event) => {
                 event.preventDefault();
             });
+        });
+
+        app.on('before-quit', () => {
+            this.git.destroy();
+            this.workspace.destroy();
+            this.menu.destroy();
         });
 
         /**
