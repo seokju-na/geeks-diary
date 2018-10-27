@@ -14,7 +14,7 @@ export function withNoteSnippetContentInsertion(
     const snippets = [...state.selectedNoteContent.snippets];
 
     // Insert new snippet after index.
-    snippets.splice(index + 1, 0, snippetContent);
+    snippets.splice(index, 0, snippetContent);
 
     return {
         ...state,
