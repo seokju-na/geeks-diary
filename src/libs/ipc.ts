@@ -1,4 +1,5 @@
- import { IpcMain, IpcRenderer } from 'electron';
+import { BrowserWindow, IpcMain, IpcRenderer } from 'electron';
+import { Observable, Subject } from 'rxjs';
 import { makePropDecorator } from './decorators';
 
 
@@ -16,6 +17,12 @@ export interface IpcActionResponse<R = any> {
 
 function makeResponseChannelName(namespace: string, actionName: string): string {
     return `${namespace}-${actionName}-response`;
+}
+
+
+export interface IpcMessage<D> {
+    name: string;
+    data?: D;
 }
 
 
@@ -51,7 +58,7 @@ export const IpcActionHandler: {
  * });
  */
 export class IpcActionServer {
-    readonly ipc: IpcMain;
+    readonly _ipc: IpcMain;
 
     // private readonly actionHandler
     private readonly actionHandlers = new Map<string, IpcActionHandler<any, any>>();
@@ -59,15 +66,15 @@ export class IpcActionServer {
     private readonly actionListener: any;
 
     constructor(public readonly namespace: string) {
-        this.ipc = require('electron').ipcMain;
+        this._ipc = require('electron').ipcMain;
 
         this.actionListener = (event: any, action: IpcAction<any>) => this.handleIpcEvent(event, action);
-        this.ipc.on(this.namespace, this.actionListener);
+        this._ipc.on(this.namespace, this.actionListener);
     }
 
     destroy(): void {
         this.actionHandlers.clear();
-        this.ipc.removeListener(this.namespace, this.actionListener);
+        this._ipc.removeListener(this.namespace, this.actionListener);
     }
 
     setActionHandler<D, R>(actionName: string, handler: IpcActionHandler<D, R>): this {
@@ -78,6 +85,10 @@ export class IpcActionServer {
     setActionErrorHandler(handler: (error: any) => any): this {
         this.actionErrorHandler = handler;
         return this;
+    }
+
+    sendMessage<D>(window: BrowserWindow, message: IpcMessage<D>): void {
+        window.webContents.send(this.namespace, message);
     }
 
     private async handleIpcEvent(event: any, action: IpcAction<any>): Promise<void> {
@@ -109,10 +120,20 @@ export class IpcActionServer {
  * const result = await client.performAction<RequestData, ResponseData>('actionA', data);
  */
 export class IpcActionClient {
-    readonly ipc: IpcRenderer;
+    readonly _ipc: IpcRenderer;
+
+    private readonly messageListener: any;
+    private readonly messageStream = new Subject<IpcMessage<any>>();
 
     constructor(public readonly namespace: string) {
-        this.ipc = require('electron').ipcRenderer;
+        this._ipc = require('electron').ipcRenderer;
+
+        this.messageListener =  (event: any, message: IpcMessage<any>) => this.handleIpcEvent(message);
+        this._ipc.on(namespace, this.messageListener);
+    }
+
+    destroy(): void {
+        this._ipc.removeListener(this.namespace, this.messageListener);
     }
 
     /** Send action to server which handles ipc main. */
@@ -122,7 +143,7 @@ export class IpcActionClient {
             const action: IpcAction<D> = { name: actionName, data };
 
             // Listen for response event for once.
-            this.ipc.once(channelName, (event: any, response: IpcActionResponse<R>) => {
+            this._ipc.once(channelName, (event: any, response: IpcActionResponse<R>) => {
                 if (response.error) {
                     reject(response.error);
                 } else {
@@ -130,7 +151,15 @@ export class IpcActionClient {
                 }
             });
 
-            this.ipc.send(this.namespace, action);
+            this._ipc.send(this.namespace, action);
         });
+    }
+
+    onMessage<D>(): Observable<IpcMessage<D>> {
+        return this.messageStream.asObservable();
+    }
+
+    private handleIpcEvent(message: IpcMessage<any>): void {
+        this.messageStream.next(message);
     }
 }
