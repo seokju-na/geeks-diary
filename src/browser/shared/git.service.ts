@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, OnDestroy } from '@angular/core';
 import { from, Observable } from 'rxjs';
 import { GitCloneOptions } from '../../core/git';
 import { VcsAuthenticationInfo } from '../../core/vcs';
@@ -6,8 +6,12 @@ import { IpcActionClient } from '../../libs/ipc';
 
 
 @Injectable()
-export class GitService {
+export class GitService implements OnDestroy {
     private ipcClient = new IpcActionClient('git');
+
+    ngOnDestroy(): void {
+        this.ipcClient.destroy();
+    }
 
     cloneRepository(
         url: string,
