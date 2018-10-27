@@ -1,4 +1,4 @@
-import { Inject, Injectable, InjectionToken, Optional } from '@angular/core';
+import { Inject, Injectable, InjectionToken, OnDestroy, Optional } from '@angular/core';
 import { from, Observable } from 'rxjs';
 import { GEEKS_DIARY_DIR_PATH, NOTES_DIR_PATH, WORKSPACE_DIR_PATH } from '../../core/workspace';
 import { IpcActionClient } from '../../libs/ipc';
@@ -15,7 +15,7 @@ export const WORKSPACE_DEFAULT_CONFIG = new InjectionToken<WorkspaceConfig>('Wor
 
 
 @Injectable()
-export class WorkspaceService {
+export class WorkspaceService implements OnDestroy {
     readonly configs: WorkspaceConfig;
     private ipcClient = new IpcActionClient('workspace');
 
@@ -27,6 +27,10 @@ export class WorkspaceService {
             ...(new WorkspaceConfig()),
             ...config,
         };
+    }
+
+    ngOnDestroy(): void {
+        this.ipcClient.destroy();
     }
 
     initWorkspace(): Observable<void> {
