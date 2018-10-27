@@ -9,7 +9,6 @@ import { noteReducerMap } from '../note.reducer';
 import { NoteStateWithRoot } from '../note.state';
 import { NoteContentDummy, NoteSnippetContentDummy } from './dummies';
 import { NoteCodeSnippetEditorComponent } from './note-code-snippet-editor/note-code-snippet-editor.component';
-import { NoteSnippetContent } from './note-content.model';
 import {
     AppendSnippetAction,
     InsertSnippetAction,
@@ -19,9 +18,9 @@ import {
 import {
     NoteSnippetEditorMoveFocusToNextEvent,
     NoteSnippetEditorMoveFocusToPreviousEvent,
+    NoteSnippetEditorNewSnippetEvent,
     NoteSnippetEditorRef,
     NoteSnippetEditorRemoveThisEvent,
-    NoteSnippetEditorSwitchSnippetAfterThisEvent,
     NoteSnippetEditorValueChangedEvent,
 } from './note-snippet-editor';
 import { NoteSnippetListManager } from './note-snippet-list-manager';
@@ -264,6 +263,55 @@ describe('browser.note.noteEditor.NoteSnippetListManager', () => {
         });
     });
 
+    describe('handle events via direct call.', () => {
+        let snippetRefs: NoteSnippetEditorRef<any>[];
+
+        beforeEach(() => {
+            spyOn(store, 'dispatch');
+
+            snippetRefs = listManager.addAllSnippetsFromContent(new NoteContentDummy().create(5));
+            fixture.detectChanges();
+        });
+
+        it('should call \'appendSnippet\' and dispatch \'APPEND_SNIPPET\' action when \'NEW_SNIPPET\' '
+            + 'event called if snippet is last element of snippets.', () => {
+            spyOn(listManager, 'appendSnippet');
+
+            const lastSnippetRef = snippetRefs[4];
+            const snippet = new NoteSnippetContentDummy().create();
+
+            const event = new NoteSnippetEditorNewSnippetEvent(
+                lastSnippetRef,
+                { snippet },
+            );
+
+            listManager.handleSnippetRefEvents(event);
+
+            expect(listManager.appendSnippet).toHaveBeenCalledWith(snippet);
+            expect(store.dispatch).toHaveBeenCalledWith(new AppendSnippetAction({ snippet }));
+        });
+
+        it('should call \'insertSnippetAt\' and dispatch \'INSERT_SNIPPET\' action when \'NEW_SNIPPET\' '
+            + 'event called if snippet is not last element of snippets.', () => {
+            spyOn(listManager, 'insertSnippetAt');
+
+            const lastSnippetRef = snippetRefs[2];
+            const snippet = new NoteSnippetContentDummy().create();
+
+            const event = new NoteSnippetEditorNewSnippetEvent(
+                lastSnippetRef,
+                { snippet },
+            );
+
+            listManager.handleSnippetRefEvents(event);
+
+            expect(listManager.insertSnippetAt).toHaveBeenCalledWith(3, snippet);
+            expect(store.dispatch).toHaveBeenCalledWith(
+                new InsertSnippetAction({ index: 3, snippet }),
+            );
+        });
+    });
+
     describe('handle events via references', () => {
         let snippetRefs: NoteSnippetEditorRef<any>[];
 
@@ -336,58 +384,6 @@ describe('browser.note.noteEditor.NoteSnippetListManager', () => {
                 index: 0,
                 patch: { value: 'Hello World!' },
             }));
-        });
-
-        // it('should call \'insertSnippetAt\' and dispatch \'INSERT_SNIPPET\' action with new code type '
-        //     + 'snippet when \'SWITCH_SNIPPET_AFTER_THIS\' event with text type snippet at not last '
-        //     + 'index called.', () => {
-        //     spyOn(listManager, 'insertSnippetAt');
-        //
-        //     snippetRefs[0]._config.type = NoteSnippetTypes.TEXT;
-        //     snippetRefs[0].events.next(new NoteSnippetEditorSwitchSnippetAfterThisEvent(snippetRefs[0]));
-        //
-        //     const newSnippet: NoteSnippetContent = {
-        //         type: NoteSnippetTypes.CODE,
-        //         value: '',
-        //         codeLanguageId: '',
-        //         codeFileName: '(No Filename)',
-        //     };
-        //
-        //     expect(listManager.insertSnippetAt).toHaveBeenCalledWith(1, newSnippet);
-        //     expect(store.dispatch).toHaveBeenCalledWith(new InsertSnippetAction({ index: 1, snippet: newSnippet }));
-        // });
-
-        it('should call \'insertSnippetAt\' and dispatch \'INSERT_SNIPPET\' action with new text type '
-            + 'snippet with \'SWITCH_SNIPPET_AFTER_THIS\' event with code type snippet at not last '
-            + 'index called.', () => {
-            spyOn(listManager, 'insertSnippetAt');
-
-            snippetRefs[2]._config.type = NoteSnippetTypes.CODE;
-            snippetRefs[2].events.next(new NoteSnippetEditorSwitchSnippetAfterThisEvent(snippetRefs[2]));
-
-            const newSnippet: NoteSnippetContent = {
-                type: NoteSnippetTypes.TEXT,
-                value: '',
-            };
-
-            expect(listManager.insertSnippetAt).toHaveBeenCalledWith(3, newSnippet);
-            expect(store.dispatch).toHaveBeenCalledWith(new InsertSnippetAction({ index: 3, snippet: newSnippet }));
-        });
-
-        it('should call \'appendSnippet\' and dispatch \'APPEND_SNIPPET\' action with new code type '
-            + 'snippet with \'SWITCH_SNIPPET_AFTER_THIS\' event with text type snippet at last index called.', () => {
-            spyOn(listManager, 'appendSnippet');
-
-            snippetRefs[4]._config.type = NoteSnippetTypes.CODE;
-            snippetRefs[4].events.next(new NoteSnippetEditorSwitchSnippetAfterThisEvent(snippetRefs[4]));
-
-            const newSnippet: NoteSnippetContent = {
-                type: NoteSnippetTypes.TEXT,
-                value: '',
-            };
-
-            expect(listManager.appendSnippet).toHaveBeenCalledWith(newSnippet);
-            expect(store.dispatch).toHaveBeenCalledWith(new AppendSnippetAction({ snippet: newSnippet }));
         });
     });
 });

@@ -1,8 +1,9 @@
-import { BACKSPACE, DOWN_ARROW, ENTER, UP_ARROW } from '@angular/cdk/keycodes';
+import { BACKSPACE, DOWN_ARROW, UP_ARROW } from '@angular/cdk/keycodes';
 import { DomPortalOutlet } from '@angular/cdk/portal';
 import { HostBinding, OnInit } from '@angular/core';
 import { Observable, Subject } from 'rxjs';
 import { NoteSnippetTypes } from '../../../core/note';
+import { NoteSnippetContent } from './note-content.model';
 
 
 let uniqueId = 0;
@@ -25,7 +26,7 @@ export class NoteSnippetEditorConfig {
  */
 export enum NoteSnippetEditorEventNames {
     REMOVE_THIS = 'noteSnippetEditorRemoveThis',
-    SWITCH_SNIPPET_AFTER_THIS = 'noteSnippetEditorSwitchSnippetAfterThis',
+    NEW_SNIPPET = 'noteSnippetEditorNewSnippet',
     MOVE_FOCUS_TO_PREVIOUS = 'noteSnippetEditorMoveFocusToPrevious',
     MOVE_FOCUS_TO_NEXT = 'noteSnippetEditorMoveFocusToNext',
     VALUE_CHANGED = 'noteSnippetEditorValueChanged',
@@ -36,7 +37,7 @@ export enum NoteSnippetEditorEventNames {
 
 export type NoteSnippetEditorEvent =
     NoteSnippetEditorRemoveThisEvent
-    | NoteSnippetEditorSwitchSnippetAfterThisEvent
+    | NoteSnippetEditorNewSnippetEvent
     | NoteSnippetEditorMoveFocusToPreviousEvent
     | NoteSnippetEditorMoveFocusToNextEvent
     | NoteSnippetEditorValueChangedEvent
@@ -59,10 +60,13 @@ export class NoteSnippetEditorRemoveThisEvent implements NoteSnippetEditorEventI
 }
 
 
-export class NoteSnippetEditorSwitchSnippetAfterThisEvent implements NoteSnippetEditorEventInterface {
-    readonly name = NoteSnippetEditorEventNames.SWITCH_SNIPPET_AFTER_THIS;
+export class NoteSnippetEditorNewSnippetEvent implements NoteSnippetEditorEventInterface {
+    readonly name = NoteSnippetEditorEventNames.NEW_SNIPPET;
 
-    constructor(public readonly source: NoteSnippetEditorRef<any>) {
+    constructor(
+        public readonly source: NoteSnippetEditorRef<any>,
+        public readonly payload: { snippet: NoteSnippetContent },
+    ) {
     }
 }
 
@@ -238,12 +242,6 @@ export abstract class NoteSnippetEditor<T = any> implements OnInit {
                     this.emitEvent(new NoteSnippetEditorMoveFocusToNextEvent(this._ref));
                 }
                 break;
-
-            case ENTER:
-                if (event.shiftKey) {
-                    event.preventDefault();
-                    this.emitEvent(new NoteSnippetEditorSwitchSnippetAfterThisEvent(this._ref));
-                }
         }
     }
 

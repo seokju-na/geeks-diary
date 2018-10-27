@@ -8,6 +8,8 @@ import { NoteCodeSnippetEditorComponent } from './note-code-snippet-editor/note-
 import { NoteContent, NoteSnippetContent } from './note-content.model';
 import {
     AppendSnippetAction,
+    BlurSnippetAction,
+    FocusSnippetAction,
     InsertSnippetAction,
     RemoveSnippetAction,
     UpdateSnippetAction,
@@ -44,6 +46,10 @@ export class NoteSnippetListManager {
         private appRef: ApplicationRef,
         private store: Store<NoteStateWithRoot>,
     ) {
+    }
+
+    getSnippetRefByIndex(index: number): NoteSnippetEditorRef<any> | null {
+        return this.snippetRefs[index] || null;
     }
 
     topFocusOut(): Observable<void> {
@@ -149,6 +155,60 @@ export class NoteSnippetListManager {
             } else if (direction === -1) {
                 nextSnippet.componentInstance.setPositionToBottom();
             }
+        }
+    }
+
+    handleSnippetRefEvents(event: NoteSnippetEditorEvent): void {
+        const index = this.snippetRefs.findIndex(ref => ref.id === event.source.id);
+
+        switch (event.name) {
+            case NoteSnippetEditorEventNames.REMOVE_THIS:
+                // If it's has only one snippet, it cannot be removed.
+                if (index === 0 && this.snippetRefs.length === 1) {
+                    return;
+                }
+
+                this.removeSnippetAt(index);
+                this.store.dispatch(new RemoveSnippetAction({ index }));
+                break;
+
+            case NoteSnippetEditorEventNames.NEW_SNIPPET:
+                if (index === this.snippetRefs.length - 1) {
+                    this.appendSnippet(event.payload.snippet);
+                    this.store.dispatch(new AppendSnippetAction({ snippet: event.payload.snippet }));
+                } else {
+                    this.insertSnippetAt(index + 1, event.payload.snippet);
+                    this.store.dispatch(new InsertSnippetAction({ index: index + 1, snippet: event.payload.snippet }));
+                }
+                break;
+
+            case NoteSnippetEditorEventNames.MOVE_FOCUS_TO_PREVIOUS:
+                // Move focus to outside.
+                if (index === 0) {
+                    this._topFocusOut.next();
+                } else {
+                    this.moveFocusByIndex(index, -1);
+                }
+                break;
+
+            case NoteSnippetEditorEventNames.MOVE_FOCUS_TO_NEXT:
+                this.moveFocusByIndex(index, 1);
+                break;
+
+            case NoteSnippetEditorEventNames.VALUE_CHANGED:
+                this.store.dispatch(new UpdateSnippetAction({
+                    index,
+                    patch: { value: event.payload.value },
+                }));
+                break;
+
+            case NoteSnippetEditorEventNames.FOCUSED:
+                this.store.dispatch(new FocusSnippetAction({ index }));
+                break;
+
+            case NoteSnippetEditorEventNames.BLURRED:
+                this.store.dispatch(new BlurSnippetAction());
+                break;
         }
     }
 
@@ -274,71 +334,5 @@ export class NoteSnippetListManager {
         this.snippetRefEventsSubscription = merge(
             ...this.snippetRefs.map(snippetRef => snippetRef.events.asObservable()),
         ).subscribe(event => this.handleSnippetRefEvents(event));
-    }
-
-    private handleSnippetRefEvents(event: NoteSnippetEditorEvent): void {
-        const index = this.snippetRefs.findIndex(ref => ref.id === event.source.id);
-
-        switch (event.name) {
-            case NoteSnippetEditorEventNames.REMOVE_THIS:
-                // If it's has only one snippet, it cannot be removed.
-                if (index === 0 && this.snippetRefs.length === 1) {
-                    return;
-                }
-
-                this.removeSnippetAt(index);
-                this.store.dispatch(new RemoveSnippetAction({ index }));
-                break;
-
-            case NoteSnippetEditorEventNames.SWITCH_SNIPPET_AFTER_THIS:
-                const switchedSnippet = this.getSwitchedSnippetFromRef(event.source);
-
-                if (index === this.snippetRefs.length - 1) {
-                    this.appendSnippet(switchedSnippet);
-                    this.store.dispatch(new AppendSnippetAction({ snippet: switchedSnippet }));
-                } else {
-                    this.insertSnippetAt(index + 1, switchedSnippet);
-                    this.store.dispatch(new InsertSnippetAction({ index: index + 1, snippet: switchedSnippet }));
-                }
-                break;
-
-            case NoteSnippetEditorEventNames.MOVE_FOCUS_TO_PREVIOUS:
-                // Move focus to outside.
-                if (index === 0) {
-                    this._topFocusOut.next();
-                } else {
-                    this.moveFocusByIndex(index, -1);
-                }
-                break;
-
-            case NoteSnippetEditorEventNames.MOVE_FOCUS_TO_NEXT:
-                this.moveFocusByIndex(index, 1);
-                break;
-
-            case NoteSnippetEditorEventNames.VALUE_CHANGED:
-                this.store.dispatch(new UpdateSnippetAction({
-                    index,
-                    patch: { value: event.payload.value },
-                }));
-                break;
-        }
-    }
-
-    private getSwitchedSnippetFromRef(ref: NoteSnippetEditorRef<any>): NoteSnippetContent {
-        switch (ref._config.type) {
-            case NoteSnippetTypes.TEXT:
-                return {
-                    type: NoteSnippetTypes.CODE,
-                    value: '',
-                    codeLanguageId: 'python',
-                    codeFileName: 'test.py',
-                };
-
-            case NoteSnippetTypes.CODE:
-                return {
-                    type: NoteSnippetTypes.TEXT,
-                    value: '',
-                };
-        }
     }
 }
