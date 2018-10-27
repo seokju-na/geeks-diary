@@ -63,14 +63,14 @@ describe('browser.note.noteEditor.noteEditorReducer', () => {
             beforeState = ensureNoteContentLoaded(5);
         });
 
-        it('should insert snippet after index', () => {
+        it('should insert snippet at index', () => {
             const snippet = new NoteSnippetContentDummy().create();
             const state = noteEditorReducer(
                 beforeState,
                 new InsertSnippetAction({ index: 3, snippet }),
             );
 
-            expect(state.selectedNoteContent.snippets[4]).toEqual(snippet);
+            expect(state.selectedNoteContent.snippets[3]).toEqual(snippet);
         });
     });
 
