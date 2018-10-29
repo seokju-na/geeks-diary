@@ -2,7 +2,8 @@ import { DatePipe } from '@angular/common';
 import { fakeAsync, TestBed } from '@angular/core/testing';
 import { fastTestSetup } from '../../../../test/helpers';
 import { FsMatchLiterals, MockFsService } from '../../../../test/mocks/browser';
-import { FsService } from '../../shared';
+import { Asset, AssetTypes } from '../../../core/asset';
+import { FsService, WORKSPACE_DEFAULT_CONFIG, WorkspaceConfig, WorkspaceService } from '../../shared';
 import { basicFixture } from '../fixtures';
 import { NoteParser } from '../note-shared';
 import { NoteEditorService } from './note-editor.service';
@@ -11,6 +12,10 @@ import { NoteEditorService } from './note-editor.service';
 describe('browser.note.noteEditor.NoteEditorService', () => {
     let noteEditor: NoteEditorService;
     let mockFs: MockFsService;
+
+    const workspaceConfig: WorkspaceConfig = {
+        assetsDirPath: '/test/assets',
+    };
 
     fastTestSetup();
 
@@ -23,6 +28,8 @@ describe('browser.note.noteEditor.NoteEditorService', () => {
                     NoteParser,
                     ...MockFsService.providers(),
                     NoteEditorService,
+                    { provide: WORKSPACE_DEFAULT_CONFIG, useValue: workspaceConfig },
+                    WorkspaceService,
                 ],
             });
     });
@@ -34,6 +41,30 @@ describe('browser.note.noteEditor.NoteEditorService', () => {
 
     afterEach(() => {
         mockFs.verify();
+    });
+
+    describe('copyAssetFile', () => {
+        it('should copy file and return asset model.', fakeAsync(() => {
+            const file = { path: '/foo/bar/some-image.png' };
+
+            const callback = jasmine.createSpy('copy asset file callback');
+            const subscription = noteEditor.copyAssetFile(AssetTypes.IMAGE, file as any).subscribe(callback);
+
+            mockFs
+                .expect({
+                    methodName: 'copyFile',
+                    args: [file.path, `${workspaceConfig.assetsDirPath}/some-image.png`, FsMatchLiterals.ANY],
+                })
+                .flush(null);
+
+            expect(callback).toHaveBeenCalledWith({
+                type: AssetTypes.IMAGE,
+                fileName: 'some-image.png',
+                filePath: `${workspaceConfig.assetsDirPath}/some-image.png`,
+                extension: '.png',
+            } as Asset);
+            subscription.unsubscribe();
+        }));
     });
 
     describe('loadNoteContent', () => {

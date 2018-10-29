@@ -1,9 +1,11 @@
 import { DatePipe } from '@angular/common';
 import { Injectable } from '@angular/core';
+import * as path from 'path';
 import { Observable, zip } from 'rxjs';
 import { map, mapTo } from 'rxjs/operators';
+import { Asset, AssetTypes, getFilePathDescription } from '../../../core/asset';
 import { Note } from '../../../core/note';
-import { FsService } from '../../shared';
+import { FsService, WorkspaceService } from '../../shared';
 import { NoteItem } from '../note-collection';
 import { convertToNoteSnippets, NoteParser } from '../note-shared';
 import { NoteContent } from './note-content.model';
@@ -15,7 +17,25 @@ export class NoteEditorService {
         private fs: FsService,
         private parser: NoteParser,
         private datePipe: DatePipe,
+        private workspace: WorkspaceService,
     ) {
+    }
+
+    copyAssetFile(type: AssetTypes, file: File): Observable<Asset> {
+        const { fileName, extension } = getFilePathDescription(file.path);
+        const destination = path.resolve(this.workspace.configs.assetsDirPath, fileName);
+
+        const asset: Asset = {
+            type,
+            fileName,
+            filePath: destination,
+            extension,
+        };
+
+        return this.fs.copyFile(file.path, destination, {
+            overwrite: false,
+            errorOnExist: true,
+        }).pipe(mapTo(asset));
     }
 
     loadNoteContent(noteItem: NoteItem): Observable<NoteContent> {
