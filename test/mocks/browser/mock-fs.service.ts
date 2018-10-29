@@ -1,5 +1,6 @@
 import { Provider } from '@angular/core';
 import { flush } from '@angular/core/testing';
+import { CopyOptions } from 'fs-extra';
 import { Observable, Subject } from 'rxjs';
 import { FsService } from '../../../src/browser/shared';
 
@@ -145,6 +146,13 @@ export class MockFsService extends FsService {
         return this.createAttachment<void>(
             'writeJsonFile',
             [fileName, value],
+        );
+    }
+
+    copyFile(src: string, dest: string, options?: CopyOptions): Observable<void> {
+        return this.createAttachment<void>(
+            'copyFile',
+            [src, dest, options],
         );
     }
 
