@@ -107,6 +107,10 @@ export class MockFsService extends FsService {
         this.attachments = [];
     }
 
+    discardPeriodStubs(): void {
+        this.attachments = [];
+    }
+
     isPathExists(path: string): Observable<boolean> {
         return this.createAttachment<boolean>(
             'isPathExists',
