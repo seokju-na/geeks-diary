@@ -106,8 +106,6 @@ describe('browser.note.noteEditor.NoteEditorService', () => {
 
             expect(confirmDialogRef).toBeDefined();
             expect(confirmDialogRef.config.data.confirmButtonString).toEqual('Change');
-            expect(confirmDialogRef.config.data.body)
-                .toEqual('\'some-image.png\' is already exists in assets directory. Do you want to rename the file?');
 
             confirmDialogRef.close(true);
             flush();
