@@ -2,10 +2,14 @@ import { DatePipe } from '@angular/common';
 import { Injectable } from '@angular/core';
 import * as path from 'path';
 import { Observable, zip } from 'rxjs';
-import { map, mapTo } from 'rxjs/operators';
-import { Asset, AssetTypes, getFilePathDescription } from '../../../core/asset';
+import { fromPromise } from 'rxjs/internal-compatibility';
+import { catchError, map, mapTo } from 'rxjs/operators';
+import { Asset, AssetTypes } from '../../../core/asset';
 import { Note } from '../../../core/note';
+import { toPromise } from '../../../libs/rx';
 import { FsService, WorkspaceService } from '../../shared';
+import { ChangeFileNameDialog, ChangeFileNameDialogResult } from '../../shared/change-file-name-dialog';
+import { ConfirmDialog } from '../../shared/confirm-dialog';
 import { NoteItem } from '../note-collection';
 import { convertToNoteSnippets, NoteParser } from '../note-shared';
 import { NoteContent } from './note-content.model';
@@ -18,24 +22,63 @@ export class NoteEditorService {
         private parser: NoteParser,
         private datePipe: DatePipe,
         private workspace: WorkspaceService,
+        private confirmDialog: ConfirmDialog,
+        private changeFileNameDialog: ChangeFileNameDialog,
     ) {
     }
 
-    copyAssetFile(type: AssetTypes, file: File): Observable<Asset> {
-        const { fileName, extension } = getFilePathDescription(file.path);
-        const destination = path.resolve(this.workspace.configs.assetsDirPath, fileName);
+    copyAssetFile(type: AssetTypes, filePath: string, destFileName?: string): Observable<Asset | null> {
+        const { assetsDirPath } = this.workspace.configs;
+
+        const extension = destFileName ? path.extname(destFileName) : path.extname(filePath);
+        const fileName = destFileName ? destFileName : path.basename(filePath);
+        const fileNameWithoutExtension = path.basename(fileName, extension);
+
+        const destination = path.resolve(assetsDirPath, fileName);
+        const relativePath = path
+            .relative(this.workspace.configs.rootDirPath, destination)
+            .replace(/ /g, '%20'); // This is for supporting web url.
 
         const asset: Asset = {
             type,
             fileName,
+            fileNameWithoutExtension,
             filePath: destination,
             extension,
+            relativePathToWorkspaceDir: relativePath,
         };
 
-        return this.fs.copyFile(file.path, destination, {
+        // An rich UI solution for file already exists problem.
+        const changeFileNameAndSaveWhenFileAlreadyExists = async () => {
+            const confirmed: boolean = await toPromise(this.confirmDialog.open({
+                title: 'Copy',
+                body: `'${fileName}' is already exists in assets directory.\nDo you want to rename the file?`,
+                confirmButtonString: 'Change',
+            }).afterClosed());
+
+            if (!confirmed) {
+                return null;
+            }
+
+            const result: ChangeFileNameDialogResult = await toPromise(this.changeFileNameDialog.open({
+                directoryPath: assetsDirPath,
+                fileName,
+            }).afterClosed());
+
+            if (!result.isChanged) {
+                return null;
+            }
+
+            return toPromise(this.copyAssetFile(type, filePath, result.changedFileName));
+        };
+
+        return this.fs.copyFile(filePath, destination, {
             overwrite: false,
             errorOnExist: true,
-        }).pipe(mapTo(asset));
+        }).pipe(
+            mapTo(asset),
+            catchError(() => fromPromise(changeFileNameAndSaveWhenFileAlreadyExists())),
+        );
     }
 
     loadNoteContent(noteItem: NoteItem): Observable<NoteContent> {

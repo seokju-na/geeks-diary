@@ -49,6 +49,18 @@ export class NoteTextSnippetEditorComponent extends NoteSnippetCodeMirrorEditor 
         };
     }
 
+    insertValueAtCursor(value: string): void {
+        const doc = this._editor.getDoc();
+        const currentPosition = doc.getCursor();
+
+        doc.replaceRange(
+            value,
+            currentPosition,
+            currentPosition,
+            '+programmatically',
+        );
+    }
+
     handleFocus(focused: boolean): void {
         this.focused = focused;
 

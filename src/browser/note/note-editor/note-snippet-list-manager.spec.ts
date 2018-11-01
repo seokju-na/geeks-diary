@@ -16,6 +16,7 @@ import {
     UpdateSnippetAction,
 } from './note-editor.actions';
 import {
+    NoteSnippetEditorInsertImageEvent,
     NoteSnippetEditorMoveFocusToNextEvent,
     NoteSnippetEditorMoveFocusToPreviousEvent,
     NoteSnippetEditorNewSnippetEvent,
@@ -285,7 +286,7 @@ describe('browser.note.noteEditor.NoteSnippetListManager', () => {
                 { snippet },
             );
 
-            listManager.handleSnippetRefEvents(event);
+            listManager.handleSnippetRefEvent(event);
 
             expect(listManager.appendSnippet).toHaveBeenCalledWith(snippet);
             expect(store.dispatch).toHaveBeenCalledWith(new AppendSnippetAction({ snippet }));
@@ -303,11 +304,31 @@ describe('browser.note.noteEditor.NoteSnippetListManager', () => {
                 { snippet },
             );
 
-            listManager.handleSnippetRefEvents(event);
+            listManager.handleSnippetRefEvent(event);
 
             expect(listManager.insertSnippetAt).toHaveBeenCalledWith(3, snippet);
             expect(store.dispatch).toHaveBeenCalledWith(
                 new InsertSnippetAction({ index: 3, snippet }),
+            );
+        });
+
+        it('should call \'insertValueAtCursor\' for component instance when \'INSERT_IMAGE\' event called.', () => {
+            const snippetRef = listManager.appendSnippet({
+                type: NoteSnippetTypes.TEXT,
+                value: 'ho',
+            });
+
+            spyOn(snippetRef.componentInstance, 'insertValueAtCursor');
+
+            const event = new NoteSnippetEditorInsertImageEvent(snippetRef, {
+                fileName: 'FileName',
+                filePath: '/foo/bar/some-image.png',
+            });
+
+            listManager.handleSnippetRefEvent(event);
+
+            expect(snippetRef.componentInstance.insertValueAtCursor).toHaveBeenCalledWith(
+                '![FileName](/foo/bar/some-image.png)',
             );
         });
     });

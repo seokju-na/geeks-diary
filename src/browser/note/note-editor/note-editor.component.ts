@@ -4,12 +4,19 @@ import { FormControl } from '@angular/forms';
 import { select, Store } from '@ngrx/store';
 import { Observable, Subscription } from 'rxjs';
 import { filter, withLatestFrom } from 'rxjs/operators';
+import { AssetTypes } from '../../../core/asset';
 import { NoteSnippetTypes } from '../../../core/note';
-import { MenuEvent, MenuService } from '../../shared';
+import { MenuEvent, MenuService, NativeDialog, nativeDialogFileFilters, NativeDialogProperties } from '../../shared';
 import { NoteStateWithRoot } from '../note.state';
 import { NoteCodeSnippetActionDialog } from './note-code-snippet-action-dialog/note-code-snippet-action-dialog';
+import { NoteSnippetContent } from './note-content.model';
+import { NoteEditorService } from './note-editor.service';
 import { NoteEditorState } from './note-editor.state';
-import { NoteSnippetEditorNewSnippetEvent } from './note-snippet-editor';
+import {
+    NoteSnippetEditorInsertImageEvent,
+    NoteSnippetEditorNewSnippetEvent,
+    NoteSnippetEditorRef,
+} from './note-snippet-editor';
 import { NoteSnippetListManager } from './note-snippet-list-manager';
 
 
@@ -34,6 +41,8 @@ export class NoteEditorComponent implements OnInit, OnDestroy {
         private menu: MenuService,
         private store: Store<NoteStateWithRoot>,
         private actionDialog: NoteCodeSnippetActionDialog,
+        private nativeDialog: NativeDialog,
+        private editorService: NoteEditorService,
     ) {
     }
 
@@ -42,6 +51,7 @@ export class NoteEditorComponent implements OnInit, OnDestroy {
             filter(event => [
                 MenuEvent.NEW_CODE_SNIPPET,
                 MenuEvent.NEW_TEXT_SNIPPET,
+                MenuEvent.INSERT_IMAGE,
             ].includes(event)),
         );
     }
@@ -76,32 +86,15 @@ export class NoteEditorComponent implements OnInit, OnDestroy {
 
             switch (event as MenuEvent) {
                 case MenuEvent.NEW_TEXT_SNIPPET:
-                    this.snippetListManager.handleSnippetRefEvents(new NoteSnippetEditorNewSnippetEvent(
-                        ref,
-                        {
-                            snippet: {
-                                type: NoteSnippetTypes.TEXT,
-                                value: '',
-                            },
-                        },
-                    ));
+                    this.createNewTextSnippet(ref);
                     break;
+
                 case MenuEvent.NEW_CODE_SNIPPET:
-                    this.actionDialog.open({ actionType: 'create' }).afterClosed().subscribe((result) => {
-                        if (result) {
-                            this.snippetListManager.handleSnippetRefEvents(new NoteSnippetEditorNewSnippetEvent(
-                                ref,
-                                {
-                                    snippet: {
-                                        type: NoteSnippetTypes.CODE,
-                                        value: '',
-                                        codeLanguageId: result.codeLanguageId,
-                                        codeFileName: result.codeFileName,
-                                    },
-                                },
-                            ));
-                        }
-                    });
+                    this.createNewCodeSnippet(ref);
+                    break;
+
+                case MenuEvent.INSERT_IMAGE:
+                    this.insertImageAtSnippet(ref);
                     break;
             }
         });
@@ -119,5 +112,56 @@ export class NoteEditorComponent implements OnInit, OnDestroy {
             event.preventDefault();
             this.snippetListManager.focusTo(0);
         }
+    }
+
+    private createNewTextSnippet(ref: NoteSnippetEditorRef<any>): void {
+        const snippet: NoteSnippetContent = {
+            type: NoteSnippetTypes.TEXT,
+            value: '',
+        };
+        const event = new NoteSnippetEditorNewSnippetEvent(ref, { snippet });
+
+        this.snippetListManager.handleSnippetRefEvent(event);
+    }
+
+    private createNewCodeSnippet(ref: NoteSnippetEditorRef<any>): void {
+        this.actionDialog.open({ actionType: 'create' }).afterClosed().subscribe((result) => {
+            if (result) {
+                const snippet: NoteSnippetContent = {
+                    type: NoteSnippetTypes.CODE,
+                    value: '',
+                    codeLanguageId: result.codeLanguageId,
+                    codeFileName: result.codeFileName,
+                };
+                const event = new NoteSnippetEditorNewSnippetEvent(ref, { snippet });
+
+                this.snippetListManager.handleSnippetRefEvent(event);
+            }
+        });
+    }
+
+    private insertImageAtSnippet(ref: NoteSnippetEditorRef<any>): Promise<void> {
+        if (ref._config.type !== NoteSnippetTypes.TEXT) {
+            return;
+        }
+
+        this.nativeDialog.showOpenDialog({
+            message: 'Choose an image:',
+            properties: NativeDialogProperties.OPEN_FILE,
+            fileFilters: [nativeDialogFileFilters.IMAGES],
+        }).subscribe((result) => {
+            if (result.isSelected) {
+                this.editorService.copyAssetFile(AssetTypes.IMAGE, result.filePaths[0]).subscribe((asset) => {
+                    if (asset) {
+                        const event = new NoteSnippetEditorInsertImageEvent(ref, {
+                            fileName: asset.fileNameWithoutExtension,
+                            filePath: asset.relativePathToWorkspaceDir,
+                        });
+
+                        this.snippetListManager.handleSnippetRefEvent(event);
+                    }
+                });
+            }
+        });
     }
 }

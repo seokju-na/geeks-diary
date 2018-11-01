@@ -2,28 +2,31 @@ import { DOWN_ARROW, ENTER } from '@angular/cdk/keycodes';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
 import { combineReducers, Store, StoreModule } from '@ngrx/store';
-import { Subject } from 'rxjs';
+import { of, Subject } from 'rxjs';
 import { dispatchKeyboardEvent, fastTestSetup } from '../../../../test/helpers';
 import { MockDialog } from '../../../../test/mocks/browser';
+import { Asset, AssetTypes } from '../../../core/asset';
 import { NoteSnippetTypes } from '../../../core/note';
-import { MenuEvent, MenuService, SharedModule } from '../../shared';
+import { MenuEvent, MenuService, NativeDialog, NativeDialogOpenResult, SharedModule } from '../../shared';
 import { Dialog } from '../../ui/dialog';
 import { UiModule } from '../../ui/ui.module';
 import { NoteItemDummy } from '../note-collection/dummies';
+import { NoteSharedModule } from '../note-shared';
 import { noteReducerMap } from '../note.reducer';
 import { NoteStateWithRoot } from '../note.state';
-import { NoteContentDummy } from './dummies';
-import { NoteCodeSnippetActionDialog } from './note-code-snippet-action-dialog/note-code-snippet-action-dialog';
+import { NoteContentDummy, NoteSnippetContentDummy } from './dummies';
 import {
     NoteCodeSnippetActionDialogActionType,
     NoteCodeSnippetActionDialogData,
 } from './note-code-snippet-action-dialog/note-code-snippet-action-dialog-data';
 import { NoteCodeSnippetActionDialogResult } from './note-code-snippet-action-dialog/note-code-snippet-action-dialog-result';
 import { NoteCodeSnippetActionDialogComponent } from './note-code-snippet-action-dialog/note-code-snippet-action-dialog.component';
-import { NoteSnippetContent } from './note-content.model';
+import { NoteContent, NoteSnippetContent } from './note-content.model';
 import { BlurSnippetAction, FocusSnippetAction, LoadNoteContentCompleteAction } from './note-editor.actions';
 import { NoteEditorComponent } from './note-editor.component';
-import { NoteSnippetEditorNewSnippetEvent } from './note-snippet-editor';
+import { NoteEditorModule } from './note-editor.module';
+import { NoteEditorService } from './note-editor.service';
+import { NoteSnippetEditorInsertImageEvent, NoteSnippetEditorNewSnippetEvent } from './note-snippet-editor';
 import { NoteSnippetListManager } from './note-snippet-list-manager';
 import Spy = jasmine.Spy;
 
@@ -36,9 +39,13 @@ describe('browser.note.noteEditor.NoteEditorComponent', () => {
     let listManager: NoteSnippetListManager;
     let menu: MenuService;
     let mockDialog: MockDialog;
+    let nativeDialog: NativeDialog;
+    let noteEditor: NoteEditorService;
 
-    let tapFocusOuts: Subject<void>;
     let menuMessages: Subject<MenuEvent>;
+
+    const noteDummy = new NoteItemDummy();
+    const contentDummy = new NoteContentDummy();
 
     const getTitleTextareaEl = (): HTMLTextAreaElement =>
         fixture.debugElement.query(
@@ -46,10 +53,11 @@ describe('browser.note.noteEditor.NoteEditorComponent', () => {
         ).nativeElement as HTMLTextAreaElement;
 
     function ensureSnippets(snippetCount = 5): void {
-        const note = new NoteItemDummy().create();
-        const content = new NoteContentDummy().create(snippetCount);
+        const note = noteDummy.create();
+        const content = contentDummy.create(snippetCount);
 
         store.dispatch(new LoadNoteContentCompleteAction({ note, content }));
+        listManager.addAllSnippetsFromContent(content);
     }
 
     function activateSnippetAtIndex(index: number): void {
@@ -63,14 +71,6 @@ describe('browser.note.noteEditor.NoteEditorComponent', () => {
     fastTestSetup();
 
     beforeAll(async () => {
-        listManager = jasmine.createSpyObj('listManager', [
-            'getSnippetRefByIndex',
-            'topFocusOut',
-            'setContainerElement',
-            'setViewContainerRef',
-            'handleSnippetRefEvents',
-            'focusTo',
-        ]);
         menu = jasmine.createSpyObj('menu', [
             'onMessage',
         ]);
@@ -83,16 +83,13 @@ describe('browser.note.noteEditor.NoteEditorComponent', () => {
                     StoreModule.forRoot({
                         note: combineReducers(noteReducerMap),
                     }),
+                    NoteSharedModule,
+                    NoteEditorModule,
                     ...MockDialog.imports(),
                 ],
                 providers: [
                     { provide: MenuService, useValue: menu },
-                    { provide: NoteSnippetListManager, useValue: listManager },
                     ...MockDialog.providers(),
-                    NoteCodeSnippetActionDialog,
-                ],
-                declarations: [
-                    NoteEditorComponent,
                 ],
             })
             .compileComponents();
@@ -100,25 +97,22 @@ describe('browser.note.noteEditor.NoteEditorComponent', () => {
 
     beforeEach(() => {
         store = TestBed.get(Store);
+        listManager = TestBed.get(NoteSnippetListManager);
         mockDialog = TestBed.get(Dialog);
+        nativeDialog = TestBed.get(NativeDialog);
+        noteEditor = TestBed.get(NoteEditorService);
 
-        tapFocusOuts = new Subject<void>();
         menuMessages = new Subject<MenuEvent>();
 
-        (listManager.setContainerElement as Spy).and.returnValue(listManager);
-        (listManager.setViewContainerRef as Spy).and.returnValue(listManager);
-        (listManager.topFocusOut as Spy).and.returnValue(tapFocusOuts.asObservable());
-
         (menu.onMessage as Spy).and.returnValue(menuMessages.asObservable());
+        spyOn(listManager, 'handleSnippetRefEvent').and.callThrough();
 
         fixture = TestBed.createComponent(NoteEditorComponent);
         component = fixture.componentInstance;
     });
 
     afterEach(() => {
-        tapFocusOuts.complete();
         menuMessages.complete();
-
         mockDialog.closeAll();
     });
 
@@ -126,6 +120,7 @@ describe('browser.note.noteEditor.NoteEditorComponent', () => {
         it('should move focus first index of snippet when pressed enter in title textarea.', () => {
             fixture.detectChanges();
 
+            spyOn(listManager, 'focusTo');
             dispatchKeyboardEvent(getTitleTextareaEl(), 'keydown', ENTER);
 
             expect(listManager.focusTo).toHaveBeenCalledWith(0);
@@ -135,6 +130,7 @@ describe('browser.note.noteEditor.NoteEditorComponent', () => {
             + 'title textarea.', () => {
             fixture.detectChanges();
 
+            spyOn(listManager, 'focusTo');
             dispatchKeyboardEvent(getTitleTextareaEl(), 'keydown', DOWN_ARROW);
 
             expect(listManager.focusTo).toHaveBeenCalledWith(0);
@@ -143,6 +139,9 @@ describe('browser.note.noteEditor.NoteEditorComponent', () => {
 
     describe('snippet list manager', () => {
         it('should set container element and view container ref on ngOnInit.', () => {
+            spyOn(listManager, 'setContainerElement').and.callThrough();
+            spyOn(listManager, 'setViewContainerRef').and.callThrough();
+
             fixture.detectChanges();
 
             expect(listManager.setContainerElement).toHaveBeenCalledWith(component.snippetsList.nativeElement);
@@ -152,7 +151,7 @@ describe('browser.note.noteEditor.NoteEditorComponent', () => {
         it('should focus title textarea when top focused out.', () => {
             fixture.detectChanges();
 
-            tapFocusOuts.next();
+            listManager['_topFocusOut'].next();
             fixture.detectChanges();
 
             expect(document.activeElement).toEqual(component.titleTextarea.nativeElement);
@@ -160,34 +159,32 @@ describe('browser.note.noteEditor.NoteEditorComponent', () => {
     });
 
     describe('MenuEvent.NEW_TEXT_SNIPPET', () => {
-        beforeEach(() => {
-            ensureSnippets();
-        });
-
         it('should not handle create new snippet event if active snippet index is \'null\'.', () => {
+            fixture.detectChanges();
+
+            ensureSnippets();
             deactivateSnippet();
             fixture.detectChanges();
 
             menuMessages.next(MenuEvent.NEW_TEXT_SNIPPET);
 
-            expect(listManager.handleSnippetRefEvents).not.toHaveBeenCalled();
+            expect(listManager.handleSnippetRefEvent).not.toHaveBeenCalled();
         });
 
         it('should handle create new snippet event when active snippet index is exists.', () => {
+            fixture.detectChanges();
+
+            ensureSnippets();
             activateSnippetAtIndex(2);
             fixture.detectChanges();
 
-            (listManager.getSnippetRefByIndex as Spy).and.returnValue('THIS_IS_SNIPPET_REF');
-
             menuMessages.next(MenuEvent.NEW_TEXT_SNIPPET);
 
-            expect(listManager.getSnippetRefByIndex).toHaveBeenCalledWith(2);
+            expect(listManager.handleSnippetRefEvent).toHaveBeenCalled();
 
-            const event = (
-                listManager.handleSnippetRefEvents as Spy
-            ).calls.mostRecent().args[0] as NoteSnippetEditorNewSnippetEvent;
+            const event = (listManager.handleSnippetRefEvent as Spy)
+                .calls.mostRecent().args[0] as NoteSnippetEditorNewSnippetEvent;
 
-            expect(listManager.handleSnippetRefEvents).toHaveBeenCalled();
             // noinspection SuspiciousInstanceOfGuard
             expect(event instanceof NoteSnippetEditorNewSnippetEvent).toBe(true);
             expect(event.payload.snippet).toEqual({
@@ -198,20 +195,15 @@ describe('browser.note.noteEditor.NoteEditorComponent', () => {
     });
 
     describe('MenuEvent.NEW_CODE_SNIPPET', () => {
-        beforeEach(() => {
-            ensureSnippets();
-        });
-
         it('should open NoteCodeSnippetActionDialog when active snippet index is exists. '
             + 'And handle create new snippet when user close dialog with result.', () => {
+            fixture.detectChanges();
+
+            ensureSnippets();
             activateSnippetAtIndex(0);
             fixture.detectChanges();
 
-            (listManager.getSnippetRefByIndex as Spy).and.returnValue('THIS_IS_SNIPPET_REF');
-
             menuMessages.next(MenuEvent.NEW_CODE_SNIPPET);
-
-            expect(listManager.getSnippetRefByIndex).toHaveBeenCalledWith(0);
 
             // Expect dialog.
             const actionDialog = mockDialog.getByComponent<NoteCodeSnippetActionDialogComponent,
@@ -229,10 +221,10 @@ describe('browser.note.noteEditor.NoteEditorComponent', () => {
             });
 
             const event = (
-                listManager.handleSnippetRefEvents as Spy
+                listManager.handleSnippetRefEvent as Spy
             ).calls.mostRecent().args[0] as NoteSnippetEditorNewSnippetEvent;
 
-            expect(listManager.handleSnippetRefEvents).toHaveBeenCalled();
+            expect(listManager.handleSnippetRefEvent).toHaveBeenCalled();
             // noinspection SuspiciousInstanceOfGuard
             expect(event instanceof NoteSnippetEditorNewSnippetEvent).toBe(true);
             expect(event.payload.snippet).toEqual({
@@ -241,6 +233,71 @@ describe('browser.note.noteEditor.NoteEditorComponent', () => {
                 codeLanguageId: 'typescript',
                 codeFileName: 'i-love-ts.ts',
             } as NoteSnippetContent);
+        });
+    });
+
+    describe('MenuEvent.INSERT_IMAGE', () => {
+        let snippets: NoteSnippetContent[];
+
+        beforeEach(() => {
+            fixture.detectChanges();
+
+            const snippetDummy = new NoteSnippetContentDummy();
+
+            snippets = [
+                snippetDummy.create(NoteSnippetTypes.TEXT),
+                snippetDummy.create(NoteSnippetTypes.CODE),
+            ];
+
+            const content = { snippets } as NoteContent;
+
+            store.dispatch(new LoadNoteContentCompleteAction({
+                note: new NoteItemDummy().create(),
+                content,
+            }));
+            listManager.addAllSnippetsFromContent(content);
+
+            fixture.detectChanges();
+        });
+
+        it('should show file open dialog when insert image event received while type of active snippet is '
+            + '\'TEXT\'. And dispatch NoteSnippetEditorInsertImageEvent when user select file.', () => {
+            activateSnippetAtIndex(0);
+            fixture.detectChanges();
+
+            spyOn(nativeDialog, 'showOpenDialog').and.returnValue(of({
+                isSelected: true,
+                filePaths: ['/foo/bar/assets/some-image.png'],
+            } as NativeDialogOpenResult));
+
+            spyOn(noteEditor, 'copyAssetFile').and.returnValue(of({
+                fileNameWithoutExtension: 'some-image',
+                relativePathToWorkspaceDir: './some-image.png',
+            } as Asset));
+
+            menuMessages.next(MenuEvent.INSERT_IMAGE);
+
+            expect(nativeDialog.showOpenDialog).toHaveBeenCalled();
+            expect(noteEditor.copyAssetFile).toHaveBeenCalledWith(
+                AssetTypes.IMAGE,
+                '/foo/bar/assets/some-image.png',
+            );
+
+            expect(listManager.handleSnippetRefEvent).toHaveBeenCalled();
+
+            const event = (
+                listManager.handleSnippetRefEvent as Spy
+            ).calls.first().args[0] as NoteSnippetEditorInsertImageEvent;
+
+            // noinspection SuspiciousInstanceOfGuard
+            expect(event instanceof NoteSnippetEditorInsertImageEvent).toBe(true);
+            expect(event.payload.fileName).toEqual('some-image');
+            expect(event.payload.filePath).toEqual('./some-image.png');
+        });
+
+        it('should show file open dialog when insert image event received wile type of active snippet is '
+            + '\'TEXT\'. When failed copy image file because file name is duplicated, then open file name change '
+            + 'dialog.', () => {
         });
     });
 });

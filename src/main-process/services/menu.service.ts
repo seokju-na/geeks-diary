@@ -167,6 +167,13 @@ export class MenuService extends Service {
                     accelerator: 'CmdOrCtrl+Shift+C',
                     click: sendMessageOnClick('newCodeSnippet'),
                 },
+                separator,
+                {
+                    label: __DARWIN__ ? 'Insert Image' : 'Insert &image',
+                    id: 'insert-image',
+                    accelerator: 'Ctrl+Shift+I',
+                    click: sendMessageOnClick('insertImage'),
+                },
             ],
         });
 
