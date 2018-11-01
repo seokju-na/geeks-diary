@@ -5,3 +5,9 @@ gd-dialog-header {
         margin-left: $spacing-half;
     }
 }
+
+gd-dialog-content {
+    p {
+        margin: 0;
+    }
+}
