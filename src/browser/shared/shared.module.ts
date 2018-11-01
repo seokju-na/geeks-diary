@@ -1,6 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { AuthenticationDatabaseProvider } from './authentication-database';
+import { ChangeFileNameDialogModule } from './change-file-name-dialog';
 import { ConfirmDialogModule } from './confirm-dialog';
 import { FsService } from './fs.service';
 import { GitService } from './git.service';
@@ -14,6 +15,7 @@ import { WorkspaceService } from './workspace.service';
     imports: [
         CommonModule,
         ConfirmDialogModule,
+        ChangeFileNameDialogModule,
     ],
     providers: [
         FsService,
@@ -26,6 +28,7 @@ import { WorkspaceService } from './workspace.service';
     ],
     exports: [
         ConfirmDialogModule,
+        ChangeFileNameDialogModule,
     ],
 })
 export class SharedModule {

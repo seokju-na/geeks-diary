@@ -1,0 +1,35 @@
+<form [formGroup]="formGroup" (submit)="submit()">
+    <gd-dialog-header>
+        <h1 gdDialogTitle>Change File Name</h1>
+    </gd-dialog-header>
+
+    <gd-dialog-content>
+        <div gdArea gdColumns="1fr 5fr" gdGap="5px">
+            <label gdColumn="1" gdRow="1" gdFormFieldLabel for="file-name-input">File Name:</label>
+            <gd-form-field id="file-name-input-form-field" gdColumn="2" gdRow="1">
+                <input gdInput formControlName="fileName" cdkFocusInitial id="file-name-input">
+
+                <gd-form-field-error errorName="required">File name is required</gd-form-field-error>
+                <gd-form-field-error errorName="fileAlreadyExists">
+                    File already exists in directory
+                </gd-form-field-error>
+            </gd-form-field>
+
+            <label gdColumn="1" gdRow="2" gdFormFieldLabel for="directory-textarea">Directory:</label>
+            <gd-form-field gdColumn="2" gdRow="2">
+                <textarea gdInput gdAutosize formControlName="directory" id="directory-textarea" readonly
+                          rows="1"></textarea>
+            </gd-form-field>
+        </div>
+    </gd-dialog-content>
+
+    <gd-dialog-actions>
+        <button gd-button (click)="closeThisDialog()" type="button" class="ChangeFileNameDialog__cancelButton">
+            Cancel
+        </button>
+        <button gd-button color="primary" [disabled]="formGroup.invalid || formGroup.pending"
+                class="ChangeFileNameDialog__submitButton">
+            Save
+        </button>
+    </gd-dialog-actions>
+</form>
