@@ -158,7 +158,7 @@ export class NoteSnippetListManager {
         }
     }
 
-    handleSnippetRefEvents(event: NoteSnippetEditorEvent): void {
+    handleSnippetRefEvent(event: NoteSnippetEditorEvent): void {
         const index = this.snippetRefs.findIndex(ref => ref.id === event.source.id);
 
         switch (event.name) {
@@ -208,6 +208,14 @@ export class NoteSnippetListManager {
 
             case NoteSnippetEditorEventNames.BLURRED:
                 this.store.dispatch(new BlurSnippetAction());
+                break;
+
+            case NoteSnippetEditorEventNames.INSERT_IMAGE:
+                if (event.source._config.type === NoteSnippetTypes.TEXT) {
+                    event.source.componentInstance.insertValueAtCursor(
+                        `![${event.payload.fileName}](${event.payload.filePath})`,
+                    );
+                }
                 break;
         }
     }
@@ -333,6 +341,6 @@ export class NoteSnippetListManager {
 
         this.snippetRefEventsSubscription = merge(
             ...this.snippetRefs.map(snippetRef => snippetRef.events.asObservable()),
-        ).subscribe(event => this.handleSnippetRefEvents(event));
+        ).subscribe(event => this.handleSnippetRefEvent(event));
     }
 }

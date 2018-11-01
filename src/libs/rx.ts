@@ -7,7 +7,10 @@ export function toPromise<T = any>(observable: Observable<T>): Promise<T> {
         let result: T;
 
         observable.subscribe(
-            value => result = value,
+            (value) => {
+                result = value;
+                resolve(value);
+            },
             error => reject(error),
             () => resolve(result),
         );

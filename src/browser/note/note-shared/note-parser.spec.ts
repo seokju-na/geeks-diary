@@ -1,6 +1,9 @@
 import { TestBed } from '@angular/core/testing';
-import { fastTestSetup } from '../../../../test/helpers';
+import { expectDom, fastTestSetup } from '../../../../test/helpers';
+import { NoteSnippetTypes } from '../../../core/note';
+import { SharedModule, WORKSPACE_DEFAULT_CONFIG, WorkspaceConfig } from '../../shared';
 import { basicFixture } from '../fixtures';
+import { NoteSnippetContent } from '../note-editor';
 import { NoteParser } from './note-parser';
 import { convertToNoteContentSnippets, convertToNoteSnippets } from './note-parsing.model';
 
@@ -8,12 +11,20 @@ import { convertToNoteContentSnippets, convertToNoteSnippets } from './note-pars
 describe('browser.note.NoteParser', () => {
     let parser: NoteParser;
 
+    const workspaceConfig: WorkspaceConfig = {
+        rootDirPath: '/test/workspace/',
+    };
+
     fastTestSetup();
 
     beforeAll(() => {
         TestBed
             .configureTestingModule({
-                providers: [NoteParser],
+                imports: [SharedModule],
+                providers: [
+                    { provide: WORKSPACE_DEFAULT_CONFIG, useValue: workspaceConfig },
+                    NoteParser,
+                ],
             });
     });
 
@@ -69,6 +80,37 @@ describe('browser.note.NoteParser', () => {
                 expect(parsedSnippet.startLineNumber).toEqual(snippet.startLineNumber);
                 expect(parsedSnippet.endLineNumber).toEqual(snippet.endLineNumber);
             });
+        });
+    });
+
+    describe('convertSnippetContentToHtml', () => {
+        it('should prepend workspace root url to image source.', () => {
+            const snippet: NoteSnippetContent = {
+                type: NoteSnippetTypes.TEXT,
+                value: '![Image](images/my-awesome-image.png)',
+            };
+
+            const rendered = parser.convertSnippetContentToHtml(snippet);
+
+            // noinspection HtmlUnknownTarget
+            expect(rendered).toContain(
+                '<p><img src="/test/workspace/images/my-awesome-image.png" alt="Image"></p>',
+            );
+        });
+
+        it('should convert to code block with syntax highlight if type of snippet is \'CODE\'.', () => {
+            const snippet: NoteSnippetContent = {
+                type: NoteSnippetTypes.CODE,
+                value: 'console.log(\'Hello World\');',
+                codeLanguageId: 'javascript',
+            };
+
+            const rendered = parser.convertSnippetContentToHtml(snippet);
+            const dom = document.createElement('div');
+
+            dom.innerHTML = rendered;
+
+            expectDom(dom.querySelector('code')).toContainClasses('language-javascript');
         });
     });
 });

@@ -5,3 +5,4 @@ export * from './workspace.service';
 export * from './authentication-database';
 export * from './git.service';
 export * from './menu.service';
+export * from './native-dialog';

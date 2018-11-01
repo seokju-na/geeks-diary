@@ -32,6 +32,7 @@ export enum NoteSnippetEditorEventNames {
     VALUE_CHANGED = 'noteSnippetEditorValueChanged',
     FOCUSED = 'noteSnippetEditorFocused',
     BLURRED = 'noteSnippetEditorBlurred',
+    INSERT_IMAGE = 'noteSnippetEditorInsertImage',
 }
 
 
@@ -42,7 +43,8 @@ export type NoteSnippetEditorEvent =
     | NoteSnippetEditorMoveFocusToNextEvent
     | NoteSnippetEditorValueChangedEvent
     | NoteSnippetEditorFocusedEvent
-    | NoteSnippetEditorBlurredEvent;
+    | NoteSnippetEditorBlurredEvent
+    | NoteSnippetEditorInsertImageEvent;
 
 
 interface NoteSnippetEditorEventInterface {
@@ -110,6 +112,17 @@ export class NoteSnippetEditorBlurredEvent implements NoteSnippetEditorEventInte
     readonly name = NoteSnippetEditorEventNames.BLURRED;
 
     constructor(public readonly source: NoteSnippetEditorRef<any>) {
+    }
+}
+
+
+export class NoteSnippetEditorInsertImageEvent implements NoteSnippetEditorEventInterface {
+    readonly name = NoteSnippetEditorEventNames.INSERT_IMAGE;
+
+    constructor(
+        public readonly source: NoteSnippetEditorRef<any>,
+        public readonly payload: { fileName: string, filePath: string },
+    ) {
     }
 }
 
@@ -203,6 +216,9 @@ export abstract class NoteSnippetEditor<T = any> implements OnInit {
 
     /** Set raw value of editor */
     abstract setRawValue(value: string): void;
+
+    /** Insert given value at current cursor positioned. */
+    insertValueAtCursor?(value: string): void;
 
     /** Get code language id */
     getCodeLanguageId?(): string;

@@ -66,7 +66,7 @@ export class FormFieldComponent implements AfterViewInit {
         const formErrors = this._control.getErrors();
 
         // Reset error children.
-        this._errorChildren.forEach(error => error.show);
+        this._errorChildren.forEach(error => error.show = false);
 
         const targetError = this.selectFirstError(Object.keys(formErrors));
 

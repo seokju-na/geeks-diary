@@ -8,6 +8,7 @@ import { enterZone } from '../../libs/rx';
 export enum MenuEvent {
     NEW_TEXT_SNIPPET = '[MenuEvent] New text snippet',
     NEW_CODE_SNIPPET = '[MenuEvent] New code snippet',
+    INSERT_IMAGE = '[MenuEvent] Insert image',
 }
 
 
@@ -31,6 +32,8 @@ export class MenuService implements OnDestroy {
                         return MenuEvent.NEW_TEXT_SNIPPET;
                     case 'newCodeSnippet':
                         return MenuEvent.NEW_CODE_SNIPPET;
+                    case 'insertImage':
+                        return MenuEvent.INSERT_IMAGE;
                     default:
                         return null;
                 }

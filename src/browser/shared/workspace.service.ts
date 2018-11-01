@@ -1,6 +1,6 @@
 import { Inject, Injectable, InjectionToken, OnDestroy, Optional } from '@angular/core';
 import { from, Observable } from 'rxjs';
-import { GEEKS_DIARY_DIR_PATH, NOTES_DIR_PATH, WORKSPACE_DIR_PATH } from '../../core/workspace';
+import { ASSETS_DIR_PATH, GEEKS_DIARY_DIR_PATH, NOTES_DIR_PATH, WORKSPACE_DIR_PATH } from '../../core/workspace';
 import { IpcActionClient } from '../../libs/ipc';
 
 
@@ -8,6 +8,7 @@ export class WorkspaceConfig {
     rootDirPath?: string = WORKSPACE_DIR_PATH;
     geeksDiaryDirPath?: string = GEEKS_DIARY_DIR_PATH;
     notesDirPath?: string = NOTES_DIR_PATH;
+    assetsDirPath?: string = ASSETS_DIR_PATH;
 }
 
 

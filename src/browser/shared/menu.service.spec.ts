@@ -49,6 +49,10 @@ describe('browser.shared.MenuService', () => {
             messages.next({ name: 'newCodeSnippet' });
             expect(callback).toHaveBeenCalledWith(MenuEvent.NEW_CODE_SNIPPET);
 
+            // Insert image
+            messages.next({ name: 'insertImage' });
+            expect(callback).toHaveBeenCalledWith(MenuEvent.INSERT_IMAGE);
+
             messages.complete();
             subscription.unsubscribe();
         });
