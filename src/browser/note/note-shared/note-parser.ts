@@ -2,8 +2,11 @@ import { Injectable } from '@angular/core';
 import * as hljs from 'highlight.js';
 import * as yaml from 'js-yaml';
 import { EOL } from 'os';
+import * as path from 'path';
 import * as Remarkable from 'remarkable';
+import { escapeHtml, replaceEntities, unescapeMd } from 'remarkable/lib/common/utils';
 import { Note, NoteMetadata, NoteSnippetTypes } from '../../../core/note';
+import { WorkspaceService } from '../../shared';
 import { NoteContent, NoteSnippetContent } from '../note-editor';
 import { NoteContentParseResult, NoteContentRawValueParseResult, NoteSnippetParseResult } from './note-parsing.model';
 import remarkableMetaPlugin = require('remarkable-meta');
@@ -21,7 +24,31 @@ export class NoteContentParsingOptions {
 
 @Injectable()
 export class NoteParser {
-    private markdownParser: Remarkable;
+    private readonly markdownParser: Remarkable;
+
+    constructor(private workspace: WorkspaceService) {
+        this.markdownParser = new Remarkable({
+            highlight: (str, lang) => {
+                if (lang && hljs.getLanguage(lang)) {
+                    try {
+                        return hljs.highlight(lang, str).value;
+                    } catch (err) {
+                    }
+                }
+
+                try {
+                    return hljs.highlightAuto(str).value;
+                } catch (err) {
+                }
+
+                return ''; // use external default escaping
+            },
+        });
+
+        this.markdownParser.use(remarkableMetaPlugin);
+
+        overrideMarkdownParseToAdaptLink(this.markdownParser, this.workspace.configs.rootDirPath);
+    }
 
     generateNoteContent(note: Note, contentRawValue: string): NoteContent {
         if (!contentRawValue) {
@@ -60,8 +87,6 @@ export class NoteParser {
     }
 
     parseNoteContentRawValue(contentRawValue: string): NoteContentRawValueParseResult {
-        this.initMarkdownParser();
-
         const snippets = [];
         const lines = contentRawValue.split('\n');
         const tokens = this.markdownParser.parse(contentRawValue, { breaks: true });
@@ -198,8 +223,6 @@ export class NoteParser {
     }
 
     convertSnippetContentToHtml(snippet: NoteSnippetContent): string {
-        this.initMarkdownParser();
-
         let value: string;
 
         if (snippet.type === NoteSnippetTypes.CODE) {
@@ -211,31 +234,6 @@ export class NoteParser {
         }
 
         return this.markdownParser.render(value);
-    }
-
-    private initMarkdownParser(): void {
-        if (this.markdownParser) {
-            this.markdownParser = null;
-        }
-
-        this.markdownParser = new Remarkable({
-            highlight: (str, lang) => {
-                if (lang && hljs.getLanguage(lang)) {
-                    try {
-                        return hljs.highlight(lang, str).value;
-                    } catch (err) {
-                    }
-                }
-
-                try {
-                    return hljs.highlightAuto(str).value;
-                } catch (err) {
-                }
-
-                return ''; // use external default escaping
-            },
-        });
-        this.markdownParser.use(remarkableMetaPlugin);
     }
 }
 
@@ -295,6 +293,21 @@ function* parseTokens(lines: string[], _tokens: Remarkable.Token[]): IterableIte
             }
         }
     }
+}
+
+
+function overrideMarkdownParseToAdaptLink(md: Remarkable, baseUrl: string): void {
+    md.renderer.rules.image = (tokens, idx, options /*, env */) => {
+        const srcUrl = path.resolve(baseUrl, tokens[idx].src);
+
+        const src = ' src="' + escapeHtml(srcUrl) + '"';
+        const title = tokens[idx].title ? (' title="' + escapeHtml(replaceEntities(tokens[idx].title)) + '"') : '';
+        const alt = ' alt="' + (tokens[idx].alt ? escapeHtml(replaceEntities(unescapeMd(tokens[idx].alt))) : '') + '"';
+        const suffix = options.xhtmlOut ? ' /' : '';
+
+        // noinspection HtmlRequiredAltAttribute
+        return '<img' + src + alt + title + suffix + '>';
+    };
 }
 
 
