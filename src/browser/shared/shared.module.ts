@@ -5,6 +5,7 @@ import { ConfirmDialogModule } from './confirm-dialog';
 import { FsService } from './fs.service';
 import { GitService } from './git.service';
 import { MenuService } from './menu.service';
+import { NativeDialog } from './native-dialog';
 import { WorkspaceDatabaseProvider } from './workspace-database';
 import { WorkspaceService } from './workspace.service';
 
@@ -14,7 +15,6 @@ import { WorkspaceService } from './workspace.service';
         CommonModule,
         ConfirmDialogModule,
     ],
-    declarations: [],
     providers: [
         FsService,
         WorkspaceService,
@@ -22,6 +22,7 @@ import { WorkspaceService } from './workspace.service';
         AuthenticationDatabaseProvider,
         GitService,
         MenuService,
+        NativeDialog,
     ],
     exports: [
         ConfirmDialogModule,
