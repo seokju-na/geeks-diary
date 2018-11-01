@@ -65,11 +65,11 @@ export class NoteEditorService {
                 fileName,
             }).afterClosed());
 
-            if (!result.isChanged) {
+            if (result && result.isChanged) {
+                return toPromise(this.copyAssetFile(type, filePath, result.changedFileName));
+            } else {
                 return null;
             }
-
-            return toPromise(this.copyAssetFile(type, filePath, result.changedFileName));
         };
 
         return this.fs.copyFile(filePath, destination, {
