@@ -9,6 +9,7 @@
 @import "./button-toggle/button-toggle-theme";
 @import "./radio/radio-theme";
 @import "./line/line-theme";
+@import "./tabs/tab-group-theme";
 
 @mixin gd-ui-all-theme($theme) {
     @include gd-ui-autocomplete-theme($theme);
@@ -22,4 +23,5 @@
     @include gd-ui-button-toggle-theme($theme);
     @include gd-ui-radio-theme($theme);
     @include gd-ui-line-theme($theme);
+    @include gd-ui-tab-group-theme($theme);
 }
