@@ -33,12 +33,10 @@ $_checkbox-mark-stroke-size: 2.5 / 12 * $checkbox-size !default;
         flex-shrink: 0;
 
         > input {
-            position: absolute;
-            display: none;
-            width: 0;
-            height: 0;
-            left: 0;
-            top: 0;
+            // Move the input to the bottom and in the middle.
+            // Visual improvement to properly show browser popups when being required.
+            bottom: 0;
+            left: 50%;
         }
 
         &--noSideMargin {

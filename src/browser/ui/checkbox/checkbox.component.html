@@ -3,6 +3,7 @@
           [class.Checkbox__innerContainer--noSideMargin]="!checkboxLabel.textContent || !checkboxLabel.textContent.trim()">
         <input #input
                type="checkbox"
+               class="cdk-visually-hidden"
                [id]="inputId"
                [checked]="checked"
                [attr.value]="value"
