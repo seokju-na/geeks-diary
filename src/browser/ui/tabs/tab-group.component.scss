@@ -1,0 +1,33 @@
+@import "../style/typography";
+@import "./tab-group-sizes";
+
+.TabGroup {
+    position: relative;
+
+    &__list {
+        margin: 0;
+        padding: 0;
+
+        > li {
+            list-style: none;
+        }
+    }
+
+    &__inkBar {
+        position: absolute;
+        height: 2px;
+        bottom: 0;
+    }
+}
+
+.TabItem {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    height: $tab-size;
+
+    font: {
+        size: $font-size;
+        weight: $font-weight-semiBold;
+    };
+}

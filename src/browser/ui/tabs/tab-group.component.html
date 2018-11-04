@@ -1,0 +1,10 @@
+<ul fxLayout role="tablist" class="TabGroup__list">
+    <li fxFlex="1 0 auto" role="tab" gdTabItem *ngFor="let tab of tabs; let i = index"
+        (click)="_onClickTab(i)"
+        [active]="tabControl.activeTabIndex === i"
+        [attr.tabIndex]="_getTabIndex(i)"
+        [attr.aria-posinset]="i + 1"
+        [attr.aria-selected]="tabControl.activeTabIndex === i">
+        {{ tab.name }}
+    </li>
+</ul>

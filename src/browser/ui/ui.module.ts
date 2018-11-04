@@ -16,6 +16,7 @@ import { RadioModule } from './radio';
 import { ResizableModule } from './resizable';
 import { SpinnerModule } from './spinner';
 import { StyleModule } from './style';
+import { TabsModule } from './tabs';
 import { TextFieldModule } from './text-field';
 import { TitleBarModule } from './title-bar';
 import { TooltipModule } from './tooltip';
@@ -49,6 +50,7 @@ const UI_MODULES = [
     LineModule,
     TextFieldModule,
     MenuModule,
+    TabsModule,
 ];
 
 
