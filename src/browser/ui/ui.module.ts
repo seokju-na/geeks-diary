@@ -6,6 +6,7 @@ import { ReactiveFormsModule } from '@angular/forms';
 import { AutocompleteModule } from './autocomplete';
 import { ButtonModule } from './button';
 import { ButtonToggleModule } from './button-toggle';
+import { CheckboxModule } from './checkbox';
 import { DialogModule } from './dialog';
 import { FormFieldModule } from './form-field';
 import { IconModule } from './icon';
@@ -51,6 +52,7 @@ const UI_MODULES = [
     TextFieldModule,
     MenuModule,
     TabsModule,
+    CheckboxModule,
 ];
 
 
