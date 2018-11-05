@@ -10,6 +10,7 @@
 @import "./radio/radio-theme";
 @import "./line/line-theme";
 @import "./tabs/tab-group-theme";
+@import "./checkbox/checkbox-theme";
 
 @mixin gd-ui-all-theme($theme) {
     @include gd-ui-autocomplete-theme($theme);
@@ -24,4 +25,5 @@
     @include gd-ui-radio-theme($theme);
     @include gd-ui-line-theme($theme);
     @include gd-ui-tab-group-theme($theme);
+    @include gd-ui-checkbox-theme($theme);
 }
