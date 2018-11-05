@@ -46,6 +46,14 @@ class DomExpectMatcher {
             return expect(document.activeElement).toEqual(this.element);
         }
     }
+
+    toBeStyled(styleName: string, value: string): any {
+        if (this.denied) {
+            return expect(getComputedStyle(this.element)[styleName]).not.toEqual(value);
+        } else {
+            return expect(getComputedStyle(this.element)[styleName]).toEqual(value);
+        }
+    }
 }
 
 
