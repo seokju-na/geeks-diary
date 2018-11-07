@@ -3,7 +3,7 @@ import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { SharedModule } from '../shared';
 import { UiModule } from '../ui/ui.module';
-import { VcsModule } from '../vcs/vcs.module';
+import { VcsModule } from '../vcs';
 import { WizardChoosingModule } from './wizard-choosing';
 import { WizardCloningModule } from './wizard-cloning';
 import { WizardRoutingModule } from './wizard-routing.module';

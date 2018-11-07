@@ -1,7 +1,8 @@
 import * as nodeGit from 'nodegit';
-import { CloneOptions, Repository, StatusFile } from 'nodegit';
+import { CloneOptions, DiffFile, Repository, StatusFile } from 'nodegit';
+import * as path from 'path';
 import { GitCloneOptions, GitError, gitErrorRegexes } from '../../core/git';
-import { VcsAuthenticationTypes } from '../../core/vcs';
+import { VcsAuthenticationTypes, VcsFileChange, VcsFileChangeStatusTypes } from '../../core/vcs';
 import { IpcActionHandler } from '../../libs/ipc';
 import { Service } from './service';
 
@@ -27,26 +28,15 @@ export class GitService extends Service {
         }
     }
 
+    async openRepository(dirPath: string): Promise<Repository> {
+        return this.git.Repository.open(dirPath);
+    }
+
     @IpcActionHandler('createRepository')
     async createRepository(dirPath: string): Promise<void> {
         const repository = await this.git.Repository.init(dirPath, 0);
 
         repository.free();
-    }
-
-    @IpcActionHandler('openRepository')
-    async openRepository(dirPath: string): Promise<Repository> {
-        return this.git.Repository.open(dirPath);
-    }
-
-    @IpcActionHandler('getFileStatues')
-    async getFileStatues(dirPath: string): Promise<StatusFile[]> {
-        const repository = await this.openRepository(dirPath);
-        const statues = await repository.getStatus();
-
-        repository.free();
-
-        return statues;
     }
 
     @IpcActionHandler('cloneRepository')
@@ -98,6 +88,17 @@ export class GitService extends Service {
         repository.free();
     }
 
+    @IpcActionHandler('getFileChanges')
+    async getFileChanges(dirPath: string): Promise<VcsFileChange[]> {
+        const repository = await this.openRepository(dirPath);
+        const statues = await repository.getStatusExt();
+        const fileChanges = statues.map(status => this.parseFileChange(dirPath, status));
+
+        repository.free();
+
+        return fileChanges;
+    }
+
     handleError(error: any): GitError | any {
         const out = error.message;
 
@@ -110,5 +111,40 @@ export class GitService extends Service {
         }
 
         return error;
+    }
+
+    private parseFileChange(workingDir: string, status: StatusFile): VcsFileChange {
+        let fileChange = {
+            filePath: status.path(),
+            workingDirectoryPath: workingDir,
+            absoluteFilePath: path.resolve(workingDir, status.path()),
+        } as VcsFileChange;
+
+        if (status.isNew()) {
+            fileChange = { ...fileChange, status: VcsFileChangeStatusTypes.NEW };
+        } else if (status.isRenamed()) {
+            const diff = status.headToIndex();
+
+            /** NOTE: '@types/nodegit' is incorrect. */
+            const oldFile = (diff as any).oldFile() as DiffFile;
+            const newFile = (diff as any).newFile() as DiffFile;
+
+            fileChange = {
+                ...fileChange,
+                status: VcsFileChangeStatusTypes.RENAMED,
+                headToIndexDiff: {
+                    oldFilePath: oldFile.path(),
+                    newFilePath: newFile.path(),
+                },
+            };
+        } else if (status.isModified()) {
+            fileChange = { ...fileChange, status: VcsFileChangeStatusTypes.MODIFIED };
+        } else if (status.isDeleted()) {
+            fileChange = { ...fileChange, status: VcsFileChangeStatusTypes.REMOVED };
+        }
+
+        // TODO: Handle ignored, conflicted file changes.
+
+        return fileChange;
     }
 }

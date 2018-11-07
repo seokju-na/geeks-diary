@@ -1,6 +1,6 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
-import { VcsRemoteAuthenticationInfoResolver } from '../vcs/vcs-remote';
+import { WizardVcsAuthenticationInfoExistsResolver } from './resolvers';
 import { WizardChoosingComponent } from './wizard-choosing';
 import { WizardCloningComponent } from './wizard-cloning';
 
@@ -14,7 +14,7 @@ const WIZARD_ROUTES: Routes = [
         path: 'cloning',
         component: WizardCloningComponent,
         resolve: {
-            isAuthenticationInfoExists: VcsRemoteAuthenticationInfoResolver,
+            isAuthenticationInfoExists: WizardVcsAuthenticationInfoExistsResolver,
         },
     },
 ];

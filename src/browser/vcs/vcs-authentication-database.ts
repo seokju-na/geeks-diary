@@ -4,11 +4,11 @@ import { Database } from '../../core/database';
 import { VcsAuthenticationInfo } from '../../core/vcs';
 
 
-export class AuthenticationDatabase extends Database {
+export class VcsAuthenticationDatabase extends Database {
     readonly authentications!: Dexie.Table<VcsAuthenticationInfo, number>;
 
     constructor() {
-        super('Authentication');
+        super('VcsAuthentication');
 
         this.conditionalVersion(1, {
             authentications: '++, type, authorizationHeader, providerName, userName, displayName, email',
@@ -17,13 +17,11 @@ export class AuthenticationDatabase extends Database {
 }
 
 
-export const authenticationDatabase = new AuthenticationDatabase();
+export const vcsAuthenticationDatabase = new VcsAuthenticationDatabase();
 
-export const AUTHENTICATION_DATABASE = new InjectionToken<AuthenticationDatabase>(
-    'AuthenticationDatabase',
-);
+export const VCS_AUTHENTICATION_DATABASE = new InjectionToken<VcsAuthenticationDatabase>('VcsAuthenticationDatabase');
 
-export const AuthenticationDatabaseProvider = {
-    provide: AUTHENTICATION_DATABASE,
-    useValue: authenticationDatabase,
+export const VcsAuthenticationDatabaseProvider = {
+    provide: VCS_AUTHENTICATION_DATABASE,
+    useValue: vcsAuthenticationDatabase,
 };

@@ -7,7 +7,7 @@ import { VcsAuthenticationTypes } from '../../../core/vcs';
 import { WorkspaceError } from '../../../core/workspace';
 import { WorkspaceService } from '../../shared';
 import { ConfirmDialog } from '../../shared/confirm-dialog';
-import { VcsRemoteService } from '../../vcs/vcs-remote';
+import { VcsService } from '../../vcs';
 
 
 @Component({
@@ -31,7 +31,7 @@ export class WizardCloningComponent implements OnInit {
     private _loginSuccess: boolean = false;
 
     constructor(
-        private vcsRemote: VcsRemoteService,
+        private vcs: VcsService,
         private activatedRoute: ActivatedRoute,
         private confirmDialog: ConfirmDialog,
         private workspace: WorkspaceService,
@@ -80,7 +80,7 @@ export class WizardCloningComponent implements OnInit {
          * Currently we only have github provider for vcs remote.
          * Later, providers get increased, handling is required.
          */
-        this.vcsRemote.setProvider('github');
+        this.vcs.setRemoveProvider('github');
 
         /** Set remote url validation. */
         const remoteUrlFormatValidator: ValidatorFn = (control) => {
@@ -88,7 +88,7 @@ export class WizardCloningComponent implements OnInit {
                 return null;
             }
 
-            return this.vcsRemote.isRepositoryUrlValid(control.value)
+            return this.vcs.isRemoteRepositoryUrlValid(control.value)
                 ? null
                 : { invalidFormat: true };
         };
@@ -113,12 +113,12 @@ export class WizardCloningComponent implements OnInit {
         this._loginProcessing = true;
         this._loginErrorCaught = false;
 
-        const { type, userName, password, token } = this.authenticationFormGroup.value;
+        const { type, userName, password, token } = this.authenticationFormGroup.value as any;
 
         switch (type as VcsAuthenticationTypes) {
             case VcsAuthenticationTypes.BASIC:
-                this.vcsRemote
-                    .loginWithBasicAuthorization(
+                this.vcs
+                    .loginRemoteWithBasicAuthorization(
                         userName as string,
                         password as string,
                     )
@@ -130,8 +130,8 @@ export class WizardCloningComponent implements OnInit {
                 break;
 
             case VcsAuthenticationTypes.OAUTH2_TOKEN:
-                this.vcsRemote
-                    .loginWithOauth2TokenAuthorization(token as string)
+                this.vcs
+                    .loginRemoteWithOauth2TokenAuthorization(token as string)
                     .pipe(finalize(() => this._loginProcessing = false))
                     .subscribe(
                         () => this.handleLoginToVcsRemoteSuccess(),
@@ -144,7 +144,7 @@ export class WizardCloningComponent implements OnInit {
     clone(): void {
         this._cloneProcessing = true;
 
-        this.vcsRemote.cloneRepository(
+        this.vcs.cloneRepository(
             this.remoteUrlFormControl.value,
             this.workspace.configs.rootDirPath,
         ).subscribe(

@@ -1,70 +1,76 @@
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { fakeAsync, flush, TestBed } from '@angular/core/testing';
-import { of } from 'rxjs';
-import { fastTestSetup } from '../../../../test/helpers';
-import { VcsAuthenticationInfoDummy } from '../../../core/dummies';
-import { VcsAuthenticationInfo, VcsAuthenticationTypes } from '../../../core/vcs';
-import { toPromise } from '../../../libs/rx';
-import { AUTHENTICATION_DATABASE, AuthenticationDatabase, GitService, SharedModule } from '../../shared';
-import { VcsRemoteProviderFactory } from './vcs-remote-provider-factory';
-import { VcsRemoteService } from './vcs-remote.service';
+import { Observable, of } from 'rxjs';
+import { fastTestSetup } from '../../../test/helpers';
+import { VcsAuthenticationInfoDummy } from '../../core/dummies';
+import { VcsAuthenticationInfo, VcsAuthenticationTypes, VcsRemoteRepository } from '../../core/vcs';
+import { toPromise } from '../../libs/rx';
+import { GitService, SharedModule } from '../shared';
+import {
+    VCS_AUTHENTICATION_DATABASE,
+    VcsAuthenticationDatabase,
+    VcsAuthenticationDatabaseProvider,
+} from './vcs-authentication-database';
+import { VcsRemoteModule, VcsRemoteProvider, VcsRemoteProviderFactory } from './vcs-remote';
+import { VcsService } from './vcs.service';
 
 
-class TestVcsRemoteProvider {
-    readonly name = 'test';
-    readonly apiUrl = 'https://api.test.com';
+class TestVcsRemoteProvider extends VcsRemoteProvider {
+    constructor() {
+        super('test', 'https://api.test.com');
+    }
 
-    authorizeByBasic(): void {
+    authorizeByBasic(username: string, password: string): Observable<VcsAuthenticationInfo> {
         throw new Error('Please create spy.');
     }
 
-    authorizeByOauth2Token(): void {
+    authorizeByOauth2Token(token: string): Observable<VcsAuthenticationInfo> {
         throw new Error('Please create spy.');
     }
 
-    isRepositoryUrlValid(): void {
+    isRepositoryUrlValid(url: string): boolean {
         throw new Error('Please create spy.');
     }
 
-    findRepository(): void {
+    findRepository(url: string, authInfo?: VcsAuthenticationInfo): Observable<VcsRemoteRepository> {
         throw new Error('Please create spy.');
     }
 }
 
 
-describe('browser.vcs.vcsRemote.VcsRemoteService', () => {
-    let remote: VcsRemoteService;
-    let remoteProviderFactory: VcsRemoteProviderFactory;
-    let authDB: AuthenticationDatabase;
+describe('browser.vcs.VcsService', () => {
+    let vcs: VcsService;
+    let removeProviderFactory: VcsRemoteProviderFactory;
+    let authDB: VcsAuthenticationDatabase;
     let git: GitService;
 
     fastTestSetup();
 
     beforeAll(() => {
-        TestBed
-            .configureTestingModule({
-                imports: [
-                    SharedModule,
-                    HttpClientTestingModule,
-                ],
-                providers: [
-                    VcsRemoteProviderFactory,
-                    VcsRemoteService,
-                ],
-            });
+        TestBed.configureTestingModule({
+            imports: [
+                SharedModule,
+                HttpClientTestingModule,
+                VcsRemoteModule,
+            ],
+            providers: [
+                VcsAuthenticationDatabaseProvider,
+                VcsService,
+            ],
+        });
     });
 
     beforeEach(() => {
-        remote = TestBed.get(VcsRemoteService);
-        remoteProviderFactory = TestBed.get(VcsRemoteProviderFactory);
-        authDB = TestBed.get(AUTHENTICATION_DATABASE);
+        vcs = TestBed.get(VcsService);
+        removeProviderFactory = TestBed.get(VcsRemoteProviderFactory);
+        authDB = TestBed.get(VCS_AUTHENTICATION_DATABASE);
         git = TestBed.get(GitService);
 
-        spyOn(remoteProviderFactory, 'create').and.returnValue(new TestVcsRemoteProvider());
-        remote.setProvider('test' as any);
+        spyOn(removeProviderFactory, 'create').and.returnValue(new TestVcsRemoteProvider());
+        vcs.setRemoveProvider('test' as any);
     });
 
-    describe('loginWithBasicAuthorization', () => {
+    describe('loginRemoteWithBasicAuthorization', () => {
         const username = 'username';
         const password = 'password';
         let callback: jasmine.Spy;
@@ -77,14 +83,14 @@ describe('browser.vcs.vcsRemote.VcsRemoteService', () => {
 
         it('should authorize by basic and save authentication info in database ' +
             'after authorization.', fakeAsync(() => {
-            spyOn(remote._provider, 'authorizeByBasic').and.returnValue(of(authInfo));
-            spyOn(authDB.authentications, 'add').and.returnValue(of(null));
+            spyOn(vcs._removeProvider, 'authorizeByBasic').and.returnValue(of(authInfo));
+            spyOn(authDB.authentications, 'add').and.returnValue(Promise.resolve());
 
-            const subscription = remote.loginWithBasicAuthorization(username, password).subscribe(callback);
+            const subscription = vcs.loginRemoteWithBasicAuthorization(username, password).subscribe(callback);
             flush();
 
             expect(callback).toHaveBeenCalledWith(authInfo);
-            expect(remote._provider.authorizeByBasic).toHaveBeenCalledWith(username, password);
+            expect(vcs._removeProvider.authorizeByBasic).toHaveBeenCalledWith(username, password);
             expect(authDB.authentications.add).toHaveBeenCalledWith(authInfo);
 
             subscription.unsubscribe();
@@ -92,24 +98,24 @@ describe('browser.vcs.vcsRemote.VcsRemoteService', () => {
 
         it('should authorize by basic and skip save authentication info in ' +
             'database after authorization if instance login option is true.', fakeAsync(() => {
-            spyOn(remote._provider, 'authorizeByBasic').and.returnValue(of(authInfo));
-            spyOn(authDB.authentications, 'add').and.returnValue(of(null));
+            spyOn(vcs._removeProvider, 'authorizeByBasic').and.returnValue(of(authInfo));
+            spyOn(authDB.authentications, 'add').and.returnValue(Promise.resolve());
 
-            const subscription = remote
-                .loginWithBasicAuthorization(username, password, { instanceLogin: true })
+            const subscription = vcs
+                .loginRemoteWithBasicAuthorization(username, password, { instanceLogin: true })
                 .subscribe(callback);
 
             flush();
 
             expect(callback).toHaveBeenCalledWith(authInfo);
-            expect(remote._provider.authorizeByBasic).toHaveBeenCalledWith(username, password);
+            expect(vcs._removeProvider.authorizeByBasic).toHaveBeenCalledWith(username, password);
             expect(authDB.authentications.add).not.toHaveBeenCalledWith(authInfo);
 
             subscription.unsubscribe();
         }));
     });
 
-    describe('loginWithOauth2TokenAuthorization', () => {
+    describe('loginRemoteWithOauth2TokenAuthorization', () => {
         const token = 'token';
         let callback: jasmine.Spy;
         let authInfo: VcsAuthenticationInfo;
@@ -121,14 +127,14 @@ describe('browser.vcs.vcsRemote.VcsRemoteService', () => {
 
         it('should authorize by oauth2 token and save authentication info in database ' +
             'after authorization.', fakeAsync(() => {
-            spyOn(remote._provider, 'authorizeByOauth2Token').and.returnValue(of(authInfo));
-            spyOn(authDB.authentications, 'add').and.returnValue(of(null));
+            spyOn(vcs._removeProvider, 'authorizeByOauth2Token').and.returnValue(of(authInfo));
+            spyOn(authDB.authentications, 'add').and.returnValue(Promise.resolve());
 
-            const subscription = remote.loginWithOauth2TokenAuthorization(token).subscribe(callback);
+            const subscription = vcs.loginRemoteWithOauth2TokenAuthorization(token).subscribe(callback);
             flush();
 
             expect(callback).toHaveBeenCalledWith(authInfo);
-            expect(remote._provider.authorizeByOauth2Token).toHaveBeenCalledWith(token);
+            expect(vcs._removeProvider.authorizeByOauth2Token).toHaveBeenCalledWith(token);
             expect(authDB.authentications.add).toHaveBeenCalledWith(authInfo);
 
             subscription.unsubscribe();
@@ -136,17 +142,17 @@ describe('browser.vcs.vcsRemote.VcsRemoteService', () => {
 
         it('should authorize by oauth2 token and skip save authentication info in ' +
             'database after authorization if instance login option is true.', fakeAsync(() => {
-            spyOn(remote._provider, 'authorizeByOauth2Token').and.returnValue(of(authInfo));
-            spyOn(authDB.authentications, 'add').and.returnValue(of(null));
+            spyOn(vcs._removeProvider, 'authorizeByOauth2Token').and.returnValue(of(authInfo));
+            spyOn(authDB.authentications, 'add').and.returnValue(Promise.resolve());
 
-            const subscription = remote
-                .loginWithOauth2TokenAuthorization(token, { instanceLogin: true })
+            const subscription = vcs
+                .loginRemoteWithOauth2TokenAuthorization(token, { instanceLogin: true })
                 .subscribe(callback);
 
             flush();
 
             expect(callback).toHaveBeenCalledWith(authInfo);
-            expect(remote._provider.authorizeByOauth2Token).toHaveBeenCalledWith(token);
+            expect(vcs._removeProvider.authorizeByOauth2Token).toHaveBeenCalledWith(token);
             expect(authDB.authentications.add).not.toHaveBeenCalledWith(authInfo);
 
             subscription.unsubscribe();
@@ -171,7 +177,7 @@ describe('browser.vcs.vcsRemote.VcsRemoteService', () => {
 
             spyOn(git, 'cloneRepository').and.returnValue(of(null));
 
-            await toPromise(remote.cloneRepository('url', 'localPath'));
+            await toPromise(vcs.cloneRepository('url', 'localPath'));
 
             expect(git.cloneRepository).toHaveBeenCalledWith('url', 'localPath', latestAuthInfo);
         });
@@ -181,10 +187,9 @@ describe('browser.vcs.vcsRemote.VcsRemoteService', () => {
             await authDB.authentications.clear();
 
             spyOn(git, 'cloneRepository').and.returnValue(of(null));
+            await toPromise(vcs.cloneRepository('url', 'localPath'));
 
-            await toPromise(remote.cloneRepository('url', 'localPath'));
-
-            expect(git.cloneRepository).toHaveBeenCalledWith('url', 'localPath', null);
+            expect(git.cloneRepository).toHaveBeenCalledWith('url', 'localPath', undefined);
         });
     });
 });
