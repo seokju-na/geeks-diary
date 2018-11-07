@@ -1,6 +1,5 @@
 import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
-import { AuthenticationDatabaseProvider } from './authentication-database';
 import { ChangeFileNameDialogModule } from './change-file-name-dialog';
 import { ConfirmDialogModule } from './confirm-dialog';
 import { FsService } from './fs.service';
@@ -21,7 +20,6 @@ import { WorkspaceService } from './workspace.service';
         FsService,
         WorkspaceService,
         WorkspaceDatabaseProvider,
-        AuthenticationDatabaseProvider,
         GitService,
         MenuService,
         NativeDialog,
