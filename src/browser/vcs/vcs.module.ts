@@ -1,14 +1,17 @@
-import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
+import { VcsAuthenticationDatabaseProvider } from './vcs-authentication-database';
 import { VcsRemoteModule } from './vcs-remote';
+import { VcsService } from './vcs.service';
 
 
 @NgModule({
     imports: [
-        CommonModule,
         VcsRemoteModule,
     ],
-    declarations: [],
+    providers: [
+        VcsAuthenticationDatabaseProvider,
+        VcsService,
+    ],
     exports: [
         VcsRemoteModule,
     ],

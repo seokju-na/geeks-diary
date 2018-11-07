@@ -4,6 +4,7 @@ import { ComponentFixture, fakeAsync, flush, TestBed } from '@angular/core/testi
 import { By } from '@angular/platform-browser';
 import { ActivatedRoute } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
+import { StoreModule } from '@ngrx/store';
 import { of, throwError } from 'rxjs';
 import {
     dispatchFakeEvent,
@@ -22,8 +23,7 @@ import { ConfirmDialogComponent, ConfirmDialogData } from '../../shared/confirm-
 import { Dialog } from '../../ui/dialog';
 import { RadioButtonComponent } from '../../ui/radio';
 import { UiModule } from '../../ui/ui.module';
-import { VcsRemoteService } from '../../vcs/vcs-remote';
-import { VcsModule } from '../../vcs/vcs.module';
+import { VcsModule, VcsService } from '../../vcs';
 import { WizardCloningComponent } from './wizard-cloning.component';
 
 
@@ -31,7 +31,7 @@ describe('browser.wizard.wizardCloning.WizardCloningComponent', () => {
     let fixture: ComponentFixture<WizardCloningComponent>;
     let component: WizardCloningComponent;
 
-    let vcsRemote: VcsRemoteService;
+    let vcs: VcsService;
     let workspace: WorkspaceService;
     let mockDialog: MockDialog;
     let mockLocation: SpyLocation;
@@ -109,6 +109,7 @@ describe('browser.wizard.wizardCloning.WizardCloningComponent', () => {
                 imports: [
                     UiModule,
                     SharedModule,
+                    StoreModule.forRoot({}),
                     VcsModule,
                     NoopModule,
                     RouterTestingModule.withRoutes([
@@ -127,7 +128,7 @@ describe('browser.wizard.wizardCloning.WizardCloningComponent', () => {
     });
 
     beforeEach(() => {
-        vcsRemote = TestBed.get(VcsRemoteService);
+        vcs = TestBed.get(VcsService);
         workspace = TestBed.get(WorkspaceService);
         mockDialog = TestBed.get(Dialog);
         mockLocation = TestBed.get(Location);
@@ -223,7 +224,7 @@ describe('browser.wizard.wizardCloning.WizardCloningComponent', () => {
             switchAuthMethodOption(VcsAuthenticationTypes.BASIC);
             fixture.detectChanges();
 
-            spyOn(vcsRemote, 'loginWithBasicAuthorization').and.returnValue(of(null));
+            spyOn(vcs, 'loginRemoteWithBasicAuthorization').and.returnValue(of(null));
 
             const userNameInputEl = getUserNameInputEl();
             const passwordInputEl = getPasswordInputEl();
@@ -241,7 +242,7 @@ describe('browser.wizard.wizardCloning.WizardCloningComponent', () => {
                 By.css('.WizardCloning__loginCompleted'),
             );
 
-            expect(vcsRemote.loginWithBasicAuthorization).toHaveBeenCalledWith('user', 'password');
+            expect(vcs.loginRemoteWithBasicAuthorization).toHaveBeenCalledWith('user', 'password');
             expect(loginComplete).not.toBeNull();
         }));
 
@@ -250,7 +251,7 @@ describe('browser.wizard.wizardCloning.WizardCloningComponent', () => {
             switchAuthMethodOption(VcsAuthenticationTypes.OAUTH2_TOKEN);
             fixture.detectChanges();
 
-            spyOn(vcsRemote, 'loginWithOauth2TokenAuthorization').and.returnValue(of(null));
+            spyOn(vcs, 'loginRemoteWithOauth2TokenAuthorization').and.returnValue(of(null));
 
             const tokenInputEl = getTokenInputEl();
 
@@ -266,7 +267,7 @@ describe('browser.wizard.wizardCloning.WizardCloningComponent', () => {
                 By.css('.WizardCloning__loginCompleted'),
             );
 
-            expect(vcsRemote.loginWithOauth2TokenAuthorization).toHaveBeenCalledWith('token');
+            expect(vcs.loginRemoteWithOauth2TokenAuthorization).toHaveBeenCalledWith('token');
             expect(loginComplete).not.toBeNull();
         }));
 
@@ -277,7 +278,7 @@ describe('browser.wizard.wizardCloning.WizardCloningComponent', () => {
 
             const error = new VcsError(VcsErrorCodes.AUTHENTICATE_ERROR);
 
-            spyOn(vcsRemote, 'loginWithBasicAuthorization').and.returnValue(throwError(error));
+            spyOn(vcs, 'loginRemoteWithBasicAuthorization').and.returnValue(throwError(error));
 
             submitAuthLoginForm();
             flush();
@@ -293,7 +294,7 @@ describe('browser.wizard.wizardCloning.WizardCloningComponent', () => {
 
             const error = new VcsError(VcsErrorCodes.AUTHENTICATE_ERROR);
 
-            spyOn(vcsRemote, 'loginWithOauth2TokenAuthorization').and.returnValue(throwError(error));
+            spyOn(vcs, 'loginRemoteWithOauth2TokenAuthorization').and.returnValue(throwError(error));
 
             submitAuthLoginForm();
             flush();
@@ -326,12 +327,12 @@ describe('browser.wizard.wizardCloning.WizardCloningComponent', () => {
 
             const error = new GitError(GitErrorCodes.AUTHENTICATION_FAIL);
 
-            spyOn(vcsRemote, 'cloneRepository').and.returnValue(throwError(error));
+            spyOn(vcs, 'cloneRepository').and.returnValue(throwError(error));
 
             clickCloneButton();
             flush();
 
-            expect(vcsRemote.cloneRepository).toHaveBeenCalledWith(url, WORKSPACE_DIR_PATH);
+            expect(vcs.cloneRepository).toHaveBeenCalledWith(url, WORKSPACE_DIR_PATH);
 
             const alertDialogRef = mockDialog.getByComponent<ConfirmDialogComponent,
                 ConfirmDialogData,
@@ -352,7 +353,7 @@ describe('browser.wizard.wizardCloning.WizardCloningComponent', () => {
             remoteUrlInputEl.blur();
             fixture.detectChanges();
 
-            spyOn(vcsRemote, 'cloneRepository').and.returnValue(of(null));
+            spyOn(vcs, 'cloneRepository').and.returnValue(of(null));
             spyOn(workspace, 'initWorkspace').and.returnValue(of(null));
 
 
@@ -361,7 +362,7 @@ describe('browser.wizard.wizardCloning.WizardCloningComponent', () => {
 
             flush();
 
-            expect(vcsRemote.cloneRepository).toHaveBeenCalledWith(url, WORKSPACE_DIR_PATH);
+            expect(vcs.cloneRepository).toHaveBeenCalledWith(url, WORKSPACE_DIR_PATH);
             expect(workspace.initWorkspace).toHaveBeenCalled();
         }));
     });
