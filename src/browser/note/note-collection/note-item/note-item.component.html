@@ -1,0 +1,9 @@
+<div class="NoteItem__wrapper">
+    <div *ngIf="note.label" class="NoteItem__labelWrapper">
+        <label class="NoteItem__label">{{ note.label }}</label>
+    </div>
+    <h1 class="NoteItem__title">{{ noteTitle }}</h1>
+    <time [attr.datetime]="note.createdDatetime | date:'short'" class="NoteItem__createdAt">
+        {{ note.createdDatetime | date:'MMM d, y h:mm a' }}
+    </time>
+</div>

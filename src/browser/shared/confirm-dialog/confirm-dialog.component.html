@@ -1,0 +1,21 @@
+<gd-dialog-header *ngIf="data.title">
+    <gd-icon *ngIf="data.isAlert" name="exclamation-triangle"></gd-icon>
+    <h1 gdDialogTitle>{{ data.title }}</h1>
+</gd-dialog-header>
+
+<gd-dialog-content>
+    <p [innerHTML]="content">
+</gd-dialog-content>
+
+<gd-dialog-actions align="end">
+    <button *ngIf="data.isAlert" gd-button (click)="closeWith()">
+        {{ data.alertButtonString }}
+    </button>
+
+    <button *ngIf="!data.isAlert" gd-button (click)="closeWith(false)">
+        {{ data.cancelButtonString }}
+    </button>
+    <button *ngIf="!data.isAlert" gd-button color="primary" (click)="closeWith(true)">
+        {{ data.confirmButtonString }}
+    </button>
+</gd-dialog-actions>

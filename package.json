@@ -1,6 +1,6 @@
 {
     "name": "geeks-diary",
-    "version": "1.0.0",
+    "version": "1.0.0-beta",
     "description": "TIL writing tool for geeks",
     "private": true,
     "repository": {
@@ -8,25 +8,23 @@
         "url": "https://github.com/seokju-na/geeks-diary.git"
     },
     "scripts": {
-        "start": "npx electron package/dist/main.js",
+        "start": "npx electron dist/main.js",
         "serve:browser:app": "npx ng build app --watch",
         "serve:browser:wizard": "npx ng build wizard --watch",
-        "serve:main-process": "npx webpack --config package/webpack.electron.js --watch",
+        "serve:main-process": "npx webpack --config webpack.electron.js --watch",
         "build": "yarn build:browser && yarn build:main-process",
         "build:browser": "yarn build:browser:app && yarn build:browser:wizard",
         "build:browser:app": "cross-env NODE_ENV=production npx ng build app --prod",
         "build:browser:wizard": "cross-env NODE_ENV=production npx ng build wizard --prod",
-        "build:main-process": "cross-env NODE_ENV=production npx webpack --config package/webpack.electron.js",
+        "build:main-process": "cross-env NODE_ENV=production npx webpack --config webpack.electron.js",
         "lint": "yarn lint:browser && yarn lint:main-process",
         "lint:browser": "npx ng lint app",
-        "lint:main-process": "npx tslint --project package/tsconfig.electron.json",
-        "test": "yarn lint && yarn test:browser && yarn test:main-process && yarn test:libs && yarn build",
+        "lint:main-process": "npx tslint --project tsconfig.electron.json",
+        "test": "yarn test:browser && yarn test:main-process && yarn test:libs",
         "test:browser": "npx ng test app",
-        "test:browser:coverage": "npx ng test app --code-coverage=true",
-        "test:main-process": "npx electron-mocha --opts package/test/test-main-process.opts",
-        "test:main-process:coverage": "npx nyc yarn test:main-process",
-        "test:libs": "npx electron-mocha --opts package/test/test-libs.opts",
-        "test:libs:coverage": "npx nyc yarn test:libs",
+        "test:main-process": "npx electron-mocha --opts test/test-main-process.opts",
+        "test:libs": "npx electron-mocha --opts test/test-libs.opts",
+        "ci": "yarn lint && yarn test && yarn build",
         "scripts:override-angular-dev-kit": "./scripts/override-angular-dev-kit",
         "scripts:build-vendors": "./scripts/build-vendors.sh",
         "postinstall": "yarn scripts:override-angular-dev-kit && yarn scripts:build-vendors"
@@ -38,37 +36,39 @@
     },
     "license": "MIT",
     "engines": {
-        "node": ">= 8.10",
-        "yarn": ">= 1.5.0"
+        "node": "~8.11.4",
+        "yarn": ">= 1.9.0"
     },
     "dependencies": {
-        "@angular/animations": "^6.0.7",
+        "@angular/animations": "^6.1.0",
         "@angular/cdk": "^6.3.2",
-        "@angular/common": "^6.0.7",
-        "@angular/core": "^6.0.7",
-        "@angular/flex-layout": "^6.0.0-beta.16",
-        "@angular/forms": "^6.0.7",
-        "@angular/platform-browser": "^6.0.7",
-        "@angular/platform-browser-dynamic": "^6.0.7",
+        "@angular/common": "^6.1.0",
+        "@angular/core": "^6.1.0",
+        "@angular/flex-layout": "6.0.0-beta.16",
+        "@angular/forms": "^6.1.0",
+        "@angular/platform-browser": "^6.1.0",
+        "@angular/platform-browser-dynamic": "^6.1.0",
+        "@angular/router": "^6.1.0",
         "@ngrx/effects": "^6.0.1",
         "@ngrx/store": "^6.0.1",
         "@ngrx/store-devtools": "^6.0.1",
+        "codemirror": "^5.40.2",
         "core-js": "^2.5.7",
         "devicon-2.2": "^2.2.0",
         "dexie": "^2.0.4",
         "file-url": "^2.0.2",
         "fs-extra": "^7.0.0",
         "get-md-title": "^1.0.4",
+        "highlight.js": "^9.13.1",
         "js-yaml": "^3.12.0",
         "line-awesome": "icons8/line-awesome",
         "lodash.kebabcase": "^4.1.1",
-        "monaco-editor": "^0.13.1",
         "nodegit": "^0.22.2",
         "octicons": "^7.3.0",
         "path-is-inside": "^1.0.2",
         "remarkable": "^1.7.1",
         "remarkable-meta": "^1.0.1",
-        "rxjs": "^6.2.1",
+        "rxjs": "6.2.2",
         "typeface-open-sans": "^0.0.54",
         "uuid": "^3.3.2",
         "zone.js": "^0.8.26"
@@ -76,11 +76,13 @@
     "devDependencies": {
         "@angular-devkit/build-angular": "0.6.7",
         "@angular/cli": "6.0.7",
-        "@angular/compiler": "^6.0.7",
-        "@angular/compiler-cli": "^6.0.7",
-        "@angular/language-service": "^6.0.7",
+        "@angular/compiler": "^6.1.0",
+        "@angular/compiler-cli": "^6.1.0",
+        "@angular/language-service": "^6.1.0",
         "@types/chai": "^4.1.4",
+        "@types/codemirror": "^0.0.60",
         "@types/fs-extra": "^5.0.4",
+        "@types/highlight.js": "^9.12.3",
         "@types/jasmine": "^2.8.8",
         "@types/jasminewd2": "^2.0.3",
         "@types/js-yaml": "^3.11.2",
@@ -91,7 +93,7 @@
         "chai": "^4.1.2",
         "codelyzer": "^4.4.2",
         "cross-env": "^5.2.0",
-        "electron": "^2.0.4",
+        "electron": "~2.x.x",
         "electron-devtools-installer": "^2.2.4",
         "electron-mocha": "^6.0.4",
         "electron-rebuild": "^1.8.1",
@@ -103,6 +105,7 @@
         "karma-jasmine": "^1.1.2",
         "karma-jasmine-html-reporter": "^0.2.2",
         "lodash.isequal": "^4.5.0",
+        "node-abi": "^2.4.4",
         "nyc": "^12.0.2",
         "source-map-support": "^0.5.6",
         "ts-node": "^7.0.0",
@@ -111,30 +114,5 @@
         "uglifyjs-webpack-plugin": "^1.2.7",
         "webpack": "^4.14.0",
         "webpack-cli": "^3.0.8"
-    },
-    "nyc": {
-        "exclude": [
-            "package/dist/",
-            "package/src/assets/",
-            "package/src/browser/",
-            "package/src/environments/",
-            "package/src/libs/",
-            "package/src/models/",
-            "package/test/",
-            "package/src/main-process/**/*.spec.ts"
-        ],
-        "include": [
-            "package/src/main-process/"
-        ],
-        "extension": [
-            ".ts"
-        ],
-        "all": true,
-        "reporter": [
-            "lcov",
-            "text-summary",
-            "json"
-        ],
-        "report-dir": "coverage-main-process/"
     }
 }

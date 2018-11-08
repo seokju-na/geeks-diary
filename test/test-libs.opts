@@ -1,0 +1,7 @@
+# Mocha opts for testing libs
+
+--require ts-node/register
+--require source-map-support/register
+--ui bdd
+--recursive
+src/libs/**/*.spec.ts

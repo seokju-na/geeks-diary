@@ -1,0 +1,47 @@
+@import "../../../ui/style/theming";
+@import "../../../ui/style/typography";
+
+@mixin gd-note-text-snippet-editor-theme($theme) {
+    $primary: map-get($theme, primary);
+    $foreground: map-get($theme, foreground);
+    $background: map-get($theme, background);
+
+    .NoteTextSnippetEditor {
+        border: 1px solid transparent;
+        color: gd-color($foreground, text);
+
+        &--focused {
+            border-color: gd-color($foreground, divider);
+        }
+
+        &__editor {
+            background-color: gd-color($background, background);
+        }
+
+        span.cm-variable-2, span.cm-variable-3, span.cm-keyword {
+            color: gd-color($foreground, secondary-text);
+        }
+
+        span.cm-comment {
+            color: gd-color($foreground, hint-text);
+        }
+
+        span.cm-link {
+            text-decoration: none;
+            color: gd-color($foreground, text);
+        }
+
+        span.cm-url {
+            color: gd-color($foreground, secondary-text);
+        }
+
+        span.cm-quote {
+            color: gd-color($foreground, secondary-text);
+        }
+
+        span.cm-string {
+            font-weight: $font-weight-semiBold;
+            color: gd-color($foreground, secondary-text);
+        }
+    }
+}

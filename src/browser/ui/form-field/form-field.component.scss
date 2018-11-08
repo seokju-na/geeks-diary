@@ -1,0 +1,14 @@
+@import "../style/spacing";
+
+.FormField {
+    &__content {
+        .Input {
+            display: block;
+            width: 100%;
+
+            & ~ .FormFieldError {
+                margin-top: $spacing-third;
+            }
+        }
+    }
+}

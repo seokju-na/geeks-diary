@@ -1,0 +1,99 @@
+@import "../style/button-common";
+@import "../style/typography";
+@import "../style/spacing";
+@import "./button-sizes";
+
+.Button, .FlatButton, .IconButton {
+    @include button-reset();
+
+    position: relative;
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    margin: 0;
+    height: $button-size;
+    overflow: visible;
+
+    white-space: nowrap;
+    text-decoration: none;
+    vertical-align: baseline;
+    text-align: center;
+
+    font: {
+        family: $font-family-sans-serif;
+        size: $font-size;
+        weight: $font-weight-semiBold;
+    };
+    line-height: $line-height-condensed;
+
+    //noinspection CssUnknownProperty
+    -webkit-app-region: no-drag;
+
+    &:disabled {
+        cursor: default;
+    }
+
+    & * {
+        cursor: inherit;
+    }
+}
+
+.Button {
+    padding: 0 $button-size / 1.7;
+    min-width: 85px;
+
+    &__wrapper {
+        display: inline-flex;
+        align-items: center;
+    }
+
+    &__spinner {
+        display: none;
+        position: absolute;
+        left: 50%;
+        top: 50%;
+        transform: translate(-50%, -50%);
+    }
+
+    &--showSpinner {
+        .Button__wrapper {
+            visibility: hidden;
+        }
+
+        .Button__spinner {
+            display: inline-flex;
+            line-height: 1;
+        }
+    }
+
+    &--iconContains {
+        &-left {
+            .Icon { margin-right: $spacing-third; }
+        }
+
+        &-right {
+            .Icon { margin-left: $spacing-third; }
+        }
+    }
+
+    &--size-big {
+        height: $button-size-big;
+    }
+}
+
+.FlatButton {
+    min-width: 0;
+    padding: 0;
+}
+
+.IconButton {
+    width: $button-size;
+    min-width: 0;
+    padding: 0;
+
+    &.Button--size-big {
+        width: $button-size-big;
+    }
+}

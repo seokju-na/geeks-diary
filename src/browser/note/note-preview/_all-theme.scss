@@ -1,0 +1,5 @@
+@import "./note-preview-theme";
+
+@mixin gd-note-preview-all-theme($theme) {
+    @include gd-note-preview-theme($theme);
+}

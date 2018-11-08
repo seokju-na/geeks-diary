@@ -1,0 +1,19 @@
+@import "../style/typography";
+@import "./title-bar-sizes";
+
+.TitleBar {
+    //noinspection CssUnknownProperty
+    -webkit-app-region: drag;
+    display: flex;
+    justify-content: center;
+    flex-grow: 0;
+    flex-shrink: 0;
+    height: $title-bar-darwin-size;
+    zoom: 1;
+
+    font: {
+        size: $font-size;
+        weight: $font-weight-normal;
+    };
+    line-height: 22px;
+}

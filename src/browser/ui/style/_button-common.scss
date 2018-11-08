@@ -1,0 +1,7 @@
+@mixin button-reset {
+    user-select: none;
+    cursor: pointer;
+    outline: none;
+    border: none;
+    -webkit-tap-highlight-color: transparent;
+}

@@ -1,0 +1,51 @@
+@import "../style/theming";
+
+@mixin gd-ui-checkbox-theme($theme) {
+    $is-dark-theme: map-get($theme, is-dark);
+    $primary: map-get($theme, primary);
+    $background: map-get($theme, background);
+
+    // The color of the checkbox's checkmark / mixedmark.
+    $checkbox-mark-color: gd-color($background, background);
+
+    // While the spec calls for translucent blacks/whites for disabled colors,
+    // this does not work well with elements layered on top of one another. To get around this we
+    // blend the colors together based on the base color and the theme background.
+    $white-30pct-opacity-on-dark: #686868;
+    $black-26pct-opacity-on-light: #b0b0b0;
+    $disabled-color: if($is-dark-theme, $white-30pct-opacity-on-dark, $black-26pct-opacity-on-light);
+
+    .Checkbox {
+        &__frame {
+            border-color: gd-color(map-get($theme, foreground), secondary-text);
+        }
+
+        &__checkMark {
+            fill: $checkbox-mark-color;
+
+            > path {
+                // !important is needed here because a stroke must be set as an
+                // attribute on the SVG in order for line animation to work properly.
+                stroke: $checkbox-mark-color !important;
+            }
+        }
+
+        &__mixedMark {
+            background-color: $checkbox-mark-color;
+        }
+    }
+
+    .Checkbox--indeterminate, .Checkbox--checked {
+        .Checkbox__background {
+            background-color: gd-color($primary);
+        }
+    }
+
+    .Checkbox--disabled {
+        &.Checkbox--checked:not(.Checkbox--indeterminate) {
+            .Checkbox__background {
+                background-color: $disabled-color;
+            }
+        }
+    }
+}

@@ -1,0 +1,90 @@
+@import "../style/theming";
+
+@mixin gd-ui-button-theme($theme) {
+    $primary: map-get($theme, primary);
+    $warn: map-get($theme, warn);
+    $background: map-get($theme, background);
+    $foreground: map-get($theme, foreground);
+
+    .Button, .FlatButton, .IconButton {
+        color: inherit;
+        background: transparent;
+    }
+
+    .Button {
+        border-radius: 2px;
+
+        &.Button--color-normal {
+            border: 1px solid gd-color($foreground, divider);
+            background-color: gd-color($background, background-highlight);
+
+            &:disabled, &[disabled="true"] {
+                border-color: gd-color($background, disabled-button);
+                color: gd-color($foreground, disabled-button);
+                background-color: gd-color($background, disabled-button);
+            }
+
+            &:focus {
+                box-shadow: 0 0 0 2px gd-color($primary, lighter);
+
+                &:not(.focus-visible), &.Button--focusHidden {
+                    box-shadow: none;
+                }
+            }
+        }
+
+        &.Button--color-primary {
+            color: gd-color($primary, default-contrast);
+            background-color: gd-color($primary, default);
+
+            &:disabled, &[disabled="true"] {
+                color: gd-color($foreground, disabled-button);
+                background-color: gd-color($background, disabled-button);
+            }
+
+            &:focus {
+                box-shadow: 0 0 0 2px gd-color($primary, lighter);
+
+                &:not(.focus-visible), &.Button--focusHidden {
+                    box-shadow: none;
+                }
+            }
+        }
+    }
+
+    .FlatButton {
+        border-radius: 2px;
+        border: none;
+
+        &:disabled, &[disabled="true"] {
+            color: gd-color($foreground, disabled-button);
+        }
+
+        &:focus {
+            box-shadow: 0 0 0 2px gd-color($primary, lighter);
+
+            &:not(.focus-visible), &.Button--focusHidden {
+                box-shadow: none;
+            }
+        }
+    }
+
+    .IconButton {
+        border: 1px solid transparent;
+        border-radius: 7.5%;
+
+        &:disabled, &[disabled="true"] {
+            color: gd-color($foreground, disabled-button);
+        }
+
+        &:focus {
+            border-color: gd-color($background, focused-button);
+            box-shadow: 0 0 2px 0 gd-color($background, focused-button);
+
+            &:not(.focus-visible), &.Button--focusHidden {
+                border-color: transparent;
+                box-shadow: none;
+            }
+        }
+    }
+}

@@ -1,0 +1,32 @@
+@import "../style/theming";
+
+@mixin gd-ui-tab-group-theme($theme) {
+    $background: map-get($theme, background);
+    $foreground: map-get($theme, foreground);
+    $primary: map-get($theme, primary);
+
+    .TabGroup {
+        border-bottom: 1px solid gd-color($foreground, divider);
+
+        &__list > li:not(:last-child) {
+            border-right: 1px solid gd-color($foreground, divider);
+        }
+
+        &__inkBar {
+            background-color: gd-color($primary);
+        }
+    }
+
+    .TabItem {
+        background-color: gd-color($background, background-highlight);
+
+        &--activate {
+            box-shadow: inset 0 -2px 0px gd-color($primary);
+        }
+
+        &:focus {
+            outline: 0;
+            background-color: gd-color($background, focused-button);
+        }
+    }
+}

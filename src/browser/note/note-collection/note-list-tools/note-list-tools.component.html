@@ -1,0 +1,16 @@
+<div fxLayout fxLayoutAlign="space-between center" class="NoteListTools">
+    <gd-button-toggle-group [formControl]="viewModeFormControl">
+        <gd-button-toggle *ngFor="let option of viewModeOptions"
+                          [value]="option.value"
+                          [name]="option.name">
+            <gd-icon [name]="option.iconName"></gd-icon>
+        </gd-button-toggle>
+    </gd-button-toggle-group>
+
+    <button gd-icon-button
+            id="sorting-menu-button"
+            (click)="openSortingMenu()"
+            aria-label="Open sorting notes menu">
+        <gd-icon name="sort"></gd-icon>
+    </button>
+</div>

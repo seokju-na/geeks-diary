@@ -1,0 +1,14 @@
+<div class="NoteEditor__toolbar"></div>
+
+<div fxFlex="1 1 auto" #scrollable class="NoteEditor__scrollable">
+    <div class="NoteEditor__titleEdit">
+        <div class="NoteEditor__titleTextarea">
+            <textarea #titleTextarea gdAutosize rows="1" [formControl]="titleInputControl"
+                      placeholder="Untitled Note" (keydown)="moveFocusToSnippetEditor($event)"></textarea>
+        </div>
+    </div>
+
+    <div class="NoteEditor__snippetsContainer">
+        <div #snippetsList class="NoteEditor__snippetsList"></div>
+    </div>
+</div>

@@ -1,0 +1,17 @@
+@import "../style/spacing";
+@import "../style/typography";
+
+.AutocompleteItem {
+    display: flex;
+    align-items: center;
+    padding: 0 $spacing-half;
+    height: 24px;
+    line-height: 24px;
+    color: inherit;
+    font-weight: $font-weight-semiBold;
+    outline: 0;
+
+    &--active {
+        font-weight: $font-weight-bold;
+    }
+}

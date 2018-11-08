@@ -1,0 +1,13 @@
+@import "./note-finder/note-finder-theme";
+@import "./note-calendar/note-calendar-theme";
+@import "./note-list-tools/note-list-tools-theme";
+@import "./note-list/note-list-theme";
+@import "./note-item/note-item-theme";
+
+@mixin gd-note-collection-all-theme($theme) {
+    @include gd-note-finder-theme($theme);
+    @include gd-note-calendar-theme($theme);
+    @include gd-note-list-tools-theme($theme);
+    @include gd-note-list-theme($theme);
+    @include gd-note-item-theme($theme);
+}

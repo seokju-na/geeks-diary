@@ -1,0 +1,67 @@
+<div class="NoteCalendar">
+    <div fxLayout fxLayoutAlign="space-between center" class="NoteCalendar__nav">
+        <h1 class="NoteCalendar__title">{{ currentDate | async | date:'MMM y' }}</h1>
+        <div fxLayout fxLayoutAlign="start center" class="NoteCalendar__actions">
+            <button gd-icon-button
+                    id="decrease-month-button"
+                    (click)="decreaseMonth()"
+                    aria-label="Decrease month">
+                <gd-icon name="angle-left"></gd-icon>
+            </button>
+            <button gd-icon-button
+                    id="go-to-today-button"
+                    (click)="goToToday()"
+                    aria-label="Go to today">
+                <gd-icon name="calendar-check-o"></gd-icon>
+            </button>
+            <button gd-icon-button
+                    id="increase-month-button"
+                    [disabled]="!canNavigateNextMonth"
+                    (click)="increaseMonth()"
+                    aria-label="Increase month">
+                <gd-icon name="angle-right"></gd-icon>
+            </button>
+        </div>
+    </div>
+
+    <table fxLayout="column" class="NoteCalendar__table">
+        <thead>
+        <tr>
+            <td>S</td>
+            <td>M</td>
+            <td>T</td>
+            <td>W</td>
+            <td>T</td>
+            <td>F</td>
+            <td>S</td>
+        </tr>
+        </thead>
+        <tbody>
+        <tr *ngFor="let row of calendar.rows">
+            <td *ngFor="let cell of row.cells">
+                <a [attr.datetime]="cell.label"
+                   [attr.aria-selected]="isCellSelected(cell)"
+                   [class.NoteCalendar__cell--blank]="cell.isBlank()"
+                   [class.NoteCalendar__cell--selected]="isCellSelected(cell)"
+                   (click)="selectDateCell(cell)"
+                   type="button"
+                   class="NoteCalendar__cell">
+                    <label *ngIf="!cell.isBlank()">
+                        {{ cell.date | date:'d' }}
+                    </label>
+                </a>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+
+    <div class="NoteCalendar__selectedDate">
+        <span>Date Selection : </span>
+        <span *ngIf="selectedDate | async as dateSelection; else noDateSelection">
+            {{ dateSelection | date:'y/MM/dd' }}
+        </span>
+        <ng-template #noDateSelection>
+            <span>(None)</span>
+        </ng-template>
+    </div>
+</div>

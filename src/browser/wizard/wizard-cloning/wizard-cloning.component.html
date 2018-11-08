@@ -1,0 +1,94 @@
+<div fxLayout="column" class="WizardCloning">
+    <div fxFlex="1 0 auto" fxLayout="column" fxLayoutAlign="space-between" class="WizardCloning__content">
+        <div gdArea gdColumns="1fr 5fr" gdGap="5px">
+            <label gdColumn="1" gdRow="1" gdFormFieldLabel for="remote-url-input">Remote URL:</label>
+            <gd-form-field id="remote-url-form-field" gdColumn="2" gdRow="1">
+                <input gdInput [formControl]="remoteUrlFormControl" id="remote-url-input" type="url">
+                <gd-form-field-error errorName="required">Remote url required</gd-form-field-error>
+                <gd-form-field-error errorName="invalidFormat">Invalid url format</gd-form-field-error>
+            </gd-form-field>
+
+            <label gdColumn="1" gdRow="2" gdFormFieldLabel for="directory">Directory:</label>
+            <gd-form-field gdColumn="2" gdRow="2">
+                <textarea gdInput
+                          gdAutosize
+                          [formControl]="workspaceDirectoryFormControl"
+                          id="directory"
+                          readonly
+                          rows="1"></textarea>
+            </gd-form-field>
+        </div>
+
+        <div fxLayout fxLayoutAlign="start center" fxLayoutGap="5px"
+             *ngIf="loginCompleted" class="WizardCloning__loginCompleted">
+            <gd-icon name="check-circle"></gd-icon>
+            <span>Github Login Completed</span>
+        </div>
+
+        <div fxLayout="column" *ngIf="authFormAvailable">
+            <div fxLayout fxLayoutAlign="start center" fxLayoutGap="10px" class="WizardCloning__formToggling">
+                <button gd-flat-button [focusHidden]="true" iconContains="left" fxFlex="none"
+                        (click)="toggleAuthForm()" type="button">
+                    <gd-icon [name]="authFormToggled ? 'caret-down' : 'caret-up'"></gd-icon>
+                    Github Login (Optional)
+                </button>
+
+                <gd-horizontal-line fxFlex="1 0 auto"></gd-horizontal-line>
+            </div>
+
+            <form gdArea gdRows="repeat(4, 1fr)" gdColumns="1fr 3fr 2fr" gdGap="5px"
+                  [formGroup]="authenticationFormGroup"
+                  (submit)="loginToVcsRemote()"
+                  [attr.aria-hidden]="!authFormToggled"
+                  [class.WizardCloning__authenticationForm--show]="authFormToggled"
+                  class="WizardCloning__authenticationForm">
+
+                <label gdRow="1" gdColumn="1" gdFormFieldLabel>Auth Type:</label>
+                <gd-radio-group gdRow="1" gdColumn="2 / 4" fxLayout fxLayoutAlign="start center" fxLayoutGap="20px"
+                                [formControlName]="'type'" name="type">
+                    <gd-radio-button [value]="authenticationTypes.BASIC">Username and Password</gd-radio-button>
+                    <gd-radio-button [value]="authenticationTypes.OAUTH2_TOKEN">Oauth2 Token</gd-radio-button>
+                </gd-radio-group>
+
+                <ng-container [ngSwitch]="authenticationFormGroup.get('type').value">
+                    <ng-container *ngSwitchCase="authenticationTypes.BASIC">
+                        <label gdRow="2" gdColumn="1" gdFormFieldLabel for="username-input">Username:</label>
+                        <gd-form-field gdRow="2" gdColumn="2 / 3">
+                            <input gdInput formControlName="userName" id="username-input">
+                        </gd-form-field>
+
+                        <label gdRow="3" gdColumn="1" gdFormFieldLabel for="password-input">Password:</label>
+                        <gd-form-field gdRow="3" gdColumn="2 / 3">
+                            <input gdInput formControlName="password" type="password" id="password-input">
+                        </gd-form-field>
+                    </ng-container>
+
+                    <ng-container *ngSwitchCase="authenticationTypes.OAUTH2_TOKEN">
+                        <label gdRow="2" gdColumn="1" gdFormFieldLabel for="token-input">Token:</label>
+                        <gd-form-field gdRow="2" gdColumn="2 / 4">
+                            <input gdInput formControlName="token" id="token-input">
+                        </gd-form-field>
+                    </ng-container>
+                </ng-container>
+
+                <div fxLayout fxLayoutAlign="start center" gdRow="4" gdColumn="2 / 4">
+                    <button gd-button id="login-button" [disabled]="loginProcessing"
+                            [showSpinner]="loginProcessing">
+                        Login
+                    </button>
+                    <gd-form-field-error [show]="loginErrorCaught" class="WizardCloning__loginFailError">
+                        Login Failed
+                    </gd-form-field-error>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div fxLayout fxLayoutAlign="end" fxLayoutGap="10px" class="WizardCloning__actions">
+        <button gd-button id="back-step-button" (click)="goToBack()">Previous</button>
+        <button gd-button id="clone-button" color="primary" [disabled]="remoteUrlFormControl.invalid || cloneProcessing"
+                (click)="clone()" [showSpinner]="cloneProcessing">
+            Clone
+        </button>
+    </div>
+</div>

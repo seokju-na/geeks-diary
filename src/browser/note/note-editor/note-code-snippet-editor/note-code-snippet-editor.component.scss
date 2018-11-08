@@ -1,0 +1,21 @@
+@import "../../../ui/style/spacing";
+
+.NoteCodeSnippetEditor {
+    &__header {
+        height: 24px;
+        padding: 0 $spacing-half;
+        border-top-left-radius: 4px;
+        border-top-right-radius: 4px;
+        color: inherit;
+    }
+
+    &__fileName {
+        display: inline-block;
+        line-height: 25px;
+        padding: 0 $spacing-half;
+    }
+
+    &__editor {
+        font-family: Menlo, Monaco, Consolas, monospace;
+    }
+}

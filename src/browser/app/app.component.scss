@@ -1,0 +1,36 @@
+@import "../ui/title-bar/title-bar-sizes";
+
+.App {
+    width: 100%;
+    height: 100%;
+
+    &__container {
+        width: 100%;
+        min-height: 1px;
+        height: calc(100% - #{$title-bar-darwin-size});
+    }
+
+    &__aside {
+        height: 100%;
+    }
+
+    &__content {
+        visibility: hidden;
+        min-width: 1px;
+        height: 100%;
+
+        &--show {
+            visibility: visible;
+        }
+    }
+
+    &__sections {
+        height: 100%;
+
+        > section {
+            min-height: 1px;
+            width: 50%;
+            height: 100%;
+        }
+    }
+}

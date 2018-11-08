@@ -1,0 +1,40 @@
+@import "../../ui/style/spacing";
+
+:host {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    height: 100%;
+}
+
+.NotePreview {
+    min-height: 100%;
+    overflow-y: auto;
+    scroll-behavior: smooth;
+    padding: $spacing ($spacing + $spacing-half);
+
+    &__title {
+        padding: $spacing 0;
+
+        > h1 {
+            margin: 0;
+            padding: 0;
+        }
+    }
+
+    &__snippet {
+        &--text {
+
+        }
+
+        &--code {
+            .NotePreview__snippetHtml {
+                padding: $spacing;
+                overflow-x: auto;
+            }
+        }
+    }
+
+    &__snippetHtml {
+    }
+}

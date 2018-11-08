@@ -1,0 +1,13 @@
+@import "./note-editor-theme";
+@import "./note-snippet-code-mirror-editor-theme";
+@import "./note-code-snippet-editor/note-code-snippet-editor-theme";
+@import "./note-text-snippet-editor/note-text-snippet-editor-theme";
+@import "./note-header/note-header-theme";
+
+@mixin gd-note-editor-all-theme($theme) {
+    @include gd-note-editor-theme($theme);
+    @include gd-note-snippet-code-mirror-editor-theme($theme);
+    @include gd-note-code-snippet-editor-theme($theme);
+    @include gd-note-text-snippet-editor-theme($theme);
+    @include gd-note-header-theme($theme);
+}

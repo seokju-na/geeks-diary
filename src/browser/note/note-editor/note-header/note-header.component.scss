@@ -1,0 +1,49 @@
+@import "../../../ui/style/spacing";
+@import "../../../ui/style/typography";
+@import "./note-header-sizes";
+
+:host {
+    display: block;
+}
+
+.NoteHeader {
+    width: 100%;
+    height: $note-header-size;
+
+    &__title {
+        padding: 0 $spacing-half;
+
+        #selected-note-title {
+            display: inline-block;
+            margin: 0;
+            padding: 0 $spacing-half;
+            font: {
+                size: $font-size;
+                weight: $font-weight-semiBold;
+            };
+            line-height: $note-header-size;
+        }
+    }
+
+    &__times {
+        padding: 0 $spacing-half;
+
+        time {
+            &:first-child {
+                margin-right: $spacing-double;
+            }
+
+            span:first-child {
+                margin-right: $spacing-half;
+            }
+        }
+    }
+
+    &__toolbar {
+        padding: 0 $spacing-half;
+
+        button:last-child {
+            margin-left: $spacing-half;
+        }
+    }
+}
