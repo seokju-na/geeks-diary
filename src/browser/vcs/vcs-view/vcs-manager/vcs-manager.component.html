@@ -1,2 +1,14 @@
-<div class="VcsManager">
+<div fxLayout="column" class="VcsManager">
+    <div fxFlex="none" fxLayout fxLayoutAlign="space-between center" class="VcsManager__title">
+        <h1>Version Control</h1>
+        <div class="VcsManager__tools">
+            <button gd-icon-button aria-label="Sync workspace">
+                <gd-icon name="refresh"></gd-icon>
+            </button>
+        </div>
+    </div>
+
+    <div fxLayout fxFlex="1 1 auto" class="VcsManager__itemsContainer">
+        <div #itemList class="VcsManager__itemList"></div>
+    </div>
 </div>
