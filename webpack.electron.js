@@ -1,4 +1,4 @@
-const { DefinePlugin, NoEmitOnErrorsPlugin, ProgressPlugin } = require('webpack');
+const { DefinePlugin, NoEmitOnErrorsPlugin } = require('webpack');
 const path = require('path');
 const UglifyJsPlugin = require('uglifyjs-webpack-plugin');
 
@@ -34,7 +34,6 @@ const config = {
     },
     plugins: [
         new NoEmitOnErrorsPlugin(),
-        new ProgressPlugin(),
         new DefinePlugin({
             'process.env': {
                 NODE_ENV: JSON.stringify(process.env.NODE_ENV)
@@ -48,7 +47,11 @@ const config = {
     target: 'electron-main',
     externals: {
         nodegit: 'require("nodegit")'
-    }
+    },
+    stats: {
+        colors: true,
+        modules: false,
+    },
 };
 
 
