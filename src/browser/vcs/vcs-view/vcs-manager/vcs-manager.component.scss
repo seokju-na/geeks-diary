@@ -1,2 +1,36 @@
+@import "../../../ui/style/spacing";
+@import "../../../ui/style/typography";
+@import "./vcs-manager-sizes";
+
 .VcsManager {
+    width: 100%;
+    height: 100%;
+
+    &__title {
+        width: 100%;
+        height: $vcs-manager-title-size;
+        padding: 0 $spacing-half;
+        border-top: 1px solid transparent;
+    }
+
+    &__title > h1 {
+        margin: 0;
+        padding: 0 $spacing-half;
+
+        font: {
+            size: $font-size;
+            weight: $font-weight-semiBold;
+        };
+    }
+
+    &__itemsContainer {
+    }
+
+    &__itemList {
+        width: 100%;
+
+        .VcsItemPane {
+            width: 100%;
+        }
+    }
 }

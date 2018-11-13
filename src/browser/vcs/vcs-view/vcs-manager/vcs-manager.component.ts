@@ -1,4 +1,8 @@
-import { Component, OnInit } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, ViewChild, ViewContainerRef } from '@angular/core';
+import { createDummies } from '../../../../../test/helpers';
+import { WORKSPACE_DIR_PATH } from '../../../../core/workspace';
+import { VcsFileChangeDummy } from '../../dummies';
+import { VcsItemListManager } from '../vcs-item-list-manager';
 
 
 @Component({
@@ -6,12 +10,24 @@ import { Component, OnInit } from '@angular/core';
     templateUrl: './vcs-manager.component.html',
     styleUrls: ['./vcs-manager.component.scss'],
 })
-export class VcsManagerComponent implements OnInit {
+export class VcsManagerComponent implements AfterViewInit {
+    @ViewChild('itemList') itemList: ElementRef<HTMLElement>;
 
-    constructor() {
+    constructor(
+        private itemListManager: VcsItemListManager,
+        private viewContainerRef: ViewContainerRef,
+    ) {
     }
 
-    ngOnInit() {
-    }
+    ngAfterViewInit(): void {
+        this.itemListManager
+            .setViewContainerRef(this.viewContainerRef)
+            .setContainerElement(this.itemList.nativeElement);
 
+        Promise.resolve(null).then(() => {
+            this.itemListManager.initWithFileChanges(
+                createDummies(new VcsFileChangeDummy(WORKSPACE_DIR_PATH), 20),
+            );
+        });
+    }
 }

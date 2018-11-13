@@ -9,6 +9,8 @@ export enum MenuEvent {
     NEW_TEXT_SNIPPET = '[MenuEvent] New text snippet',
     NEW_CODE_SNIPPET = '[MenuEvent] New code snippet',
     INSERT_IMAGE = '[MenuEvent] Insert image',
+    TOGGLE_NOTE_LIST = '[MenuEvent] Toggle note list',
+    TOGGLE_VCS = '[MenuEvent] Toggle vcs',
 }
 
 
@@ -34,6 +36,10 @@ export class MenuService implements OnDestroy {
                         return MenuEvent.NEW_CODE_SNIPPET;
                     case 'insertImage':
                         return MenuEvent.INSERT_IMAGE;
+                    case 'toggleNoteList':
+                        return MenuEvent.TOGGLE_NOTE_LIST;
+                    case 'toggleVcs':
+                        return MenuEvent.TOGGLE_VCS;
                     default:
                         return null;
                 }

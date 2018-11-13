@@ -97,7 +97,7 @@ export class CheckboxComponent implements ControlValueAccessor, OnDestroy {
      */
     @Input('aria-labelledby') ariaLabelledby: string | null = null;
 
-    private _uniqueId: string = `gd-chceckbox-${uniqueId++}`;
+    private _uniqueId: string = `gd-checkbox-${uniqueId++}`;
 
     /** A unique id for the checkbox input. If none is supplied, it will be auto-generated. */
     @Input() id: string = this._uniqueId;
