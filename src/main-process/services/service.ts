@@ -17,7 +17,7 @@ export abstract class Service extends EventEmitter {
 
         if (actionHandlers) {
             for (const actionName of Object.keys(actionHandlers)) {
-                const action = actionHandlers[actionName][0].action;
+                const action = actionHandlers[actionName][0].actionName;
                 const method = this[actionName];
 
                 this.ipc.setActionHandler(action, method.bind(this));
