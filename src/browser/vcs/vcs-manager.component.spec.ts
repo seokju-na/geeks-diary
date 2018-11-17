@@ -13,7 +13,7 @@ import { VcsStateWithRoot } from './vcs.state';
 import { VcsManagerComponent } from './vcs-manager.component';
 
 
-describe('browser.vcs.vcsView.VcsManagerComponent', () => {
+describe('browser.vcs.VcsManagerComponent', () => {
     let fixture: ComponentFixture<VcsManagerComponent>;
     let component: VcsManagerComponent;
 
