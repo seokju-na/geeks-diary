@@ -37,6 +37,20 @@ export enum VcsFileChangeStatusTypes {
 }
 
 
+export function getVcsFileChangeStatusName(status: VcsFileChangeStatusTypes): string {
+    switch (status) {
+        case VcsFileChangeStatusTypes.NEW:
+            return 'New';
+        case VcsFileChangeStatusTypes.MODIFIED:
+            return 'Modified';
+        case VcsFileChangeStatusTypes.RENAMED:
+            return 'Renamed';
+        case VcsFileChangeStatusTypes.REMOVED:
+            return 'Removed';
+    }
+}
+
+
 export function getVcsFileChangeStatusIcon(status: VcsFileChangeStatusTypes): string {
     /* tslint:disable */
     switch (status) {
