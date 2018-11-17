@@ -14,5 +14,7 @@ export interface VcsState {
 
 
 export interface VcsStateWithRoot {
-    vcs: VcsState;
+    vcs: {
+        vcs: VcsState;
+    };
 }

@@ -4,7 +4,6 @@ import { ComponentFixture, fakeAsync, flush, TestBed } from '@angular/core/testi
 import { By } from '@angular/platform-browser';
 import { ActivatedRoute } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
-import { StoreModule } from '@ngrx/store';
 import { of, throwError } from 'rxjs';
 import {
     dispatchFakeEvent,
@@ -23,8 +22,9 @@ import { ConfirmDialogComponent, ConfirmDialogData } from '../../shared/confirm-
 import { Dialog } from '../../ui/dialog';
 import { RadioButtonComponent } from '../../ui/radio';
 import { UiModule } from '../../ui/ui.module';
-import { VcsModule, VcsService } from '../../vcs';
+import { VcsService } from '../../vcs';
 import { WizardCloningComponent } from './wizard-cloning.component';
+import Spy = jasmine.Spy;
 
 
 describe('browser.wizard.wizardCloning.WizardCloningComponent', () => {
@@ -104,13 +104,21 @@ describe('browser.wizard.wizardCloning.WizardCloningComponent', () => {
             },
         };
 
+        vcs = jasmine.createSpyObj('vcs', [
+            'setRemoveProvider',
+            'isRemoteRepositoryUrlValid',
+            'loginRemoteWithBasicAuthorization',
+            'loginRemoteWithOauth2TokenAuthorization',
+            'cloneRepository',
+        ]);
+
+        (vcs.setRemoveProvider as Spy).and.returnValue(vcs);
+
         await TestBed
             .configureTestingModule({
                 imports: [
                     UiModule,
                     SharedModule,
-                    StoreModule.forRoot({}),
-                    VcsModule,
                     NoopModule,
                     RouterTestingModule.withRoutes([
                         { path: '', component: NoopComponent },
@@ -119,6 +127,7 @@ describe('browser.wizard.wizardCloning.WizardCloningComponent', () => {
                 ],
                 providers: [
                     ...MockDialog.providers(),
+                    { provide: VcsService, useValue: vcs },
                     { provide: ActivatedRoute, useValue: route },
                     { provide: Location, useClass: SpyLocation },
                 ],
@@ -162,6 +171,8 @@ describe('browser.wizard.wizardCloning.WizardCloningComponent', () => {
         it('should show invalid format error when input value is empty after input element '
             + 'blur.', () => {
             const inputEl = getRemoteUrlInputEl();
+
+            (vcs.isRemoteRepositoryUrlValid as Spy).and.returnValue(false);
 
             typeInElement('this_is_not_valid_url', inputEl);
             inputEl.blur();
@@ -224,7 +235,7 @@ describe('browser.wizard.wizardCloning.WizardCloningComponent', () => {
             switchAuthMethodOption(VcsAuthenticationTypes.BASIC);
             fixture.detectChanges();
 
-            spyOn(vcs, 'loginRemoteWithBasicAuthorization').and.returnValue(of(null));
+            (vcs.loginRemoteWithBasicAuthorization as Spy).and.returnValue(of(null));
 
             const userNameInputEl = getUserNameInputEl();
             const passwordInputEl = getPasswordInputEl();
@@ -251,7 +262,7 @@ describe('browser.wizard.wizardCloning.WizardCloningComponent', () => {
             switchAuthMethodOption(VcsAuthenticationTypes.OAUTH2_TOKEN);
             fixture.detectChanges();
 
-            spyOn(vcs, 'loginRemoteWithOauth2TokenAuthorization').and.returnValue(of(null));
+            (vcs.loginRemoteWithOauth2TokenAuthorization as Spy).and.returnValue(of(null));
 
             const tokenInputEl = getTokenInputEl();
 
@@ -278,7 +289,7 @@ describe('browser.wizard.wizardCloning.WizardCloningComponent', () => {
 
             const error = new VcsError(VcsErrorCodes.AUTHENTICATE_ERROR);
 
-            spyOn(vcs, 'loginRemoteWithBasicAuthorization').and.returnValue(throwError(error));
+            (vcs.loginRemoteWithBasicAuthorization as Spy).and.returnValue(throwError(error));
 
             submitAuthLoginForm();
             flush();
@@ -294,7 +305,7 @@ describe('browser.wizard.wizardCloning.WizardCloningComponent', () => {
 
             const error = new VcsError(VcsErrorCodes.AUTHENTICATE_ERROR);
 
-            spyOn(vcs, 'loginRemoteWithOauth2TokenAuthorization').and.returnValue(throwError(error));
+            (vcs.loginRemoteWithOauth2TokenAuthorization as Spy).and.returnValue(throwError(error));
 
             submitAuthLoginForm();
             flush();
@@ -310,6 +321,8 @@ describe('browser.wizard.wizardCloning.WizardCloningComponent', () => {
         });
 
         it('should clone button to be disabled if remote url input is invalid.', () => {
+            (vcs.isRemoteRepositoryUrlValid as Spy).and.returnValue(false);
+
             typeInElement('this_is_invalid_remote_url', getRemoteUrlInputEl());
             getRemoteUrlInputEl().blur();
             fixture.detectChanges();
@@ -321,13 +334,15 @@ describe('browser.wizard.wizardCloning.WizardCloningComponent', () => {
             const url = 'https://github.com/owner/repo.git';
             const remoteUrlInputEl = getRemoteUrlInputEl();
 
+            (vcs.isRemoteRepositoryUrlValid as Spy).and.returnValue(true);
+
             typeInElement(url, remoteUrlInputEl);
             remoteUrlInputEl.blur();
             fixture.detectChanges();
 
             const error = new GitError(GitErrorCodes.AUTHENTICATION_FAIL);
 
-            spyOn(vcs, 'cloneRepository').and.returnValue(throwError(error));
+            (vcs.cloneRepository as Spy).and.returnValue(throwError(error));
 
             clickCloneButton();
             flush();
@@ -349,13 +364,14 @@ describe('browser.wizard.wizardCloning.WizardCloningComponent', () => {
             const url = 'https://github.com/owner/repo.git';
             const remoteUrlInputEl = getRemoteUrlInputEl();
 
+            (vcs.isRemoteRepositoryUrlValid as Spy).and.returnValue(true);
+
             typeInElement(url, remoteUrlInputEl);
             remoteUrlInputEl.blur();
             fixture.detectChanges();
 
-            spyOn(vcs, 'cloneRepository').and.returnValue(of(null));
+            (vcs.cloneRepository as Spy).and.returnValue(of(null));
             spyOn(workspace, 'initWorkspace').and.returnValue(of(null));
-
 
             getCloneButtonEl().click();
             fixture.detectChanges();

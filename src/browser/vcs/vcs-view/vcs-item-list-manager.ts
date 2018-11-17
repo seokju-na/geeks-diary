@@ -1,7 +1,7 @@
 import { FocusKeyManager } from '@angular/cdk/a11y';
 import { ComponentPortal, DomPortalOutlet, PortalInjector } from '@angular/cdk/portal';
 import { ApplicationRef, ComponentFactoryResolver, Injectable, Injector, ViewContainerRef } from '@angular/core';
-import { merge, Subscription } from 'rxjs';
+import { merge, Observable, Subject, Subscription } from 'rxjs';
 import { VcsFileChange } from '../../../core/vcs';
 import { VcsItem, VcsItemConfig, VcsItemEvent, VcsItemEventNames, VcsItemRef } from './vcs-item';
 import { VcsItemMaker } from './vcs-item-maker';
@@ -12,13 +12,15 @@ let uniqueId = 0;
 
 @Injectable()
 export class VcsItemListManager {
+    _itemRefs: VcsItemRef<any>[] = [];
     _keyManager: FocusKeyManager<VcsItem> | null = null;
     _selectedItems = new Set<string>();
 
-    private itemRefs: VcsItemRef<any>[] = [];
     private containerEl: HTMLElement;
     private viewContainerRef: ViewContainerRef;
     private itemRefEventsSubscription = Subscription.EMPTY;
+
+    private selectionChangeStream = new Subject<void>();
 
     constructor(
         private itemMaker: VcsItemMaker,
@@ -28,12 +30,20 @@ export class VcsItemListManager {
     ) {
     }
 
+    get ready(): boolean {
+        return !!this.containerEl && !!this.viewContainerRef;
+    }
+
+    get selectionChanges(): Observable<void> {
+        return this.selectionChangeStream.asObservable();
+    }
+
     /** Return all selected item references. */
     getSelectedItems(): VcsItemRef<any>[] {
         const refs: VcsItemRef<any>[] = [];
 
         for (const id of this._selectedItems.values()) {
-            const ref = this.itemRefs.find(_ref => _ref.id === id);
+            const ref = this._itemRefs.find(_ref => _ref.id === id);
 
             if (ref) {
                 refs.push(ref);
@@ -63,6 +73,12 @@ export class VcsItemListManager {
 
         this._selectedItems.clear();
 
+        // Remove previous item references.
+        while (this._itemRefs.length) {
+            this.destroyItemAt(0);
+            this._itemRefs.shift();
+        }
+
         // Add all vcs items which made from all of factories.
         const refs = this.itemMaker.create(fileChanges);
 
@@ -75,28 +91,30 @@ export class VcsItemListManager {
             }
         });
 
-        refs.forEach(ref => this.attachViewItemComponent(this.appendPaneElement(), ref));
+        refs.forEach((ref) => {
+            this.attachViewItemComponent(this.appendPaneElement(), ref);
+            this._itemRefs.push(ref);
+        });
 
-        this.itemRefs = refs;
         this._updateKeyManager();
         this.updateItemRefEventsSubscription();
 
-        return this.itemRefs;
+        return this._itemRefs;
     }
 
     _updateKeyManager(): void {
-        this._keyManager = new FocusKeyManager(this.itemRefs.map(ref => ref.componentInstance as VcsItem));
+        this._keyManager = new FocusKeyManager(this._itemRefs.map(ref => ref.componentInstance as VcsItem));
     }
 
     selectAllItems(): void {
-        this.itemRefs.forEach((itemRef) => {
+        this._itemRefs.forEach((itemRef) => {
             (itemRef.componentInstance as VcsItem).select(false);
             this._selectedItems.add(itemRef.id);
         });
     }
 
     deselectAllItems(): void {
-        this.itemRefs.forEach((itemRef) => {
+        this._itemRefs.forEach((itemRef) => {
             (itemRef.componentInstance as VcsItem).deselect(false);
         });
 
@@ -104,7 +122,7 @@ export class VcsItemListManager {
     }
 
     updateItemSelection(index: number, selected: boolean): void {
-        const ref = this.itemRefs[index];
+        const ref = this._itemRefs[index];
 
         if (!ref) {
             return;
@@ -115,13 +133,15 @@ export class VcsItemListManager {
 
         if (hasSelected && !selected) {
             this._selectedItems.delete(id);
+            this.selectionChangeStream.next();
         } else if (!hasSelected && selected) {
             this._selectedItems.add(id);
+            this.selectionChangeStream.next();
         }
     }
 
     areAllItemsSelected(): boolean {
-        return this._selectedItems.size === this.itemRefs.length;
+        return this._selectedItems.size === this._itemRefs.length;
     }
 
     isEmptySelection(): boolean {
@@ -129,7 +149,7 @@ export class VcsItemListManager {
     }
 
     handleItemEvent(event: VcsItemEvent): void {
-        const index = this.itemRefs.findIndex(ref => ref.id === event.source.id);
+        const index = this._itemRefs.findIndex(ref => ref.id === event.source.id);
 
         switch (event.name) {
             case VcsItemEventNames.UPDATE_CHECKED:
@@ -137,6 +157,20 @@ export class VcsItemListManager {
                 this.updateItemSelection(index, event.payload.checked);
                 break;
         }
+    }
+
+    destroy(): void {
+        this._keyManager = null;
+        this._selectedItems.clear();
+        this.containerEl = null;
+        this.viewContainerRef = null;
+        this._itemRefs = [];
+
+        if (this.itemRefEventsSubscription) {
+            this.itemRefEventsSubscription.unsubscribe();
+        }
+
+        this.selectionChangeStream.complete();
     }
 
     private appendPaneElement(): HTMLElement {
@@ -162,6 +196,27 @@ export class VcsItemListManager {
         ref.componentInstance = componentRef.instance;
     }
 
+    private destroyItemAt(index: number): void {
+        const itemRef = this._itemRefs[index];
+
+        if (!itemRef) {
+            return;
+        }
+
+        itemRef.destroy();
+        itemRef.panePortal.dispose();
+
+        const paneElementId = itemRef.paneElementId;
+
+        if (this.containerEl) {
+            const paneEl = this.containerEl.querySelector(`#${paneElementId}`);
+
+            if (paneEl) {
+                this.containerEl.removeChild(paneEl);
+            }
+        }
+    }
+
     private createInjector(ref: VcsItemRef<any>): PortalInjector {
         const injectionTokens = new WeakMap<any, any>([
             [VcsItemRef, ref],
@@ -177,7 +232,7 @@ export class VcsItemListManager {
         }
 
         this.itemRefEventsSubscription = merge(
-            ...this.itemRefs.map(itemRef => itemRef.events.asObservable()),
+            ...this._itemRefs.map(itemRef => itemRef.events.asObservable()),
         ).subscribe(event => this.handleItemEvent(event));
     }
 }

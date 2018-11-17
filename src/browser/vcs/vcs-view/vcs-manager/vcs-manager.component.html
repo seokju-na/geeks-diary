@@ -8,7 +8,30 @@
         </div>
     </div>
 
-    <div fxLayout fxFlex="1 1 auto" class="VcsManager__itemsContainer">
-        <div #itemList class="VcsManager__itemList"></div>
+    <gd-tab-group [tabControl]="tabControl"></gd-tab-group>
+
+    <!-- Changes Tab -->
+    <div fxFlex="1 1 auto" fxLayout="column"
+         [class.VcsManager__tabContent--hidden]="tabControl.activateTab.value !== 'gd-vcs-manager-changes'"
+         class="VcsManager__tabContent">
+        <div fxLayout fxFlex="1 1 auto" class="VcsManager__itemsContainer">
+            <div #itemList class="VcsManager__itemList"></div>
+            <div class="VcsManager__itemListEmptyState"></div>
+        </div>
+
+        <div fxFlex="none" fxLayout fxLayoutAlign="space-between center" class="VcsManager__actionbar">
+            <gd-checkbox [formControl]="allSelectCheckboxFormControl"
+                         [indeterminate]="allSelectCheckboxIndeterminate">
+                {{ selectedFileChangesCount | number }} item(s)
+            </gd-checkbox>
+            <button gd-button color="primary" [disabled]="selectedFileChangesCount === 0">Commit</button>
+        </div>
+    </div>
+
+    <!-- History Tab -->
+    <div fxFlex="1 1 auto" fxLayout="column"
+         [class.VcsManager__tabContent--hidden]="tabControl.activateTab.value !== 'gd-vcs-manager-history'"
+         class="VcsManager__tabContent">
+        My history wasn't good when I was in school. lol.
     </div>
 </div>

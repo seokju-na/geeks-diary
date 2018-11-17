@@ -1,5 +1,6 @@
 <div fxLayout="column" class="App">
     <gd-title-bar></gd-title-bar>
+    <!-- Render app menu when platform is WIN32 -->
     <div fxLayout fxFlex="1 0 auto" class="App__container">
         <gd-app-layout-sidenav fxFlex="0 0 auto" [outlets]="sidenavOutlets" class="App__aside"></gd-app-layout-sidenav>
         <main fxFlex="1 1 auto" fxLayout="column"

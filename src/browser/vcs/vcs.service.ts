@@ -1,9 +1,8 @@
 import { Inject, Injectable } from '@angular/core';
-import { Observable } from 'rxjs';
-import { fromPromise } from 'rxjs/internal-compatibility';
+import { from, Observable } from 'rxjs';
 import { mapTo, switchMap } from 'rxjs/operators';
-import { VcsAuthenticationInfo } from '../../core/vcs';
-import { GitService } from '../shared';
+import { VcsAuthenticationInfo, VcsFileChange } from '../../core/vcs';
+import { GitService, WorkspaceService } from '../shared';
 import { VCS_AUTHENTICATION_DATABASE, VcsAuthenticationDatabase } from './vcs-authentication-database';
 import { VcsRemoteProvider, VcsRemoteProviderFactory, VcsRemoteProviderType } from './vcs-remote';
 
@@ -27,6 +26,7 @@ export class VcsService {
         private remoteProviderFactory: VcsRemoteProviderFactory,
         private git: GitService,
         @Inject(VCS_AUTHENTICATION_DATABASE) private authDB: VcsAuthenticationDatabase,
+        private workspace: WorkspaceService,
     ) {
     }
 
@@ -90,7 +90,8 @@ export class VcsService {
         }
     }
 
-    fetchFileChanges(): void {
+    fetchFileChanges(): Observable<VcsFileChange[]> {
+        return this.git.getFileChanges(this.workspace.configs.rootDirPath);
     }
 
     cloneRepository(
@@ -104,7 +105,7 @@ export class VcsService {
         } as VcsCloneRepositoryOption;
 
         if (opt.useAuthenticationInfoInStoreIfExists) {
-            return fromPromise(this.authDB.authentications.toCollection().last()).pipe(
+            return from(this.authDB.authentications.toCollection().last()).pipe(
                 switchMap(authInfo => this.git.cloneRepository(sourceUrl, distLocalPath, authInfo)),
             );
         } else {
@@ -119,6 +120,6 @@ export class VcsService {
     }
 
     private storeAuthInfo(authInfo: VcsAuthenticationInfo): Observable<number> {
-        return fromPromise(this.authDB.authentications.add(authInfo));
+        return from(this.authDB.authentications.add(authInfo));
     }
 }
