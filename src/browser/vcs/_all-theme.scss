@@ -1,5 +1,7 @@
 @import "./vcs-view/all-theme";
+@import "./vcs-manager-theme";
 
 @mixin gd-vcs-all-theme($theme) {
     @include gd-vcs-view-all-theme($theme);
+    @include gd-vcs-manager-theme($theme);
 }

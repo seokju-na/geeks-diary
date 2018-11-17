@@ -3,9 +3,9 @@ import { FormControl } from '@angular/forms';
 import { select, Store } from '@ngrx/store';
 import { Subscription } from 'rxjs';
 import { take } from 'rxjs/operators';
-import { TabControl } from '../../../ui/tabs/tab-control';
-import { VcsStateWithRoot } from '../../vcs.state';
-import { VcsItemListManager } from '../vcs-item-list-manager';
+import { TabControl } from '../ui/tabs/tab-control';
+import { VcsItemListManager } from './vcs-view';
+import { VcsStateWithRoot } from './vcs.state';
 
 
 @Component({

@@ -6,7 +6,7 @@ import { NoteFinderComponent } from '../note/note-collection';
 import { NoteCollectionService } from '../note/note-collection/note-collection.service';
 import { MenuEvent, MenuService, WORKSPACE_DATABASE, WorkspaceDatabase } from '../shared';
 import { Themes, ThemeService } from '../ui/style';
-import { VcsManagerComponent } from '../vcs/vcs-view';
+import { VcsManagerComponent } from '../vcs';
 import { AppLayoutSidenavOutlet, ToggleSidenavPanelAction } from './app-layout';
 import { AppStateWithFeatures } from './app.state';
 

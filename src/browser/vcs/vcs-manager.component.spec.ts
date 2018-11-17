@@ -1,18 +1,14 @@
 import { ComponentFixture, fakeAsync, flush, TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
 import { combineReducers, Store, StoreModule } from '@ngrx/store';
-import { BaseVcsItemFactory } from '..';
-import { createDummies, createFakeEvent, fastTestSetup } from '../../../../../test/helpers';
-import { VcsFileChange } from '../../../../core/vcs';
-import { CheckboxComponent } from '../../../ui/checkbox';
-import { VcsFileChangeDummy } from '../../dummies';
-import { UpdateFileChangesAction } from '../../vcs.actions';
-import { vcsReducerMap } from '../../vcs.reducer';
-import { VcsStateWithRoot } from '../../vcs.state';
-import { VcsItem } from '../vcs-item';
-import { VcsItemListManager } from '../vcs-item-list-manager';
-import { VCS_ITEM_MAKING_FACTORIES } from '../vcs-item-maker';
-import { VcsViewModule } from '../vcs-view.module';
+import { BaseVcsItemFactory, VCS_ITEM_MAKING_FACTORIES, VcsItem, VcsItemListManager, VcsViewModule } from './vcs-view';
+import { createDummies, createFakeEvent, fastTestSetup } from '../../../test/helpers';
+import { VcsFileChange } from '../../core/vcs';
+import { CheckboxComponent } from '../ui/checkbox';
+import { VcsFileChangeDummy } from './dummies';
+import { UpdateFileChangesAction } from './vcs.actions';
+import { vcsReducerMap } from './vcs.reducer';
+import { VcsStateWithRoot } from './vcs.state';
 import { VcsManagerComponent } from './vcs-manager.component';
 
 
