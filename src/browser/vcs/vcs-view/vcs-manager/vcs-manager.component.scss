@@ -23,7 +23,14 @@
         };
     }
 
+    &__tabContent {
+        &--hidden {
+            display: none !important;
+        }
+    }
+
     &__itemsContainer {
+        overflow-y: auto;
     }
 
     &__itemList {
@@ -32,5 +39,11 @@
         .VcsItemPane {
             width: 100%;
         }
+    }
+
+    &__actionbar {
+        width: 100%;
+        height: $vcs-manager-actionbar-size;
+        padding: 0 $spacing-half 0 $spacing;
     }
 }

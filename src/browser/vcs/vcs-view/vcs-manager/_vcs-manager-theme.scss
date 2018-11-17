@@ -15,5 +15,10 @@
                 border-bottom: 1px solid gd-color($foreground, divider);
             }
         }
+
+        &__actionbar {
+            background-color: gd-color($background, background-highlight);
+            border-top: 1px solid gd-color($foreground, divider);
+        }
     }
 }
