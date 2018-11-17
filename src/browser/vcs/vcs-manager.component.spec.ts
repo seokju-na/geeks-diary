@@ -1,6 +1,7 @@
 import { ComponentFixture, fakeAsync, flush, TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
 import { combineReducers, Store, StoreModule } from '@ngrx/store';
+import { UiModule } from '../ui/ui.module';
 import { BaseVcsItemFactory, VCS_ITEM_MAKING_FACTORIES, VcsItem, VcsItemListManager, VcsViewModule } from './vcs-view';
 import { createDummies, createFakeEvent, fastTestSetup } from '../../../test/helpers';
 import { VcsFileChange } from '../../core/vcs';
@@ -45,6 +46,7 @@ describe('browser.vcs.vcsView.VcsManagerComponent', () => {
         await TestBed
             .configureTestingModule({
                 imports: [
+                    UiModule,
                     VcsViewModule,
                     StoreModule.forRoot({
                         vcs: combineReducers(vcsReducerMap),
@@ -58,6 +60,9 @@ describe('browser.vcs.vcsView.VcsManagerComponent', () => {
                         },
                         deps: [BaseVcsItemFactory],
                     },
+                ],
+                declarations: [
+                    VcsManagerComponent,
                 ],
             })
             .compileComponents();
