@@ -1,6 +1,6 @@
 import { ActionReducerMap } from '@ngrx/store';
 import { VcsAction, VcsActionTypes } from './vcs.actions';
-import { createVcsInitialState, VcsState, VcsStateWithRoot } from './vcs.state';
+import { createVcsInitialState, VcsState } from './vcs.state';
 
 
 export function vcsReducer(
@@ -19,6 +19,6 @@ export function vcsReducer(
 }
 
 
-export const vcsReducerMap: ActionReducerMap<VcsStateWithRoot> = {
+export const vcsReducerMap: ActionReducerMap<{ vcs: VcsState }> = {
     vcs: vcsReducer,
 };
