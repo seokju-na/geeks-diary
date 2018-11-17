@@ -10,7 +10,7 @@ import {
 import { FormControl } from '@angular/forms';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 import { Subscription } from 'rxjs';
-import { getVcsFileChangeStatusIcon, VcsFileChangeStatusTypes } from '../../../../core/vcs';
+import { getVcsFileChangeStatusIcon, getVcsFileChangeStatusName, VcsFileChangeStatusTypes } from '../../../../core/vcs';
 import { VcsItem, VcsItemConfig, VcsItemRef, VcsItemUpdateCheckedEvent } from '../vcs-item';
 
 
@@ -52,6 +52,12 @@ export class BaseVcsItemComponent extends VcsItem implements OnInit, OnDestroy {
 
             hostEl.classList.add(`BaseVcsItem--status-${className}`);
         }
+    }
+
+    get tooltipMessage(): string {
+        const fileChange = this._config.fileChanges[0];
+
+        return `${fileChange.filePath} • ${getVcsFileChangeStatusName(fileChange.status)}`;
     }
 
     get checked(): boolean {

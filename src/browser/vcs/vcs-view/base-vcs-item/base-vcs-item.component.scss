@@ -4,6 +4,7 @@
 .BaseVcsItem {
     display: flex;
     align-items: center;
+    justify-content: space-between;
     padding: 0 $spacing-half;
     width: 100%;
     height: $base-vcs-item-size;
@@ -11,6 +12,10 @@
 
     * {
         cursor: default !important;
+    }
+
+    gd-checkbox {
+        max-width: calc(100% - 16px);
     }
 
     &__statusIcon {
