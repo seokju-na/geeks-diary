@@ -1,8 +1,10 @@
 import { NgModule } from '@angular/core';
+import { EffectsModule } from '@ngrx/effects';
 import { StoreModule } from '@ngrx/store';
 import { VcsAuthenticationDatabaseProvider } from './vcs-authentication-database';
 import { VcsRemoteModule } from './vcs-remote';
 import { VcsViewModule } from './vcs-view';
+import { VcsEffects } from './vcs.effects';
 import { vcsReducerMap } from './vcs.reducer';
 import { VcsService } from './vcs.service';
 
@@ -12,6 +14,7 @@ import { VcsService } from './vcs.service';
         VcsRemoteModule,
         VcsViewModule,
         StoreModule.forFeature('vcs', vcsReducerMap),
+        EffectsModule.forFeature([VcsEffects]),
     ],
     providers: [
         VcsAuthenticationDatabaseProvider,

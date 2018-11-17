@@ -66,6 +66,7 @@ export class CheckboxChange {
         '[class.Checkbox--checked]': 'checked',
         '[class.Checkbox--indeterminate]': 'indeterminate',
         '[class.Checkbox--disabled]': 'disabled',
+        '[class.Checkbox--fixedWidth]': 'fixedWidth',
         '[id]': 'id',
         '[attr.tabindex]': 'null',
     },
@@ -97,10 +98,13 @@ export class CheckboxComponent implements ControlValueAccessor, OnDestroy {
      */
     @Input('aria-labelledby') ariaLabelledby: string | null = null;
 
-    private _uniqueId: string = `gd-chceckbox-${uniqueId++}`;
+    private _uniqueId: string = `gd-checkbox-${uniqueId++}`;
 
     /** A unique id for the checkbox input. If none is supplied, it will be auto-generated. */
     @Input() id: string = this._uniqueId;
+
+    /** Determine to use fixed size of checkbox. */
+    @Input() fixedWidth: boolean = false;
 
     constructor(
         public _elementRef: ElementRef<HTMLElement>,

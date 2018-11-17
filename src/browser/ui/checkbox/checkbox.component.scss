@@ -7,6 +7,7 @@ $_checkbox-mark-stroke-size: 2.5 / 12 * $checkbox-size !default;
 
 .Checkbox {
     cursor: pointer;
+    display: inline-block;
 
     * {
         cursor: inherit;
@@ -145,6 +146,20 @@ $_checkbox-mark-stroke-size: 2.5 / 12 * $checkbox-size !default;
             .Checkbox__innerContainer {
                 opacity: 0.5;
             }
+        }
+    }
+
+    &--fixedWidth {
+        .Checkbox__layout {
+            width: 100%;
+        }
+
+        .Checkbox__label {
+            flex: 1 1 auto;
+            max-width: calc(100% - 19px);
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
         }
     }
 

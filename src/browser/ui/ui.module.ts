@@ -8,6 +8,7 @@ import { ButtonModule } from './button';
 import { ButtonToggleModule } from './button-toggle';
 import { CheckboxModule } from './checkbox';
 import { DialogModule } from './dialog';
+import { ExpansionModule } from './expansion';
 import { FormFieldModule } from './form-field';
 import { IconModule } from './icon';
 import { InputModule } from './input';
@@ -53,6 +54,7 @@ const UI_MODULES = [
     MenuModule,
     TabsModule,
     CheckboxModule,
+    ExpansionModule,
 ];
 
 

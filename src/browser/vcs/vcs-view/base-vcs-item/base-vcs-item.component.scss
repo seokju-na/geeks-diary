@@ -1,0 +1,45 @@
+@import "../../../ui/style/spacing";
+@import "./base-vcs-item-sizes";
+
+.BaseVcsItem {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 $spacing-half;
+    width: 100%;
+    height: $base-vcs-item-size;
+    cursor: default;
+
+    * {
+        cursor: default !important;
+    }
+
+    gd-checkbox {
+        max-width: calc(100% - 16px);
+    }
+
+    &__statusIcon {
+        flex: none;
+        display: inline-block;
+
+        > svg {
+            display: block;
+            width: 16px;
+            height: 16px;
+        }
+    }
+
+    &--status {
+        &-new {
+        }
+
+        &-modified {
+        }
+
+        &-renamed {
+        }
+
+        &-removed {
+        }
+    }
+}
