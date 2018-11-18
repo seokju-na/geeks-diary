@@ -1,3 +1,3 @@
 export * from './menu.module';
-export * from './menu';
-export * from './menu-ref';
+export * from './native-menu';
+export * from './native-menu-ref';

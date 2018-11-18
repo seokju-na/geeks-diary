@@ -6,13 +6,13 @@ import { Observable, Subject } from 'rxjs';
 let uniqueId = 0;
 
 
-export interface MenuItemWithId extends MenuItem {
+interface MenuItemWithId extends MenuItem {
     id?: string;
 }
 
 
-export class MenuRef {
-    readonly id: string = `Menu-${uniqueId++}`;
+export class NativeMenuRef {
+    readonly id: string = `native-menu-${uniqueId++}`;
     private readonly _menu: Menu;
     private _clickedMenuItem: MenuItemWithId | null = null;
 

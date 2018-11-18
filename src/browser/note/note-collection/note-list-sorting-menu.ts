@@ -3,7 +3,7 @@ import { select, Store } from '@ngrx/store';
 import { MenuItemConstructorOptions } from 'electron';
 import { switchMap, take } from 'rxjs/operators';
 import { SortDirection } from '../../../core/sorting';
-import { Menu } from '../../ui/menu';
+import { NativeMenu } from '../../ui/menu';
 import { NoteStateWithRoot } from '../note.state';
 import { ChangeSortDirectionAction, ChangeSortOrderAction, NoteCollectionAction } from './note-collection.actions';
 import { NoteCollectionSortBy, NoteCollectionState } from './note-collection.state';
@@ -13,7 +13,7 @@ import { NoteCollectionSortBy, NoteCollectionState } from './note-collection.sta
 export class NoteListSortingMenu {
     constructor(
         private store: Store<NoteStateWithRoot>,
-        private menu: Menu,
+        private nativeMenu: NativeMenu,
     ) {
     }
 
@@ -21,7 +21,7 @@ export class NoteListSortingMenu {
         this.store.pipe(
             select(state => state.note.collection),
             take(1),
-            switchMap(state => this.menu
+            switchMap(state => this.nativeMenu
                 .open(this.buildTemplate(state))
                 .afterClosed(),
             ),

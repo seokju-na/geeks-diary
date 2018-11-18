@@ -1,11 +1,11 @@
 import { NgModule } from '@angular/core';
-import { Menu } from './menu';
+import { NativeMenu } from './native-menu';
 
 
 @NgModule({
     imports: [],
     providers: [
-        Menu,
+        NativeMenu,
     ],
 })
 export class MenuModule {
