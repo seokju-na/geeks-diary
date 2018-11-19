@@ -1,0 +1,8 @@
+@import "../style/spacing";
+
+// menu width must be a multiple of 56px
+$menu-overlay-min-width: 112px;
+$menu-overlay-max-width: 280px;
+
+$menu-item-height: 24px !default;
+$menu-side-padding: $spacing-half;
