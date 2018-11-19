@@ -5,6 +5,7 @@ export enum CodeMirrorSupportedLanguageTypes {
     PYTHON = 'python',
     GO = 'go',
     JAVA = 'java',
+    KOTLIN = 'kotlin',
     C = 'c',
     CPP = 'cpp',
     CSHARP = 'csharp',
@@ -66,6 +67,8 @@ export enum CodeMirrorSupportedLanguageTypes {
 }
 
 const _ = CodeMirrorSupportedLanguageTypes;
+
+/** Colors from https://github.com/doda/github-language-colors */
 export const languageAndIconAndColorMap: {
     id: CodeMirrorSupportedLanguageTypes;
     icon?: string;
@@ -77,6 +80,7 @@ export const languageAndIconAndColorMap: {
     { id: _.PYTHON, icon: 'python', color: '#3572A5' },
     { id: _.GO, icon: 'go', color: '#375eab' },
     { id: _.JAVA, icon: 'java', color: '#b07219' },
+    { id: _.KOTLIN, color: '#F18E33' },
     { id: _.C, icon: 'c', color: '#555555' },
     { id: _.CPP, icon: 'cplusplus', color: '#f34b7d' },
     { id: _.CSHARP, icon: 'csharp', color: '#178600' },

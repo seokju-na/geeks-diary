@@ -20,6 +20,7 @@ const codeMirrorLanguageModeMap: { [key: string]: any } = {
     [_.PYTHON]: 'text/x-python',
     [_.GO]: 'text/x-go',
     [_.JAVA]: 'text/x-java',
+    [_.KOTLIN]: 'text/x-kotlin',
     [_.C]: 'text/x-csrc',
     [_.CPP]: 'text/x-c++src',
     [_.CSHARP]: 'text/x-csharp',
