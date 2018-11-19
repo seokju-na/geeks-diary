@@ -37,6 +37,8 @@ describe('browser.vcs.VcsManagerComponent', () => {
         flush();
         fixture.detectChanges();
 
+        listManager = component['itemListManager'];
+
         return fileChanges;
     }
 
@@ -69,7 +71,6 @@ describe('browser.vcs.VcsManagerComponent', () => {
     });
 
     beforeEach(() => {
-        listManager = TestBed.get(VcsItemListManager);
         store = TestBed.get(Store);
 
         fixture = TestBed.createComponent(VcsManagerComponent);
@@ -79,6 +80,7 @@ describe('browser.vcs.VcsManagerComponent', () => {
     describe('ngOnInit', () => {
         it('should initialize vcs item list whenever file changes are updated.', () => {
             fixture.detectChanges();
+            listManager = component['itemListManager'];
 
             spyOn(listManager, 'initWithFileChanges').and.callThrough();
 
@@ -94,27 +96,6 @@ describe('browser.vcs.VcsManagerComponent', () => {
 
             expect(listManager.initWithFileChanges).toHaveBeenCalledWith(afterFileChanges);
         });
-    });
-
-    describe('ngAfterViewInit', () => {
-        it('should initialize vcs item list at first time.', fakeAsync(() => {
-            const fileChanges = createDummies(fileChangeDummy, 10);
-            store.dispatch(new UpdateFileChangesAction({ fileChanges }));
-
-            spyOn(listManager, 'setViewContainerRef').and.callThrough();
-            spyOn(listManager, 'setContainerElement').and.callThrough();
-            spyOn(listManager, 'initWithFileChanges').and.callThrough();
-
-            fixture.detectChanges();
-
-            expect(listManager.setViewContainerRef).toHaveBeenCalledWith(component._viewContainerRef);
-            expect(listManager.setContainerElement).toHaveBeenCalledWith(component._itemList.nativeElement);
-            expect(listManager.initWithFileChanges).not.toHaveBeenCalled();
-
-            flush();
-
-            expect(listManager.initWithFileChanges).toHaveBeenCalledWith(fileChanges);
-        }));
     });
 
     describe('Changes Tab - empty state', () => {
@@ -140,7 +121,6 @@ describe('browser.vcs.VcsManagerComponent', () => {
             expect(getAllSelectCheckbox().indeterminate).toBe(false);
 
             // indeterminate
-            // const samples = sampleSize<VcsItemRef<any>>(listManager._itemRefs, 3);
             (listManager._itemRefs[0].componentInstance as VcsItem).select(true);
             (listManager._itemRefs[2].componentInstance as VcsItem).select(true);
             fixture.detectChanges();

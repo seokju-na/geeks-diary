@@ -10,7 +10,12 @@ import { VcsStateWithRoot } from '../vcs.state';
 import { BaseVcsItemFactory } from './base-vcs-item/base-vcs-item-factory';
 import { BaseVcsItemComponent } from './base-vcs-item/base-vcs-item.component';
 import { VcsItemRef, VcsItemUpdateCheckedEvent } from './vcs-item';
-import { VcsItemListManager } from './vcs-item-list-manager';
+import {
+    VCS_ITEM_LIST_MANAGER,
+    VcsItemListManager,
+    VcsItemListManagerFactory,
+    VcsItemListManagerFactoryProvider,
+} from './vcs-item-list-manager';
 import { VCS_ITEM_MAKING_FACTORIES, VcsItemMaker } from './vcs-item-maker';
 
 
@@ -56,14 +61,14 @@ describe('browser.vcs.vcsView.VcsItemListManager', () => {
                         deps: [BaseVcsItemFactory],
                     },
                     VcsItemMaker,
-                    VcsItemListManager,
+                    VcsItemListManagerFactoryProvider,
                 ],
             })
             .compileComponents();
     });
 
     beforeEach(() => {
-        listManager = TestBed.get(VcsItemListManager);
+        const factory = TestBed.get(VCS_ITEM_LIST_MANAGER) as VcsItemListManagerFactory;
         store = TestBed.get(Store);
         itemMaker = TestBed.get(VcsItemMaker);
 
@@ -71,9 +76,7 @@ describe('browser.vcs.vcsView.VcsItemListManager', () => {
         component = fixture.componentInstance;
         fixture.detectChanges();
 
-        listManager
-            .setContainerElement(component.host.nativeElement)
-            .setViewContainerRef(component.viewContainerRef);
+        listManager = factory(component.host.nativeElement, component.viewContainerRef);
     });
 
     afterEach(() => {

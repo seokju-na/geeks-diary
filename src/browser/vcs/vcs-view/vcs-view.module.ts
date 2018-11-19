@@ -2,7 +2,7 @@ import { NgModule } from '@angular/core';
 import { UiModule } from '../../ui/ui.module';
 import { BaseVcsItemFactory } from './base-vcs-item/base-vcs-item-factory';
 import { BaseVcsItemComponent } from './base-vcs-item/base-vcs-item.component';
-import { VcsItemListManager } from './vcs-item-list-manager';
+import { VcsItemListManagerFactoryProvider } from './vcs-item-list-manager';
 import { VcsItemMaker } from './vcs-item-maker';
 
 
@@ -19,7 +19,7 @@ import { VcsItemMaker } from './vcs-item-maker';
     providers: [
         BaseVcsItemFactory,
         VcsItemMaker,
-        VcsItemListManager,
+        VcsItemListManagerFactoryProvider,
     ],
     exports: [
         BaseVcsItemComponent,

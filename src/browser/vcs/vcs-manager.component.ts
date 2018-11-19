@@ -1,10 +1,19 @@
-import { AfterViewInit, Component, ElementRef, OnDestroy, OnInit, ViewChild, ViewContainerRef } from '@angular/core';
+import {
+    AfterViewInit,
+    Component,
+    ElementRef,
+    Inject,
+    OnDestroy,
+    OnInit,
+    ViewChild,
+    ViewContainerRef,
+} from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { select, Store } from '@ngrx/store';
 import { Subscription } from 'rxjs';
 import { take } from 'rxjs/operators';
 import { TabControl } from '../ui/tabs/tab-control';
-import { VcsItemListManager } from './vcs-view';
+import { VCS_ITEM_LIST_MANAGER, VcsItemListManager, VcsItemListManagerFactory } from './vcs-view';
 import { VcsStateWithRoot } from './vcs.state';
 
 
@@ -26,19 +35,25 @@ export class VcsManagerComponent implements OnInit, OnDestroy, AfterViewInit {
 
     @ViewChild('itemList') _itemList: ElementRef<HTMLElement>;
 
+    private itemListManager: VcsItemListManager;
+
     private fileChangesSubscription = Subscription.EMPTY;
     private allSelectChangeSubscription = Subscription.EMPTY;
     private selectionChangeSubscription = Subscription.EMPTY;
 
     constructor(
-        private itemListManager: VcsItemListManager,
+        @Inject(VCS_ITEM_LIST_MANAGER) private itemListManagerFactory: VcsItemListManagerFactory,
         public _viewContainerRef: ViewContainerRef,
         private store: Store<VcsStateWithRoot>,
     ) {
     }
 
     get selectedFileChangesCount(): number {
-        return this.itemListManager._selectedItems.size;
+        if (this.itemListManager) {
+            return this.itemListManager._selectedItems.size;
+        } else {
+            return 0;
+        }
     }
 
     ngOnInit(): void {
@@ -51,9 +66,34 @@ export class VcsManagerComponent implements OnInit, OnDestroy, AfterViewInit {
                 this.allSelectCheckboxFormControl.enable();
             }
 
-            if (this.itemListManager.ready) {
+            if (this.itemListManager && this.itemListManager.ready) {
                 this.itemListManager.initWithFileChanges(fileChanges);
             }
+        });
+    }
+
+    ngOnDestroy(): void {
+        if (this.itemListManager) {
+            this.itemListManager.destroy();
+        }
+
+        this.fileChangesSubscription.unsubscribe();
+        this.allSelectChangeSubscription.unsubscribe();
+        this.selectionChangeSubscription.unsubscribe();
+    }
+
+    ngAfterViewInit(): void {
+        this.itemListManager = this.itemListManagerFactory(this._itemList.nativeElement, this._viewContainerRef);
+
+        this.store.pipe(
+            select(state => state.vcs.vcs.fileChanges),
+            take(1),
+        ).subscribe((fileChanges) => {
+            // We should initialize components on next tick.
+            // Otherwise we will get 'ExpressionChangedAfterItHasBeenCheckedError'.
+            Promise.resolve(null).then(() => {
+                this.itemListManager.initWithFileChanges(fileChanges);
+            });
         });
 
         // All select checkbox -> item list manager
@@ -77,29 +117,5 @@ export class VcsManagerComponent implements OnInit, OnDestroy, AfterViewInit {
                     this.allSelectCheckboxIndeterminate = !this.itemListManager.isEmptySelection();
                 }
             });
-    }
-
-    ngOnDestroy(): void {
-        this.itemListManager.destroy();
-        this.fileChangesSubscription.unsubscribe();
-        this.allSelectChangeSubscription.unsubscribe();
-        this.selectionChangeSubscription.unsubscribe();
-    }
-
-    ngAfterViewInit(): void {
-        this.itemListManager
-            .setViewContainerRef(this._viewContainerRef)
-            .setContainerElement(this._itemList.nativeElement);
-
-        this.store.pipe(
-            select(state => state.vcs.vcs.fileChanges),
-            take(1),
-        ).subscribe((fileChanges) => {
-            // We should initialize components on next tick.
-            // Otherwise we will get 'ExpressionChangedAfterItHasBeenCheckedError'.
-            Promise.resolve(null).then(() => {
-                this.itemListManager.initWithFileChanges(fileChanges);
-            });
-        });
     }
 }
