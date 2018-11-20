@@ -48,7 +48,7 @@ export class FormFieldComponent implements AfterViewInit {
 
     ngAfterViewInit(): void {
         if (!this._control) {
-            throw new Error('Form file control must be provided.');
+            throw new Error('Form field control must be provided.');
         }
 
         this._control.statusChanges.subscribe(() => {
