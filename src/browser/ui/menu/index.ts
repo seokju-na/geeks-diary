@@ -7,3 +7,6 @@ export * from './menu-panel';
 export * from './menu-positions';
 export * from './menu-trigger.directive';
 export * from './menu-animations';
+export * from './select-menu.component';
+export * from './menu-item';
+export * from './menu-separator.component';

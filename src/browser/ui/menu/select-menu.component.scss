@@ -1,0 +1,50 @@
+@import "../style/spacing";
+@import "../form-field/form-field-sizes";
+
+$select-menu-side-padding: $spacing-third;
+$select-menu-indicator-size: 8px !default;
+
+.SelectMenu {
+    display: inline-flex;
+    flex-wrap: nowrap;
+    outline: 0;
+    padding: 0 $form-control-size / 3.5;
+    height: $form-control-size;
+    border-radius: 7.5px;
+    font-size: $font-size;
+    line-height: $form-control-size - 2px;
+
+    &__container {
+        min-width: 0;
+    }
+
+    &__content {
+        > span {
+            display: inline-block;
+            text-overflow: ellipsis;
+            overflow: hidden;
+            white-space: nowrap;
+        }
+    }
+
+    &__indicator {
+        position: relative;
+        width: $select-menu-indicator-size * 2;
+        height: 100%;
+
+        &:after {
+            $size: $select-menu-indicator-size / 2;
+            width: 0;
+            height: 0;
+            border-style: solid;
+            border-width: $size $size 0 $size;
+            border-color: currentColor transparent transparent transparent;
+            content: "";
+            display: inline-block;
+            position: absolute;
+            top: 50%;
+            right: $select-menu-side-padding;
+            transform: translateY(-50%);
+        }
+    }
+}
