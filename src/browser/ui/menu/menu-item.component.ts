@@ -20,7 +20,11 @@ import {
     ViewEncapsulation,
 } from '@angular/core';
 import { Subject } from 'rxjs';
+import { MenuItem } from './menu-item';
 import { MENU_PANEL, MenuPanel } from './menu-panel';
+
+
+let uniqueId = 0;
 
 
 @Component({
@@ -36,11 +40,12 @@ import { MENU_PANEL, MenuPanel } from './menu-panel';
         '[attr.tabindex]': '_getTabIndex()',
         '[attr.disabled]': 'disabled || null',
         '[attr.aria-disabled]': 'disabled.toString()',
+        '[attr.id]': 'id',
     },
     changeDetection: ChangeDetectionStrategy.OnPush,
     encapsulation: ViewEncapsulation.None,
 })
-export class MenuItemComponent implements FocusableOption, OnDestroy {
+export class MenuItemComponent implements MenuItem, FocusableOption, OnDestroy {
     /** Stream that emits when the menu item is hovered. */
     readonly _hovered = new Subject<MenuItemComponent>();
 
@@ -49,6 +54,9 @@ export class MenuItemComponent implements FocusableOption, OnDestroy {
 
     /** Whether the menu item acts as a trigger for a sub-menu. */
     _triggersSubmenu: boolean = false;
+
+    @Input() id = `gd-menu-item-${uniqueId++}`;
+    @Input() iconName: string;
 
     constructor(
         private elementRef: ElementRef<HTMLElement>,
@@ -71,6 +79,10 @@ export class MenuItemComponent implements FocusableOption, OnDestroy {
 
     set disabled(value: boolean) {
         this._disabled = coerceBooleanProperty(value);
+    }
+
+    get label(): string {
+        return this.getLabel();
     }
 
     ngOnDestroy(): void {
@@ -133,5 +145,13 @@ export class MenuItemComponent implements FocusableOption, OnDestroy {
         }
 
         return output.trim();
+    }
+
+    toMenuItem(): MenuItem {
+        return {
+            id: this.id,
+            iconName: this.iconName,
+            label: this.label,
+        };
     }
 }
