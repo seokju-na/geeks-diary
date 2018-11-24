@@ -3,11 +3,13 @@ import { Observable, throwError } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
 import { parseGitRemoteUrl } from '../../../core/git';
 import {
+    VcsAccount,
+    VcsAuthenticateError,
     VcsAuthenticationInfo,
     VcsAuthenticationTypes,
     VcsError,
-    VcsErrorCodes,
     VcsRemoteRepository,
+    VcsRepositoryNotExistsError,
 } from '../../../core/vcs';
 import { makeBasicAuthorizationHeader, makeOauth2TokenAuthorizationHeader } from '../../../libs/authentication';
 import { VcsRemoteProvider } from './vcs-remote-provider';
@@ -40,7 +42,7 @@ export class VcsRemoteGithubProvider extends VcsRemoteProvider {
         super('github', API_URL);
     }
 
-    authorizeByBasic(username: string, password: string): Observable<VcsAuthenticationInfo> {
+    authorizeByBasic(username: string, password: string): Observable<VcsAccount> {
         const authorizationHeader = makeBasicAuthorizationHeader(username, password);
         const headers = { Authorization: authorizationHeader };
 
@@ -49,18 +51,26 @@ export class VcsRemoteGithubProvider extends VcsRemoteProvider {
                 headers: this.getHeadersWithDefaults(headers),
             })
             .pipe(
-                map(() => ({
-                    type: VcsAuthenticationTypes.BASIC,
-                    authorizationHeader,
-                    providerName: this.name,
-                    username,
-                    password,
-                } as VcsAuthenticationInfo)),
+                map((response) => {
+                    const authInfo: VcsAuthenticationInfo = {
+                        type: VcsAuthenticationTypes.BASIC,
+                        authorizationHeader,
+                        providerName: this.name,
+                        username,
+                        password,
+                    };
+
+                    return {
+                        name: response.name,
+                        email: response.email,
+                        authentication: authInfo,
+                    } as VcsAccount;
+                }),
                 catchError(error => throwError(this.parseAuthorizeError(error))),
             );
     }
 
-    authorizeByOauth2Token(token: string): Observable<VcsAuthenticationInfo> {
+    authorizeByOauth2Token(token: string): Observable<VcsAccount> {
         const authorizationHeader = makeOauth2TokenAuthorizationHeader(token);
         const headers = { Authorization: authorizationHeader };
 
@@ -69,12 +79,20 @@ export class VcsRemoteGithubProvider extends VcsRemoteProvider {
                 headers: this.getHeadersWithDefaults(headers),
             })
             .pipe(
-                map(() => ({
-                    type: VcsAuthenticationTypes.OAUTH2_TOKEN,
-                    authorizationHeader,
-                    providerName: this.name,
-                    token,
-                } as VcsAuthenticationInfo)),
+                map((response) => {
+                    const authInfo: VcsAuthenticationInfo = {
+                        type: VcsAuthenticationTypes.OAUTH2_TOKEN,
+                        authorizationHeader,
+                        providerName: this.name,
+                        token,
+                    };
+
+                    return {
+                        name: response.name,
+                        email: response.email,
+                        authentication: authInfo,
+                    } as VcsAccount;
+                }),
                 catchError(error => throwError(this.parseAuthorizeError(error))),
             );
     }
@@ -121,20 +139,20 @@ export class VcsRemoteGithubProvider extends VcsRemoteProvider {
         };
     }
 
-    private parseAuthorizeError(error: HttpErrorResponse): VcsError {
+    private parseAuthorizeError(error: HttpErrorResponse): VcsError | Error {
         if (error.status === 401) {
-            return new VcsError(VcsErrorCodes.AUTHENTICATE_ERROR);
+            return new VcsAuthenticateError();
         }
 
-        return new VcsError(VcsErrorCodes.UNKNOWN);
+        return error;
     }
 
-    private parseFindRepositoryError(error: HttpErrorResponse): VcsError {
+    private parseFindRepositoryError(error: HttpErrorResponse): VcsError | Error {
         if (error.status === 404) {
-            return new VcsError(VcsErrorCodes.REPOSITORY_NOT_EXISTS);
+            return new VcsRepositoryNotExistsError();
         }
 
-        return new VcsError(VcsErrorCodes.UNKNOWN);
+        return error;
     }
 
     private getHeadersWithAuthorization(
@@ -147,7 +165,7 @@ export class VcsRemoteGithubProvider extends VcsRemoteProvider {
     }
 
     private getHeadersWithDefaults(
-        headers: {[key: string]: string} = {},
+        headers: { [key: string]: string } = {},
     ): { [header: string]: string | string[] } {
 
         const defaults = {

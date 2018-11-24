@@ -1,9 +1,9 @@
 import { Inject, Injectable } from '@angular/core';
 import { from, Observable } from 'rxjs';
 import { mapTo, switchMap } from 'rxjs/operators';
-import { VcsAuthenticationInfo, VcsFileChange } from '../../core/vcs';
+import { VcsAccount, VcsFileChange } from '../../core/vcs';
 import { GitService, WorkspaceService } from '../shared';
-import { VCS_AUTHENTICATION_DATABASE, VcsAuthenticationDatabase } from './vcs-authentication-database';
+import { VCS_ACCOUNT_DATABASE, VcsAccountDatabase } from './vcs-account-database';
 import { VcsRemoteProvider, VcsRemoteProviderFactory, VcsRemoteProviderType } from './vcs-remote';
 
 
@@ -25,7 +25,8 @@ export class VcsService {
     constructor(
         private remoteProviderFactory: VcsRemoteProviderFactory,
         private git: GitService,
-        @Inject(VCS_AUTHENTICATION_DATABASE) private authDB: VcsAuthenticationDatabase,
+        @Inject(VCS_ACCOUNT_DATABASE) private accountDB: VcsAccountDatabase
+        ,
         private workspace: WorkspaceService,
     ) {
     }
@@ -37,7 +38,7 @@ export class VcsService {
 
     async isAuthenticationInfoExists(): Promise<boolean> {
         try {
-            const count = await this.authDB.authentications.count();
+            const count = await this.accountDB.accounts.count();
             return count > 0;
         } catch (error) {
             return false;
@@ -53,7 +54,7 @@ export class VcsService {
         username: string,
         password: string,
         option?: VcsRemoteLoginOption,
-    ): Observable<VcsAuthenticationInfo> {
+    ): Observable<VcsAccount> {
         this.checkIfRemoteProviderIsProvided();
 
         const opt = {
@@ -65,7 +66,7 @@ export class VcsService {
             return this._removeProvider.authorizeByBasic(username, password);
         } else {
             return this._removeProvider.authorizeByBasic(username, password).pipe(
-                switchMap(authInfo => this.storeAuthInfo(authInfo).pipe(mapTo(authInfo))),
+                switchMap(account => this.storeAccountInfo(account).pipe(mapTo(account))),
             );
         }
     }
@@ -73,7 +74,7 @@ export class VcsService {
     loginRemoteWithOauth2TokenAuthorization(
         token: string,
         option?: VcsRemoteLoginOption,
-    ): Observable<VcsAuthenticationInfo> {
+    ): Observable<VcsAccount> {
         this.checkIfRemoteProviderIsProvided();
 
         const opt = {
@@ -85,7 +86,7 @@ export class VcsService {
             return this._removeProvider.authorizeByOauth2Token(token);
         } else {
             return this._removeProvider.authorizeByOauth2Token(token).pipe(
-                switchMap(authInfo => this.storeAuthInfo(authInfo).pipe(mapTo(authInfo))),
+                switchMap(account => this.storeAccountInfo(account).pipe(mapTo(account))),
             );
         }
     }
@@ -105,8 +106,12 @@ export class VcsService {
         } as VcsCloneRepositoryOption;
 
         if (opt.useAuthenticationInfoInStoreIfExists) {
-            return from(this.authDB.authentications.toCollection().last()).pipe(
-                switchMap(authInfo => this.git.cloneRepository(sourceUrl, distLocalPath, authInfo)),
+            return from(this.accountDB.accounts.toCollection().last()).pipe(
+                switchMap(account => this.git.cloneRepository(
+                    sourceUrl,
+                    distLocalPath,
+                    account ? account.authentication : undefined,
+                )),
             );
         } else {
             return this.git.cloneRepository(sourceUrl, distLocalPath);
@@ -119,7 +124,7 @@ export class VcsService {
         }
     }
 
-    private storeAuthInfo(authInfo: VcsAuthenticationInfo): Observable<number> {
-        return from(this.authDB.authentications.add(authInfo));
+    private storeAccountInfo(authInfo: VcsAccount): Observable<number> {
+        return from(this.accountDB.accounts.add(authInfo));
     }
 }

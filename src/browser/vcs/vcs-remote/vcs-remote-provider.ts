@@ -1,8 +1,9 @@
 import { Observable } from 'rxjs';
-import { VcsAuthenticationInfo, VcsRemoteRepository } from '../../../core/vcs';
+import { VcsAccount, VcsAuthenticationInfo, VcsRemoteRepository } from '../../../core/vcs';
 
 
 export abstract class VcsRemoteProvider {
+    // noinspection JSValidateJSDoc
     protected constructor(
         /** The name of vcs remote provider */
         public readonly name: string,
@@ -12,10 +13,10 @@ export abstract class VcsRemoteProvider {
     }
 
     /** Authorize vcs remote service with basic. */
-    abstract authorizeByBasic(username: string, password: string): Observable<VcsAuthenticationInfo>;
+    abstract authorizeByBasic(username: string, password: string): Observable<VcsAccount>;
 
     /** Authorize vcs remote service with oauth2 token. */
-    abstract authorizeByOauth2Token(token: string): Observable<VcsAuthenticationInfo>;
+    abstract authorizeByOauth2Token(token: string): Observable<VcsAccount>;
 
     /** Check is url of repository is valid. */
     abstract isRepositoryUrlValid(url: string): boolean;
