@@ -1,20 +1,31 @@
-import { CommonModule } from '@angular/common';
 import { HttpClientModule } from '@angular/common/http';
 import { NgModule } from '@angular/core';
 import { SharedModule } from '../../shared';
+import { UiModule } from '../../ui/ui.module';
+import { VcsViewModule } from '../vcs-view';
+import { GithubAccountsDialogComponent } from './github-accounts-dialog/github-accounts-dialog.component';
 import { VcsRemoteProviderFactory } from './vcs-remote-provider-factory';
 
 
 @NgModule({
     imports: [
-        CommonModule,
+        UiModule,
         HttpClientModule,
         SharedModule,
+        VcsViewModule,
+    ],
+    declarations: [
+        GithubAccountsDialogComponent,
+    ],
+    entryComponents: [
+        GithubAccountsDialogComponent,
     ],
     providers: [
         VcsRemoteProviderFactory,
     ],
-    declarations: [],
+    exports: [
+        GithubAccountsDialogComponent,
+    ],
 })
 export class VcsRemoteModule {
 }

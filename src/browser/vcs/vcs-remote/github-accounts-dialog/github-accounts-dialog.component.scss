@@ -1,0 +1,45 @@
+@import "../../../ui/style/spacing";
+@import "../../../ui/style/typography";
+
+.GithubAccountsDialog {
+    &__panel {
+        margin-bottom: $spacing;
+        border-radius: 2.5px;
+        overflow: hidden;
+
+        > h2 {
+            margin: 0;
+            height: 28px;
+            padding: 0 $spacing;
+            font-size: $font-size;
+            font-weight: $font-weight-normal;
+            line-height: 26px;
+        }
+    }
+
+    &__accounts {
+        position: relative;
+        min-height: 140px;
+        overflow-y: auto;
+    }
+
+    &__emptyState {
+        position: absolute;
+        left: 0;
+        top: 0;
+        bottom: 0;
+        right: 0;
+    }
+
+    &__form {
+        border-radius: 2.5px;
+        padding: $spacing;
+    }
+
+    &__loginAndAddAccountButton {
+    }
+
+    &__loginFailError {
+        padding: 0 $spacing;
+    }
+}

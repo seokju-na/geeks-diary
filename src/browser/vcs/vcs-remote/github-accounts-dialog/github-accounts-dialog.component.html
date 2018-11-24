@@ -1,0 +1,64 @@
+<gd-dialog-header>
+    <h1 gdDialogTitle>Github Accounts</h1>
+</gd-dialog-header>
+
+<gd-dialog-content>
+    <div class="GithubAccountsDialog__panel">
+        <h2>{{ accountsCount | number }} account(s)</h2>
+        <div class="GithubAccountsDialog__accounts">
+            <gd-vcs-account-item *ngFor="let account of accounts"
+                                 (removeThis)="removeAccount(account)"
+                                 [active]="isItemActive(account)"
+                                 [account]="account"></gd-vcs-account-item>
+
+            <div *ngIf="isEmpty" fxLayout fxLayoutAlign="center center"
+                 class="GithubAccountsDialog__emptyState">No Accounts</div>
+        </div>
+    </div>
+
+    <form gdArea gdRows="repeat(4, 1fr)" gdColumns="1fr 3fr 2fr" gdGap="5px" (submit)="login()"
+          [formGroup]="addAccountFormGroup" class="GithubAccountsDialog__form">
+
+        <label gdRow="1" gdColumn="1" gdFormFieldLabel>Auth Type:</label>
+        <gd-radio-group gdRow="1" gdColumn="2/ 4" fxLayout fxLayoutAlign="start center" fxLayoutGap="20px"
+                        formControlName="type" name="type">
+            <gd-radio-button [value]="authenticationTypes.BASIC">Username and Password</gd-radio-button>
+            <gd-radio-button [value]="authenticationTypes.OAUTH2_TOKEN">Oauth2 Token</gd-radio-button>
+        </gd-radio-group>
+
+        <ng-container [ngSwitch]="addAccountFormGroup.get('type').value">
+            <ng-container *ngSwitchCase="authenticationTypes.BASIC">
+                <label gdRow="2" gdColumn="1" gdFormFieldLabel for="github-username-input">Username:</label>
+                <gd-form-field gdRow="2" gdColumn="2 / 3">
+                    <input gdInput formControlName="userName" id="github-username-input">
+                </gd-form-field>
+
+                <label gdRow="3" gdColumn="1" gdFormFieldLabel for="github-password-input">Password:</label>
+                <gd-form-field gdRow="3" gdColumn="2 / 3">
+                    <input gdInput formControlName="password" type="password" id="github-password-input">
+                </gd-form-field>
+            </ng-container>
+
+            <ng-container *ngSwitchCase="authenticationTypes.OAUTH2_TOKEN">
+                <label gdRow="2" gdColumn="1" gdFormFieldLabel for="github-token-input">Token:</label>
+                <gd-form-field gdRow="2" gdColumn="2 / 4">
+                    <input gdInput formControlName="token" id="github-token-input">
+                </gd-form-field>
+            </ng-container>
+        </ng-container>
+
+        <div fxLayout fxLayoutAlign="start center" gdRow="4" gdColumn="2 / 4">
+            <button gd-button color="primary" [showSpinner]="loginProcessing" [disabled]="loginProcessing"
+                    class="GithubAccountsDialog__loginAndAddAccountButton">
+                Login & Add Account
+            </button>
+            <gd-form-field-error [show]="loginErrorCaught" class="GithubAccountsDialog__loginFailError">
+                Login Failed
+            </gd-form-field-error>
+        </div>
+    </form>
+</gd-dialog-content>
+
+<gd-dialog-actions align="end">
+    <button gd-button (click)="closeThis()">Close</button>
+</gd-dialog-actions>
