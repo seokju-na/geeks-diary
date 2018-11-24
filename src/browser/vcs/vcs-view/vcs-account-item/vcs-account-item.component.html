@@ -1,0 +1,15 @@
+<div fxFlex="1 1 auto" class="VcsAccountItem__info">
+    <h1 class="VcsAccountItem__name">{{ account.name }}</h1>
+    <div class="VcsAccountItem__email"><{{ account.email }}></div>
+    <!--<div class="VcsAccountItem__defaultLabel">Default</div>-->
+</div>
+
+<!-- should show when activate or hovered -->
+<div fxFlex="none" [class.VcsAccountItem__tools--show]="showTools" class="VcsAccountItem__tools">
+    <!--<button gd-icon-button title="Set as Default" (click)="_onClickSetAsDefault()">-->
+        <!--<gd-icon name="check-square"></gd-icon>-->
+    <!--</button>-->
+    <button gd-icon-button title="Remove Github Account" (click)="_onClickRemove()">
+        <gd-icon name="trash"></gd-icon>
+    </button>
+</div>
