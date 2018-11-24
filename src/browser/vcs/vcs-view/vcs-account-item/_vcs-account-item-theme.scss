@@ -1,0 +1,18 @@
+@import "../../../ui/style/theming";
+
+@mixin gd-vcs-account-item-theme($theme) {
+    $background: map-get($theme, background);
+    $primary: map-get($theme, primary);
+
+    .VcsAccountItem {
+        outline: 0;
+
+        &--activated {
+            background-color: gd-color($background, hover);
+        }
+
+        &:focus {
+            background-color: gd-color($primary) !important;
+        }
+    }
+}

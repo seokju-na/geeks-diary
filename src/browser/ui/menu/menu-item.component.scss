@@ -1,0 +1,59 @@
+@import "../style/button-common";
+@import "../style/typography";
+@import "./menu-sizes";
+
+$menu-submenu-indicator-size: 8px !default;
+
+.MenuItem {
+    @include button-reset();
+
+    position: relative;
+
+    display: flex;
+    align-items: center;
+
+    width: 100%;
+    margin: 0;
+    height: $menu-item-height;
+    line-height: $menu-item-height;
+    padding: 0 $menu-side-padding;
+
+    white-space: nowrap;
+    text-decoration: none;
+    vertical-align: baseline;
+    text-align: center;
+
+    font: {
+        family: $font-family-sans-serif;
+        size: $font-size;
+        weight: $font-weight-normal;
+    };
+
+    //noinspection CssUnknownProperty
+    -webkit-app-region: no-drag;
+
+    &[disabled] {
+        cursor: default;
+    }
+
+    &--submenuTrigger {
+        padding-right: $menu-side-padding * 2;
+
+        // Renders a triangle to indicate that the menu item will open a sub-menu.
+        &:after {
+            $size: $menu-submenu-indicator-size / 2;
+
+            width: 0;
+            height: 0;
+            border-style: solid;
+            border-width: $size 0 $size $size;
+            border-color: transparent transparent transparent currentColor;
+            content: '';
+            display: inline-block;
+            position: absolute;
+            top: 50%;
+            right: $menu-side-padding;
+            transform: translateY(-50%);
+        }
+    }
+}

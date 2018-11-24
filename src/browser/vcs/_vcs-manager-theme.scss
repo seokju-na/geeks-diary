@@ -1,4 +1,4 @@
-@import "../../../ui/style/theming";
+@import "../ui/style/theming";
 
 @mixin gd-vcs-manager-theme($theme) {
     $background: map-get($theme, background);

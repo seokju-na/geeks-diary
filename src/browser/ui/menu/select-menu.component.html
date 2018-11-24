@@ -1,0 +1,8 @@
+<div fxFlex="1 0 auto" class="SelectMenu__container">
+    <div *ngIf="isEmptyValue" class="SelectMenu__placeholder">{{ placeholder }}</div>
+    <div *ngIf="!isEmptyValue" class="SelectMenu__content">
+        <gd-icon *ngIf="item?.iconName" [name]="item.iconName"></gd-icon>
+        <span>{{ item.label }}</span>
+    </div>
+</div>
+<div fxFlex="none" class="SelectMenu__indicator"></div>

@@ -1,0 +1,71 @@
+@import "../../../ui/style/typography";
+@import "../../../ui/style/spacing";
+@import "vcs-account-item-sizes";
+
+.VcsAccountItem {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: nowrap;
+    width: 100%;
+    height: $vcs-account-item-size;
+    line-height: $vcs-account-item-size;
+
+    &__info {
+        display: inline-flex;
+        min-width: 0;
+        text-overflow: ellipsis;
+        overflow: hidden;
+        white-space: nowrap;
+    }
+
+    &__name {
+        display: inline-block;
+        margin: 0;
+        padding: 0 $spacing-half;
+        font: {
+            size: $font-size;
+            weight: $font-weight-normal;
+        };
+    }
+
+    &__email {
+        display: inline-block;
+        padding: 0 $spacing-half;
+        font: {
+            size: $font-size;
+            weight: $font-weight-semiBold;
+        };
+    }
+
+    &__defaultLabel {
+        display: none;
+        visibility: hidden;
+    }
+
+    &__tools {
+        display: none;
+        padding: 0 $spacing-half;
+
+        > button {
+            &:nth-child(1) {
+            }
+        }
+
+        &--show {
+            display: inline-flex;
+        }
+    }
+
+    &--default {
+        .VcsAccountItem__defaultLabel {
+            display: inline-block;
+            visibility: visible;
+        }
+
+        .VcsAccountItem__tools > button:nth-child(1) {
+            display: none;
+            visibility: hidden;
+        }
+    }
+}

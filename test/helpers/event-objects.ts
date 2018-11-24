@@ -1,9 +1,19 @@
-export function createMouseEvent(type: string, x = 0, y = 0): MouseEvent {
+/**
+ * @license
+ * Copyright Google LLC All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+
+
+/** Creates a browser MouseEvent with the specified options. */
+export function createMouseEvent(type: string, x = 0, y = 0, button = 0): MouseEvent {
     const event = document.createEvent('MouseEvent');
 
     event.initMouseEvent(
         type,
-        false, /* canBubble */
+        true, /* canBubble */
         false, /* cancelable */
         window, /* view */
         0, /* detail */
@@ -15,9 +25,13 @@ export function createMouseEvent(type: string, x = 0, y = 0): MouseEvent {
         false, /* altKey */
         false, /* shiftKey */
         false, /* metaKey */
-        0, /* button */
+        button, /* button */
         null, /* relatedTarget */
     );
+
+    // `initMouseEvent` doesn't allow us to pass the `buttons` and
+    // defaults it to 0 which looks like a fake event.
+    Object.defineProperty(event, 'buttons', { get: () => 1 });
 
     return event;
 }

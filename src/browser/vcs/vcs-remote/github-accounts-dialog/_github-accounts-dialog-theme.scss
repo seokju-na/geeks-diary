@@ -1,0 +1,32 @@
+@import "../../../ui/style/theming";
+
+@mixin gd-github-accounts-dialog-theme($theme) {
+    $background: map-get($theme, background);
+    $foreground: map-get($theme, foreground);
+
+    .GithubAccountsDialog {
+        &__panel {
+            border: 1px solid gd-color($foreground, divider);
+
+            > h2 {
+                border-bottom: 1px solid gd-color($foreground, divider);
+            }
+        }
+
+        &__accounts {
+            background-color: gd-color($background, background);
+
+            > .VcsAccountItem {
+                border-bottom: 1px solid gd-color($foreground, divider);
+            }
+        }
+
+        &__emptyState {
+            color: gd-color($foreground, disabled-text);
+        }
+
+        &__form {
+            border: 1px solid gd-color($foreground, divider);
+        }
+    }
+}

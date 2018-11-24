@@ -1,6 +1,13 @@
 import { FocusKeyManager } from '@angular/cdk/a11y';
 import { ComponentPortal, DomPortalOutlet, PortalInjector } from '@angular/cdk/portal';
-import { ApplicationRef, ComponentFactoryResolver, Injectable, Injector, ViewContainerRef } from '@angular/core';
+import {
+    ApplicationRef,
+    ComponentFactoryResolver,
+    InjectionToken,
+    Injector,
+    Provider,
+    ViewContainerRef,
+} from '@angular/core';
 import { merge, Observable, Subject, Subscription } from 'rxjs';
 import { VcsFileChange } from '../../../core/vcs';
 import { VcsItem, VcsItemConfig, VcsItemEvent, VcsItemEventNames, VcsItemRef } from './vcs-item';
@@ -10,19 +17,37 @@ import { VcsItemMaker } from './vcs-item-maker';
 let uniqueId = 0;
 
 
-@Injectable()
+export const VCS_ITEM_LIST_MANAGER = new InjectionToken<VcsItemListManagerFactory>('VcsItemListManager');
+
+export type VcsItemListManagerFactory =
+    (containerEl: HTMLElement, viewContainerRef?: ViewContainerRef) => VcsItemListManager;
+
+export const VcsItemListManagerFactoryProvider: Provider = {
+    provide: VCS_ITEM_LIST_MANAGER,
+    useFactory(
+        v: VcsItemMaker,
+        i: Injector,
+        c: ComponentFactoryResolver,
+        a: ApplicationRef,
+    ): VcsItemListManagerFactory {
+        return (ce: HTMLElement, vc?: ViewContainerRef) => new VcsItemListManager(ce, vc, v, i, c, a);
+    },
+    deps: [VcsItemMaker, Injector, ComponentFactoryResolver, ApplicationRef],
+};
+
+
 export class VcsItemListManager {
     _itemRefs: VcsItemRef<any>[] = [];
     _keyManager: FocusKeyManager<VcsItem> | null = null;
     _selectedItems = new Set<string>();
 
-    private containerEl: HTMLElement;
-    private viewContainerRef: ViewContainerRef;
     private itemRefEventsSubscription = Subscription.EMPTY;
 
     private selectionChangeStream = new Subject<void>();
 
     constructor(
+        public readonly _containerEl: HTMLElement,
+        public readonly _viewContainerRef: ViewContainerRef,
         private itemMaker: VcsItemMaker,
         private injector: Injector,
         private componentFactoryResolver: ComponentFactoryResolver,
@@ -31,7 +56,7 @@ export class VcsItemListManager {
     }
 
     get ready(): boolean {
-        return !!this.containerEl && !!this.viewContainerRef;
+        return !!this._containerEl && !!this._viewContainerRef;
     }
 
     get selectionChanges(): Observable<void> {
@@ -51,16 +76,6 @@ export class VcsItemListManager {
         }
 
         return refs;
-    }
-
-    setContainerElement(containerEl: HTMLElement): this {
-        this.containerEl = containerEl;
-        return this;
-    }
-
-    setViewContainerRef(viewContainerRef: ViewContainerRef): this {
-        this.viewContainerRef = viewContainerRef;
-        return this;
     }
 
     initWithFileChanges(fileChanges: VcsFileChange[]): VcsItemRef<any>[] {
@@ -162,8 +177,6 @@ export class VcsItemListManager {
     destroy(): void {
         this._keyManager = null;
         this._selectedItems.clear();
-        this.containerEl = null;
-        this.viewContainerRef = null;
         this._itemRefs = [];
 
         if (this.itemRefEventsSubscription) {
@@ -179,7 +192,7 @@ export class VcsItemListManager {
         pane.id = `gd-vcs-item-pane-${uniqueId++}`;
         pane.classList.add('VcsItemPane');
 
-        this.containerEl.appendChild(pane);
+        this._containerEl.appendChild(pane);
 
         return pane;
     }
@@ -188,7 +201,7 @@ export class VcsItemListManager {
         const portal = new DomPortalOutlet(pane, this.componentFactoryResolver, this.appRef, this.injector);
         const injector = this.createInjector(ref);
         const componentRef = portal.attachComponentPortal(
-            new ComponentPortal<VcsItem>(ref.component, this.viewContainerRef || undefined, injector),
+            new ComponentPortal<VcsItem>(ref.component, this._viewContainerRef || undefined, injector),
         );
 
         ref.panePortal = portal;
@@ -208,11 +221,11 @@ export class VcsItemListManager {
 
         const paneElementId = itemRef.paneElementId;
 
-        if (this.containerEl) {
-            const paneEl = this.containerEl.querySelector(`#${paneElementId}`);
+        if (this._containerEl) {
+            const paneEl = this._containerEl.querySelector(`#${paneElementId}`);
 
             if (paneEl) {
-                this.containerEl.removeChild(paneEl);
+                this._containerEl.removeChild(paneEl);
             }
         }
     }

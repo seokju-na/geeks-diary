@@ -4,6 +4,9 @@
     &__content {
         .Input {
             display: block;
+        }
+
+        .Input, .SelectMenu {
             width: 100%;
 
             & ~ .FormFieldError {

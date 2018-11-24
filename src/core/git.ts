@@ -1,4 +1,4 @@
-import { VcsAuthenticationInfo } from './vcs';
+import { VcsAccount, VcsAuthenticationInfo } from './vcs';
 
 
 type Protocol = 'ssh' | 'https';
@@ -112,4 +112,12 @@ export interface GitCloneOptions {
     url: string;
     localPath: string;
     authentication?: VcsAuthenticationInfo;
+}
+
+
+export interface GitCommitOptions {
+    workspaceDirPath: string;
+    message: string;
+    filesToAdd: string[];
+    author: VcsAccount;
 }

@@ -1,6 +1,10 @@
 import 'core-js/es6/reflect';
 import 'core-js/es7/reflect';
 import 'zone.js/dist/zone';
+import 'zone.js/dist/zone-patch-electron';
+// import 'zone.js/dist/zone-node';
+// Stupid! We can use zone node patch. I patched every method until I knew this...
+// See 'enterZone': 'src/libs/rx.ts'
 
 
 /**

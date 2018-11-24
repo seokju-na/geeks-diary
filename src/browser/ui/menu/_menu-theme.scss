@@ -1,0 +1,57 @@
+@import "../style/theming";
+
+@mixin gd-ui-menu-theme($theme) {
+    $background: map-get($theme, background);
+    $foreground: map-get($theme, foreground);
+    $primary: map-get($theme, primary);
+
+    .Menu {
+        background-color: gd-color($background, background-highlight);
+        color: gd-color($foreground, 'text');
+
+        &[disabled] {
+            &, &::after {
+                color: gd-color($foreground, 'disabled');
+            }
+        }
+    }
+
+    .MenuItem {
+        color: inherit;
+        background: transparent;
+
+        &--submenuTrigger:after {
+            color: gd-color($foreground, 'icon');
+        }
+
+        &:hover:not([disabled]) {
+            background-color: gd-color($background, hover);
+        }
+
+        &.cdk-program-focused, &.cdk-keyboard-focused, &--highlighted {
+            &:not([disabled]) {
+                background-color: gd-color($primary);
+                color: gd-color($primary, default-contrast);
+            }
+        }
+    }
+
+    .MenuSeparator {
+        background-color: gd-color($foreground, divider);
+    }
+
+    .SelectMenu {
+        background: gd-color($background, background-highlight);
+        border: 1px solid gd-color($foreground, divider);
+        color: gd-color($foreground, text);
+
+        &:focus {
+            border-color: gd-color($primary);
+            box-shadow: 0 0 0 1px gd-color($primary);
+        }
+
+        &:disabled {
+            background-color: gd-color($background, background);
+        }
+    }
+}

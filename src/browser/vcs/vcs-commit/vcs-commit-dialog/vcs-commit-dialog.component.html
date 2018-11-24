@@ -1,0 +1,58 @@
+<gd-dialog-header>
+    <h1 gdDialogTitle>Commit File Changes</h1>
+</gd-dialog-header>
+
+<gd-dialog-content fxLayout class="VcsCommitDialog__content">
+    <section fxFlex="4 4 57.2%">
+        <div fxLayout="column" class="VcsCommitDialog__itemContainer">
+            <h2 fxFlex="none">{{ selectedItemsCount }} items selected</h2>
+            <div #itemList fxFlex="1 1 auto" class="VcsCommitDialog__itemList"></div>
+        </div>
+    </section>
+
+    <form [formGroup]="commitFormGroup" fxFlex="3 3 42.8%" fxLayout="column" fxLayoutAlign="space-between"
+          (submit)="commit()" class="VcsCommitDialog__form">
+
+        <div gdArea gdColumns="1fr 5fr" gdGap="5px">
+            <!-- Author -->
+            <label gdColumn="1" gdRow="1" gdFormFieldLabel for="commit-author-select">Author:</label>
+            <gd-form-field gdColumn="2" gdRow="1">
+                <gd-select-menu [gdMenuTrigger]="authorMenu" formControlName="author" id="commit-author-select"
+                                [convertFn]="authorMenuConvertFn" placeholder="Select author..."></gd-select-menu>
+                <gd-menu #authorMenu="gdMenu">
+                    <button gd-menu-item (click)="selectAuthor(item)" *ngFor="let item of authorMenuItems">
+                        {{ item.label }}
+                    </button>
+                    <gd-menu-separator></gd-menu-separator>
+                    <button gd-menu-item id="add-author-menu" iconName="plus" (click)="addAuthor()">
+                        Add author
+                    </button>
+                </gd-menu>
+            </gd-form-field>
+
+            <!-- Summary -->
+            <label gdRow="2" gdColumn="1 / 3" for="commit-summary-input">Summary:</label>
+            <gd-form-field gdRow="3" gdColumn="1 / 3" id="commit-summary-form-field">
+                <input gdInput formControlName="summary" type="text" id="commit-summary-input">
+                <gd-form-field-error errorName="required">Summary is required</gd-form-field-error>
+                <gd-form-field-error errorName="maxlength">
+                    Summary cannot be more than 72 characters
+                </gd-form-field-error>
+            </gd-form-field>
+
+            <!-- Description -->
+            <label gdRow="4" gdColumn="1 / 3" for="commit-description-textarea">Description:</label>
+            <gd-form-field gdRow="5" gdColumn="1 / 3">
+            <textarea gdInput formControlName="description" rows="3" id="commit-description-textarea"
+                      gdAutosize [maxRows]="5"></textarea>
+            </gd-form-field>
+        </div>
+
+        <div fxLayout fxLayoutAlign="start center" fxLayoutGap="5px" class="VcsCommitDialog__actions">
+            <button fxFlex="2 2 auto" gd-button color="primary"
+                    [disabled]="commitFormGroup.invalid || selectedItemsCount === 0"
+                    [showSpinner]="commitProcessing" class="VcsCommitDialog__submitButton">Commit</button>
+            <button fxFlex="1 1 auto" gd-button (click)="closeThisDialog()" type="button">Cancel</button>
+        </div>
+    </form>
+</gd-dialog-content>

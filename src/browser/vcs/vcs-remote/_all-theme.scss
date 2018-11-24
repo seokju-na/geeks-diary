@@ -1,0 +1,5 @@
+@import "./github-accounts-dialog/github-accounts-dialog-theme";
+
+@mixin gd-vcs-remote-all-theme($theme) {
+    @include gd-github-accounts-dialog-theme($theme);
+}

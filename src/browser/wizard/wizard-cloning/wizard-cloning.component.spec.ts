@@ -15,7 +15,7 @@ import {
 } from '../../../../test/helpers';
 import { MockDialog } from '../../../../test/mocks/browser';
 import { GitError, GitErrorCodes } from '../../../core/git';
-import { VcsAuthenticationTypes, VcsError, VcsErrorCodes } from '../../../core/vcs';
+import { VcsAuthenticateError, VcsAuthenticationTypes } from '../../../core/vcs';
 import { WORKSPACE_DIR_PATH } from '../../../core/workspace';
 import { SharedModule, WorkspaceService } from '../../shared';
 import { ConfirmDialogComponent, ConfirmDialogData } from '../../shared/confirm-dialog';
@@ -287,7 +287,7 @@ describe('browser.wizard.wizardCloning.WizardCloningComponent', () => {
             switchAuthMethodOption(VcsAuthenticationTypes.BASIC);
             fixture.detectChanges();
 
-            const error = new VcsError(VcsErrorCodes.AUTHENTICATE_ERROR);
+            const error = new VcsAuthenticateError();
 
             (vcs.loginRemoteWithBasicAuthorization as Spy).and.returnValue(throwError(error));
 
@@ -303,7 +303,7 @@ describe('browser.wizard.wizardCloning.WizardCloningComponent', () => {
             switchAuthMethodOption(VcsAuthenticationTypes.OAUTH2_TOKEN);
             fixture.detectChanges();
 
-            const error = new VcsError(VcsErrorCodes.AUTHENTICATE_ERROR);
+            const error = new VcsAuthenticateError();
 
             (vcs.loginRemoteWithOauth2TokenAuthorization as Spy).and.returnValue(throwError(error));
 

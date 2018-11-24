@@ -1,27 +1,28 @@
 import { ComponentFixture, fakeAsync, flush, TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
 import { combineReducers, Store, StoreModule } from '@ngrx/store';
-import { BaseVcsItemFactory } from '..';
-import { createDummies, createFakeEvent, fastTestSetup } from '../../../../../test/helpers';
-import { VcsFileChange } from '../../../../core/vcs';
-import { CheckboxComponent } from '../../../ui/checkbox';
-import { VcsFileChangeDummy } from '../../dummies';
-import { UpdateFileChangesAction } from '../../vcs.actions';
-import { vcsReducerMap } from '../../vcs.reducer';
-import { VcsStateWithRoot } from '../../vcs.state';
-import { VcsItem } from '../vcs-item';
-import { VcsItemListManager } from '../vcs-item-list-manager';
-import { VCS_ITEM_MAKING_FACTORIES } from '../vcs-item-maker';
-import { VcsViewModule } from '../vcs-view.module';
+import { MockDialog } from '../../../test/mocks/browser';
+import { Dialog } from '../ui/dialog';
+import { UiModule } from '../ui/ui.module';
+import { VcsCommitDialogComponent, VcsCommitDialogData, VcsCommitDialogResult, VcsCommitModule } from './vcs-commit';
+import { BaseVcsItemFactory, VCS_ITEM_MAKING_FACTORIES, VcsItem, VcsItemListManager, VcsViewModule } from './vcs-view';
+import { createDummies, createFakeEvent, fastTestSetup } from '../../../test/helpers';
+import { VcsFileChange } from '../../core/vcs';
+import { CheckboxComponent } from '../ui/checkbox';
+import { VcsFileChangeDummy } from './dummies';
+import { UpdateFileChangesAction } from './vcs.actions';
+import { vcsReducerMap } from './vcs.reducer';
+import { VcsStateWithRoot } from './vcs.state';
 import { VcsManagerComponent } from './vcs-manager.component';
 
 
-describe('browser.vcs.vcsView.VcsManagerComponent', () => {
+describe('browser.vcs.VcsManagerComponent', () => {
     let fixture: ComponentFixture<VcsManagerComponent>;
     let component: VcsManagerComponent;
 
     let listManager: VcsItemListManager;
     let store: Store<VcsStateWithRoot>;
+    let mockDialog: MockDialog;
 
     const fileChangeDummy = new VcsFileChangeDummy();
 
@@ -29,6 +30,9 @@ describe('browser.vcs.vcsView.VcsManagerComponent', () => {
         fixture.debugElement.query(
             By.css('.VcsManager__actionbar > gd-checkbox'),
         ).componentInstance as CheckboxComponent;
+
+    const getCommitButtonEl = (): HTMLButtonElement =>
+        fixture.debugElement.query(By.css('.VcsManager__commitButton')).nativeElement as HTMLButtonElement;
 
     function initVcsItemsWith(
         fileChanges: VcsFileChange[] = createDummies(fileChangeDummy, 5),
@@ -40,6 +44,8 @@ describe('browser.vcs.vcsView.VcsManagerComponent', () => {
         flush();
         fixture.detectChanges();
 
+        listManager = component['itemListManager'];
+
         return fileChanges;
     }
 
@@ -49,10 +55,13 @@ describe('browser.vcs.vcsView.VcsManagerComponent', () => {
         await TestBed
             .configureTestingModule({
                 imports: [
+                    UiModule,
                     VcsViewModule,
+                    VcsCommitModule,
                     StoreModule.forRoot({
                         vcs: combineReducers(vcsReducerMap),
                     }),
+                    ...MockDialog.imports(),
                 ],
                 providers: [
                     {
@@ -62,22 +71,31 @@ describe('browser.vcs.vcsView.VcsManagerComponent', () => {
                         },
                         deps: [BaseVcsItemFactory],
                     },
+                    ...MockDialog.providers(),
+                ],
+                declarations: [
+                    VcsManagerComponent,
                 ],
             })
             .compileComponents();
     });
 
     beforeEach(() => {
-        listManager = TestBed.get(VcsItemListManager);
         store = TestBed.get(Store);
+        mockDialog = TestBed.get(Dialog);
 
         fixture = TestBed.createComponent(VcsManagerComponent);
         component = fixture.componentInstance;
     });
 
+    afterEach(() => {
+        mockDialog.closeAll();
+    });
+
     describe('ngOnInit', () => {
         it('should initialize vcs item list whenever file changes are updated.', () => {
             fixture.detectChanges();
+            listManager = component['itemListManager'];
 
             spyOn(listManager, 'initWithFileChanges').and.callThrough();
 
@@ -93,27 +111,6 @@ describe('browser.vcs.vcsView.VcsManagerComponent', () => {
 
             expect(listManager.initWithFileChanges).toHaveBeenCalledWith(afterFileChanges);
         });
-    });
-
-    describe('ngAfterViewInit', () => {
-        it('should initialize vcs item list at first time.', fakeAsync(() => {
-            const fileChanges = createDummies(fileChangeDummy, 10);
-            store.dispatch(new UpdateFileChangesAction({ fileChanges }));
-
-            spyOn(listManager, 'setViewContainerRef').and.callThrough();
-            spyOn(listManager, 'setContainerElement').and.callThrough();
-            spyOn(listManager, 'initWithFileChanges').and.callThrough();
-
-            fixture.detectChanges();
-
-            expect(listManager.setViewContainerRef).toHaveBeenCalledWith(component._viewContainerRef);
-            expect(listManager.setContainerElement).toHaveBeenCalledWith(component._itemList.nativeElement);
-            expect(listManager.initWithFileChanges).not.toHaveBeenCalled();
-
-            flush();
-
-            expect(listManager.initWithFileChanges).toHaveBeenCalledWith(fileChanges);
-        }));
     });
 
     describe('Changes Tab - empty state', () => {
@@ -139,7 +136,6 @@ describe('browser.vcs.vcsView.VcsManagerComponent', () => {
             expect(getAllSelectCheckbox().indeterminate).toBe(false);
 
             // indeterminate
-            // const samples = sampleSize<VcsItemRef<any>>(listManager._itemRefs, 3);
             (listManager._itemRefs[0].componentInstance as VcsItem).select(true);
             (listManager._itemRefs[2].componentInstance as VcsItem).select(true);
             fixture.detectChanges();
@@ -179,6 +175,28 @@ describe('browser.vcs.vcsView.VcsManagerComponent', () => {
 
             expect(component.allSelectCheckboxFormControl.value as boolean).toBe(false);
             expect(listManager.isEmptySelection()).toBe(true);
+        }));
+    });
+
+    describe('Changes Tab - commit', () => {
+        it('should open commit dialog with selected file changes.', fakeAsync(() => {
+            const fileChanges = initVcsItemsWith();
+
+            // select all items.
+            listManager._itemRefs.forEach(ref => (ref.componentInstance as VcsItem).select(true));
+            fixture.detectChanges();
+
+            getCommitButtonEl().click();
+
+            const commitDialogRef = mockDialog.getByComponent<VcsCommitDialogComponent,
+                VcsCommitDialogData,
+                VcsCommitDialogResult>(
+                VcsCommitDialogComponent,
+            );
+
+            expect(commitDialogRef).toBeDefined();
+            expect(commitDialogRef.config.disableBackdropClickClose).toBe(true);
+            expect(commitDialogRef.config.data.fileChanges).toEqual(fileChanges);
         }));
     });
 });

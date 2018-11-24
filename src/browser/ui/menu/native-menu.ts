@@ -1,18 +1,18 @@
 import { Injectable, NgZone } from '@angular/core';
 import { MenuItemConstructorOptions, PopupOptions } from 'electron';
-import { MenuRef } from './menu-ref';
+import { NativeMenuRef } from './native-menu-ref';
 
 
 @Injectable()
-export class Menu {
+export class NativeMenu {
     constructor(private ngZone: NgZone) {
     }
 
     open(
         template: MenuItemConstructorOptions[],
         options: PopupOptions = {},
-    ): MenuRef {
+    ): NativeMenuRef {
 
-        return new MenuRef(template, options, this.ngZone);
+        return new NativeMenuRef(template, options, this.ngZone);
     }
 }

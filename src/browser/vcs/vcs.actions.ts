@@ -5,6 +5,7 @@ import { VcsFileChange } from '../../core/vcs';
 export enum VcsActionTypes {
     UPDATE_FILE_CHANGES = '[Vcs] Update file changes',
     UPDATE_FILE_CHANGES_FAIL = '[Vcs] Update file changes fail',
+    COMMITTED = '[Vcs] Committed',
 }
 
 
@@ -24,6 +25,15 @@ export class UpdateFileChangesErrorAction implements Action {
 }
 
 
+export class CommittedAction implements Action {
+    readonly type = VcsActionTypes.COMMITTED;
+
+    constructor(public readonly payload: { commitId: string }) {
+    }
+}
+
+
 export type VcsAction =
     UpdateFileChangesAction
-    | UpdateFileChangesErrorAction;
+    | UpdateFileChangesErrorAction
+    | CommittedAction;

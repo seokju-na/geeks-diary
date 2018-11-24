@@ -652,7 +652,8 @@ $color-blue-gray: $color-blue-grey;
 // Background palette for light themes.
 $light-theme-background: (
     background-highlight: white,
-    background: map_get($color-grey, 50),
+    background: #f3f3f3,
+    hover: rgba(black, 0.04),
     card: white,
     dialog: white,
     disabled-button: rgba(black, 0.12),
@@ -666,6 +667,7 @@ $light-theme-background: (
 $dark-theme-background: (
     background-highlight: map_get($color-grey, 800),
     background: #303030,
+    hover: rgba(white, 0.04),
     card: map_get($color-grey, 800),
     dialog: map_get($color-grey, 800),
     disabled-button: rgba(white, 0.12),

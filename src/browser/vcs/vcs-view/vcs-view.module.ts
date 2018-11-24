@@ -2,9 +2,9 @@ import { NgModule } from '@angular/core';
 import { UiModule } from '../../ui/ui.module';
 import { BaseVcsItemFactory } from './base-vcs-item/base-vcs-item-factory';
 import { BaseVcsItemComponent } from './base-vcs-item/base-vcs-item.component';
-import { VcsItemListManager } from './vcs-item-list-manager';
+import { VcsAccountItemComponent } from './vcs-account-item/vcs-account-item.component';
+import { VcsItemListManagerFactoryProvider } from './vcs-item-list-manager';
 import { VcsItemMaker } from './vcs-item-maker';
-import { VcsManagerComponent } from './vcs-manager/vcs-manager.component';
 
 
 @NgModule({
@@ -12,21 +12,20 @@ import { VcsManagerComponent } from './vcs-manager/vcs-manager.component';
         UiModule,
     ],
     declarations: [
-        VcsManagerComponent,
         BaseVcsItemComponent,
+        VcsAccountItemComponent,
     ],
     entryComponents: [
-        VcsManagerComponent,
         BaseVcsItemComponent,
     ],
     providers: [
         BaseVcsItemFactory,
         VcsItemMaker,
-        VcsItemListManager,
+        VcsItemListManagerFactoryProvider,
     ],
     exports: [
-        VcsManagerComponent,
         BaseVcsItemComponent,
+        VcsAccountItemComponent,
     ],
 })
 export class VcsViewModule {

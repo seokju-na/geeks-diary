@@ -3,11 +3,11 @@ import { HttpClientTestingModule, HttpTestingController } from '@angular/common/
 import { fakeAsync, TestBed } from '@angular/core/testing';
 import { fastTestSetup, httpRequestMatch } from '../../../../test/helpers';
 import {
-    VcsAuthenticationInfo,
+    VcsAccount,
+    VcsAuthenticateError,
     VcsAuthenticationTypes,
-    VcsError,
-    VcsErrorCodes,
     VcsRemoteRepository,
+    VcsRepositoryNotExistsError,
 } from '../../../core/vcs';
 import { AUTH_API_URL, REPO_API_URL, VcsRemoteGithubProvider } from './vcs-remote-github-provider';
 
@@ -58,12 +58,16 @@ describe('browser.vcs.vcsRemote.VcsRemoteGithubProvider', () => {
                 }))
                 .flush(response);
 
-            const expected: VcsAuthenticationInfo = {
-                type: VcsAuthenticationTypes.BASIC,
-                authorizationHeader,
-                providerName: 'github',
-                username: 'user',
-                password: 'password',
+            const expected: VcsAccount = {
+                name: 'user',
+                email: 'user@test.com',
+                authentication: {
+                    type: VcsAuthenticationTypes.BASIC,
+                    authorizationHeader,
+                    providerName: 'github',
+                    username: 'user',
+                    password: 'password',
+                },
             };
 
             expect(callback).toHaveBeenCalledWith(expected);
@@ -72,7 +76,8 @@ describe('browser.vcs.vcsRemote.VcsRemoteGithubProvider', () => {
         it('should return \'AUTHENTICATE_ERROR\' error  after request ' +
             'when authorize failed with 401 error code.', fakeAsync(() => {
             provider.authorizeByBasic(username, password).subscribe(
-                () => {},
+                () => {
+                },
                 callback,
             );
 
@@ -86,7 +91,7 @@ describe('browser.vcs.vcsRemote.VcsRemoteGithubProvider', () => {
                 }))
                 .flush(null, { status: 401, statusText: 'Unauthorized' });
 
-            expect(callback).toHaveBeenCalledWith(new VcsError(VcsErrorCodes.AUTHENTICATE_ERROR));
+            expect(callback).toHaveBeenCalledWith(new VcsAuthenticateError());
         }));
     });
 
@@ -112,11 +117,15 @@ describe('browser.vcs.vcsRemote.VcsRemoteGithubProvider', () => {
                 }))
                 .flush(response);
 
-            const expected: VcsAuthenticationInfo = {
-                type: VcsAuthenticationTypes.OAUTH2_TOKEN,
-                authorizationHeader,
-                providerName: 'github',
-                token: 'this_is_token',
+            const expected: VcsAccount = {
+                name: 'user',
+                email: 'user@test.com',
+                authentication: {
+                    type: VcsAuthenticationTypes.OAUTH2_TOKEN,
+                    authorizationHeader,
+                    providerName: 'github',
+                    token: 'this_is_token',
+                },
             };
 
             expect(callback).toHaveBeenCalledWith(expected);
@@ -125,7 +134,8 @@ describe('browser.vcs.vcsRemote.VcsRemoteGithubProvider', () => {
         it('should return \'AUTHENTICATE_ERROR\' error after request ' +
             'when authorize failed with 401 error code.', fakeAsync(() => {
             provider.authorizeByOauth2Token(token).subscribe(
-                () => {},
+                () => {
+                },
                 callback,
             );
 
@@ -139,7 +149,7 @@ describe('browser.vcs.vcsRemote.VcsRemoteGithubProvider', () => {
                 }))
                 .flush(null, { status: 401, statusText: 'Unauthorized' });
 
-            expect(callback).toHaveBeenCalledWith(new VcsError(VcsErrorCodes.AUTHENTICATE_ERROR));
+            expect(callback).toHaveBeenCalledWith(new VcsAuthenticateError());
         }));
     });
 
@@ -222,7 +232,8 @@ describe('browser.vcs.vcsRemote.VcsRemoteGithubProvider', () => {
         it('should return \'REPOSITORY_NOT_EXISTS\' error after request ' +
             'when request failed with 404 error code.', fakeAsync(() => {
             provider.findRepository(url).subscribe(
-                () => {},
+                () => {
+                },
                 callback,
             );
 
@@ -233,7 +244,7 @@ describe('browser.vcs.vcsRemote.VcsRemoteGithubProvider', () => {
                 }))
                 .flush(null, { status: 404, statusText: 'Not found' });
 
-            expect(callback).toHaveBeenCalledWith(new VcsError(VcsErrorCodes.REPOSITORY_NOT_EXISTS));
+            expect(callback).toHaveBeenCalledWith(new VcsRepositoryNotExistsError());
         }));
     });
 });

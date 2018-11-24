@@ -1,5 +1,5 @@
-import { Dummy, TextDummy, TypesDummy } from '../../test/helpers';
-import { VcsAuthenticationInfo, VcsAuthenticationTypes } from './vcs';
+import { Dummy, EmailDummy, TextDummy, TypesDummy } from '../../test/helpers';
+import { VcsAccount, VcsAuthenticationInfo, VcsAuthenticationTypes } from './vcs';
 
 
 export class VcsAuthenticationInfoDummy extends Dummy<VcsAuthenticationInfo> {
@@ -21,6 +21,21 @@ export class VcsAuthenticationInfoDummy extends Dummy<VcsAuthenticationInfo> {
             username: this.userName.create(),
             password: this.password.create(),
             token: this.token.create(),
+        };
+    }
+}
+
+
+export class VcsAccountDummy implements Dummy<VcsAccount> {
+    private name = new TextDummy('Tommy');
+    private email = new EmailDummy();
+    private auth = new VcsAuthenticationInfoDummy();
+
+    create(type?: VcsAuthenticationTypes): VcsAccount {
+        return {
+            name: this.name.create(),
+            email: this.email.create(),
+            authentication: this.auth.create(type),
         };
     }
 }

@@ -49,6 +49,23 @@ export class TextDummy extends Dummy<string> {
 }
 
 
+export class EmailDummy extends Dummy<string> {
+    private text: TextDummy;
+
+    constructor(
+        private readonly user = 'developer',
+        private readonly domain = 'i_love_google.com',
+    ) {
+        super();
+        this.text = new TextDummy(user);
+    }
+
+    create(): string {
+        return `${this.text.create()}@${this.domain}`;
+    }
+}
+
+
 export class TypesDummy<T> extends Dummy<T> {
     constructor(readonly types: T[]) {
         super();

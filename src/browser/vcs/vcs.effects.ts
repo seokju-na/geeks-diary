@@ -3,7 +3,7 @@ import { Actions, Effect } from '@ngrx/effects';
 import { Action } from '@ngrx/store';
 import { of } from 'rxjs';
 import { catchError, debounceTime, filter, map, switchMap } from 'rxjs/operators';
-import { UpdateFileChangesAction, UpdateFileChangesErrorAction } from './vcs.actions';
+import { UpdateFileChangesAction, UpdateFileChangesErrorAction, VcsActionTypes } from './vcs.actions';
 import { VcsService } from './vcs.service';
 
 
@@ -30,6 +30,8 @@ export class VcsEffects {
         private vcsService: VcsService,
         @Optional() @Inject(VCS_DETECT_CHANGES_EFFECT_ACTIONS) effectActions: any[],
     ) {
-        this.detectChangesEffectActions = effectActions || [];
+        this.detectChangesEffectActions = (effectActions || []).concat([
+            VcsActionTypes.COMMITTED,
+        ]);
     }
 }
