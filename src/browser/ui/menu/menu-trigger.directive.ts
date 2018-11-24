@@ -156,7 +156,6 @@ export class MenuTriggerDirective implements AfterContentInit, OnDestroy {
      */
     focus(origin: FocusOrigin = 'program') {
         this._focusMonitor.focusVia(this._elementRef.nativeElement, origin);
-
     }
 
     /** Handles mouse presses on the trigger. */
