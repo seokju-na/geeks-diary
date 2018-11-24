@@ -2,6 +2,7 @@ import { expect } from 'chai';
 import * as fse from 'fs-extra';
 import * as _git from 'nodegit';
 import * as path from 'path';
+import { VcsAccountDummy } from '../../core/dummies';
 import { VcsFileChange, VcsFileChangeStatusTypes } from '../../core/vcs';
 import { GitService } from './git.service';
 
@@ -73,6 +74,48 @@ describe('mainProcess.services.GitService', () => {
                 absoluteFilePath: path.resolve(tmpPath, 'test-file'),
                 status: VcsFileChangeStatusTypes.NEW,
             } as VcsFileChange);
+        });
+    });
+
+    describe('commit', () => {
+        const testFiles: string[] = [];
+
+        beforeEach(async () => {
+            await makeTmpPath(true);
+
+            const fileA = path.resolve(tmpPath, 'a');
+            const fileB = path.resolve(tmpPath, 'b');
+
+            await Promise.all([
+                fse.writeFile(fileA, 'a data'),
+                fse.writeFile(fileB, 'b data'),
+            ]);
+
+            testFiles.push('a', 'b');
+        });
+
+        it('should commit on head.', async () => {
+            const author = new VcsAccountDummy().create();
+            const commitId = await git.commit({
+                workspaceDirPath: tmpPath,
+                filesToAdd: testFiles,
+                author,
+                message: 'Summary\n\nDescription',
+            });
+
+            const repo = await _git.Repository.open(tmpPath);
+            const headCommit = await repo.getHeadCommit();
+
+            expect(headCommit.author().name()).to.equal(author.name);
+            expect(headCommit.author().email()).to.equal(author.email);
+            expect(headCommit.committer().name()).to.equal(author.name);
+            expect(headCommit.committer().email()).to.equal(author.email);
+            expect(headCommit.summary()).to.equal('Summary');
+            expect(headCommit.message()).to.equal('Summary\n\nDescription');
+            expect(headCommit.id().tostrS()).to.equal(commitId);
+
+            headCommit.free();
+            repo.free();
         });
     });
 });

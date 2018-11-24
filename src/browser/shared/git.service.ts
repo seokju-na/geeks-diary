@@ -1,7 +1,8 @@
 import { Injectable, NgZone, OnDestroy } from '@angular/core';
+import { EOL } from 'os';
 import { from, Observable } from 'rxjs';
-import { GitCloneOptions } from '../../core/git';
-import { VcsAuthenticationInfo, VcsFileChange } from '../../core/vcs';
+import { GitCloneOptions, GitCommitOptions } from '../../core/git';
+import { VcsAccount, VcsAuthenticationInfo, VcsFileChange } from '../../core/vcs';
 import { IpcActionClient } from '../../libs/ipc';
 import { enterZone } from '../../libs/rx';
 
@@ -36,5 +37,29 @@ export class GitService implements OnDestroy {
         );
 
         return from(task);
+    }
+
+    commit(
+        workspaceDirPath: string,
+        author: VcsAccount,
+        message: {
+            summary: string;
+            description: string;
+        },
+        filesToAdd: string[],
+    ): Observable<string> {
+        const options: GitCommitOptions = {
+            workspaceDirPath,
+            author,
+            message: `${message.summary}${EOL}${EOL}${message.description}`,
+            filesToAdd,
+        };
+
+        const commitTask = this.ipcClient.performAction<GitCommitOptions, string>(
+            'commit',
+            options,
+        );
+
+        return from(commitTask);
     }
 }

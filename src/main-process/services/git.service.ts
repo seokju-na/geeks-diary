@@ -1,7 +1,7 @@
 import * as nodeGit from 'nodegit';
 import { CloneOptions, DiffFile, Repository, StatusFile } from 'nodegit';
 import * as path from 'path';
-import { GitCloneOptions, GitError, gitErrorRegexes } from '../../core/git';
+import { GitCloneOptions, GitCommitOptions, GitError, gitErrorRegexes } from '../../core/git';
 import { VcsAuthenticationTypes, VcsFileChange, VcsFileChangeStatusTypes } from '../../core/vcs';
 import { IpcActionHandler } from '../../libs/ipc';
 import { Service } from './service';
@@ -97,6 +97,18 @@ export class GitService extends Service {
         repository.free();
 
         return fileChanges;
+    }
+
+    @IpcActionHandler('commit')
+    async commit(option: GitCommitOptions): Promise<string> {
+        const repository = await this.openRepository(option.workspaceDirPath);
+        const signature = this.git.Signature.now(option.author.name, option.author.email);
+        const commitId = await repository.createCommitOnHead(option.filesToAdd, signature, signature, option.message);
+
+        signature.free();
+        repository.free();
+
+        return commitId.tostrS();
     }
 
     handleError(error: any): GitError | any {
