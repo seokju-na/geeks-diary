@@ -32,11 +32,11 @@ export class AutosizeDirective implements AfterViewInit, DoCheck, OnDestroy {
 
     private _maxRows: number;
 
+    @Input()
     get maxRows(): number {
         return this._maxRows;
     }
 
-    @Input()
     set maxRows(value: number) {
         this._maxRows = value;
         this.setMaxHeight();
