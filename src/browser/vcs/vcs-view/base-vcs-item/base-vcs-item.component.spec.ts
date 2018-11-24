@@ -43,7 +43,8 @@ describe('browser.vcs.vcsView.BaseVcsItemComponent', () => {
                     { provide: VcsItemRef, useValue: ref },
                     { provide: VcsItemConfig, useValue: config },
                 ],
-            });
+            })
+            .compileComponents();
     });
 
     beforeEach(() => {
