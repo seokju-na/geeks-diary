@@ -25,9 +25,7 @@
                 {{ selectedFileChangesCount | number }} item(s)
             </gd-checkbox>
             <button gd-button color="primary" [disabled]="selectedFileChangesCount === 0"
-                    (click)="openCommitDialog()">
-                Commit
-            </button>
+                    class="VcsManager__commitButton" (click)="openCommitDialog()">Commit</button>
         </div>
     </div>
 

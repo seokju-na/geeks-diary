@@ -1,7 +1,11 @@
 @import "./vcs-view/all-theme";
 @import "./vcs-manager-theme";
+@import "./vcs-commit/all-theme";
+@import "./vcs-remote/all-theme";
 
 @mixin gd-vcs-all-theme($theme) {
     @include gd-vcs-view-all-theme($theme);
     @include gd-vcs-manager-theme($theme);
+    @include gd-vcs-commit-all-theme($theme);
+    @include gd-vcs-remote-all-theme($theme);
 }

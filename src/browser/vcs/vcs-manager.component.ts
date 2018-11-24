@@ -12,7 +12,9 @@ import { FormControl } from '@angular/forms';
 import { select, Store } from '@ngrx/store';
 import { Subscription } from 'rxjs';
 import { take } from 'rxjs/operators';
+import { Dialog } from '../ui/dialog';
 import { TabControl } from '../ui/tabs/tab-control';
+import { VcsCommitDialogComponent, VcsCommitDialogData, VcsCommitDialogResult } from './vcs-commit';
 import { VCS_ITEM_LIST_MANAGER, VcsItemListManager, VcsItemListManagerFactory } from './vcs-view';
 import { VcsStateWithRoot } from './vcs.state';
 
@@ -45,6 +47,7 @@ export class VcsManagerComponent implements OnInit, OnDestroy, AfterViewInit {
         @Inject(VCS_ITEM_LIST_MANAGER) private itemListManagerFactory: VcsItemListManagerFactory,
         public _viewContainerRef: ViewContainerRef,
         private store: Store<VcsStateWithRoot>,
+        private dialog: Dialog,
     ) {
     }
 
@@ -117,5 +120,27 @@ export class VcsManagerComponent implements OnInit, OnDestroy, AfterViewInit {
                     this.allSelectCheckboxIndeterminate = !this.itemListManager.isEmptySelection();
                 }
             });
+    }
+
+    openCommitDialog(): void {
+        if (!this.itemListManager) {
+            return;
+        }
+
+        const fileChanges = this.itemListManager
+            .getSelectedItems()
+            .reduce((all, item) => all.concat(...item._config.fileChanges), []);
+
+        this.dialog.open<VcsCommitDialogComponent,
+            VcsCommitDialogData,
+            VcsCommitDialogResult>(
+            VcsCommitDialogComponent,
+            {
+                width: '700px',
+                maxHeight: '75vh',
+                disableBackdropClickClose: true,
+                data: { fileChanges },
+            },
+        );
     }
 }

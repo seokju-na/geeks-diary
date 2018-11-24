@@ -1,0 +1,30 @@
+@import "../../../ui/style/spacing";
+@import "../../../ui/style/typography";
+
+.VcsCommitDialog {
+    &__itemContainer {
+        height: 100%;
+        border-radius: 2.5px;
+
+        > h2 {
+            height: 28px;
+            margin: 0;
+            padding: 0 $spacing;
+            font-size: $font-size;
+            font-weight: $font-weight-normal;
+            line-height: 26px;
+        }
+    }
+
+    &__itemList {
+        overflow-y: auto;
+    }
+
+    &__form {
+        margin-left: $spacing;
+    }
+
+    &__actions {
+        margin-top: $spacing;
+    }
+}
