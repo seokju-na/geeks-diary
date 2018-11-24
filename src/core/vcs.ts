@@ -4,6 +4,17 @@ export enum VcsAuthenticationTypes {
 }
 
 
+/**
+ * VCS account model.
+ * Used to create signature or authenticate to Remote.
+ */
+export interface VcsAccount {
+    readonly name: string;
+    readonly email: string;
+    readonly authentication: VcsAuthenticationInfo;
+}
+
+
 export interface VcsAuthenticationInfo {
     readonly type: VcsAuthenticationTypes;
     readonly authorizationHeader: string;
@@ -114,24 +125,26 @@ export interface VcsFileChange {
 export enum VcsErrorCodes {
     AUTHENTICATE_ERROR = 'AUTHENTICATE_ERROR',
     REPOSITORY_NOT_EXISTS = 'REPOSITORY_NOT_EXISTS',
-    UNKNOWN = 'UNKNOWN',
 }
 
 
-export class VcsError extends Error {
-    constructor(public readonly code: VcsErrorCodes) {
-        super(getDescriptionForError(code));
+export class VcsAuthenticateError extends Error {
+    public readonly code = VcsErrorCodes.AUTHENTICATE_ERROR;
+
+    constructor() {
+        super('Authenticate failed.');
     }
 }
 
 
-function getDescriptionForError(code: VcsErrorCodes): string {
-    switch (code) {
-        case VcsErrorCodes.AUTHENTICATE_ERROR:
-            return 'Authenticate failed.';
-        case VcsErrorCodes.REPOSITORY_NOT_EXISTS:
-            return 'Cannot find repository.';
-        case VcsErrorCodes.UNKNOWN:
-            return 'Unknown error.';
+export class VcsRepositoryNotExistsError extends Error {
+    public readonly code = VcsErrorCodes.REPOSITORY_NOT_EXISTS;
+
+    constructor() {
+        super('Cannot find repository.');
     }
 }
+
+
+export type VcsError = VcsAuthenticateError
+    | VcsRepositoryNotExistsError;
