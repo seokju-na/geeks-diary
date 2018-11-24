@@ -3,7 +3,7 @@ import { OverlayModule } from '@angular/cdk/overlay';
 import { PortalModule } from '@angular/cdk/portal';
 import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
-import { FlexModule } from '@angular/flex-layout';
+import { FlexLayoutModule } from '@angular/flex-layout';
 import { IconModule } from '../icon';
 import { MenuItemComponent } from './menu-item.component';
 import { MenuSeparatorComponent } from './menu-separator.component';
@@ -16,7 +16,7 @@ import { SelectMenuComponent } from './select-menu.component';
 @NgModule({
     imports: [
         CommonModule,
-        FlexModule,
+        FlexLayoutModule,
         A11yModule,
         OverlayModule,
         PortalModule,
