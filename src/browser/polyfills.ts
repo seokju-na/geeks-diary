@@ -7,6 +7,9 @@ import 'zone.js/dist/zone-patch-electron';
 // See 'enterZone': 'src/libs/rx.ts'
 
 
+(<any>Symbol).asyncIterator = Symbol.asyncIterator || Symbol.for('Symbol.asyncIterator');
+
+
 /**
  * Focus visible polyfill.
  * Source from: https://github.com/WICG/focus-visible
