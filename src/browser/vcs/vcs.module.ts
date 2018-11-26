@@ -3,7 +3,7 @@ import { EffectsModule } from '@ngrx/effects';
 import { StoreModule } from '@ngrx/store';
 import { UiModule } from '../ui/ui.module';
 import { VcsAccountDatabaseProvider } from './vcs-account-database';
-import { VcsCommitModule } from './vcs-commit';
+import { VcsLocalModule } from './vcs-local';
 import { VcsManagerComponent } from './vcs-manager.component';
 import { VcsRemoteModule } from './vcs-remote';
 import { VcsViewModule } from './vcs-view';
@@ -17,7 +17,7 @@ import { VcsService } from './vcs.service';
         UiModule,
         VcsRemoteModule,
         VcsViewModule,
-        VcsCommitModule,
+        VcsLocalModule,
         StoreModule.forFeature('vcs', vcsReducerMap),
         EffectsModule.forFeature([VcsEffects]),
     ],

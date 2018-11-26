@@ -1,5 +1,5 @@
 @import "./vcs-commit-dialog/vcs-commit-dialog-theme";
 
-@mixin gd-vcs-commit-all-theme($theme) {
+@mixin gd-vcs-local-all-theme($theme) {
     @include gd-vcs-commit-dialog-theme($theme);
 }
