@@ -1,0 +1,40 @@
+@import "../../../ui/style/spacing";
+@import "../../../ui/style/theming";
+@import "./note-vcs-item-sizes";
+
+@mixin gd-note-vcs-item-theme($theme) {
+    $foreground: map-get($theme, foreground);
+
+    .NoteVcsItem {
+        &__panel {
+            // border-top: 1px solid gd-color($foreground, divider);
+        }
+
+        &__fileChange {
+            position: relative;
+
+            &:not(:last-child):after {
+                position: absolute;
+                display: block;
+                width: $note-vcs-item-file-size / 2;
+                height: $note-vcs-item-file-size / 2;
+                border-left: 1px solid gd-color($foreground, secondary-text);
+                top: ($note-vcs-item-file-size / 2);
+                left: ($note-vcs-item-file-size / 2);
+                content: " ";
+            }
+
+            &:before {
+                position: absolute;
+                display: block;
+                width: $note-vcs-item-file-size / 2;
+                height: $note-vcs-item-file-size / 2;
+                border-left: 1px solid gd-color($foreground, secondary-text);
+                border-bottom: 1px solid gd-color($foreground, secondary-text);
+                top: 0;
+                left: ($note-vcs-item-file-size / 2);
+                content: " ";
+            }
+        }
+    }
+}
