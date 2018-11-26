@@ -11,7 +11,7 @@ export class ExpansionPanelDirective {
     constructor(public _elementRef: ElementRef<HTMLElement>) {
     }
 
-    private _expanded: boolean;
+    private _expanded: boolean = false;
 
     @Input()
     get expanded(): boolean {
