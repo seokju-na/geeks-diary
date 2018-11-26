@@ -4,7 +4,7 @@ import { combineReducers, Store, StoreModule } from '@ngrx/store';
 import { MockDialog } from '../../../test/mocks/browser';
 import { Dialog } from '../ui/dialog';
 import { UiModule } from '../ui/ui.module';
-import { VcsCommitDialogComponent, VcsCommitDialogData, VcsCommitDialogResult, VcsCommitModule } from './vcs-commit';
+import { VcsCommitDialogComponent, VcsCommitDialogData, VcsCommitDialogResult, VcsLocalModule } from './vcs-local';
 import { BaseVcsItemFactory, VCS_ITEM_MAKING_FACTORIES, VcsItem, VcsItemListManager, VcsViewModule } from './vcs-view';
 import { createDummies, createFakeEvent, fastTestSetup } from '../../../test/helpers';
 import { VcsFileChange } from '../../core/vcs';
@@ -57,7 +57,7 @@ describe('browser.vcs.VcsManagerComponent', () => {
                 imports: [
                     UiModule,
                     VcsViewModule,
-                    VcsCommitModule,
+                    VcsLocalModule,
                     StoreModule.forRoot({
                         vcs: combineReducers(vcsReducerMap),
                     }),

@@ -14,7 +14,7 @@ import { Subscription } from 'rxjs';
 import { take } from 'rxjs/operators';
 import { Dialog } from '../ui/dialog';
 import { TabControl } from '../ui/tabs/tab-control';
-import { VcsCommitDialogComponent, VcsCommitDialogData, VcsCommitDialogResult } from './vcs-commit';
+import { VcsCommitDialogComponent, VcsCommitDialogData, VcsCommitDialogResult } from './vcs-local';
 import { VCS_ITEM_LIST_MANAGER, VcsItemListManager, VcsItemListManagerFactory } from './vcs-view';
 import { VcsStateWithRoot } from './vcs.state';
 

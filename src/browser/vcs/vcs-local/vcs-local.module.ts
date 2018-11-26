@@ -17,5 +17,5 @@ import { VcsCommitDialogComponent } from './vcs-commit-dialog/vcs-commit-dialog.
         VcsCommitDialogComponent,
     ],
 })
-export class VcsCommitModule {
+export class VcsLocalModule {
 }
