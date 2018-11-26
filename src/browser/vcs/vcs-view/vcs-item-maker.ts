@@ -6,7 +6,6 @@ import { VcsItemFactory, VcsItemRef } from './vcs-item';
 export const VCS_ITEM_MAKING_FACTORIES = new InjectionToken<VcsItemFactory<any>[]>('VcsItemMakingFactories');
 
 
-
 @Injectable()
 export class VcsItemMaker {
     /** Registered vcs item factories. */
@@ -23,10 +22,22 @@ export class VcsItemMaker {
     }
 
     /** Create vcs item references with given file changes. */
-    create(fileChanges: VcsFileChange[]): VcsItemRef<any>[] {
+    async create(fileChanges: VcsFileChange[]): Promise<VcsItemRef<any>[]> {
         let refs: VcsItemRef<any>[] = [];
-        const _fileChanges = [...fileChanges];
 
+        for await (const _refs of this.pumpRefs(this.factories, fileChanges)) {
+            refs = refs.concat(_refs);
+        }
+
+        return refs;
+    }
+
+    async* pumpRefs(
+        factories: VcsItemFactory<any>[],
+        fileChanges: VcsFileChange[],
+    ): AsyncIterableIterator<VcsItemRef<any>[]> {
+
+        const _fileChanges = [...fileChanges];
         const discardUsedFileChange = (change: VcsFileChange) => {
             const index = _fileChanges.findIndex(_change => _change.filePath === change.filePath);
 
@@ -35,16 +46,11 @@ export class VcsItemMaker {
             }
         };
 
-        // Make vcs items from registered factories.
-        for (const factory of this.factories) {
-            const result = factory.create(_fileChanges);
+        for (const factory of factories) {
+            const result = await factory.create(_fileChanges);
+            result.usedFileChanges.forEach(used => discardUsedFileChange(used));
 
-            refs = refs.concat(result.refs);
-            result.usedFileChanges.forEach(usedFileChange => discardUsedFileChange(usedFileChange));
+            yield result.refs;
         }
-
-        // TODO: Use default vcs item factory about rest of all file changes.
-
-        return refs;
     }
 }

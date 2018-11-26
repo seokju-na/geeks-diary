@@ -11,6 +11,7 @@
         "experimentalDecorators": true,
         "target": "es2015",
         "lib": [
+            "esnext.asynciterable",
             "es2017",
             "dom"
         ]

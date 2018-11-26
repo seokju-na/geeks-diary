@@ -78,7 +78,7 @@ export class VcsItemListManager {
         return refs;
     }
 
-    initWithFileChanges(fileChanges: VcsFileChange[]): VcsItemRef<any>[] {
+    async initWithFileChanges(fileChanges: VcsFileChange[]): Promise<VcsItemRef<any>[]> {
         // Preserve previous selections.
         const previousSelections: string[] = [];
 
@@ -95,7 +95,7 @@ export class VcsItemListManager {
         }
 
         // Add all vcs items which made from all of factories.
-        const refs = this.itemMaker.create(fileChanges);
+        const refs = await this.itemMaker.create(fileChanges);
 
         previousSelections.forEach((id) => {
             const index = refs.findIndex(ref => ref.id === id);

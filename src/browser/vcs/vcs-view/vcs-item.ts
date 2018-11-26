@@ -7,6 +7,7 @@ import { VcsFileChange } from '../../../core/vcs';
 
 
 export class VcsItemConfig {
+    title?: string;
     fileChanges: VcsFileChange[];
     checked?: boolean = false;
 }
@@ -122,5 +123,8 @@ export interface VcsItemCreateResult<T extends VcsItem> {
  * Abstraction for implement vcs item factory.
  */
 export abstract class VcsItemFactory<T extends VcsItem> {
-    abstract create(fileChanges: VcsFileChange[], ...extras: any[]): VcsItemCreateResult<T>;
+    abstract create(
+        fileChanges: VcsFileChange[],
+        ...extras: any[],
+    ): VcsItemCreateResult<T> | Promise<VcsItemCreateResult<T>>;
 }

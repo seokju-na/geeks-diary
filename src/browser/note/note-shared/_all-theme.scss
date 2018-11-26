@@ -1,0 +1,5 @@
+@import "./note-vcs-item/note-vcs-item-theme";
+
+@mixin gd-note-shared-all-theme($theme) {
+    @include gd-note-vcs-item-theme($theme);
+}

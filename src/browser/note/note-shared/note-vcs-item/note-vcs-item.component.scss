@@ -1,0 +1,44 @@
+@import "../../../ui/style/spacing";
+@import "../../../ui/button/button-sizes";
+@import "./note-vcs-item-sizes";
+
+.NoteVcsItem {
+    &__head {
+        padding: 0 $spacing-half;
+        width: 100%;
+        height: $note-vcs-item-size;
+        cursor: default;
+
+        gd-checkbox {
+            max-width: calc(100% - #{$button-size});
+        }
+    }
+
+    &__panel {
+        padding: $spacing-third 0;
+    }
+
+    &__fileChange {
+        $padding-left: $note-vcs-item-file-size + $spacing-half;
+
+        padding: 0 $spacing-half 0 $padding-left;
+        height: $note-vcs-item-file-size;
+    }
+
+    &__fileName {
+        min-width: 1px;
+        text-overflow: ellipsis;
+        overflow: hidden;
+        white-space: nowrap;
+    }
+
+    &__statusIcon {
+        display: inline-block;
+
+        > svg {
+            display: block;
+            width: 16px;
+            height: 16px;
+        }
+    }
+}

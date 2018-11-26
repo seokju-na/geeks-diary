@@ -1,5 +1,5 @@
 import { Component, ElementRef, NgModule, ViewChild, ViewContainerRef } from '@angular/core';
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, fakeAsync, flushMicrotasks, TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
 import { combineReducers, Store, StoreModule } from '@ngrx/store';
 import { createDummies, fastTestSetup } from '../../../../test/helpers';
@@ -38,7 +38,12 @@ describe('browser.vcs.vcsView.VcsItemListManager', () => {
 
     function ensureVcsItems(count: number = 10): VcsItemRef<any>[] {
         const fileChanges = createDummies(fileChangeDummy, count);
-        return listManager.initWithFileChanges(fileChanges);
+        let refs: VcsItemRef<any>[];
+
+        listManager.initWithFileChanges(fileChanges).then(_refs => refs = _refs);
+        flushMicrotasks();
+
+        return refs;
     }
 
     fastTestSetup();
@@ -86,9 +91,9 @@ describe('browser.vcs.vcsView.VcsItemListManager', () => {
     });
 
     describe('#initWithFileChanges', () => {
-        it('should create vcs items.', () => {
+        it('should create vcs items.', async () => {
             const fileChanges = createDummies(fileChangeDummy, 10);
-            const refs = listManager.initWithFileChanges(fileChanges);
+            const refs = await listManager.initWithFileChanges(fileChanges);
 
             fixture.detectChanges();
 
@@ -96,9 +101,9 @@ describe('browser.vcs.vcsView.VcsItemListManager', () => {
             expect(getPaneElList().length).toEqual(10);
         });
 
-        it('should keep previous selections when vcs items are changed.', () => {
+        it('should keep previous selections when vcs items are changed.', async () => {
             const prevFileChanges = createDummies(fileChangeDummy, 5);
-            const prevRefs = listManager.initWithFileChanges(prevFileChanges);
+            const prevRefs = await listManager.initWithFileChanges(prevFileChanges);
             fixture.detectChanges();
 
             listManager.updateItemSelection(2, true);
@@ -108,7 +113,7 @@ describe('browser.vcs.vcsView.VcsItemListManager', () => {
             expect(listManager.getSelectedItems()).toEqual([prevRefs[2], prevRefs[4]]);
 
             const nextFileChanges = [...prevFileChanges, ...createDummies(fileChangeDummy, 5)];
-            const nextRefs = listManager.initWithFileChanges(nextFileChanges);
+            const nextRefs = await listManager.initWithFileChanges(nextFileChanges);
             fixture.detectChanges();
 
             expect(listManager.getSelectedItems()).toEqual([nextRefs[2], nextRefs[4]]);
@@ -116,10 +121,10 @@ describe('browser.vcs.vcsView.VcsItemListManager', () => {
     });
 
     describe('#selectAllItems', () => {
-        beforeEach(() => {
+        beforeEach(fakeAsync(() => {
             ensureVcsItems();
             fixture.detectChanges();
-        });
+        }));
 
         it('should select all items.', () => {
             listManager.selectAllItems();
@@ -132,10 +137,10 @@ describe('browser.vcs.vcsView.VcsItemListManager', () => {
     });
 
     describe('#deselectAllItems', () => {
-        beforeEach(() => {
+        beforeEach(fakeAsync(() => {
             ensureVcsItems();
             fixture.detectChanges();
-        });
+        }));
 
         it('should deselect all items.', () => {
             listManager.deselectAllItems();
@@ -148,10 +153,10 @@ describe('browser.vcs.vcsView.VcsItemListManager', () => {
     });
 
     describe('#areAllItemsSelected', () => {
-        beforeEach(() => {
+        beforeEach(fakeAsync(() => {
             ensureVcsItems();
             fixture.detectChanges();
-        });
+        }));
 
         it('should be \'true\' if all items are selected.', () => {
             listManager.selectAllItems();
@@ -162,10 +167,10 @@ describe('browser.vcs.vcsView.VcsItemListManager', () => {
     });
 
     describe('#isEmptySelection', () => {
-        beforeEach(() => {
+        beforeEach(fakeAsync(() => {
             ensureVcsItems();
             fixture.detectChanges();
-        });
+        }));
 
         it('should be \'true\' if all items are selected.', () => {
             listManager.deselectAllItems();
@@ -178,10 +183,10 @@ describe('browser.vcs.vcsView.VcsItemListManager', () => {
     describe('#updateItemSelection', () => {
         let refs: VcsItemRef<BaseVcsItemComponent>[];
 
-        beforeEach(() => {
+        beforeEach(fakeAsync(() => {
             refs = ensureVcsItems();
             fixture.detectChanges();
-        });
+        }));
 
         it('should not throw \'TypeError\' if index of references is not exists.', () => {
             expect(() => listManager.updateItemSelection(10, true)).not.toThrowError();
@@ -208,10 +213,10 @@ describe('browser.vcs.vcsView.VcsItemListManager', () => {
     describe('handle events via references', () => {
         let refs: VcsItemRef<any>[];
 
-        beforeEach(() => {
+        beforeEach(fakeAsync(() => {
             refs = ensureVcsItems();
             fixture.detectChanges();
-        });
+        }));
 
         it('should call \'updateItemSelection\' when \'UPDATE_CHECKED\' event called.', () => {
             spyOn(listManager, 'updateItemSelection');

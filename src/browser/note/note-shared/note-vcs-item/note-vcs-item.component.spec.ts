@@ -1,34 +1,32 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
-import { expectDom, fastTestSetup } from '../../../../../test/helpers';
+import { createDummies, fastTestSetup } from '../../../../../test/helpers';
 import { VcsFileChange } from '../../../../core/vcs';
 import { CheckboxComponent } from '../../../ui/checkbox';
 import { UiModule } from '../../../ui/ui.module';
-import { VcsFileChangeDummy } from '../../dummies';
-import { VcsItemConfig, VcsItemRef, VcsItemUpdateCheckedEvent } from '../vcs-item';
-import { BaseVcsItemComponent } from './base-vcs-item.component';
+import { VcsFileChangeDummy } from '../../../vcs/dummies';
+import { VcsItemConfig, VcsItemRef, VcsItemUpdateCheckedEvent } from '../../../vcs/vcs-view';
+import { NoteVcsItemComponent } from './note-vcs-item.component';
 
 
-describe('browser.vcs.vcsView.BaseVcsItemComponent', () => {
-    let fixture: ComponentFixture<BaseVcsItemComponent>;
-    let component: BaseVcsItemComponent;
+describe('browser.note.noteShared.NoteVcsItemComponent', () => {
+    let fixture: ComponentFixture<NoteVcsItemComponent>;
+    let component: NoteVcsItemComponent;
 
-    let ref: VcsItemRef<BaseVcsItemComponent>;
+    let ref: VcsItemRef<NoteVcsItemComponent>;
     let config: VcsItemConfig;
-
-    let fileChange: VcsFileChange;
+    let fileChanges: VcsFileChange[];
 
     const getCheckboxInputEl = (): HTMLInputElement =>
         (fixture.debugElement.query(
-            By.css('gd-checkbox')).componentInstance as CheckboxComponent
+                By.css('gd-checkbox')).componentInstance as CheckboxComponent
         )._inputElement.nativeElement;
 
     fastTestSetup();
 
     beforeAll(async () => {
-        fileChange = new VcsFileChangeDummy().create();
-        config = { fileChanges: [fileChange] };
-
+        fileChanges = createDummies(new VcsFileChangeDummy(), 2);
+        config = { fileChanges };
         ref = new VcsItemRef(config);
 
         await TestBed
@@ -37,7 +35,7 @@ describe('browser.vcs.vcsView.BaseVcsItemComponent', () => {
                     UiModule,
                 ],
                 declarations: [
-                    BaseVcsItemComponent,
+                    NoteVcsItemComponent,
                 ],
                 providers: [
                     { provide: VcsItemRef, useValue: ref },
@@ -48,22 +46,17 @@ describe('browser.vcs.vcsView.BaseVcsItemComponent', () => {
     });
 
     beforeEach(() => {
-        fixture = TestBed.createComponent(BaseVcsItemComponent);
+        fixture = TestBed.createComponent(NoteVcsItemComponent);
         component = fixture.componentInstance;
         fixture.detectChanges();
     });
 
     describe('appearance', () => {
-        it('should display checkbox label as file path of file change.', () => {
-            const checkboxLabel = fixture.debugElement.query(
-                By.css('.Checkbox__label'),
-            ).nativeElement as HTMLElement;
-
-            expectDom(checkboxLabel).toContainText(fileChange.filePath);
+        it('should ho_ho_ho', () => {
         });
     });
 
-    describe('checkbox interaction', () => {
+    describe('checkbox interactive', () => {
         it('should emit event when checkbox toggled.', () => {
             const callback = jasmine.createSpy('vcs item event callback');
             const subscription = ref.events.subscribe(callback);
@@ -74,7 +67,7 @@ describe('browser.vcs.vcsView.BaseVcsItemComponent', () => {
             subscription.unsubscribe();
         });
 
-        it('should ', () => {
+        it('1', () => {
             const callback = jasmine.createSpy('vcs item event callback');
             const subscription = ref.events.subscribe(callback);
 
@@ -89,7 +82,7 @@ describe('browser.vcs.vcsView.BaseVcsItemComponent', () => {
             subscription.unsubscribe();
         });
 
-        it('should ', () => {
+        it('1', () => {
             const callback = jasmine.createSpy('vcs item event callback');
             const subscription = ref.events.subscribe(callback);
 
@@ -100,21 +93,6 @@ describe('browser.vcs.vcsView.BaseVcsItemComponent', () => {
             expect(getCheckboxInputEl().checked).toBe(false);
             expect(callback).not.toHaveBeenCalledWith(new VcsItemUpdateCheckedEvent(ref, {
                 checked: false,
-            }));
-            subscription.unsubscribe();
-        });
-
-        it('should ', () => {
-            const callback = jasmine.createSpy('vcs item event callback');
-            const subscription = ref.events.subscribe(callback);
-
-            component.toggle(false);
-            fixture.detectChanges();
-
-            expect(component.checkFormControl.value as boolean).toBe(true);
-            expect(getCheckboxInputEl().checked).toBe(true);
-            expect(callback).not.toHaveBeenCalledWith(new VcsItemUpdateCheckedEvent(ref, {
-                checked: true,
             }));
             subscription.unsubscribe();
         });

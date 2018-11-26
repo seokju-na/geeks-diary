@@ -90,8 +90,9 @@ export class VcsCommitDialogComponent implements OnInit, AfterViewInit {
 
         // Next tick
         Promise.resolve(null).then(() => {
-            this.itemListManager.initWithFileChanges(this.data.fileChanges);
-            this.itemListManager.selectAllItems();
+            this.itemListManager
+                .initWithFileChanges(this.data.fileChanges)
+                .then(() => this.itemListManager.selectAllItems());
         });
     }
 

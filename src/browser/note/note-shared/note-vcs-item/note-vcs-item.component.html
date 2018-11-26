@@ -1,0 +1,16 @@
+<div fxLayout fxLayoutAlign="start center" class="NoteVcsItem__head">
+    <gd-checkbox fxFlex="1 1 auto" [formControl]="checkFormControl" [fixedWidth]="true">
+        {{ _config.title }}
+    </gd-checkbox>
+    <button fxFlex="none" gd-icon-button aria-label="" [gdExpansionTrigger]="panel">
+        <gd-icon [name]="panel.expanded ? 'angle-up' : 'angle-down'"></gd-icon>
+    </button>
+</div>
+
+<div gdExpansionPanel #panel="gdExpansionPanel" [expanded]="false" class="NoteVcsItem__panel">
+    <div *ngFor="let change of _config.fileChanges" fxLayout fxLayoutAlign="start center"
+         class="NoteVcsItem__fileChange">
+        <span fxFlex="1 1 auto" class="NoteVcsItem__fileName">{{ change.filePath }}</span>
+        <span fxFlex="none" class="NoteVcsItem__statusIcon" [innerHTML]="getStatusIconForFileChange(change)"></span>
+    </div>
+</div>
