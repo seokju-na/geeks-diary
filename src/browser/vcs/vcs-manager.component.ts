@@ -10,12 +10,15 @@ import {
 } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { select, Store } from '@ngrx/store';
-import { Subscription } from 'rxjs';
-import { take } from 'rxjs/operators';
+import { Observable, Subject, Subscription } from 'rxjs';
+import { filter, switchMap, take, tap } from 'rxjs/operators';
+import { VcsCommitItem } from '../../core/vcs';
 import { Dialog } from '../ui/dialog';
 import { TabControl } from '../ui/tabs/tab-control';
 import { VcsCommitDialogComponent, VcsCommitDialogData, VcsCommitDialogResult } from './vcs-local';
 import { VCS_ITEM_LIST_MANAGER, VcsItemListManager, VcsItemListManagerFactory } from './vcs-view';
+import { LoadMoreCommitHistoryAction } from './vcs.actions';
+import { VcsService } from './vcs.service';
 import { VcsStateWithRoot } from './vcs.state';
 
 
@@ -35,8 +38,18 @@ export class VcsManagerComponent implements OnInit, OnDestroy, AfterViewInit {
     readonly allSelectCheckboxFormControl = new FormControl(false);
     allSelectCheckboxIndeterminate = false;
 
+    commitItems: Observable<VcsCommitItem[]> = this.store.pipe(
+        select(state => state.vcs.vcs.history),
+    );
+
     @ViewChild('itemList') _itemList: ElementRef<HTMLElement>;
 
+    private allCommitsItemAreLoaded = false;
+    private commitItemsAreLoading = false;
+    private loadMoreCommitItems = new Subject<void>();
+    private commitItemsFetchingSubscription = Subscription.EMPTY;
+
+    /** Item list manager for changes tab. */
     private itemListManager: VcsItemListManager;
 
     private fileChangesSubscription = Subscription.EMPTY;
@@ -48,6 +61,7 @@ export class VcsManagerComponent implements OnInit, OnDestroy, AfterViewInit {
         public _viewContainerRef: ViewContainerRef,
         private store: Store<VcsStateWithRoot>,
         private dialog: Dialog,
+        private vcs: VcsService,
     ) {
     }
 
@@ -73,6 +87,23 @@ export class VcsManagerComponent implements OnInit, OnDestroy, AfterViewInit {
                 this.itemListManager.initWithFileChanges(fileChanges);
             }
         });
+
+        // Subscribe to load more commit items stream.
+        this.commitItemsFetchingSubscription = this.loadMoreCommitItems.asObservable()
+            .pipe(
+                /** Discard events while items are loading. */
+                filter(() => !this.commitItemsAreLoading),
+                tap(() => this.commitItemsAreLoading = true),
+                switchMap(() => this.vcs.fetchMoreCommitHistory()),
+            ).subscribe((items) => {
+                this.allCommitsItemAreLoaded = items.length < this.vcs.commitHistoryFetchingSize;
+                this.commitItemsAreLoading = false;
+
+                this.store.dispatch(new LoadMoreCommitHistoryAction({
+                    history: items,
+                    allLoaded: this.allCommitsItemAreLoaded,
+                }));
+            });
     }
 
     ngOnDestroy(): void {
@@ -83,6 +114,7 @@ export class VcsManagerComponent implements OnInit, OnDestroy, AfterViewInit {
         this.fileChangesSubscription.unsubscribe();
         this.allSelectChangeSubscription.unsubscribe();
         this.selectionChangeSubscription.unsubscribe();
+        this.commitItemsFetchingSubscription.unsubscribe();
     }
 
     ngAfterViewInit(): void {
@@ -94,9 +126,9 @@ export class VcsManagerComponent implements OnInit, OnDestroy, AfterViewInit {
         ).subscribe((fileChanges) => {
             // We should initialize components on next tick.
             // Otherwise we will get 'ExpressionChangedAfterItHasBeenCheckedError'.
-            Promise.resolve(null).then(() => {
-                this.itemListManager.initWithFileChanges(fileChanges);
-            });
+            Promise
+                .resolve(null)
+                .then(() => this.itemListManager.initWithFileChanges(fileChanges));
         });
 
         // All select checkbox -> item list manager
@@ -142,5 +174,9 @@ export class VcsManagerComponent implements OnInit, OnDestroy, AfterViewInit {
                 data: { fileChanges },
             },
         );
+    }
+
+    loadMoreCommitHistory(): void {
+        this.loadMoreCommitItems.next();
     }
 }

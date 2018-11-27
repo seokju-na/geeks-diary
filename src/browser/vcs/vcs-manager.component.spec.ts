@@ -12,6 +12,7 @@ import { CheckboxComponent } from '../ui/checkbox';
 import { VcsFileChangeDummy } from './dummies';
 import { UpdateFileChangesAction } from './vcs.actions';
 import { vcsReducerMap } from './vcs.reducer';
+import { VcsService } from './vcs.service';
 import { VcsStateWithRoot } from './vcs.state';
 import { VcsManagerComponent } from './vcs-manager.component';
 
@@ -23,6 +24,7 @@ describe('browser.vcs.VcsManagerComponent', () => {
     let listManager: VcsItemListManager;
     let store: Store<VcsStateWithRoot>;
     let mockDialog: MockDialog;
+    let vcs: VcsService;
 
     const fileChangeDummy = new VcsFileChangeDummy();
 
@@ -34,6 +36,7 @@ describe('browser.vcs.VcsManagerComponent', () => {
     const getCommitButtonEl = (): HTMLButtonElement =>
         fixture.debugElement.query(By.css('.VcsManager__commitButton')).nativeElement as HTMLButtonElement;
 
+    /** Initialize vcs items with given file changes. */
     function initVcsItemsWith(
         fileChanges: VcsFileChange[] = createDummies(fileChangeDummy, 5),
     ): VcsFileChange[] {
@@ -52,6 +55,11 @@ describe('browser.vcs.VcsManagerComponent', () => {
     fastTestSetup();
 
     beforeAll(async () => {
+        vcs = jasmine.createSpyObj('vcs', [
+            'fetchMoreCommitHistory',
+            'commitHistoryFetchingSize',
+        ]);
+
         await TestBed
             .configureTestingModule({
                 imports: [
@@ -72,6 +80,7 @@ describe('browser.vcs.VcsManagerComponent', () => {
                         deps: [BaseVcsItemFactory],
                     },
                     ...MockDialog.providers(),
+                    { provide: VcsService, useValue: vcs },
                 ],
                 declarations: [
                     VcsManagerComponent,
@@ -198,5 +207,9 @@ describe('browser.vcs.VcsManagerComponent', () => {
             expect(commitDialogRef.config.disableBackdropClickClose).toBe(true);
             expect(commitDialogRef.config.data.fileChanges).toEqual(fileChanges);
         }));
+    });
+
+    describe('History Tab', () => {
+        // TODO(@seoju-na): ...
     });
 });

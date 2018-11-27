@@ -46,4 +46,8 @@
         height: $vcs-manager-actionbar-size;
         padding: 0 $spacing-half 0 $spacing;
     }
+
+    &__history {
+        overflow-y: auto;
+    }
 }

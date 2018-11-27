@@ -13,6 +13,24 @@ export function vcsReducer(
                 ...state,
                 fileChanges: [...action.payload.fileChanges],
             };
+
+        case VcsActionTypes.LOAD_COMMIT_HISTORY:
+            return {
+                ...state,
+                history: [...action.payload.history],
+                allHistoryLoaded: action.payload.allLoaded,
+            };
+
+        case VcsActionTypes.LOAD_MORE_COMMIT_HISTORY:
+            return {
+                ...state,
+                history: [
+                    ...state.history,
+                    ...action.payload.history,
+                ],
+                allHistoryLoaded: action.payload.allLoaded,
+            };
+
         default:
             return state;
     }
