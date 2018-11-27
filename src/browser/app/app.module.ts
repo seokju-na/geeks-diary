@@ -7,7 +7,11 @@ import { StoreDevtoolsModule } from '@ngrx/store-devtools';
 import { NoteModule } from '../note';
 import { UiModule } from '../ui/ui.module';
 import { VcsModule } from '../vcs';
-import { AppVcsDetectChangesEffectActionsProvider, AppVcsItemFactoriesProvider } from './app-configs';
+import {
+    AppVcsDetectChangesEffectActionsProvider,
+    AppVcsHistoryChangedEffectActionsProvider,
+    AppVcsItemFactoriesProvider,
+} from './app-configs';
 import { AppLayoutModule } from './app-layout';
 import { AppComponent } from './app.component';
 import { appReducer } from './app.reducer';
@@ -28,6 +32,7 @@ import { appReducer } from './app.reducer';
     providers: [
         AppVcsItemFactoriesProvider,
         AppVcsDetectChangesEffectActionsProvider,
+        AppVcsHistoryChangedEffectActionsProvider,
     ],
     declarations: [AppComponent],
     bootstrap: [AppComponent],
