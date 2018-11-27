@@ -1,4 +1,4 @@
-import { createHash } from 'crypto';
+import * as crypto from 'crypto';
 import { Factory } from '../../src/core/common-interfaces';
 import { sample } from './sampling';
 
@@ -94,7 +94,6 @@ export class DatetimeDummy extends Dummy<number> {
 
 
 export class SHADummy extends Dummy<string> {
-    private hash = createHash('sha256');
     private context: TextDummy;
 
     constructor(public readonly contextBase: string = 'geeks-diary') {
@@ -103,7 +102,9 @@ export class SHADummy extends Dummy<string> {
     }
 
     create(): string {
-        this.hash.update(this.context.create());
-        return this.hash.digest('hex');
+        const hash = crypto.createHash('sha256');
+        hash.update(this.context.create());
+
+        return hash.digest('hex');
     }
 }
