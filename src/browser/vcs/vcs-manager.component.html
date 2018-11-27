@@ -33,7 +33,7 @@
     <div fxFlex="1 1 auto" fxLayout="column"
          [class.VcsManager__tabContent--hidden]="tabControl.activateTab.value !== 'gd-vcs-manager-history'"
          class="VcsManager__tabContent">
-        <div fxLayout fxFlex="1 1 auto" gdInfiniteScroll (scrolled)="loadMoreCommitHistory()"
+        <div fxLayout="column" fxFlex="1 1 auto" gdInfiniteScroll (scrolled)="loadMoreCommitHistory()"
              class="VcsManager__history">
             <gd-vcs-commit-item
                 *ngFor="let commitItem of commitItems | async"
