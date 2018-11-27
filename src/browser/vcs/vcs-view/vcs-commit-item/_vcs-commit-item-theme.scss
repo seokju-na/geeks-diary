@@ -1,0 +1,17 @@
+@import "../../../ui/style/theming";
+
+@mixin gd-vcs-commit-item-theme($theme) {
+    $background: map-get($theme, background);
+    $foreground: map-get($theme, foreground);
+
+    .VcsCommitItem {
+        &__detailsButton {
+            background-color: gd-color($background, disabled-button);
+            color: gd-color($foreground, secondary-text);
+        }
+
+        &__details {
+            color: gd-color($foreground, secondary-text);
+        }
+    }
+}

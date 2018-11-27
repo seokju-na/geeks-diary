@@ -1,0 +1,18 @@
+<div fxLayout fxLayoutAlign="start center" class="VcsCommitItem__head">
+    <h1 fxFlex="1 1 auto" class="VcsCommitItem__summary">{{ commitItem?.summary }}</h1>
+    <button *ngIf="descriptionExists" fxFlex="none" [gdExpansionTrigger]="panel" tabindex="-1"
+            class="VcsCommitItem__detailsButton">…</button>
+</div>
+
+<div fxLayout fxLayoutAlign="start center" class="VcsCommitItem__foot">
+    <span fxFlex="none" class="VcsCommitItem__author">{{ commitItem?.authorName }}</span>
+    <time [attr.datetime]="commitItem?.timestamp | date:'short'"
+          [attr.title]="commitItem?.timestamp | date:'medium'"
+          class="VcsCommitItem__createdAt">
+        committed {{ createdTimeDiff }} ago
+    </time>
+</div>
+
+<div gdExpansionPanel #panel="gdExpansionPanel" [expanded]="false" class="VcsCommitItem__details">
+    {{ commitItem?.description.trim() }}
+</div>

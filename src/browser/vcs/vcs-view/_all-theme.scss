@@ -1,7 +1,9 @@
 @import "./base-vcs-item/base-vcs-item-theme";
 @import "./vcs-account-item/vcs-account-item-theme";
+@import "./vcs-commit-item/vcs-commit-item-theme";
 
 @mixin gd-vcs-view-all-theme($theme) {
     @include gd-vcs-base-vcs-item-theme($theme);
     @include gd-vcs-account-item-theme($theme);
+    @include gd-vcs-commit-item-theme($theme);
 }
