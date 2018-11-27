@@ -17,7 +17,9 @@ export class VcsCommitItemComponent {
     @Input() commitItem: VcsCommitItem;
 
     get descriptionExists(): boolean {
-        return this.commitItem && this.commitItem.description.trim().length > 0;
+        return this.commitItem
+            && this.commitItem.description
+            && this.commitItem.description.trim().length > 0;
     }
 
     get createdTimeDiff(): string {
