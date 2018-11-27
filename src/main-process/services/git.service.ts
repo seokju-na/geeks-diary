@@ -1,8 +1,16 @@
 import * as nodeGit from 'nodegit';
-import { CloneOptions, DiffFile, Repository, StatusFile } from 'nodegit';
+import { CloneOptions, Commit, DiffFile, Oid, Repository, Revwalk, StatusFile } from 'nodegit';
+import { EOL } from 'os';
 import * as path from 'path';
-import { GitCloneOptions, GitCommitOptions, GitError, gitErrorRegexes } from '../../core/git';
-import { VcsAuthenticationTypes, VcsFileChange, VcsFileChangeStatusTypes } from '../../core/vcs';
+import {
+    GitCloneOptions,
+    GitCommitOptions,
+    GitError,
+    gitErrorRegexes,
+    GitGetHistoryOptions,
+    GitGetHistoryResult,
+} from '../../core/git';
+import { VcsAuthenticationTypes, VcsCommitItem, VcsFileChange, VcsFileChangeStatusTypes } from '../../core/vcs';
 import { IpcActionHandler } from '../../libs/ipc';
 import { Service } from './service';
 
@@ -102,13 +110,62 @@ export class GitService extends Service {
     @IpcActionHandler('commit')
     async commit(option: GitCommitOptions): Promise<string> {
         const repository = await this.openRepository(option.workspaceDirPath);
-        const signature = this.git.Signature.now(option.author.name, option.author.email);
+        const signature = option.createdAt
+            ? this.git.Signature.create(
+                option.author.name,
+                option.author.email,
+                option.createdAt.time,
+                option.createdAt.offset,
+            )
+            : this.git.Signature.now(option.author.name, option.author.email);
+
         const commitId = await repository.createCommitOnHead(option.filesToAdd, signature, signature, option.message);
 
         signature.free();
         repository.free();
 
         return commitId.tostrS();
+    }
+
+    @IpcActionHandler('getHistory')
+    async getHistory(options: GitGetHistoryOptions): Promise<GitGetHistoryResult> {
+        const repository = await this.openRepository(options.workspaceDirPath);
+        const walker = repository.createRevWalk();
+
+        options.commitId
+            ? walker.push(Oid.fromString(options.commitId))
+            : walker.pushHead();
+
+        walker.sorting(Revwalk.SORT.TIME);
+
+        const commits = await walker.getCommits(options.size);
+        const history = commits.map(commit => this.parseCommit(commit));
+
+        commits.forEach(commit => commit.free());
+
+        // Check for next request.
+        const result: GitGetHistoryResult = {
+            history,
+            next: null,
+            previous: { ...options },
+        };
+
+        try {
+            const next = await walker.next();
+            result.next = {
+                workspaceDirPath: options.workspaceDirPath,
+                commitId: next.tostrS(),
+                size: options.size,
+            };
+        } catch (error) {
+            // There is no next commit.
+        }
+
+        /** NOTE: '@types/nodegit' is incorrect. */
+        (<any>walker).free();
+        repository.free();
+
+        return result;
     }
 
     handleError(error: any): GitError | any {
@@ -158,5 +215,23 @@ export class GitService extends Service {
         // TODO: Handle ignored, conflicted file changes.
 
         return fileChange;
+    }
+
+    private parseCommit(commit: Commit): VcsCommitItem {
+        const message = commit.message();
+        const lines = message.split(EOL);
+        const description = lines.splice(1, lines.length).join(EOL);
+
+        return {
+            commitId: commit.id().tostrS(),
+            commitHash: commit.sha(),
+            authorName: commit.author().name(),
+            authorEmail: commit.author().email(),
+            committerName: commit.author().name(),
+            committerEmail: commit.author().email(),
+            summary: commit.summary(),
+            description: description ? description : '',
+            timestamp: commit.timeMs(),
+        };
     }
 }

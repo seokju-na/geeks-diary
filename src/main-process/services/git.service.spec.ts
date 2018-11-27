@@ -1,6 +1,7 @@
 import { expect } from 'chai';
 import * as fse from 'fs-extra';
 import * as _git from 'nodegit';
+import { EOL } from 'os';
 import * as path from 'path';
 import { VcsAccountDummy } from '../../core/dummies';
 import { VcsFileChange, VcsFileChangeStatusTypes } from '../../core/vcs';
@@ -116,6 +117,105 @@ describe('mainProcess.services.GitService', () => {
 
             headCommit.free();
             repo.free();
+        });
+    });
+
+    describe('getHistory', () => {
+        const author = new VcsAccountDummy().create();
+        const messages: { summary: string, description: string }[] = [
+            { summary: 'summary1', description: 'description1' },
+            { summary: 'summary2', description: 'description2' },
+            { summary: 'summary3', description: 'description3' },
+            { summary: 'summary4', description: 'description4' },
+            { summary: 'summary5', description: 'description5' },
+        ];
+
+        beforeEach(async () => {
+            await makeTmpPath(true);
+
+            const files = ['a', 'b', 'c', 'd', 'e', 'f', 'g'].map(name => path.resolve(tmpPath, name));
+            await Promise.all(files.map(file => fse.writeFile(file, 'data')));
+
+            const time = Math.floor(new Date().getTime() / 1000);
+
+            // TODO(@seokju-na): CLEAN CODE PLEASE !!!
+
+            await git.commit({
+                workspaceDirPath: tmpPath,
+                filesToAdd: ['a', 'b'],
+                author,
+                message: `${messages[0].summary}${EOL}${EOL}${messages[0].description}`,
+                createdAt: {
+                    time,
+                    offset: 0,
+                },
+            });
+
+            await git.commit({
+                workspaceDirPath: tmpPath,
+                filesToAdd: ['c', 'd'],
+                author,
+                message: `${messages[1].summary}${EOL}${EOL}${messages[1].description}`,
+                createdAt: {
+                    time: time + 1,
+                    offset: 0,
+                },
+            });
+
+            await git.commit({
+                workspaceDirPath: tmpPath,
+                filesToAdd: ['e'],
+                author,
+                message: `${messages[2].summary}${EOL}${EOL}${messages[2].description}`,
+                createdAt: {
+                    time: time + 2,
+                    offset: 0,
+                },
+            });
+
+            await git.commit({
+                workspaceDirPath: tmpPath,
+                filesToAdd: ['f'],
+                author,
+                message: `${messages[3].summary}${EOL}${EOL}${messages[3].description}`,
+                createdAt: {
+                    time: time + 3,
+                    offset: 0,
+                },
+            });
+
+            await git.commit({
+                workspaceDirPath: tmpPath,
+                filesToAdd: ['g'],
+                author,
+                message: `${messages[4].summary}${EOL}${EOL}${messages[4].description}`,
+                createdAt: {
+                    time: time + 4,
+                    offset: 0,
+                },
+            });
+        });
+
+        it('should get history.', async () => {
+            const first = await git.getHistory({
+                workspaceDirPath: tmpPath,
+                size: 3,
+            });
+
+            expect(first.history.length).to.equals(3);
+            expect(first.history[0].summary).to.equals(messages[4].summary);
+            expect(first.history[1].summary).to.equals(messages[3].summary);
+            expect(first.history[2].summary).to.equals(messages[2].summary);
+
+            expect(first.next).not.to.equals(null);
+
+            const second = await git.getHistory(first.next);
+
+            expect(second.history.length).to.equals(2);
+            expect(second.history[0].summary).to.equals(messages[1].summary);
+            expect(second.history[1].summary).to.equals(messages[0].summary);
+
+            expect(second.next).to.equals(null);
         });
     });
 });
