@@ -1,6 +1,5 @@
 import * as nodeGit from 'nodegit';
 import { CloneOptions, Commit, DiffFile, Oid, Repository, Revwalk, StatusFile } from 'nodegit';
-import { EOL } from 'os';
 import * as path from 'path';
 import {
     GitCloneOptions,
@@ -127,8 +126,8 @@ export class GitService extends Service {
         return commitId.tostrS();
     }
 
-    @IpcActionHandler('getHistory')
-    async getHistory(options: GitGetHistoryOptions): Promise<GitGetHistoryResult> {
+    @IpcActionHandler('getCommitHistory')
+    async getCommitHistory(options: GitGetHistoryOptions): Promise<GitGetHistoryResult> {
         const repository = await this.openRepository(options.workspaceDirPath);
         const walker = repository.createRevWalk();
 
@@ -218,10 +217,6 @@ export class GitService extends Service {
     }
 
     private parseCommit(commit: Commit): VcsCommitItem {
-        const message = commit.message();
-        const lines = message.split(EOL);
-        const description = lines.splice(1, lines.length).join(EOL);
-
         return {
             commitId: commit.id().tostrS(),
             commitHash: commit.sha(),
@@ -230,7 +225,7 @@ export class GitService extends Service {
             committerName: commit.author().name(),
             committerEmail: commit.author().email(),
             summary: commit.summary(),
-            description: description ? description : '',
+            description: commit.body(),
             timestamp: commit.timeMs(),
         };
     }

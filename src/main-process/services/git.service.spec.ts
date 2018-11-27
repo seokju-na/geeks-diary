@@ -120,7 +120,7 @@ describe('mainProcess.services.GitService', () => {
         });
     });
 
-    describe('getHistory', () => {
+    describe('getCommitHistory', () => {
         const author = new VcsAccountDummy().create();
         const messages: { summary: string, description: string }[] = [
             { summary: 'summary1', description: 'description1' },
@@ -197,7 +197,7 @@ describe('mainProcess.services.GitService', () => {
         });
 
         it('should get history.', async () => {
-            const first = await git.getHistory({
+            const first = await git.getCommitHistory({
                 workspaceDirPath: tmpPath,
                 size: 3,
             });
@@ -209,7 +209,7 @@ describe('mainProcess.services.GitService', () => {
 
             expect(first.next).not.to.equals(null);
 
-            const second = await git.getHistory(first.next);
+            const second = await git.getCommitHistory(first.next);
 
             expect(second.history.length).to.equals(2);
             expect(second.history[0].summary).to.equals(messages[1].summary);
