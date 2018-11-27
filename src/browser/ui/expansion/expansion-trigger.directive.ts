@@ -1,4 +1,3 @@
-import { ENTER } from '@angular/cdk/keycodes';
 import { Directive, HostListener, Input, OnInit } from '@angular/core';
 import { ExpansionPanelDirective } from './expansion-panel.directive';
 
@@ -46,12 +45,5 @@ export class ExpansionTriggerDirective implements OnInit {
     @HostListener('click')
     _handleClick(): void {
         this.toggle();
-    }
-
-    @HostListener('keydown', ['$event'])
-    _handleKeydown(event: KeyboardEvent): void {
-        if (event.keyCode === ENTER) {
-            this.toggle();
-        }
     }
 }

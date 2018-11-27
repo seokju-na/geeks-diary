@@ -1,5 +1,5 @@
-import { Dummy, EmailDummy, TextDummy, TypesDummy } from '../../test/helpers';
-import { VcsAccount, VcsAuthenticationInfo, VcsAuthenticationTypes } from './vcs';
+import { DatetimeDummy, Dummy, EmailDummy, SHADummy, TextDummy, TypesDummy } from '../../test/helpers';
+import { VcsAccount, VcsAuthenticationInfo, VcsAuthenticationTypes, VcsCommitItem } from './vcs';
 
 
 export class VcsAuthenticationInfoDummy extends Dummy<VcsAuthenticationInfo> {
@@ -36,6 +36,34 @@ export class VcsAccountDummy implements Dummy<VcsAccount> {
             name: this.name.create(),
             email: this.email.create(),
             authentication: this.auth.create(type),
+        };
+    }
+}
+
+
+export class VcsCommitItemDummy implements Dummy<VcsCommitItem> {
+    private sha = new SHADummy();
+    private name = new TextDummy('John');
+    private email = new EmailDummy();
+    private summary = new TextDummy('Summary');
+    private description = new TextDummy('Description');
+    private timestamp = new DatetimeDummy();
+
+    create(): VcsCommitItem {
+        const commitId = this.sha.create();
+        const name = this.name.create();
+        const email = this.email.create();
+
+        return {
+            commitId,
+            commitHash: commitId,
+            authorName: name,
+            authorEmail: email,
+            committerName: name,
+            committerEmail: email,
+            summary: this.summary.create(),
+            description: this.description.create(),
+            timestamp: this.timestamp.create(),
         };
     }
 }

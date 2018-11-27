@@ -20,5 +20,11 @@
             background-color: gd-color($background, background-highlight);
             border-top: 1px solid gd-color($foreground, divider);
         }
+
+        &__history {
+            .VcsCommitItem {
+                border-bottom: 1px solid gd-color($foreground, divider);
+            }
+        }
     }
 }

@@ -189,4 +189,12 @@ describe('browser.vcs.VcsService', () => {
             expect(git.cloneRepository).toHaveBeenCalledWith('url', 'localPath', undefined);
         });
     });
+
+    describe('fetchCommitHistory', () => {
+        it('should reset next fetching options.', () => {
+        });
+    });
+
+    describe('fetchMoreCommitHistory', () => {
+    });
 });

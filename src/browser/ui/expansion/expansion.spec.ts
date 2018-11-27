@@ -1,9 +1,8 @@
-import { ENTER } from '@angular/cdk/keycodes';
 import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
-import { dispatchKeyboardEvent, expectDom, fastTestSetup } from '../../../../test/helpers';
+import { expectDom, fastTestSetup } from '../../../../test/helpers';
 import { ExpansionModule } from './expansion.module';
 
 
@@ -51,14 +50,6 @@ describe('browser.ui.expansion', () => {
             expectDom(getPanelEl()).toBeStyled('display', 'none');
             expectDom(getPanelEl()).toBeStyled('overflow', 'hidden');
         });
-
-        it('should close panel when keydown \'ENTER\'.', () => {
-            dispatchKeyboardEvent(getTriggerButtonEl(), 'keydown', ENTER);
-            fixture.detectChanges();
-
-            expectDom(getPanelEl()).toBeStyled('display', 'none');
-            expectDom(getPanelEl()).toBeStyled('overflow', 'hidden');
-        });
     });
 
     describe('closed -> opened', () => {
@@ -69,14 +60,6 @@ describe('browser.ui.expansion', () => {
 
         it('should open panel when click trigger button.', () => {
             getTriggerButtonEl().click();
-            fixture.detectChanges();
-
-            expectDom(getPanelEl()).not.toBeStyled('display', 'none');
-            expectDom(getPanelEl()).not.toBeStyled('overflow', 'hidden');
-        });
-
-        it('should open panel when keydown \'ENTER\'.', () => {
-            dispatchKeyboardEvent(getTriggerButtonEl(), 'keydown', ENTER);
             fixture.detectChanges();
 
             expectDom(getPanelEl()).not.toBeStyled('display', 'none');

@@ -101,6 +101,29 @@ export function getVcsFileChangeStatusIcon(status: VcsFileChangeStatusTypes): st
 }
 
 
+export interface VcsCommitItem {
+    /** Commit id. Same with SHA. */
+    commitId: string;
+
+    /** SHA */
+    commitHash: string;
+
+    authorName: string;
+    authorEmail: string;
+    committerName: string;
+    committerEmail: string;
+
+    /** Summary of commit message. */
+    summary: string;
+
+    /** Description of commit message. */
+    description?: string;
+
+    /** Unix timestamp. Unit is millisecond. */
+    timestamp: number;
+}
+
+
 export interface VcsFileChange {
     /** File path relative with working directory. */
     readonly filePath: string;

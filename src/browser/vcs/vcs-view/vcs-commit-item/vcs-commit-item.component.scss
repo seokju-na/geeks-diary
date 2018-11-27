@@ -1,0 +1,74 @@
+@import "../../../ui/style/spacing";
+@import "../../../ui/style/typography";
+@import "../../../ui/style/button-common";
+
+.VcsCommitItem {
+    display: block;
+    padding: $spacing-third 0;
+
+    &__head {
+        padding: 0 $spacing;
+    }
+
+    &__summary {
+        display: block;
+        margin: 0;
+
+        font: {
+            size: $font-size;
+            weight: $font-weight-semiBold;
+        };
+
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    &__detailsButton {
+        @include button-reset();
+
+        margin-left: $spacing-half;
+        width: 20px;
+        height: 12px;
+        font-size: 12px;
+        line-height: 6px;
+        padding: 0 5px 5px;
+        cursor: pointer;
+        text-align: center;
+    }
+
+    &__foot {
+        flex-wrap: nowrap;
+        padding: 0 $spacing;
+    }
+
+    &__author {
+        display: inline-block;
+        margin-right: $spacing-half;
+
+        font: {
+            size: $font-size-sm;
+            weight: $font-weight-semiBold;
+        };
+    }
+
+    &__createdAt {
+        display: inline-block;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+
+        font: {
+            size: $font-size-sm;
+            weight: $font-weight-normal;
+        };
+    }
+
+    &__details {
+        margin-top: $spacing-third;
+        padding: 0 $spacing;
+        font: {
+            size: $font-size-sm;
+        };
+    }
+}

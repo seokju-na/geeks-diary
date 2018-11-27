@@ -1,4 +1,4 @@
-import { VcsAccount, VcsAuthenticationInfo } from './vcs';
+import { VcsAccount, VcsAuthenticationInfo, VcsCommitItem } from './vcs';
 
 
 type Protocol = 'ssh' | 'https';
@@ -116,8 +116,45 @@ export interface GitCloneOptions {
 
 
 export interface GitCommitOptions {
+    /** Workspace directory path. */
     workspaceDirPath: string;
+
+    /** Commit message raw string. */
     message: string;
+
+    /** List of files to add. Path must be relative to workspace directory path. */
     filesToAdd: string[];
+
+    /** Author of commit. Same account will be sign to committer. */
     author: VcsAccount;
+
+    /** When Commit is created. If not provided, current is default. */
+     createdAt?: {
+        time: number;
+        offset: number;
+    };
+}
+
+
+export interface GitGetHistoryOptions {
+    /** Workspace directory path. */
+    workspaceDirPath: string;
+
+    /** The starting point to call up commits. If not provided, head commit is default. */
+    commitId?: string;
+
+    /** Size of history to call. */
+    size: number;
+}
+
+
+export interface GitGetHistoryResult {
+    /** Result of commit items. */
+    history: VcsCommitItem[];
+
+    /** Next request options. If all loaded, value will be null. */
+    next: GitGetHistoryOptions | null;
+
+    /** Previous request options. */
+    previous: GitGetHistoryOptions;
 }

@@ -1,7 +1,8 @@
 import { Inject, Injectable } from '@angular/core';
-import { from, Observable } from 'rxjs';
-import { mapTo, switchMap } from 'rxjs/operators';
-import { VcsAccount, VcsFileChange } from '../../core/vcs';
+import { from, Observable, of } from 'rxjs';
+import { map, mapTo, switchMap, tap } from 'rxjs/operators';
+import { GitGetHistoryOptions } from '../../core/git';
+import { VcsAccount, VcsCommitItem, VcsFileChange } from '../../core/vcs';
 import { GitService, WorkspaceService } from '../shared';
 import { VCS_ACCOUNT_DATABASE, VcsAccountDatabase } from './vcs-account-database';
 import { VcsRemoteProvider, VcsRemoteProviderFactory, VcsRemoteProviderType } from './vcs-remote';
@@ -22,17 +23,30 @@ export class VcsCloneRepositoryOption {
 export class VcsService {
     _removeProvider: VcsRemoteProvider | null = null;
 
+    private nextCommitHistoryFetchingOptions: GitGetHistoryOptions | null = null;
+
     constructor(
         private remoteProviderFactory: VcsRemoteProviderFactory,
         private git: GitService,
-        @Inject(VCS_ACCOUNT_DATABASE) private accountDB: VcsAccountDatabase
-        ,
+        @Inject(VCS_ACCOUNT_DATABASE) private accountDB: VcsAccountDatabase,
         private workspace: WorkspaceService,
     ) {
     }
 
+    // Git commit history.
+    private _commitHistoryFetchingSize: number = 50;
+
+    get commitHistoryFetchingSize(): number {
+        return this._commitHistoryFetchingSize;
+    }
+
     setRemoveProvider(type: VcsRemoteProviderType): this {
         this._removeProvider = this.remoteProviderFactory.create(type);
+        return this;
+    }
+
+    setCommitHistoryFetchingSize(size: number): this {
+        this._commitHistoryFetchingSize = size;
         return this;
     }
 
@@ -93,6 +107,30 @@ export class VcsService {
 
     fetchFileChanges(): Observable<VcsFileChange[]> {
         return this.git.getFileChanges(this.workspace.configs.rootDirPath);
+    }
+
+    fetchCommitHistory(): Observable<VcsCommitItem[]> {
+        this.nextCommitHistoryFetchingOptions = null;
+
+        return this.git.getCommitHistory({
+            workspaceDirPath: this.workspace.configs.rootDirPath,
+            size: this._commitHistoryFetchingSize,
+        }).pipe(
+            tap(result => this.nextCommitHistoryFetchingOptions = result.next),
+            map(result => result.history),
+        );
+    }
+
+    fetchMoreCommitHistory(): Observable<VcsCommitItem[]> {
+        // Return empty list, if all history are loaded.
+        if (!this.nextCommitHistoryFetchingOptions) {
+            return of([]);
+        }
+
+        return this.git.getCommitHistory(this.nextCommitHistoryFetchingOptions).pipe(
+            tap(result => this.nextCommitHistoryFetchingOptions = result.next),
+            map(result => result.history),
+        );
     }
 
     cloneRepository(
