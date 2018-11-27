@@ -16,6 +16,7 @@ import { LineModule } from './line';
 import { MenuModule } from './menu';
 import { RadioModule } from './radio';
 import { ResizableModule } from './resizable';
+import { ScrollingModule } from './scrolling';
 import { SpinnerModule } from './spinner';
 import { StyleModule } from './style';
 import { TabsModule } from './tabs';
@@ -55,6 +56,7 @@ const UI_MODULES = [
     TabsModule,
     CheckboxModule,
     ExpansionModule,
+    ScrollingModule,
 ];
 
 
