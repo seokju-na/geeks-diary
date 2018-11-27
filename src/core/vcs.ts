@@ -117,7 +117,7 @@ export interface VcsCommitItem {
     summary: string;
 
     /** Description of commit message. */
-    description: string;
+    description?: string;
 
     /** Unix timestamp. Unit is millisecond. */
     timestamp: number;
