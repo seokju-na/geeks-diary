@@ -175,7 +175,7 @@ export class WizardCloningComponent implements OnInit {
         this.confirmDialog.open({
             isAlert: true,
             title: 'Git Error',
-            body: (error as GitError).errorDescription,
+            body: (error as GitError).message,
         });
     }
 

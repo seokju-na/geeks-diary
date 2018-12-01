@@ -73,7 +73,7 @@ export function parseGitRemoteUrl(url: string): GitRemoteUrl | null {
 
 
 export enum GitErrorCodes {
-    AUTHENTICATION_FAIL = 'AUTHENTICATION_FAIL',
+    AUTHENTICATION_FAIL = 'git.authenticationFail',
 }
 
 
@@ -85,27 +85,21 @@ export const gitErrorRegexes: {[key: string]: RegExp} = {
 /* tslint:enable */
 
 
-export class GitError extends Error {
-    readonly errorDescription: string;
+interface GitErrorImpl {
+    readonly code: GitErrorCodes;
+}
 
-    constructor(public readonly code: any) {
-        super(getDescriptionForError(code));
 
+export class GitAuthenticationFailError extends Error implements GitErrorImpl {
+    constructor(public readonly code = GitErrorCodes.AUTHENTICATION_FAIL) {
+        super('Authentication failed. Please check your credential.');
         this.name = 'GitError';
-        this.errorDescription = getDescriptionForError(code);
     }
 }
 
 
-function getDescriptionForError(code: GitErrorCodes): string {
-    switch (code) {
-        case GitErrorCodes.AUTHENTICATION_FAIL:
-            return 'Authentication failed. Please check your credential.';
-
-        default:
-            return 'Unknown Error';
-    }
-}
+export type GitError =
+    GitAuthenticationFailError;
 
 
 export interface GitCloneOptions {

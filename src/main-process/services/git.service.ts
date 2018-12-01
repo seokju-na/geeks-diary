@@ -2,9 +2,11 @@ import * as nodeGit from 'nodegit';
 import { CloneOptions, Commit, DiffFile, Oid, Repository, Revwalk, StatusFile } from 'nodegit';
 import * as path from 'path';
 import {
+    GitAuthenticationFailError,
     GitCloneOptions,
     GitCommitOptions,
     GitError,
+    GitErrorCodes,
     gitErrorRegexes,
     GitGetHistoryOptions,
     GitGetHistoryResult,
@@ -215,12 +217,19 @@ export class GitService extends Service {
         if (out) {
             for (const code of Object.keys(gitErrorRegexes)) {
                 if (gitErrorRegexes[code].test(out)) {
-                    return new GitError(code);
+                    return this.createMatchedError(code as GitErrorCodes);
                 }
             }
         }
 
         return error;
+    }
+
+    private createMatchedError(code: GitErrorCodes): GitError {
+        switch (code) {
+            case GitErrorCodes.AUTHENTICATION_FAIL:
+                return new GitAuthenticationFailError();
+        }
     }
 
     private parseFileChange(workingDir: string, status: StatusFile): VcsFileChange {
