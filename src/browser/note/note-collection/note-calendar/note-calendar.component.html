@@ -43,12 +43,11 @@
                    [attr.aria-selected]="isCellSelected(cell)"
                    [class.NoteCalendar__cell--blank]="cell.isBlank()"
                    [class.NoteCalendar__cell--selected]="isCellSelected(cell)"
+                   [style.boxShadow]="getContributionColorForCell(cell)"
                    (click)="selectDateCell(cell)"
                    type="button"
                    class="NoteCalendar__cell">
-                    <label *ngIf="!cell.isBlank()">
-                        {{ cell.date | date:'d' }}
-                    </label>
+                    <label *ngIf="!cell.isBlank()">{{ cell.date | date:'d' }}</label>
                 </a>
             </td>
         </tr>
@@ -60,8 +59,6 @@
         <span *ngIf="selectedDate | async as dateSelection; else noDateSelection">
             {{ dateSelection | date:'y/MM/dd' }}
         </span>
-        <ng-template #noDateSelection>
-            <span>(None)</span>
-        </ng-template>
+        <ng-template #noDateSelection><span>(None)</span></ng-template>
     </div>
 </div>

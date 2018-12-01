@@ -68,6 +68,7 @@ const codeMirrorLanguageModeMap: { [key: string]: any } = {
         base: 'text/html',
     },
     [_.HASKELL]: 'text/x-haskell',
+    [_.HTML]: 'text/html',
     [_.ASPX]: 'application/x-aspx',
     [_.EJS]: 'application/x-ejs',
     [_.JSP]: 'application/x-jsp',

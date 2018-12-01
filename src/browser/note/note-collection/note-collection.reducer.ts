@@ -158,6 +158,12 @@ export function noteCollectionReducer(
                 notes,
             });
 
+        case NoteCollectionActionTypes.UPDATE_CONTRIBUTION:
+            return {
+                ...state,
+                contribution: { ...action.payload.contribution },
+            };
+
         default:
             return state;
     }

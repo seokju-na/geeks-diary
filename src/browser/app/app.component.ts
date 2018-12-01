@@ -6,7 +6,7 @@ import { NoteFinderComponent } from '../note/note-collection';
 import { NoteCollectionService } from '../note/note-collection/note-collection.service';
 import { MenuEvent, MenuService, WORKSPACE_DATABASE, WorkspaceDatabase } from '../shared';
 import { Themes, ThemeService } from '../ui/style';
-import { VcsManagerComponent } from '../vcs';
+import { VcsManagerComponent, VcsService } from '../vcs';
 import { AppLayoutSidenavOutlet, ToggleSidenavPanelAction } from './app-layout';
 import { AppStateWithFeatures } from './app.state';
 
@@ -46,6 +46,7 @@ export class AppComponent implements OnInit {
         theme: ThemeService,
         @Inject(WORKSPACE_DATABASE) workspaceDB: WorkspaceDatabase,
         private menu: MenuService,
+        private vcs: VcsService,
     ) {
         const _theme = workspaceDB.cachedInfo
             ? workspaceDB.cachedInfo.theme as Themes
@@ -74,5 +75,7 @@ export class AppComponent implements OnInit {
                     break;
             }
         });
+
+        this.vcs.setCommitHistoryFetchingSize(100);
     }
 }

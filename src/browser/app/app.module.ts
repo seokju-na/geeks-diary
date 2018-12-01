@@ -8,6 +8,8 @@ import { NoteModule } from '../note';
 import { UiModule } from '../ui/ui.module';
 import { VcsModule } from '../vcs';
 import {
+    AppNoteContributionMeasurementProvider,
+    AppNoteContributionUpdatedEffectActionsRegistration,
     AppVcsDetectChangesEffectActionsProvider,
     AppVcsHistoryChangedEffectActionsProvider,
     AppVcsItemFactoriesProvider,
@@ -33,6 +35,8 @@ import { appReducer } from './app.reducer';
         AppVcsItemFactoriesProvider,
         AppVcsDetectChangesEffectActionsProvider,
         AppVcsHistoryChangedEffectActionsProvider,
+        AppNoteContributionUpdatedEffectActionsRegistration,
+        AppNoteContributionMeasurementProvider,
     ],
     declarations: [AppComponent],
     bootstrap: [AppComponent],

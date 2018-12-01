@@ -2,7 +2,7 @@ import { NgModule } from '@angular/core';
 import { EffectsModule } from '@ngrx/effects';
 import { StoreModule } from '@ngrx/store';
 import { UiModule } from '../ui/ui.module';
-import { NoteCollectionModule } from './note-collection';
+import { NoteCollectionModule, NoteContributionEffects } from './note-collection';
 import { NoteContentEffects, NoteEditorEffects, NoteEditorModule } from './note-editor';
 import { NotePreviewModule } from './note-preview';
 import { NoteSharedModule } from './note-shared';
@@ -20,6 +20,7 @@ import { noteReducerMap } from './note.reducer';
         EffectsModule.forFeature([
             NoteContentEffects,
             NoteEditorEffects,
+            NoteContributionEffects,
         ]),
     ],
     declarations: [],

@@ -1,6 +1,6 @@
 import { Action } from '@ngrx/store';
 import { SortDirection } from '../../../core/sorting';
-import { NoteCollectionSortBy, NoteCollectionViewModes } from './note-collection.state';
+import { NoteCollectionSortBy, NoteCollectionViewModes, NoteContributionTable } from './note-collection.state';
 import { NoteItem } from './note-item.model';
 
 
@@ -16,6 +16,8 @@ export enum NoteCollectionActionTypes {
     SELECT_NOTE = '[NoteCollection] Select note',
     DESELECT_NOTE = '[NoteCollection] Deselect note',
     ADD_NOTE = '[NoteCollection] Add note',
+    UPDATE_CONTRIBUTION = '[NoteCollection] Update contribution',
+    UPDATE_CONTRIBUTION_FAIL = '[NoteCollection] Update contribution fail',
 }
 
 
@@ -101,6 +103,22 @@ export class AddNoteAction implements Action {
 }
 
 
+export class UpdateNoteContributionAction implements Action {
+    readonly type = NoteCollectionActionTypes.UPDATE_CONTRIBUTION;
+
+    constructor(public readonly payload: { contribution: NoteContributionTable }) {
+    }
+}
+
+
+export class UpdateNoteContributionFailAction implements Action {
+    readonly type = NoteCollectionActionTypes.UPDATE_CONTRIBUTION_FAIL;
+
+    constructor(public readonly error?: any) {
+    }
+}
+
+
 export type NoteCollectionAction =
     LoadNoteCollectionAction
     | LoadNoteCollectionCompleteAction
@@ -112,4 +130,6 @@ export type NoteCollectionAction =
     | ChangeViewModeAction
     | SelectNoteAction
     | DeselectNoteAction
-    | AddNoteAction;
+    | AddNoteAction
+    | UpdateNoteContributionAction
+    | UpdateNoteContributionFailAction;

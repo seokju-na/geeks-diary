@@ -32,7 +32,7 @@ export class VcsItemMaker {
         return refs;
     }
 
-    async* pumpRefs(
+    private async* pumpRefs(
         factories: VcsItemFactory<any>[],
         fileChanges: VcsFileChange[],
     ): AsyncIterableIterator<VcsItemRef<any>[]> {
