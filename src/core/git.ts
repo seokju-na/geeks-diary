@@ -24,7 +24,6 @@ export interface GitRemoteUrl {
 }
 
 
-
 // Examples:
 // https://github.com/octocat/Hello-World.git
 // https://github.com/octocat/Hello-World.git/
@@ -74,14 +73,17 @@ export function parseGitRemoteUrl(url: string): GitRemoteUrl | null {
 
 export enum GitErrorCodes {
     AUTHENTICATION_FAIL = 'git.authenticationFail',
+    REMOTE_NOT_FOUND = 'git.remoteNotFound',
 }
 
 
 /* tslint:disable */
 /** A mapping from regexes to the git error they identify. */
-export const gitErrorRegexes: {[key: string]: RegExp} = {
+export const gitErrorRegexes: { [key: string]: RegExp } = {
     [GitErrorCodes.AUTHENTICATION_FAIL]: /authentication required/,
+    [GitErrorCodes.REMOTE_NOT_FOUND]: /remote '.*' does not exist/,
 };
+
 /* tslint:enable */
 
 
@@ -98,8 +100,19 @@ export class GitAuthenticationFailError extends Error implements GitErrorImpl {
 }
 
 
+export class GitRemoteNotFoundError extends Error implements GitErrorImpl {
+    constructor(
+        public readonly code = GitErrorCodes.REMOTE_NOT_FOUND,
+        remoteName?: string,
+    ) {
+        super(remoteName ? `Remote \'${remoteName}\' does not exist.` : 'Remote does not exist.');
+    }
+}
+
+
 export type GitError =
-    GitAuthenticationFailError;
+    GitAuthenticationFailError
+    | GitRemoteNotFoundError;
 
 
 export interface GitCloneOptions {
@@ -123,7 +136,7 @@ export interface GitCommitOptions {
     author: VcsAccount;
 
     /** When Commit is created. If not provided, current is default. */
-     createdAt?: {
+    createdAt?: {
         time: number;
         offset: number;
     };
@@ -157,4 +170,10 @@ export interface GitGetHistoryResult {
 
     /** Previous request options. */
     previous: GitGetHistoryOptions;
+}
+
+
+export interface GitFindRemoteOptions {
+    workspaceDirPath: string;
+    remoteName: string;
 }
