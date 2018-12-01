@@ -10,6 +10,7 @@ import {
     GitGetHistoryResult,
 } from '../../core/git';
 import { VcsAuthenticationTypes, VcsCommitItem, VcsFileChange, VcsFileChangeStatusTypes } from '../../core/vcs';
+import { datetime, DateUnits } from '../../libs/datetime';
 import { IpcActionHandler } from '../../libs/ipc';
 import { Service } from './service';
 
@@ -137,18 +138,59 @@ export class GitService extends Service {
 
         walker.sorting(Revwalk.SORT.TIME);
 
-        const commits = await walker.getCommits(options.size);
-        const history = commits.map(commit => this.parseCommit(commit));
+        let history: VcsCommitItem[];
 
-        commits.forEach(commit => commit.free());
+        // If date range provided, find commits for period.
+        if (options.dateRange) {
+            const until = new Date(options.dateRange.until);
+            const since = new Date(options.dateRange.since);
 
-        // Check for next request.
-        const result: GitGetHistoryResult = {
+            // Unexpected behavior.
+            // We need to check if the last item aborted the checkFn.
+            // 'getCommitsUntil' returns the last item, even if it does not satisfied the checkFn.
+            // So we should drop the last item.
+            let isLastAborted = false;
+            const isCommitCreatedAfterSince = (commit: Commit) => {
+                const isAfterOrSame = datetime.isAfterOrSame(new Date(commit.timeMs()), since, DateUnits.DAY);
+                isLastAborted = !isAfterOrSame;
+
+                return isAfterOrSame;
+            };
+
+            const isCommitCreatedBeforeUntil =
+                (commit: Commit) => datetime.isBeforeOrSame(new Date(commit.timeMs()), until, DateUnits.DAY);
+
+            const foundCommits = await walker.getCommitsUntil(isCommitCreatedAfterSince) as Commit[];
+            foundCommits.reverse();
+
+            // Drop the last item (but in this line, array has been reversed, so it would be the first item)
+            if (isLastAborted) {
+                foundCommits.shift();
+            }
+
+            const startIndex = foundCommits.findIndex(commit => !isCommitCreatedBeforeUntil(commit));
+
+            if (startIndex !== -1) {
+                const removedCommits = foundCommits.splice(startIndex, foundCommits.length - startIndex);
+                removedCommits.forEach(commit => commit.free());
+            }
+
+            history = foundCommits.reverse().map(commit => this.parseCommit(commit));
+            foundCommits.forEach(commit => commit.free());
+        } else {
+            const commits = await walker.getCommits(options.size);
+
+            history = commits.map(commit => this.parseCommit(commit));
+            commits.forEach(commit => commit.free());
+        }
+
+        const result = {
             history,
             next: null,
             previous: { ...options },
         };
 
+        // Check for next request.
         try {
             const next = await walker.next();
             result.next = {

@@ -143,8 +143,14 @@ export interface GitGetHistoryOptions {
     /** The starting point to call up commits. If not provided, head commit is default. */
     commitId?: string;
 
-    /** Size of history to call. */
-    size: number;
+    /** Size of history to call. Default is 100, and not required if date range is provided. */
+    size?: number;
+
+    /** Date range for filter history. Value is timestamp. */
+    dateRange?: {
+        since: number;
+        until: number;
+    };
 }
 
 
