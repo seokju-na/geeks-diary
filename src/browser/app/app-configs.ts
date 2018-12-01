@@ -1,8 +1,13 @@
 import { Provider } from '@angular/core';
-import { NoteCollectionActionTypes } from '../note/note-collection';
+import {
+    NOTE_CONTRIBUTION_MEASUREMENT,
+    NOTE_CONTRIBUTION_UPDATED_EFFECT_ACTIONS,
+    NoteCollectionActionTypes,
+} from '../note/note-collection';
 import { NoteEditorActionTypes } from '../note/note-editor';
 import { NoteVcsItemFactory } from '../note/note-shared';
-import { VCS_DETECT_CHANGES_EFFECT_ACTIONS, VCS_HISTORY_CHANGED_EFFECT_ACTIONS } from '../vcs';
+import { VCS_DETECT_CHANGES_EFFECT_ACTIONS, VCS_HISTORY_CHANGED_EFFECT_ACTIONS, VcsActionTypes } from '../vcs';
+import { VcsCommitContributionMeasurement } from '../vcs/vcs-local';
 import { BaseVcsItemFactory, VCS_ITEM_MAKING_FACTORIES, VcsItemFactory } from '../vcs/vcs-view';
 
 
@@ -35,4 +40,19 @@ export const AppVcsHistoryChangedEffectActionsProvider: Provider = {
     useValue: [
         NoteCollectionActionTypes.LOAD_COLLECTION_COMPLETE, // Initial load
     ],
+};
+
+
+export const AppNoteContributionUpdatedEffectActionsRegistration: Provider = {
+    provide: NOTE_CONTRIBUTION_UPDATED_EFFECT_ACTIONS,
+    useValue: [
+        NoteCollectionActionTypes.LOAD_COLLECTION_COMPLETE,
+        VcsActionTypes.COMMITTED,
+    ],
+};
+
+
+export const AppNoteContributionMeasurementProvider: Provider = {
+    provide: NOTE_CONTRIBUTION_MEASUREMENT,
+    useClass: VcsCommitContributionMeasurement,
 };
