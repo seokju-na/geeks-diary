@@ -15,6 +15,10 @@ class Datetime {
         return new Date(date.toString());
     }
 
+    isValid(date: Date): boolean {
+        return !Number.isNaN(date.getTime());
+    }
+
     today(): Date {
         return new Date();
     }
@@ -140,6 +144,14 @@ class Datetime {
     ): boolean {
 
         return this.diff(source, target, unit) <= 0;
+    }
+
+    isBeforeOrSame(
+        source: Date,
+        target: Date,
+        unit: DateUnits = DateUnits.MILLISECOND,
+    ): boolean {
+        return this.diff(source, target, unit) >= 0;
     }
 }
 
