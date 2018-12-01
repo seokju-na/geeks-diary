@@ -8,8 +8,10 @@ import {
     GitError,
     GitErrorCodes,
     gitErrorRegexes,
+    GitFindRemoteOptions,
     GitGetHistoryOptions,
     GitGetHistoryResult,
+    GitRemoteNotFoundError,
 } from '../../core/git';
 import { VcsAuthenticationTypes, VcsCommitItem, VcsFileChange, VcsFileChangeStatusTypes } from '../../core/vcs';
 import { datetime, DateUnits } from '../../libs/datetime';
@@ -211,6 +213,23 @@ export class GitService extends Service {
         return result;
     }
 
+    @IpcActionHandler('isRemoteExists')
+    async isRemoteExists(options: GitFindRemoteOptions): Promise<boolean> {
+        const repository = await this.openRepository(options.workspaceDirPath);
+
+        try {
+            const remote = await repository.getRemote(options.remoteName);
+            remote.free();
+            return true;
+        } catch (error) {
+            if (gitErrorRegexes[GitErrorCodes.REMOTE_NOT_FOUND].test(error.message)) {
+                return false;
+            } else {
+                throw error;
+            }
+        }
+    }
+
     handleError(error: any): GitError | any {
         const out = error.message;
 
@@ -229,6 +248,8 @@ export class GitService extends Service {
         switch (code) {
             case GitErrorCodes.AUTHENTICATION_FAIL:
                 return new GitAuthenticationFailError();
+            case GitErrorCodes.REMOTE_NOT_FOUND:
+                return new GitRemoteNotFoundError();
         }
     }
 

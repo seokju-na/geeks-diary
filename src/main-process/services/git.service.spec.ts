@@ -12,6 +12,10 @@ describe('mainProcess.services.GitService', () => {
     let git: GitService;
     const tmpPath = path.resolve(process.cwd(), 'tmp/');
 
+    function getFixturePath(name: string): string {
+        return path.resolve(process.cwd(), 'test/workspace-fixtures/', name, '_git/');
+    }
+
     async function makeTmpPath(createGit: boolean = false): Promise<void> {
         await fse.ensureDir(tmpPath);
 
@@ -223,6 +227,17 @@ describe('mainProcess.services.GitService', () => {
             });
 
             expect(nothing.history.length).to.equals(0);
+        });
+    });
+
+    describe('isRemoteExists', () => {
+        it('should return \'false\' if repository has not remote.', async () => {
+            const result = await git.isRemoteExists({
+                workspaceDirPath: getFixturePath('origin-not-exists'),
+                remoteName: 'origin',
+            });
+
+            expect(result).to.equals(false);
         });
     });
 });
