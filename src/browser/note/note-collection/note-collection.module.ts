@@ -6,6 +6,7 @@ import { NoteSharedModule } from '../note-shared';
 import { CreateNewNoteDialogComponent } from './create-new-note-dialog/create-new-note-dialog.component';
 import { NoteCalendarComponent } from './note-calendar/note-calendar.component';
 import { NoteCollectionService } from './note-collection.service';
+import { NoteContributionService } from './note-contribution.service';
 import { NoteFinderComponent } from './note-finder/note-finder.component';
 import { NoteItemComponent } from './note-item/note-item.component';
 import { NoteListSortingMenu } from './note-list-sorting-menu';
@@ -35,6 +36,7 @@ import { NoteListToolsComponent } from './note-list-tools/note-list-tools.compon
         DatePipe,
         NoteCollectionService,
         NoteListSortingMenu,
+        NoteContributionService,
     ],
     exports: [
         NoteFinderComponent,

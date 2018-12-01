@@ -22,6 +22,11 @@ export enum NoteCollectionViewModes {
 }
 
 
+export interface NoteContributionTable {
+    [key: string]: number;
+}
+
+
 export interface NoteCollectionState {
     readonly loading: boolean;
     readonly loaded: boolean;
@@ -29,6 +34,7 @@ export interface NoteCollectionState {
     readonly selectedNote: NoteItem;
     readonly notes: NoteItem[];
     readonly filteredAndSortedNotes: NoteItem[];
+    readonly contribution: NoteContributionTable;
 
     readonly filterBy: NoteCollectionFilterBy;
     readonly sortBy: NoteCollectionSortBy;
@@ -52,6 +58,7 @@ export function createNoteCollectionInitialState(): NoteCollectionState {
         selectedNote: null,
         notes: [],
         filteredAndSortedNotes: [],
+        contribution: {},
         filterBy: NoteCollectionFilterBy.BY_MONTH,
         sortBy: NoteCollectionSortBy.CREATED,
         sortDirection: SortDirection.DESC,

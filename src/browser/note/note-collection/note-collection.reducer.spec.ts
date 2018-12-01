@@ -13,6 +13,7 @@ import {
     SelectDateFilterAction,
     SelectMonthFilterAction,
     SelectNoteAction,
+    UpdateNoteContributionAction,
 } from './note-collection.actions';
 import { noteCollectionReducer } from './note-collection.reducer';
 import {
@@ -21,6 +22,7 @@ import {
     NoteCollectionSortBy,
     NoteCollectionState,
     NoteCollectionViewModes,
+    NoteContributionTable,
 } from './note-collection.state';
 import { NoteItem } from './note-item.model';
 
@@ -435,6 +437,18 @@ describe('browser.note.noteCollection.noteCollectionReducer', () => {
             );
 
             expect(state.notes.includes(newNote)).toBe(true);
+        });
+    });
+
+    describe('UPDATE_CONTRIBUTION', () => {
+        it('should set note contribution.', () => {
+            const contribution: NoteContributionTable = { a: 3 };
+            const state = noteCollectionReducer(
+                undefined,
+                new UpdateNoteContributionAction({ contribution }),
+            );
+
+            expect(state.contribution).toEqual(contribution);
         });
     });
 });
