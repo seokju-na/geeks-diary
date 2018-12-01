@@ -10,7 +10,7 @@ import { UiModule } from '../../../ui/ui.module';
 import { VcsCommitItemComponent } from './vcs-commit-item.component';
 
 
-describe('VcsCommitItemComponent', () => {
+describe('browser.vcs.vcsView.VcsCommitItemComponent', () => {
     let component: VcsCommitItemComponent;
     let fixture: ComponentFixture<VcsCommitItemComponent>;
 
