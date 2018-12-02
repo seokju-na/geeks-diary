@@ -1,5 +1,5 @@
 import * as nodeGit from 'nodegit';
-import { CloneOptions, Commit, DiffFile, Oid, Repository, Revwalk, StatusFile } from 'nodegit';
+import { CloneOptions, Commit, DiffFile, FetchOptions, Oid, Repository, Revwalk, StatusFile } from 'nodegit';
 import * as path from 'path';
 import {
     GitAuthenticationFailError,
@@ -11,22 +11,44 @@ import {
     GitFindRemoteOptions,
     GitGetHistoryOptions,
     GitGetHistoryResult,
+    GitMergeConflictedError,
     GitRemoteNotFoundError,
+    GitSyncWithRemoteOptions,
 } from '../../core/git';
-import { VcsAuthenticationTypes, VcsCommitItem, VcsFileChange, VcsFileChangeStatusTypes } from '../../core/vcs';
+import {
+    VcsAuthenticationInfo,
+    VcsAuthenticationTypes,
+    VcsCommitItem,
+    VcsFileChange,
+    VcsFileChangeStatusTypes,
+} from '../../core/vcs';
 import { datetime, DateUnits } from '../../libs/datetime';
 import { IpcActionHandler } from '../../libs/ipc';
 import { Service } from './service';
 
 
+let uniqueId = 0;
+
+interface FetchOptionsWithTriesInfo {
+    fetchOptions: FetchOptions;
+    triesKey: string | null;
+}
+
+
 export class GitService extends Service {
     private git = nodeGit;
+    private fetchTriesMap = new Map<string, number>();
 
     constructor() {
         super('git');
     }
 
     init(): void {
+    }
+
+    destroy(): void {
+        super.destroy();
+        this.fetchTriesMap.clear();
     }
 
     async isRepositoryExists(dirPath: string): Promise<boolean> {
@@ -53,49 +75,20 @@ export class GitService extends Service {
 
     @IpcActionHandler('cloneRepository')
     async cloneRepository(options: GitCloneOptions): Promise<void> {
-        const cloneOptions = (): CloneOptions => {
-            let tries = 0;
-
-            const opts: CloneOptions = {
-                fetchOpts: { callbacks: {} },
-            };
-
-            // github will fail cert check on some OSX machines
-            // this overrides that check.
-            opts.fetchOpts.callbacks.certificateCheck = () => 1;
-
-            if (options.authentication) {
-                opts.fetchOpts.callbacks.credentials = () => {
-                    if (tries++ > 5) {
-                        throw new Error('Authentication Error');
-                    }
-
-                    const type = options.authentication.type;
-
-                    switch (type) {
-                        case VcsAuthenticationTypes.BASIC:
-                            return this.git.Cred.userpassPlaintextNew(
-                                options.authentication.username,
-                                options.authentication.password,
-                            );
-
-                        case VcsAuthenticationTypes.OAUTH2_TOKEN:
-                            return this.git.Cred.userpassPlaintextNew(
-                                options.authentication.token,
-                                'x-oauth-basic',
-                            );
-                    }
-                };
-            }
-
-            return opts;
+        const { triesKey, fetchOptions } = this.getFetchOptions(options.authentication);
+        const cloneOptions: CloneOptions = {
+            fetchOpts: fetchOptions,
         };
 
         const repository = await this.git.Clone.clone(
             options.url,
             options.localPath,
-            cloneOptions(),
+            cloneOptions,
         );
+
+        if (triesKey) {
+            this.fetchTriesMap.delete(triesKey);
+        }
 
         repository.free();
     }
@@ -230,6 +223,41 @@ export class GitService extends Service {
         }
     }
 
+    @IpcActionHandler('syncWithRemote')
+    async syncWithRemote(options: GitSyncWithRemoteOptions): Promise<void> {
+        const repository = await this.openRepository(options.workspaceDirPath);
+
+        // Pull
+        const pullFetchOptions = this.getFetchOptions(options.authentication);
+        const signature = this.git.Signature.now(options.author.name, options.author.email);
+
+        await repository.fetchAll(pullFetchOptions.fetchOptions);
+
+        try {
+            await repository.mergeBranches(
+                'master',
+                `${options.remoteName}/master`,
+                signature,
+                this.git.Merge.PREFERENCE.NONE,
+            );
+        } catch (index) { // Repository#mergeBranchs throws index as error.
+            throw new GitMergeConflictedError();
+        }
+
+        this.fetchTriesMap.delete(pullFetchOptions.triesKey);
+
+        // Push
+        const pushFetchOptions = this.getFetchOptions(options.authentication);
+        const remote = await repository.getRemote(options.remoteName);
+
+        await remote.push(
+            ['refs/heads/master:refs/heads/master'],
+            pushFetchOptions,
+        );
+
+        this.fetchTriesMap.delete(pushFetchOptions.triesKey);
+    }
+
     handleError(error: any): GitError | any {
         const out = error.message;
 
@@ -299,6 +327,63 @@ export class GitService extends Service {
             summary: commit.summary(),
             description: commit.body(),
             timestamp: commit.timeMs(),
+        };
+    }
+
+    /** Get fetch options. */
+    private getFetchOptions(authentication?: VcsAuthenticationInfo): FetchOptionsWithTriesInfo {
+        let key: string = null;
+        const options: FetchOptions = {
+            callbacks: {},
+        };
+
+        // Github will fail cert check on some OSX machines
+        // This overrides that check.
+        options.callbacks.certificateCheck = () => 1;
+
+        if (authentication) {
+            key = `git-fetch-try-${uniqueId++}`;
+            this.fetchTriesMap.set(key, 0);
+
+            options.callbacks.credentials = () => {
+                const tries = this.fetchTriesMap.get(key);
+
+                /**
+                 * Note that this is important.
+                 * libgit2 doesn't stop checking credential even if authorize failed.
+                 * So if we do not take proper action, we will end up in an infinite loop.
+                 * See also:
+                 *  https://github.com/nodegit/nodegit/issues/1133
+                 *
+                 * Check if tries goes at least 5, throw error to exit the infinite loop.
+                 */
+                if (tries > 5) {
+                    throw new Error('Authentication Error');
+                }
+
+                const type = options.authentication.type;
+
+                switch (type) {
+                    case VcsAuthenticationTypes.BASIC:
+                        return this.git.Cred.userpassPlaintextNew(
+                            options.authentication.username,
+                            options.authentication.password,
+                        );
+
+                    case VcsAuthenticationTypes.OAUTH2_TOKEN:
+                        return this.git.Cred.userpassPlaintextNew(
+                            options.authentication.token,
+                            'x-oauth-basic',
+                        );
+                }
+
+                this.fetchTriesMap.set(key, tries + 1);
+            };
+        }
+
+        return {
+            triesKey: key,
+            fetchOptions: options,
         };
     }
 }
