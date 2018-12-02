@@ -74,6 +74,7 @@ export function parseGitRemoteUrl(url: string): GitRemoteUrl | null {
 export enum GitErrorCodes {
     AUTHENTICATION_FAIL = 'git.authenticationFail',
     REMOTE_NOT_FOUND = 'git.remoteNotFound',
+    MERGE_CONFLICTED = 'git.mergeConflicted',
 }
 
 
@@ -110,9 +111,17 @@ export class GitRemoteNotFoundError extends Error implements GitErrorImpl {
 }
 
 
+export class GitMergeConflictedError extends Error implements GitErrorImpl {
+    constructor(public readonly code = GitErrorCodes.MERGE_CONFLICTED) {
+        super('Conflicts happens during merge branches.');
+    }
+}
+
+
 export type GitError =
     GitAuthenticationFailError
-    | GitRemoteNotFoundError;
+    | GitRemoteNotFoundError
+    | GitMergeConflictedError;
 
 
 export interface GitCloneOptions {
@@ -176,4 +185,12 @@ export interface GitGetHistoryResult {
 export interface GitFindRemoteOptions {
     workspaceDirPath: string;
     remoteName: string;
+}
+
+
+export interface GitSyncWithRemoteOptions {
+    workspaceDirPath: string;
+    remoteName: string;
+    author: VcsAccount;
+    authentication: VcsAuthenticationInfo;
 }
