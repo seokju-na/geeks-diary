@@ -4,4 +4,5 @@
 --require source-map-support/register
 --ui bdd
 --recursive
+--timeout 10000
 src/main-process/**/*.spec.ts
