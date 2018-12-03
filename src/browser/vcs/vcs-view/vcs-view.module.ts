@@ -6,6 +6,7 @@ import { VcsAccountItemComponent } from './vcs-account-item/vcs-account-item.com
 import { VcsItemListManagerFactoryProvider } from './vcs-item-list-manager';
 import { VcsItemMaker } from './vcs-item-maker';
 import { VcsCommitItemComponent } from './vcs-commit-item/vcs-commit-item.component';
+import { VcsSyncMessageBoxComponent } from './vcs-sync-message-box/vcs-sync-message-box.component';
 
 
 @NgModule({
@@ -16,6 +17,7 @@ import { VcsCommitItemComponent } from './vcs-commit-item/vcs-commit-item.compon
         BaseVcsItemComponent,
         VcsAccountItemComponent,
         VcsCommitItemComponent,
+        VcsSyncMessageBoxComponent,
     ],
     entryComponents: [
         BaseVcsItemComponent,
@@ -29,6 +31,7 @@ import { VcsCommitItemComponent } from './vcs-commit-item/vcs-commit-item.compon
         BaseVcsItemComponent,
         VcsAccountItemComponent,
         VcsCommitItemComponent,
+        VcsSyncMessageBoxComponent,
     ],
 })
 export class VcsViewModule {

@@ -23,6 +23,10 @@
         };
     }
 
+    &__syncResultMessage {
+        padding: $spacing-half;
+    }
+
     &__tabContent {
         &--hidden {
             display: none !important;

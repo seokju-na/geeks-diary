@@ -27,6 +27,7 @@ describe('browser.vcs.VcsAccountDatabase', () => {
 
     afterEach(async () => {
         await accountDB.accounts.clear();
+        await accountDB.metadata.clear();
     });
 
     describe('#getAllAccounts', () => {
@@ -99,4 +100,50 @@ describe('browser.vcs.VcsAccountDatabase', () => {
     //         expect(defaultAccount).toEqual(next);
     //     });
     // });
+
+    describe('getRepositoryFetchAccount', () => {
+        it('should return vcs account if repository fetch account exists in metadata table.', async () => {
+            const account = vcsAccountDummy.create();
+            await accountDB.accounts.put(account);
+            await accountDB.metadata.put({
+                accountEmail: account.email,
+                isRepositoryFetchAccount: 1,
+            });
+
+            const result = await accountDB.getRepositoryFetchAccount();
+            expect(result).toEqual(account);
+        });
+
+        it('should return undefined if repository fetch account does not exist in metadata table.', async () => {
+            const account = vcsAccountDummy.create();
+            await accountDB.accounts.put(account);
+            await accountDB.metadata.put({
+                accountEmail: account.email,
+                isRepositoryFetchAccount: 0,
+            });
+
+            const result = await accountDB.getRepositoryFetchAccount();
+            expect(result).toEqual(undefined);
+        });
+    });
+
+    describe('setRepositoryFetchAccountAs', () => {
+        it('should remove previous data.', async () => {
+            const prevAccount = vcsAccountDummy.create();
+            await accountDB.metadata.put({
+                accountEmail: prevAccount.email,
+                isRepositoryFetchAccount: 1,
+            });
+
+            const nextAccount = vcsAccountDummy.create();
+            await accountDB.setRepositoryFetchAccountAs(nextAccount);
+
+            expect(await accountDB.metadata.get({
+                isRepositoryFetchAccount: 1,
+            })).toEqual({
+                accountEmail: nextAccount.email,
+                isRepositoryFetchAccount: 1,
+            });
+        });
+    });
 });

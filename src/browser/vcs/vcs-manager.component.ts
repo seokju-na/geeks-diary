@@ -11,13 +11,19 @@ import {
 import { FormControl } from '@angular/forms';
 import { select, Store } from '@ngrx/store';
 import { Observable, Subject, Subscription } from 'rxjs';
-import { filter, switchMap, take, tap } from 'rxjs/operators';
+import { filter, finalize, switchMap, take, tap } from 'rxjs/operators';
+import { GitSyncWithRemoteResult } from '../../core/git';
 import { VcsCommitItem } from '../../core/vcs';
 import { Dialog } from '../ui/dialog';
 import { TabControl } from '../ui/tabs/tab-control';
 import { VcsCommitDialogComponent, VcsCommitDialogData, VcsCommitDialogResult } from './vcs-local';
-import { VCS_ITEM_LIST_MANAGER, VcsItemListManager, VcsItemListManagerFactory } from './vcs-view';
-import { LoadMoreCommitHistoryAction } from './vcs.actions';
+import {
+    VCS_ITEM_LIST_MANAGER,
+    VcsItemListManager,
+    VcsItemListManagerFactory,
+    VcsSyncMessageBoxType,
+} from './vcs-view';
+import { LoadMoreCommitHistoryAction, SynchronizedAction, SynchronizedFailAction } from './vcs.actions';
 import { VcsService } from './vcs.service';
 import { VcsStateWithRoot } from './vcs.state';
 
@@ -43,6 +49,11 @@ export class VcsManagerComponent implements OnInit, OnDestroy, AfterViewInit {
     );
 
     @ViewChild('itemList') _itemList: ElementRef<HTMLElement>;
+
+    syncResultMessageType: VcsSyncMessageBoxType;
+    syncResultMessageDismissed = true;
+    syncWorkspaceResult: GitSyncWithRemoteResult | null = null;
+    syncWorkspaceErrorCaught: { message: string } | null = null;
 
     private allCommitsItemAreLoaded = false;
     private commitItemsAreLoading = false;
@@ -71,6 +82,12 @@ export class VcsManagerComponent implements OnInit, OnDestroy, AfterViewInit {
         } else {
             return 0;
         }
+    }
+
+    private _workspaceSynchronizing = false;
+
+    get workspaceSynchronizing(): boolean {
+        return this._workspaceSynchronizing;
     }
 
     ngOnInit(): void {
@@ -178,5 +195,42 @@ export class VcsManagerComponent implements OnInit, OnDestroy, AfterViewInit {
 
     loadMoreCommitHistory(): void {
         this.loadMoreCommitItems.next();
+    }
+
+    async syncWorkspace(): Promise<void> {
+        if (this._workspaceSynchronizing) {
+            return;
+        }
+
+        if (!(await this.vcs.canSyncRepository())) {
+            // TODO : Show dialog or something...
+            return;
+        }
+
+        this.syncResultMessageDismissed = false;
+        this.syncResultMessageType = null;
+        this._workspaceSynchronizing = true;
+        this.syncWorkspaceResult = null;
+        this.syncWorkspaceErrorCaught = null;
+
+        this.vcs
+            .syncRepository()
+            .pipe(finalize(() => this._workspaceSynchronizing = false))
+            .subscribe(
+                (result) => {
+                    this.syncResultMessageType = 'success';
+                    this.syncWorkspaceResult = result;
+                    this.store.dispatch(new SynchronizedAction());
+                },
+                (error) => {
+                    this.syncResultMessageType = 'error';
+                    this.syncWorkspaceErrorCaught = { message: error.message ? error.message : 'Unknown Error' };
+                    this.store.dispatch(new SynchronizedFailAction(error));
+                },
+            );
+    }
+
+    dismissSyncResultMessage(): void {
+        this.syncResultMessageDismissed = true;
     }
 }

@@ -1,0 +1,27 @@
+<div *ngIf="processing" fxLayout fxLayoutAlign="start center" fxLayoutGap="5px"
+     class="VcsSyncMessageBox__processing">
+    <gd-spinner></gd-spinner>
+    <span>Sync processing...</span>
+</div>
+
+<div *ngIf="!processing && contentExists" class="VcsSyncMessageBox__content">
+    <div fxLayout fxLayoutAlign="start center" class="VcsSyncMessageBox__head">
+        <gd-icon [name]="headIconName"></gd-icon>
+        <span fxFlex="1 1 auto">{{ headTitle }}</span>
+        <button gd-icon-button (click)="dismissThis()" aria-label="Dismiss message">
+            <gd-icon name="close"></gd-icon>
+        </button>
+    </div>
+
+    <p [ngSwitch]="type" class="VcsSyncMessageBox__message">
+        <ng-container *ngSwitchCase="'success'">
+            Finished at {{ successResult?.timestamp | date:'medium' }}<br>
+            <a (click)="openRemoteUrl(successResult?.remoteUrl)"
+               [attr.title]="successResult?.remoteUrl">See Remote</a>
+        </ng-container>
+        <ng-container *ngSwitchCase="'error'">
+            {{ error?.message }}
+            <!-- TODO : External editor -->
+        </ng-container>
+    </p>
+</div>

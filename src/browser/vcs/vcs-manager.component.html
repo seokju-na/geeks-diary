@@ -2,13 +2,24 @@
     <div fxFlex="none" fxLayout fxLayoutAlign="space-between center" class="VcsManager__title">
         <h1>Version Control</h1>
         <div class="VcsManager__tools">
-            <button gd-icon-button aria-label="Sync workspace">
-                <gd-icon name="refresh"></gd-icon>
+            <button (click)="syncWorkspace()" gd-icon-button aria-label="Sync workspace"
+                    id="vcs-sync-workspace-button">
+                <gd-icon *ngIf="!workspaceSynchronizing" name="refresh"></gd-icon>
+                <gd-spinner *ngIf="workspaceSynchronizing"></gd-spinner>
             </button>
         </div>
     </div>
 
     <gd-tab-group [tabControl]="tabControl"></gd-tab-group>
+
+    <gd-vcs-sync-message-box
+        *ngIf="!syncResultMessageDismissed"
+        (dismiss)="dismissSyncResultMessage()"
+        [processing]="workspaceSynchronizing"
+        [type]="syncResultMessageType"
+        [successResult]="syncWorkspaceResult"
+        [error]="syncWorkspaceErrorCaught"
+        class="VcsManager__syncResultMessage"></gd-vcs-sync-message-box>
 
     <!-- Changes Tab -->
     <div fxFlex="1 1 auto" fxLayout="column"

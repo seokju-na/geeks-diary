@@ -48,6 +48,7 @@ export const AppNoteContributionUpdatedEffectActionsRegistration: Provider = {
     useValue: [
         NoteCollectionActionTypes.LOAD_COLLECTION_COMPLETE,
         VcsActionTypes.COMMITTED,
+        VcsActionTypes.SYNCHRONIZED,
     ],
 };
 

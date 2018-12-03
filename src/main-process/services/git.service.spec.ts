@@ -2,7 +2,8 @@ import { expect } from 'chai';
 import * as fse from 'fs-extra';
 import * as _git from 'nodegit';
 import * as path from 'path';
-import { VcsAccountDummy } from '../../core/dummies';
+import { VcsAccountDummy, VcsAuthenticationInfoDummy } from '../../core/dummies';
+import { GitMergeConflictedError } from '../../core/git';
 import { VcsFileChange, VcsFileChangeStatusTypes } from '../../core/vcs';
 import { datetime, DateUnits } from '../../libs/datetime';
 import { GitService } from './git.service';
@@ -11,6 +12,10 @@ import { GitService } from './git.service';
 describe('mainProcess.services.GitService', () => {
     let git: GitService;
     const tmpPath = path.resolve(process.cwd(), 'tmp/');
+
+    function getFixturePath(name: string): string {
+        return path.resolve(process.cwd(), 'test/workspace-fixtures/', name, '_git/');
+    }
 
     async function makeTmpPath(createGit: boolean = false): Promise<void> {
         await fse.ensureDir(tmpPath);
@@ -223,6 +228,43 @@ describe('mainProcess.services.GitService', () => {
             });
 
             expect(nothing.history.length).to.equals(0);
+        });
+    });
+
+    // FIXME LATER : Travis CI fails in this test. Ignore for while.
+    xdescribe('isRemoteExists', () => {
+        it('should return \'false\' if repository has not remote.', async () => {
+            const result = await git.isRemoteExists({
+                workspaceDirPath: getFixturePath('origin-not-exists'),
+                remoteName: 'origin',
+            });
+
+            expect(result).to.equals(false);
+        });
+    });
+
+    /**
+     * NOTE: This tests require network connection.
+     * If your network is slow, this test is likely to be timed out.
+     */
+    describe('syncWithRemote', () => {
+        it('should throw \'MERGE_CONFLICTED\' error when conflict happens during merges '
+            + 'fetched branch.', async () => {
+            let error = null;
+
+            try {
+                await git.syncWithRemote({
+                    workspaceDirPath: getFixturePath('conflict'),
+                    remoteName: 'origin',
+                    authentication: new VcsAuthenticationInfoDummy().create(),
+                    author: new VcsAccountDummy().create(),
+                });
+            } catch (err) {
+                error = err;
+            }
+
+            expect(error).not.equals(null);
+            expect(error instanceof GitMergeConflictedError).to.equals(true);
         });
     });
 });

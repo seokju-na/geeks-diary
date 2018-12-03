@@ -1,0 +1,33 @@
+@import "../../../ui/style/spacing";
+@import "../../../ui/style/typography";
+
+.VcsSyncMessageBox {
+    &__processing {
+        padding: $spacing-half;
+    }
+
+    &__content {
+        padding: $spacing-half;
+    }
+
+    &__head {
+        > span {
+            display: inline-block;
+            padding: 0 $spacing-half;
+
+            font: {
+                size: $font-size;
+                weight: $font-weight-semiBold;
+            }
+        }
+    }
+
+    &__message {
+        margin: 0;
+        padding: 0 $spacing-half;
+
+        > a {
+            text-decoration: none;
+        }
+    }
+}

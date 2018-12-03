@@ -24,7 +24,6 @@ export interface GitRemoteUrl {
 }
 
 
-
 // Examples:
 // https://github.com/octocat/Hello-World.git
 // https://github.com/octocat/Hello-World.git/
@@ -73,39 +72,66 @@ export function parseGitRemoteUrl(url: string): GitRemoteUrl | null {
 
 
 export enum GitErrorCodes {
-    AUTHENTICATION_FAIL = 'AUTHENTICATION_FAIL',
+    AUTHENTICATION_FAIL = 'git.authenticationFail',
+    REMOTE_NOT_FOUND = 'git.remoteNotFound',
+    MERGE_CONFLICTED = 'git.mergeConflicted',
+    NETWORK_ERROR = 'git.networkError',
 }
 
 
 /* tslint:disable */
 /** A mapping from regexes to the git error they identify. */
-export const gitErrorRegexes: {[key: string]: RegExp} = {
+export const gitErrorRegexes: { [key: string]: RegExp } = {
     [GitErrorCodes.AUTHENTICATION_FAIL]: /authentication required/,
+    [GitErrorCodes.REMOTE_NOT_FOUND]: /remote '.*' does not exist/,
+    [GitErrorCodes.NETWORK_ERROR]: /curl error: Could not resolve host:/,
 };
+
 /* tslint:enable */
 
 
-export class GitError extends Error {
-    readonly errorDescription: string;
+interface GitErrorImpl {
+    readonly code: GitErrorCodes;
+}
 
-    constructor(public readonly code: any) {
-        super(getDescriptionForError(code));
 
+export class GitAuthenticationFailError extends Error implements GitErrorImpl {
+    constructor(public readonly code = GitErrorCodes.AUTHENTICATION_FAIL) {
+        super('Authentication failed. Please check your credential.');
         this.name = 'GitError';
-        this.errorDescription = getDescriptionForError(code);
     }
 }
 
 
-function getDescriptionForError(code: GitErrorCodes): string {
-    switch (code) {
-        case GitErrorCodes.AUTHENTICATION_FAIL:
-            return 'Authentication failed. Please check your credential.';
-
-        default:
-            return 'Unknown Error';
+export class GitRemoteNotFoundError extends Error implements GitErrorImpl {
+    constructor(
+        public readonly code = GitErrorCodes.REMOTE_NOT_FOUND,
+        remoteName?: string,
+    ) {
+        super(remoteName ? `Remote \'${remoteName}\' does not exist.` : 'Remote does not exist.');
     }
 }
+
+
+export class GitMergeConflictedError extends Error implements GitErrorImpl {
+    constructor(public readonly code = GitErrorCodes.MERGE_CONFLICTED) {
+        super('Conflicts happens during merge branches.');
+    }
+}
+
+
+export class GitNetworkError extends Error implements GitErrorImpl {
+    constructor(public readonly code = GitErrorCodes.NETWORK_ERROR) {
+        super('Network error.');
+    }
+}
+
+
+export type GitError =
+    GitAuthenticationFailError
+    | GitRemoteNotFoundError
+    | GitMergeConflictedError
+    | GitNetworkError;
 
 
 export interface GitCloneOptions {
@@ -129,7 +155,7 @@ export interface GitCommitOptions {
     author: VcsAccount;
 
     /** When Commit is created. If not provided, current is default. */
-     createdAt?: {
+    createdAt?: {
         time: number;
         offset: number;
     };
@@ -163,4 +189,24 @@ export interface GitGetHistoryResult {
 
     /** Previous request options. */
     previous: GitGetHistoryOptions;
+}
+
+
+export interface GitFindRemoteOptions {
+    workspaceDirPath: string;
+    remoteName: string;
+}
+
+
+export interface GitSyncWithRemoteOptions {
+    workspaceDirPath: string;
+    remoteName: string;
+    author: VcsAccount;
+    authentication: VcsAuthenticationInfo;
+}
+
+
+export interface GitSyncWithRemoteResult {
+    timestamp: number;
+    remoteUrl: string;
 }

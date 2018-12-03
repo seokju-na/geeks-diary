@@ -9,6 +9,8 @@ export enum VcsActionTypes {
     LOAD_COMMIT_HISTORY = '[Vcs] Load commit history',
     LOAD_MORE_COMMIT_HISTORY = '[Vcs] Load more commit history',
     LOAD_COMMIT_HISTORY_FAIL = '[Vcs] Load commit history fail',
+    SYNCHRONIZED = '[Vcs] Synchronized',
+    SYNCHRONIZED_FAIL = '[Vcs] Synchronized fail',
 }
 
 
@@ -58,8 +60,21 @@ export class LoadMoreCommitHistoryAction implements Action {
 }
 
 
-export class LoadCommitHistoryFail implements Action {
+export class LoadCommitHistoryFailAction implements Action {
     readonly type = VcsActionTypes.LOAD_COMMIT_HISTORY_FAIL;
+
+    constructor(public readonly error?: any) {
+    }
+}
+
+
+export class SynchronizedAction implements Action {
+    readonly type = VcsActionTypes.SYNCHRONIZED;
+}
+
+
+export class SynchronizedFailAction implements Action {
+    readonly type = VcsActionTypes.SYNCHRONIZED_FAIL;
 
     constructor(public readonly error?: any) {
     }
@@ -72,4 +87,6 @@ export type VcsAction =
     | CommittedAction
     | LoadCommitHistoryAction
     | LoadMoreCommitHistoryAction
-    | LoadCommitHistoryFail;
+    | LoadCommitHistoryFailAction
+    | SynchronizedAction
+    | SynchronizedFailAction;

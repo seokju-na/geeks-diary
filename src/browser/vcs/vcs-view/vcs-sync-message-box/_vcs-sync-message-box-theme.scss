@@ -1,0 +1,47 @@
+@import "../../../ui/style/theming";
+
+@mixin gd-vcs-sync-message-box-theme($theme) {
+    $background: map-get($theme, background);
+    $foreground: map-get($theme, foreground);
+
+    .VcsSyncMessageBox {
+        &__processing {
+            background-color: gd-color($background, selected-button);
+            border: 1px solid gd-color($foreground, divider);
+            border-radius: 2.5px;
+        }
+
+        &__content {
+            border-radius: 2.5px;
+        }
+
+        &__message > a {
+            $contrast: map-get($color-green, contrast);
+            border-bottom: 1px dashed map-get($contrast, 600);
+        }
+
+        &--type {
+            &-success {
+                .VcsSyncMessageBox__content {
+                    background-color: map-get($color-green, 600);
+
+                    $contrast: map-get($color-green, contrast);
+                    color: map-get($contrast, 600);
+
+                    box-shadow: 1px 1px 0 2px map-get($color-green, 900);
+                }
+            }
+
+            &-error {
+                .VcsSyncMessageBox__content {
+                    background-color: map-get($color-red, 600);
+
+                    $contrast: map-get($color-red, contrast);
+                    color: map-get($contrast, 600);
+
+                    box-shadow: 1px 1px 0 2px map-get($color-red, 900);
+                }
+            }
+        }
+    }
+}

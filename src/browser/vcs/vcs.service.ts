@@ -1,8 +1,9 @@
 import { Inject, Injectable } from '@angular/core';
 import { from, Observable, of } from 'rxjs';
-import { map, mapTo, switchMap, tap } from 'rxjs/operators';
-import { GitGetHistoryOptions } from '../../core/git';
+import { filter, map, mapTo, switchMap, tap } from 'rxjs/operators';
+import { GitGetHistoryOptions, GitSyncWithRemoteResult } from '../../core/git';
 import { VcsAccount, VcsCommitItem, VcsFileChange } from '../../core/vcs';
+import { toPromise } from '../../libs/rx';
 import { GitService, WorkspaceService } from '../shared';
 import { VCS_ACCOUNT_DATABASE, VcsAccountDatabase } from './vcs-account-database';
 import { VcsRemoteProvider, VcsRemoteProviderFactory, VcsRemoteProviderType } from './vcs-remote';
@@ -154,6 +155,28 @@ export class VcsService {
         } else {
             return this.git.cloneRepository(sourceUrl, distLocalPath);
         }
+    }
+
+    async canSyncRepository(): Promise<boolean> {
+        const fetchAccount = await this.accountDB.getRepositoryFetchAccount();
+        const isRemoteExists = await toPromise(this.git.isRemoteExists({
+            workspaceDirPath: this.workspace.configs.rootDirPath,
+            remoteName: 'origin',
+        }));
+
+        return (fetchAccount !== undefined) && isRemoteExists;
+    }
+
+    syncRepository(): Observable<GitSyncWithRemoteResult> {
+        return from(this.accountDB.getRepositoryFetchAccount()).pipe(
+            filter(fetchAccount => fetchAccount !== undefined),
+            switchMap(fetchAccount => this.git.syncWithRemote({
+                workspaceDirPath: this.workspace.configs.rootDirPath,
+                remoteName: 'origin',
+                authentication: fetchAccount.authentication,
+                author: fetchAccount,
+            })),
+        );
     }
 
     private checkIfRemoteProviderIsProvided(): void {

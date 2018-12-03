@@ -1,7 +1,15 @@
 import { Injectable, NgZone, OnDestroy } from '@angular/core';
 import { EOL } from 'os';
 import { from, Observable } from 'rxjs';
-import { GitCloneOptions, GitCommitOptions, GitGetHistoryOptions, GitGetHistoryResult } from '../../core/git';
+import {
+    GitCloneOptions,
+    GitCommitOptions,
+    GitFindRemoteOptions,
+    GitGetHistoryOptions,
+    GitGetHistoryResult,
+    GitSyncWithRemoteOptions,
+    GitSyncWithRemoteResult,
+} from '../../core/git';
 import { VcsAccount, VcsAuthenticationInfo, VcsFileChange } from '../../core/vcs';
 import { IpcActionClient } from '../../libs/ipc';
 import { enterZone } from '../../libs/rx';
@@ -66,6 +74,20 @@ export class GitService implements OnDestroy {
     getCommitHistory(options: GitGetHistoryOptions): Observable<GitGetHistoryResult> {
         return from(this.ipcClient.performAction<GitGetHistoryOptions, GitGetHistoryResult>(
             'getCommitHistory',
+            options,
+        ));
+    }
+
+    isRemoteExists(options: GitFindRemoteOptions): Observable<boolean> {
+        return from(this.ipcClient.performAction<GitFindRemoteOptions, boolean>(
+            'isRemoteExists',
+            options,
+        ));
+    }
+
+    syncWithRemote(options: GitSyncWithRemoteOptions): Observable<GitSyncWithRemoteResult> {
+        return from(this.ipcClient.performAction<GitSyncWithRemoteOptions, GitSyncWithRemoteResult>(
+            'syncWithRemote',
             options,
         ));
     }

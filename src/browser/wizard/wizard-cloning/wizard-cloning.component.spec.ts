@@ -14,7 +14,7 @@ import {
     typeInElement,
 } from '../../../../test/helpers';
 import { MockDialog } from '../../../../test/mocks/browser';
-import { GitError, GitErrorCodes } from '../../../core/git';
+import { GitAuthenticationFailError } from '../../../core/git';
 import { VcsAuthenticateError, VcsAuthenticationTypes } from '../../../core/vcs';
 import { WORKSPACE_DIR_PATH } from '../../../core/workspace';
 import { SharedModule, WorkspaceService } from '../../shared';
@@ -340,7 +340,7 @@ describe('browser.wizard.wizardCloning.WizardCloningComponent', () => {
             remoteUrlInputEl.blur();
             fixture.detectChanges();
 
-            const error = new GitError(GitErrorCodes.AUTHENTICATION_FAIL);
+            const error = new GitAuthenticationFailError();
 
             (vcs.cloneRepository as Spy).and.returnValue(throwError(error));
 
@@ -357,7 +357,7 @@ describe('browser.wizard.wizardCloning.WizardCloningComponent', () => {
 
             expect(alertDialogRef).toBeDefined();
             expect(alertDialogRef.config.data.isAlert).toBe(true);
-            expect(alertDialogRef.config.data.body).toEqual(error.errorDescription);
+            expect(alertDialogRef.config.data.body).toEqual(error.message);
         }));
 
         it('should call init workspace after clone complete.', fakeAsync(() => {
