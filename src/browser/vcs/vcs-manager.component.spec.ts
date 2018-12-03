@@ -1,6 +1,7 @@
 import { ComponentFixture, fakeAsync, flush, TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
 import { combineReducers, Store, StoreModule } from '@ngrx/store';
+import { of } from 'rxjs';
 import { MockDialog } from '../../../test/mocks/browser';
 import { Dialog } from '../ui/dialog';
 import { UiModule } from '../ui/ui.module';
@@ -10,11 +11,12 @@ import { createDummies, createFakeEvent, fastTestSetup } from '../../../test/hel
 import { VcsFileChange } from '../../core/vcs';
 import { CheckboxComponent } from '../ui/checkbox';
 import { VcsFileChangeDummy } from './dummies';
-import { UpdateFileChangesAction } from './vcs.actions';
+import { SynchronizedAction, UpdateFileChangesAction } from './vcs.actions';
 import { vcsReducerMap } from './vcs.reducer';
 import { VcsService } from './vcs.service';
 import { VcsStateWithRoot } from './vcs.state';
 import { VcsManagerComponent } from './vcs-manager.component';
+import Spy = jasmine.Spy;
 
 
 describe('browser.vcs.VcsManagerComponent', () => {
@@ -35,6 +37,9 @@ describe('browser.vcs.VcsManagerComponent', () => {
 
     const getCommitButtonEl = (): HTMLButtonElement =>
         fixture.debugElement.query(By.css('.VcsManager__commitButton')).nativeElement as HTMLButtonElement;
+
+    const getSyncWorkspaceButtonEl = (): HTMLButtonElement =>
+        fixture.debugElement.query(By.css('#vcs-sync-workspace-button')).nativeElement as HTMLButtonElement;
 
     /** Initialize vcs items with given file changes. */
     function initVcsItemsWith(
@@ -58,6 +63,8 @@ describe('browser.vcs.VcsManagerComponent', () => {
         vcs = jasmine.createSpyObj('vcs', [
             'fetchMoreCommitHistory',
             'commitHistoryFetchingSize',
+            'canSyncRepository',
+            'syncRepository',
         ]);
 
         await TestBed
@@ -92,6 +99,8 @@ describe('browser.vcs.VcsManagerComponent', () => {
     beforeEach(() => {
         store = TestBed.get(Store);
         mockDialog = TestBed.get(Dialog);
+
+        spyOn(store, 'dispatch').and.callThrough();
 
         fixture = TestBed.createComponent(VcsManagerComponent);
         component = fixture.componentInstance;
@@ -211,5 +220,18 @@ describe('browser.vcs.VcsManagerComponent', () => {
 
     describe('History Tab', () => {
         // TODO(@seoju-na): ...
+    });
+
+    describe('Sync Workspace', () => {
+        it('should dispatch \'SYNCHRONIZED\' action after sync repository completes, '
+            + 'when use click sync button.', fakeAsync(() => {
+            (vcs.canSyncRepository as Spy).and.returnValue(Promise.resolve(true));
+            (vcs.syncRepository as Spy).and.returnValue(of(null));
+
+            getSyncWorkspaceButtonEl().click();
+            flush();
+
+            expect(store.dispatch).toHaveBeenCalledWith(new SynchronizedAction());
+        }));
     });
 });

@@ -4,7 +4,7 @@ import { of } from 'rxjs';
 import { catchError, debounceTime, filter, map, switchMap } from 'rxjs/operators';
 import {
     LoadCommitHistoryAction,
-    LoadCommitHistoryFail,
+    LoadCommitHistoryFailAction,
     UpdateFileChangesAction,
     UpdateFileChangesErrorAction,
     VcsActionTypes,
@@ -44,7 +44,7 @@ export class VcsEffects {
             history,
             allLoaded: history.length < this.vcsService.commitHistoryFetchingSize,
         })),
-        catchError(error => of(new LoadCommitHistoryFail(error))),
+        catchError(error => of(new LoadCommitHistoryFailAction(error))),
     );
 
     constructor(
@@ -55,10 +55,12 @@ export class VcsEffects {
     ) {
         this.detectChangesEffectActions = (detectChangesEffectActions || []).concat([
             VcsActionTypes.COMMITTED,
+            VcsActionTypes.SYNCHRONIZED,
         ]);
 
         this.historyChangedEffectActions = (historyChangedEffectActions || []).concat([
             VcsActionTypes.COMMITTED,
+            VcsActionTypes.SYNCHRONIZED,
         ]);
     }
 }

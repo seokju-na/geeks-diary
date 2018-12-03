@@ -3,9 +3,10 @@ import { fakeAsync, flush, TestBed } from '@angular/core/testing';
 import { Observable, of } from 'rxjs';
 import { fastTestSetup } from '../../../test/helpers';
 import { VcsAccountDummy } from '../../core/dummies';
+import { GitFindRemoteOptions, GitSyncWithRemoteOptions } from '../../core/git';
 import { VcsAccount, VcsAuthenticationInfo, VcsAuthenticationTypes, VcsRemoteRepository } from '../../core/vcs';
 import { toPromise } from '../../libs/rx';
-import { GitService, SharedModule } from '../shared';
+import { GitService, SharedModule, WORKSPACE_DEFAULT_CONFIG, WorkspaceConfig } from '../shared';
 import { VCS_ACCOUNT_DATABASE, VcsAccountDatabase, VcsAccountDatabaseProvider } from './vcs-account-database';
 import { VcsRemoteModule, VcsRemoteProvider, VcsRemoteProviderFactory } from './vcs-remote';
 import { VcsService } from './vcs.service';
@@ -41,6 +42,9 @@ describe('browser.vcs.VcsService', () => {
     let git: GitService;
 
     const accountDummy = new VcsAccountDummy();
+    const workspaceConfig: WorkspaceConfig = {
+        rootDirPath: '/test/workspace',
+    };
 
     fastTestSetup();
 
@@ -54,6 +58,7 @@ describe('browser.vcs.VcsService', () => {
             providers: [
                 VcsAccountDatabaseProvider,
                 VcsService,
+                { provide: WORKSPACE_DEFAULT_CONFIG, useValue: workspaceConfig },
             ],
         });
     });
@@ -66,6 +71,11 @@ describe('browser.vcs.VcsService', () => {
 
         spyOn(removeProviderFactory, 'create').and.returnValue(new TestVcsRemoteProvider());
         vcs.setRemoveProvider('test' as any);
+    });
+
+    afterEach(async () => {
+        await accountDB.accounts.clear();
+        await accountDB.metadata.clear();
     });
 
     describe('loginRemoteWithBasicAuthorization', () => {
@@ -196,5 +206,62 @@ describe('browser.vcs.VcsService', () => {
     });
 
     describe('fetchMoreCommitHistory', () => {
+    });
+
+    describe('canSyncRepository', () => {
+        it('should return true if fetch account and remote exists.', async () => {
+            const fetchAccount = accountDummy.create();
+            await accountDB.addNewAccount(fetchAccount);
+            await accountDB.setRepositoryFetchAccountAs(fetchAccount);
+
+            spyOn(git, 'isRemoteExists').and.returnValue(of(true));
+
+            const result = await vcs.canSyncRepository();
+
+            expect(result).toBe(true);
+            expect(git.isRemoteExists).toHaveBeenCalledWith({
+                workspaceDirPath: workspaceConfig.rootDirPath,
+                remoteName: 'origin',
+            } as GitFindRemoteOptions);
+        });
+
+        it('should return false if fetch account not exists.', async () => {
+            await accountDB.metadata.clear();
+            spyOn(git, 'isRemoteExists').and.returnValue(of(true));
+
+            const result = await vcs.canSyncRepository();
+            expect(result).toBe(false);
+        });
+
+        it('should return false if remote is not exists.', async () => {
+            const fetchAccount = accountDummy.create();
+            await accountDB.addNewAccount(fetchAccount);
+            await accountDB.setRepositoryFetchAccountAs(fetchAccount);
+
+            spyOn(git, 'isRemoteExists').and.returnValue(of(false));
+
+            const result = await vcs.canSyncRepository();
+            expect(result).toBe(false);
+        });
+    });
+
+    describe('syncRepository', () => {
+        it('should call sync method with fetch account.', () => {
+            const fetchAccount = accountDummy.create();
+
+            spyOn(accountDB, 'getRepositoryFetchAccount').and.returnValue(of(fetchAccount));
+            spyOn(git, 'syncWithRemote').and.returnValue(of(null));
+
+            const callback = jasmine.createSpy('sync repository callback');
+            const subscription = vcs.syncRepository().subscribe(callback);
+
+            expect(git.syncWithRemote).toHaveBeenCalledWith({
+                workspaceDirPath: workspaceConfig.rootDirPath,
+                remoteName: 'origin',
+                authentication: fetchAccount.authentication,
+                author: fetchAccount,
+            } as GitSyncWithRemoteOptions);
+            subscription.unsubscribe();
+        });
     });
 });
