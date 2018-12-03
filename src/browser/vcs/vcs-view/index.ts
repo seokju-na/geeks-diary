@@ -6,3 +6,4 @@ export * from './vcs-item';
 export * from './vcs-item-list-manager';
 export * from './vcs-account-item/vcs-account-item.component';
 export * from './vcs-commit-item/vcs-commit-item.component';
+export * from './vcs-sync-message-box/vcs-sync-message-box.component';
