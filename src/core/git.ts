@@ -75,6 +75,7 @@ export enum GitErrorCodes {
     AUTHENTICATION_FAIL = 'git.authenticationFail',
     REMOTE_NOT_FOUND = 'git.remoteNotFound',
     MERGE_CONFLICTED = 'git.mergeConflicted',
+    NETWORK_ERROR = 'git.networkError',
 }
 
 
@@ -83,6 +84,7 @@ export enum GitErrorCodes {
 export const gitErrorRegexes: { [key: string]: RegExp } = {
     [GitErrorCodes.AUTHENTICATION_FAIL]: /authentication required/,
     [GitErrorCodes.REMOTE_NOT_FOUND]: /remote '.*' does not exist/,
+    [GitErrorCodes.NETWORK_ERROR]: /curl error: Could not resolve host:/,
 };
 
 /* tslint:enable */
@@ -118,10 +120,18 @@ export class GitMergeConflictedError extends Error implements GitErrorImpl {
 }
 
 
+export class GitNetworkError extends Error implements GitErrorImpl {
+    constructor(public readonly code = GitErrorCodes.NETWORK_ERROR) {
+        super('Network error.');
+    }
+}
+
+
 export type GitError =
     GitAuthenticationFailError
     | GitRemoteNotFoundError
-    | GitMergeConflictedError;
+    | GitMergeConflictedError
+    | GitNetworkError;
 
 
 export interface GitCloneOptions {
@@ -193,4 +203,10 @@ export interface GitSyncWithRemoteOptions {
     remoteName: string;
     author: VcsAccount;
     authentication: VcsAuthenticationInfo;
+}
+
+
+export interface GitSyncWithRemoteResult {
+    timestamp: number;
+    remoteUrl: string;
 }

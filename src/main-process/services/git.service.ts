@@ -11,9 +11,10 @@ import {
     GitFindRemoteOptions,
     GitGetHistoryOptions,
     GitGetHistoryResult,
-    GitMergeConflictedError,
+    GitMergeConflictedError, GitNetworkError,
     GitRemoteNotFoundError,
     GitSyncWithRemoteOptions,
+    GitSyncWithRemoteResult,
 } from '../../core/git';
 import {
     VcsAuthenticationInfo,
@@ -78,6 +79,7 @@ export class GitService extends Service {
         const { triesKey, fetchOptions } = this.getFetchOptions(options.authentication);
         const cloneOptions: CloneOptions = {
             fetchOpts: fetchOptions,
+            bare: 0,
         };
 
         const repository = await this.git.Clone.clone(
@@ -224,7 +226,7 @@ export class GitService extends Service {
     }
 
     @IpcActionHandler('syncWithRemote')
-    async syncWithRemote(options: GitSyncWithRemoteOptions): Promise<void> {
+    async syncWithRemote(options: GitSyncWithRemoteOptions): Promise<GitSyncWithRemoteResult> {
         const repository = await this.openRepository(options.workspaceDirPath);
 
         // Pull
@@ -252,10 +254,20 @@ export class GitService extends Service {
 
         await remote.push(
             ['refs/heads/master:refs/heads/master'],
-            pushFetchOptions,
+            { callbacks: pushFetchOptions.fetchOptions.callbacks },
         );
 
         this.fetchTriesMap.delete(pushFetchOptions.triesKey);
+
+        const result: GitSyncWithRemoteResult = {
+            timestamp: Date.now(),
+            remoteUrl: remote.url(),
+        };
+
+        remote.free();
+        repository.free();
+
+        return result;
     }
 
     handleError(error: any): GitError | any {
@@ -278,6 +290,8 @@ export class GitService extends Service {
                 return new GitAuthenticationFailError();
             case GitErrorCodes.REMOTE_NOT_FOUND:
                 return new GitRemoteNotFoundError();
+            case GitErrorCodes.NETWORK_ERROR:
+                return new GitNetworkError();
         }
     }
 
@@ -361,23 +375,21 @@ export class GitService extends Service {
                     throw new Error('Authentication Error');
                 }
 
-                const type = options.authentication.type;
+                this.fetchTriesMap.set(key, tries + 1);
 
-                switch (type) {
+                switch (authentication.type) {
                     case VcsAuthenticationTypes.BASIC:
                         return this.git.Cred.userpassPlaintextNew(
-                            options.authentication.username,
-                            options.authentication.password,
+                            authentication.username,
+                            authentication.password,
                         );
 
                     case VcsAuthenticationTypes.OAUTH2_TOKEN:
                         return this.git.Cred.userpassPlaintextNew(
-                            options.authentication.token,
+                            authentication.token,
                             'x-oauth-basic',
                         );
                 }
-
-                this.fetchTriesMap.set(key, tries + 1);
             };
         }
 
