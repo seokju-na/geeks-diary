@@ -1,8 +1,15 @@
 import { Injectable } from '@angular/core';
 import { Actions, Effect, ofType } from '@ngrx/effects';
 import { map, tap } from 'rxjs/operators';
+import { MenuService } from '../../shared';
 import { NoteCollectionActionTypes, SelectNoteAction } from '../note-collection';
-import { LoadNoteContentAction, LoadNoteContentCompleteAction, NoteEditorActionTypes } from './note-editor.actions';
+import {
+    ChangeViewModeAction,
+    LoadNoteContentAction,
+    LoadNoteContentCompleteAction,
+    NoteEditorActionTypes,
+} from './note-editor.actions';
+import { NoteEditorViewModes } from './note-editor.state';
 import { NoteSnippetListManager } from './note-snippet-list-manager';
 
 
@@ -31,9 +38,32 @@ export class NoteEditorEffects {
         }),
     );
 
+    @Effect({ dispatch: false })
+    updateNoteViewMenuState = this.actions.pipe(
+        ofType(NoteEditorActionTypes.CHANGE_VIEW_MODE),
+        tap((action: ChangeViewModeAction) => {
+            let activeMode: 'note-view-show-both' | 'note-view-editor-only' | 'note-view-preview-only';
+
+            switch (action.payload.viewMode) {
+                case NoteEditorViewModes.SHOW_BOTH:
+                    activeMode = 'note-view-show-both';
+                    break;
+                case NoteEditorViewModes.PREVIEW_ONLY:
+                    activeMode = 'note-view-preview-only';
+                    break;
+                case NoteEditorViewModes.EDITOR_ONLY:
+                    activeMode = 'note-view-editor-only';
+                    break;
+            }
+
+            this.menu.updateNoteEditorViewMenuState(activeMode);
+        }),
+    );
+
     constructor(
         private actions: Actions,
         private snippetListManager: NoteSnippetListManager,
+        private menu: MenuService,
     ) {
     }
 }

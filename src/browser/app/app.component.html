@@ -6,7 +6,9 @@
         <main fxFlex="1 1 auto" fxLayout="column"
               [class.App__content--show]="noteContentLoaded | async" class="App__content">
             <gd-note-header></gd-note-header>
-            <div fxLayout class="App__sections">
+            <div fxLayout
+                 [ngClass]="'App__sections--' + (noteEditorViewModeAsClassName | async)"
+                 class="App__sections">
                 <section>
                     <gd-note-editor></gd-note-editor>
                 </section>

@@ -1,6 +1,7 @@
 import { Action } from '@ngrx/store';
 import { NoteItem } from '../note-collection';
 import { NoteContent, NoteSnippetContent } from './note-content.model';
+import { NoteEditorViewModes } from './note-editor.state';
 
 
 export enum NoteEditorActionTypes {
@@ -19,6 +20,7 @@ export enum NoteEditorActionTypes {
     SAVE_NOTE_CONTENT_ERROR = '[NoteEditor] Save note content error',
     FOCUS_SNIPPET = '[NoteEditor] Focus snippet',
     BLUR_SNIPPET = '[NoteEditor] Blur snippet',
+    CHANGE_VIEW_MODE = '[NoteEditor] Change view mode',
 }
 
 
@@ -136,6 +138,14 @@ export class BlurSnippetAction implements Action {
 }
 
 
+export class ChangeViewModeAction implements Action {
+    readonly type = NoteEditorActionTypes.CHANGE_VIEW_MODE;
+
+    constructor(public readonly payload: { viewMode: NoteEditorViewModes }) {
+    }
+}
+
+
 export type NoteEditorAction =
     InitNoteEditorAction
     | LoadNoteContentAction
@@ -151,4 +161,5 @@ export type NoteEditorAction =
     | SaveNoteContentCompleteAction
     | SaveNoteContentErrorAction
     | FocusSnippetAction
-    | BlurSnippetAction;
+    | BlurSnippetAction
+    | ChangeViewModeAction;

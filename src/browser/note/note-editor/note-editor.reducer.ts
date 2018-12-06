@@ -154,6 +154,12 @@ export function noteEditorReducer(
                 activeSnippetIndex: null,
             };
 
+        case NoteEditorActionTypes.CHANGE_VIEW_MODE:
+            return {
+                ...state,
+                viewMode: action.payload.viewMode,
+            };
+
         default:
             return state;
     }

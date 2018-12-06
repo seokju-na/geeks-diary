@@ -4,7 +4,8 @@
     </div>
 
     <div *ngIf="noteSelectionExists" fxLayout fxLayoutAlign="start center" class="NoteHeader__toolbar">
-        <button gd-icon-button aria-label="Change editor view mode">
+        <button gd-icon-button aria-label="Change editor view mode"
+                (click)="openEditorViewModeMenu()" id="note-change-editor-view-mode-button">
             <gd-icon name="eye"></gd-icon>
         </button>
         <button gd-icon-button aria-label="View history of note">
