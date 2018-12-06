@@ -1,9 +1,10 @@
 import { Component, Inject, OnInit } from '@angular/core';
-import { Store } from '@ngrx/store';
+import { select, Store } from '@ngrx/store';
 import { Observable } from 'rxjs';
 import { filter, map } from 'rxjs/operators';
 import { NoteFinderComponent } from '../note/note-collection';
 import { NoteCollectionService } from '../note/note-collection/note-collection.service';
+import { ChangeViewModeAction, NoteEditorViewModes } from '../note/note-editor';
 import { MenuEvent, MenuService, WORKSPACE_DATABASE, WorkspaceDatabase } from '../shared';
 import { Themes, ThemeService } from '../ui/style';
 import { VcsManagerComponent, VcsService } from '../vcs';
@@ -38,6 +39,20 @@ export class AppComponent implements OnInit {
 
     readonly noteContentLoaded: Observable<boolean> = this.store.pipe(
         map(state => state.note.editor.loaded),
+    );
+
+    readonly noteEditorViewModeAsClassName: Observable<string> = this.store.pipe(
+        select(state => state.note.editor.viewMode),
+        map((viewMode) => {
+            switch (viewMode) {
+                case NoteEditorViewModes.PREVIEW_ONLY:
+                    return 'previewOnly';
+                case NoteEditorViewModes.EDITOR_ONLY:
+                    return 'editorOnly';
+                case NoteEditorViewModes.SHOW_BOTH:
+                    return 'showBoth';
+            }
+        }),
     );
 
     constructor(
@@ -77,5 +92,8 @@ export class AppComponent implements OnInit {
         });
 
         this.vcs.setCommitHistoryFetchingSize(100);
+
+        // FIXME LATER
+        this.store.dispatch(new ChangeViewModeAction({ viewMode: NoteEditorViewModes.SHOW_BOTH }));
     }
 }

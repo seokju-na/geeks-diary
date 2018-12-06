@@ -32,5 +32,25 @@
             width: 50%;
             height: 100%;
         }
+
+        &--previewOnly {
+            > section:nth-child(1) {
+                display: none;
+            }
+
+            > section:nth-child(2) {
+                width: 100%;
+            }
+        }
+
+        &--editorOnly {
+            > section:nth-child(1) {
+                width: 100%;
+            }
+
+            > section:nth-child(2) {
+                display: none;
+            }
+        }
     }
 }

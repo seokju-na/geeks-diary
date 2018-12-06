@@ -4,6 +4,7 @@ import { NoteSnippetContent } from './note-content.model';
 import {
     AppendSnippetAction,
     BlurSnippetAction,
+    ChangeViewModeAction,
     FocusSnippetAction,
     InsertSnippetAction,
     LoadNoteContentAction,
@@ -12,7 +13,7 @@ import {
     UpdateSnippetAction,
 } from './note-editor.actions';
 import { noteEditorReducer } from './note-editor.reducer';
-import { createNoteEditorInitialState, NoteEditorState } from './note-editor.state';
+import { createNoteEditorInitialState, NoteEditorState, NoteEditorViewModes } from './note-editor.state';
 
 
 describe('browser.note.noteEditor.noteEditorReducer', () => {
@@ -157,6 +158,16 @@ describe('browser.note.noteEditor.noteEditorReducer', () => {
         it('should set active snippet index as null.', () => {
             const state = noteEditorReducer(beforeState, new BlurSnippetAction());
             expect(state.activeSnippetIndex).toBeNull();
+        });
+    });
+
+    describe('CHANGE_VIEW_MODE', () => {
+        it('should set editor view mode.', () => {
+            const state = noteEditorReducer(undefined, new ChangeViewModeAction({
+                viewMode: NoteEditorViewModes.EDITOR_ONLY,
+            }));
+
+            expect(state.viewMode).toEqual(NoteEditorViewModes.EDITOR_ONLY);
         });
     });
 });

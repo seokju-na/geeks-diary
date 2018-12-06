@@ -1,4 +1,6 @@
 import { BrowserWindow, Menu, MenuItemConstructorOptions } from 'electron';
+import { environment } from '../../core/environment';
+import { IpcActionHandler } from '../../libs/ipc';
 import { __DARWIN__ } from '../../libs/platform';
 import { Service } from './service';
 
@@ -16,15 +18,29 @@ export class MenuService extends Service {
     handleError(error: any): any {
     }
 
+    @IpcActionHandler('updateNoteEditorViewMenuState')
+    updateNoteEditorViewMenuState(activeMode: string): void {
+        const template = this.makeTemplate();
+        const viewMenu = template[__DARWIN__ ? 3 : 2];
+        const noteViewMenu = viewMenu.submenu[3];
+
+        noteViewMenu.submenu.forEach((menuItem) => {
+            menuItem.checked = menuItem.id === activeMode;
+        });
+
+        const menu = Menu.buildFromTemplate(template);
+        Menu.setApplicationMenu(menu);
+    }
+
     /**
      * Make template for menu.
      * It's not sure...
      *
      * macOS:
-     * | Geeks Diary | File | Edit | View | Note | Snippet | Window | Help |
+     * | Geeks Diary | File | Edit | View | Repository | Snippet | Window | Help |
      *
      * Windows:
-     * | File | Edit | View | Note | Snippet | Window | Help |
+     * | File | Edit | View | Repository | Snippet | Help |
      */
     private makeTemplate(): MenuItemConstructorOptions[] {
         const template: MenuItemConstructorOptions[] = [];
@@ -94,13 +110,6 @@ export class MenuService extends Service {
         if (__DARWIN__) {
             (fileMenu.submenu as MenuItemConstructorOptions[]).push(
                 separator,
-                {
-                    label: '&Options…',
-                    id: 'preferences',
-                    accelerator: 'CmdOrCtrl+,',
-                    click: sendMessageOnClick('showPreferences'),
-                },
-                separator,
                 { role: 'quit' },
             );
         }
@@ -117,16 +126,15 @@ export class MenuService extends Service {
                 { role: 'cut', label: __DARWIN__ ? 'Cut' : 'Cu&t' },
                 { role: 'copy', label: __DARWIN__ ? 'Copy' : '&Copy' },
                 { role: 'paste', label: __DARWIN__ ? 'Paste' : '&Paste' },
-                // {
-                //     label: __DARWIN__ ? 'Select All' : 'Select &all',
-                //     accelerator: 'CmdOrCtrl+A',
-                //     click: emit('select-all'),
-                // },
+                {
+                    role: 'selectAll',
+                    label: __DARWIN__ ? 'Select All' : 'Select &all',
+                },
             ],
         });
 
         // View
-        template.push({
+        const viewMenu: MenuItemConstructorOptions = {
             label: __DARWIN__ ? 'View' : '&View',
             submenu: [
                 {
@@ -143,13 +151,59 @@ export class MenuService extends Service {
                 },
                 separator,
                 {
-                    role: 'reload',
+                    id: 'note-view',
+                    label: 'Note View',
+                    submenu: [
+                        {
+                            label: 'Editor Only',
+                            id: 'note-view-editor-only',
+                            type: 'checkbox',
+                            click: sendMessageOnClick('changeEditorViewModeToEditorOnly'),
+                        },
+                        {
+                            label: 'Preview Only',
+                            id: 'note-view-preview-only',
+                            type: 'checkbox',
+                            click: sendMessageOnClick('changeEditorViewModeToPreviewOnly'),
+                        },
+                        {
+                            label: 'Show Both',
+                            id: 'note-view-show-both',
+                            type: 'checkbox',
+                            click: sendMessageOnClick('changeEditorViewModeToShowBoth'),
+                        },
+                    ],
+                },
+            ],
+        };
+
+        if (!environment.production) {
+            (viewMenu.submenu as MenuItemConstructorOptions[]).push(
+                separator,
+                { role: 'reload' },
+            );
+        }
+
+        template.push(viewMenu);
+
+        // Repository
+        template.push({
+            label: __DARWIN__ ? 'Repository' : '&Repository',
+            submenu: [
+                {
+                    label: 'Commit Note',
+                    id: 'commit-note',
+                    accelerator: 'CmdOrCtrl+K',
+                    click: sendMessageOnClick('commitNote'),
+                },
+                {
+                    label: 'Sync Repository',
+                    id: 'sync-repository',
+                    accelerator: 'CmdOrCtrl+Shift+K',
+                    click: sendMessageOnClick('syncRepository'),
                 },
             ],
         });
-
-        // Note
-
 
         // Snippet
         template.push({
@@ -178,6 +232,18 @@ export class MenuService extends Service {
         });
 
         // Window
+        if (__DARWIN__) {
+            template.push({
+                role: 'window',
+                submenu: [
+                    { role: 'minimize' },
+                    { role: 'zoom' },
+                    { role: 'close' },
+                    separator,
+                    { role: 'front' },
+                ],
+            });
+        }
 
         return template;
     }

@@ -15,3 +15,4 @@ export * from './note-content.effects';
 export * from './note-editor.effects';
 export * from './note-editor-toolbar/note-editor-toolbar.component';
 export * from './note-header/note-header.component';
+export * from './note-editor-view-mode-menu';
