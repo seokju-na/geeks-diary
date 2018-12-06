@@ -5,8 +5,8 @@ import { filter, map } from 'rxjs/operators';
 import { NoteFinderComponent } from '../note/note-collection';
 import { NoteCollectionService } from '../note/note-collection/note-collection.service';
 import { ChangeViewModeAction, NoteEditorViewModes } from '../note/note-editor';
-import { MenuEvent, MenuService, WORKSPACE_DATABASE, WorkspaceDatabase } from '../shared';
-import { Themes, ThemeService } from '../ui/style';
+import { MenuEvent, MenuService, ThemeService, WORKSPACE_DATABASE, WorkspaceDatabase } from '../shared';
+import { defaultTheme, Themes } from '../ui/style';
 import { VcsManagerComponent, VcsService } from '../vcs';
 import { AppLayoutSidenavOutlet, ToggleSidenavPanelAction } from './app-layout';
 import { AppStateWithFeatures } from './app.state';
@@ -65,9 +65,9 @@ export class AppComponent implements OnInit {
     ) {
         const _theme = workspaceDB.cachedInfo
             ? workspaceDB.cachedInfo.theme as Themes
-            : ThemeService.defaultTheme;
+            : defaultTheme;
 
-        theme.setTheme(_theme);
+        theme.applyThemeToHtml(_theme);
         workspaceDB.update({ theme: _theme });
     }
 

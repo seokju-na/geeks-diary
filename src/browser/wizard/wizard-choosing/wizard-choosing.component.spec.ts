@@ -7,11 +7,11 @@ import { of, throwError } from 'rxjs';
 import { fastTestSetup, NoopComponent, NoopModule, sample, sampleWithout } from '../../../../test/helpers';
 import { MockDialog } from '../../../../test/mocks/browser';
 import { WorkspaceError, WorkspaceErrorCodes, WorkspaceInfo } from '../../../core/workspace';
-import { SharedModule, WORKSPACE_DATABASE, WorkspaceDatabase, WorkspaceService } from '../../shared';
+import { SharedModule, ThemeService, WORKSPACE_DATABASE, WorkspaceDatabase, WorkspaceService } from '../../shared';
 import { ConfirmDialogComponent, ConfirmDialogData } from '../../shared/confirm-dialog';
 import { ButtonToggleComponent } from '../../ui/button-toggle';
 import { Dialog } from '../../ui/dialog';
-import { Themes, ThemeService } from '../../ui/style';
+import { Themes } from '../../ui/style';
 import { UiModule } from '../../ui/ui.module';
 import { WizardChoosingComponent } from './wizard-choosing.component';
 
@@ -77,6 +77,10 @@ describe('browser.wizard.wizardChoosing.WizardChoosingComponent', () => {
 
         fixture = TestBed.createComponent(WizardChoosingComponent);
         component = fixture.componentInstance;
+    });
+
+    afterEach(async () => {
+        await workspaceDB.info.clear();
     });
 
     describe('create new workspace', () => {

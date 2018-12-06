@@ -1,6 +1,6 @@
 import { Component, Inject } from '@angular/core';
-import { WORKSPACE_DATABASE, WorkspaceDatabase } from '../shared';
-import { Themes, ThemeService } from '../ui/style';
+import { ThemeService, WORKSPACE_DATABASE, WorkspaceDatabase } from '../shared';
+import { defaultTheme, Themes } from '../ui/style';
 
 
 @Component({
@@ -15,9 +15,9 @@ export class WizardComponent {
     ) {
         const _theme = workspaceDB.cachedInfo
             ? workspaceDB.cachedInfo.theme as Themes
-            : ThemeService.defaultTheme;
+            : defaultTheme;
 
-        theme.setTheme(_theme);
+        theme.applyThemeToHtml(_theme);
         workspaceDB.update({ theme: _theme });
     }
 }
