@@ -1,5 +1,5 @@
 import { Inject, Injectable } from '@angular/core';
-import { from, Observable, of } from 'rxjs';
+import { from, Observable, of, zip } from 'rxjs';
 import { filter, map, mapTo, switchMap, tap } from 'rxjs/operators';
 import { GitGetHistoryOptions, GitSyncWithRemoteResult } from '../../core/git';
 import { VcsAccount, VcsCommitItem, VcsFileChange } from '../../core/vcs';
@@ -165,6 +165,17 @@ export class VcsService {
         }));
 
         return (fetchAccount !== undefined) && isRemoteExists;
+    }
+
+    setRemoteRepository(fetchAccount: VcsAccount, remoteUrl: string): Observable<void> {
+        return zip(
+            from(this.accountDB.setRepositoryFetchAccountAs(fetchAccount)),
+            this.git.setRemote({
+                workspaceDirPath: this.workspace.configs.rootDirPath,
+                remoteName: 'origin',
+                remoteUrl,
+            }),
+        ).pipe(mapTo(null));
     }
 
     syncRepository(): Observable<GitSyncWithRemoteResult> {

@@ -3,7 +3,7 @@ import { fakeAsync, flush, TestBed } from '@angular/core/testing';
 import { Observable, of } from 'rxjs';
 import { fastTestSetup } from '../../../test/helpers';
 import { VcsAccountDummy } from '../../core/dummies';
-import { GitFindRemoteOptions, GitSyncWithRemoteOptions } from '../../core/git';
+import { GitFindRemoteOptions, GitSetRemoteOptions, GitSyncWithRemoteOptions } from '../../core/git';
 import { VcsAccount, VcsAuthenticationInfo, VcsAuthenticationTypes, VcsRemoteRepository } from '../../core/vcs';
 import { toPromise } from '../../libs/rx';
 import { GitService, SharedModule, WORKSPACE_DEFAULT_CONFIG, WorkspaceConfig } from '../shared';
@@ -243,6 +243,31 @@ describe('browser.vcs.VcsService', () => {
             const result = await vcs.canSyncRepository();
             expect(result).toBe(false);
         });
+    });
+
+    describe('setRemoteRepository', () => {
+        it('should save fetch account to account database and call set remote method '
+            + 'from git service.', fakeAsync(() => {
+            const fetchAccount = accountDummy.create();
+            const remoteUrl = 'https://github.com/seokju-na/geeks-diary.git';
+
+            spyOn(accountDB, 'setRepositoryFetchAccountAs').and.callFake(() => Promise.resolve(null));
+            spyOn(git, 'setRemote').and.returnValue(of(null));
+
+            const callback = jasmine.createSpy('set remote repository');
+            const subscription = vcs.setRemoteRepository(fetchAccount, remoteUrl).subscribe(callback);
+
+            flush();
+
+            expect(accountDB.setRepositoryFetchAccountAs).toHaveBeenCalledWith(fetchAccount);
+            expect(git.setRemote).toHaveBeenCalledWith({
+                workspaceDirPath: workspaceConfig.rootDirPath,
+                remoteName: 'origin',
+                remoteUrl,
+            } as GitSetRemoteOptions);
+
+            subscription.unsubscribe();
+        }));
     });
 
     describe('syncRepository', () => {
