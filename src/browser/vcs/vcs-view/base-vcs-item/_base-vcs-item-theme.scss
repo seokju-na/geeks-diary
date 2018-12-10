@@ -1,4 +1,9 @@
+@import "../../../ui/style/theming";
+
 @mixin gd-vcs-base-vcs-item-theme($theme) {
+    $background: map-get($theme, background);
+
     .BaseVcsItem {
+        background: gd-color($background, background-highlight);
     }
 }
