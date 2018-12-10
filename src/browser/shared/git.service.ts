@@ -7,6 +7,7 @@ import {
     GitFindRemoteOptions,
     GitGetHistoryOptions,
     GitGetHistoryResult,
+    GitSetRemoteOptions,
     GitSyncWithRemoteOptions,
     GitSyncWithRemoteResult,
 } from '../../core/git';
@@ -81,6 +82,13 @@ export class GitService implements OnDestroy {
     isRemoteExists(options: GitFindRemoteOptions): Observable<boolean> {
         return from(this.ipcClient.performAction<GitFindRemoteOptions, boolean>(
             'isRemoteExists',
+            options,
+        ));
+    }
+
+    setRemote(options: GitSetRemoteOptions): Observable<void> {
+        return from(this.ipcClient.performAction<GitSetRemoteOptions, void>(
+            'setRemote',
             options,
         ));
     }
