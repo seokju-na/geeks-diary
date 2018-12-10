@@ -1,0 +1,11 @@
+@import "../../ui/style/theming";
+
+@mixin gd-settings-dialog-theme($theme) {
+    $foreground: map-get($theme, foreground);
+
+    .SettingsDialog {
+        &__content > gd-tab-group {
+            border-bottom: 1px solid gd-color($foreground, divider);
+        }
+    }
+}

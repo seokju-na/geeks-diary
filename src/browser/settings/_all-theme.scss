@@ -1,0 +1,5 @@
+@import "./settings-dialog/settings-dialog-theme";
+
+@mixin gd-settings-all-theme($theme) {
+    @include gd-settings-dialog-theme($theme);
+}

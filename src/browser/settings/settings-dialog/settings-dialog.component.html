@@ -1,0 +1,17 @@
+<gd-dialog-header fxLayout fxLayoutAlign="space-between center">
+    <h1 gdDialogTitle>{{ title }}</h1>
+    <button gd-icon-button aria-label="Close settings" (click)="closeThisDialog()" id="settings-dialog-close-button">
+        <gd-icon name="close"></gd-icon>
+    </button>
+</gd-dialog-header>
+
+<gd-dialog-content class="SettingsDialog__content">
+    <gd-tab-group [tabControl]="tabControl"></gd-tab-group>
+    <div [ngSwitch]="tabControl.activateTab?.value" class="SettingsDialog__container">
+        <ng-container *ngFor="let context of settingContexts">
+            <div *ngSwitchCase="context.id" class="SettingsDialog__tabContent">
+                <ng-container *ngComponentOutlet="context.component; injector: _injector"></ng-container>
+            </div>
+        </ng-container>
+    </div>
+</gd-dialog-content>
