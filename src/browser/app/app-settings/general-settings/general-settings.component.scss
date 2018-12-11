@@ -1,0 +1,7 @@
+@import "../../../ui/form-field/form-field-sizes";
+
+.GeneralSettings {
+    &__formFieldSizedBox {
+        height: $form-control-size;
+    }
+}
