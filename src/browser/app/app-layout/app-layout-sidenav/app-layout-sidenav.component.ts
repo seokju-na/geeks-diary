@@ -2,6 +2,7 @@ import { Component, Injector, Input } from '@angular/core';
 import { select, Store } from '@ngrx/store';
 import { Observable } from 'rxjs';
 import { share } from 'rxjs/operators';
+import { SettingsDialog } from '../../../settings';
 import { AppState } from '../../app.state';
 import { ToggleSidenavPanelAction } from '../app-layout.actions';
 import { AppLayoutSidenavOutlet } from '../app-layout.state';
@@ -28,10 +29,15 @@ export class AppLayoutSidenavComponent {
     constructor(
         private store: Store<AppState>,
         public _injector: Injector,
+        private settingsDialog: SettingsDialog,
     ) {
     }
 
     toggleServicePanel(outletId: string): void {
         this.store.dispatch(new ToggleSidenavPanelAction({ outletId }));
+    }
+
+    openSettingsDialog(): void {
+        this.settingsDialog.open();
     }
 }

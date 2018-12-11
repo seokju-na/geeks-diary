@@ -16,6 +16,10 @@
                 </button>
             </li>
         </ul>
+
+        <button gd-icon-button aria-label="Open Settings" [bigSize]="true" (click)="openSettingsDialog()">
+            <gd-icon name="cog" [bigSize]="true"></gd-icon>
+        </button>
     </nav>
 
     <gd-resizable-content role="tabpanel" [minWidth]="200" [maxWidth]="375" class="AppLayoutSidenav__panel">
