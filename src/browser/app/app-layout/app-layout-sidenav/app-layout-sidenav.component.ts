@@ -1,8 +1,9 @@
-import { Component, Injector, Input } from '@angular/core';
+import { Component, Injector, Input, OnInit } from '@angular/core';
 import { select, Store } from '@ngrx/store';
 import { Observable } from 'rxjs';
-import { share } from 'rxjs/operators';
+import { filter, share } from 'rxjs/operators';
 import { SettingsDialog } from '../../../settings';
+import { MenuEvent, MenuService } from '../../../shared';
 import { AppState } from '../../app.state';
 import { ToggleSidenavPanelAction } from '../app-layout.actions';
 import { AppLayoutSidenavOutlet } from '../app-layout.state';
@@ -13,7 +14,7 @@ import { AppLayoutSidenavOutlet } from '../app-layout.state';
     templateUrl: './app-layout-sidenav.component.html',
     styleUrls: ['./app-layout-sidenav.component.scss'],
 })
-export class AppLayoutSidenavComponent {
+export class AppLayoutSidenavComponent implements OnInit {
     @Input() outlets: AppLayoutSidenavOutlet[];
 
     readonly showPanel: Observable<boolean> = this.store.pipe(
@@ -30,7 +31,14 @@ export class AppLayoutSidenavComponent {
         private store: Store<AppState>,
         public _injector: Injector,
         private settingsDialog: SettingsDialog,
+        private menu: MenuService,
     ) {
+    }
+
+    ngOnInit(): void {
+        this.menu.onMessage().pipe(
+            filter(event => event === MenuEvent.OPEN_SETTINGS),
+        ).subscribe(() => this.openSettingsDialog());
     }
 
     toggleServicePanel(outletId: string): void {
