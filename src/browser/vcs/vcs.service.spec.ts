@@ -1,9 +1,14 @@
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { fakeAsync, flush, TestBed } from '@angular/core/testing';
-import { Observable, of } from 'rxjs';
+import { Observable, of, throwError } from 'rxjs';
 import { fastTestSetup } from '../../../test/helpers';
 import { VcsAccountDummy } from '../../core/dummies';
-import { GitFindRemoteOptions, GitSetRemoteOptions, GitSyncWithRemoteOptions } from '../../core/git';
+import {
+    GitFindRemoteOptions,
+    GitRemoteNotFoundError,
+    GitSetRemoteOptions,
+    GitSyncWithRemoteOptions,
+} from '../../core/git';
 import { VcsAccount, VcsAuthenticationInfo, VcsAuthenticationTypes, VcsRemoteRepository } from '../../core/vcs';
 import { toPromise } from '../../libs/rx';
 import { GitService, SharedModule, WORKSPACE_DEFAULT_CONFIG, WorkspaceConfig } from '../shared';
@@ -242,6 +247,63 @@ describe('browser.vcs.VcsService', () => {
 
             const result = await vcs.canSyncRepository();
             expect(result).toBe(false);
+        });
+    });
+
+    describe('getRepositoryFetchAccount', () => {
+        it('should return fetch account if its exists.', fakeAsync(() => {
+            const fetchAccount = accountDummy.create();
+            spyOn(accountDB, 'getRepositoryFetchAccount').and.callFake(() => Promise.resolve(fetchAccount));
+
+            const callback = jasmine.createSpy('get repository fetch account callback');
+            const subscription = vcs.getRepositoryFetchAccount().subscribe(callback);
+            flush();
+
+            expect(callback).toHaveBeenCalledWith(fetchAccount);
+            subscription.unsubscribe();
+        }));
+
+        it('should return null if fetch account is not exists.', fakeAsync(() => {
+            spyOn(accountDB, 'getRepositoryFetchAccount').and.callFake(() => Promise.resolve(undefined));
+
+            const callback = jasmine.createSpy('get repository fetch account callback');
+            const subscription = vcs.getRepositoryFetchAccount().subscribe(callback);
+            flush();
+
+            expect(callback).toHaveBeenCalledWith(null);
+            subscription.unsubscribe();
+        }));
+    });
+
+    describe('getRemoteRepositoryUrl', () => {
+        it('should return null if remote not found.', () => {
+            spyOn(git, 'getRemoteUrl').and.returnValue(throwError(new GitRemoteNotFoundError()));
+
+            const callback = jasmine.createSpy('get remote repository url callback');
+            const subscription = vcs.getRemoteRepositoryUrl().subscribe(callback);
+
+            expect(git.getRemoteUrl).toHaveBeenCalledWith({
+                workspaceDirPath: workspaceConfig.rootDirPath,
+                remoteName: 'origin',
+            } as GitFindRemoteOptions);
+            expect(callback).toHaveBeenCalledWith(null);
+
+            subscription.unsubscribe();
+        });
+
+        it('should return remote url.', () => {
+            spyOn(git, 'getRemoteUrl').and.returnValue(of('remote_repository_url'));
+
+            const callback = jasmine.createSpy('get remote repository url callback');
+            const subscription = vcs.getRemoteRepositoryUrl().subscribe(callback);
+
+            expect(git.getRemoteUrl).toHaveBeenCalledWith({
+                workspaceDirPath: workspaceConfig.rootDirPath,
+                remoteName: 'origin',
+            } as GitFindRemoteOptions);
+            expect(callback).toHaveBeenCalledWith('remote_repository_url');
+
+            subscription.unsubscribe();
         });
     });
 
