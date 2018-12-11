@@ -146,8 +146,8 @@ export interface VcsFileChange {
 
 
 export enum VcsErrorCodes {
-    AUTHENTICATE_ERROR = 'AUTHENTICATE_ERROR',
-    REPOSITORY_NOT_EXISTS = 'REPOSITORY_NOT_EXISTS',
+    AUTHENTICATE_ERROR = 'vcs.authenticateError',
+    REPOSITORY_NOT_EXISTS = 'vcs.repositoryNotExists',
 }
 
 
@@ -169,5 +169,6 @@ export class VcsRepositoryNotExistsError extends Error {
 }
 
 
-export type VcsError = VcsAuthenticateError
+export type VcsError =
+    VcsAuthenticateError
     | VcsRepositoryNotExistsError;
