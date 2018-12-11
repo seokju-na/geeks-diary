@@ -50,10 +50,13 @@ export class VcsSettingsComponent implements OnInit {
     ) {
     }
 
+    /* tslint:disable */
     readonly accountMenuConvertFn = (value: VcsAccount): MenuItem => ({
         id: value.email,
         label: `${value.name} <${value.email}>`,
     });
+
+    /* tslint:enable */
 
     ngOnInit(): void {
         this.vcs.setRemoveProvider('github');
@@ -79,8 +82,8 @@ export class VcsSettingsComponent implements OnInit {
     }
 
     selectAccount(item: MenuItem): void {
-        const account = this.accounts.find(account => account.email === item.id);
-        this.remoteSettingForm.get('githubAccount').patchValue(account);
+        const fetchAccount = this.accounts.find(account => account.email === item.id);
+        this.remoteSettingForm.get('githubAccount').patchValue(fetchAccount);
     }
 
     async saveRemote(): Promise<void> {
