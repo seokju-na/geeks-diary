@@ -1,0 +1,5 @@
+@import "./_vcs-settings-theme";
+
+@mixin gd-vcs-settings-all-theme($theme) {
+    @include gd-vcs-settings-theme($theme);
+}
