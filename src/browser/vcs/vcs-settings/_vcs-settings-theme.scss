@@ -1,0 +1,15 @@
+@import "../../ui/style/theming";
+
+@mixin gd-vcs-settings-theme($theme) {
+    .VcsSettings {
+        &__saveRemoteResultMessage {
+            &--success {
+                color: map-get($color-green, 700);
+            }
+
+            &--fail {
+                color: map-get($color-red, 700);
+            }
+        }
+    }
+}
