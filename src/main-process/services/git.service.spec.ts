@@ -246,6 +246,28 @@ describe('mainProcess.services.GitService', () => {
         });
     });
 
+    describe('getRemoteUrl', () => {
+        beforeEach(async () => {
+            await makeTmpPath(true);
+        });
+
+        it('should return url of remote.', async () => {
+            // First set remote..
+            const remoteName = 'my_remote';
+            const remoteUrl = 'some_remote_url';
+
+            const repo = await _git.Repository.open(tmpPath);
+            await _git.Remote.create(repo, remoteName, remoteUrl);
+
+            const result = await git.getRemoteUrl({
+                workspaceDirPath: tmpPath,
+                remoteName,
+            });
+
+            expect(result).to.equals(remoteUrl);
+        });
+    });
+
     describe('setRemote', () => {
         beforeEach(async () => {
             await makeTmpPath(true);

@@ -86,6 +86,13 @@ export class GitService implements OnDestroy {
         ));
     }
 
+    getRemoteUrl(options: GitFindRemoteOptions): Observable<string> {
+        return from(this.ipcClient.performAction<GitFindRemoteOptions, string>(
+            'getRemoteUrl',
+            options,
+        ));
+    }
+
     setRemote(options: GitSetRemoteOptions): Observable<void> {
         return from(this.ipcClient.performAction<GitSetRemoteOptions, void>(
             'setRemote',

@@ -227,6 +227,18 @@ export class GitService extends Service {
         }
     }
 
+    @IpcActionHandler('getRemoteUrl')
+    async getRemoteUrl(options: GitFindRemoteOptions): Promise<string> {
+        const repository = await this.openRepository(options.workspaceDirPath);
+        const remote = await repository.getRemote(options.remoteName);
+        const remoteUrl = remote.url();
+
+        remote.free();
+        repository.free();
+
+        return remoteUrl;
+    }
+
     @IpcActionHandler('setRemote')
     async setRemote(options: GitSetRemoteOptions): Promise<void> {
         const { remoteName, remoteUrl } = options;
