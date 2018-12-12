@@ -2,8 +2,7 @@ import { Component, Inject, OnInit } from '@angular/core';
 import { select, Store } from '@ngrx/store';
 import { Observable } from 'rxjs';
 import { filter, map } from 'rxjs/operators';
-import { NoteFinderComponent } from '../note/note-collection';
-import { NoteCollectionService } from '../note/note-collection/note-collection.service';
+import { NoteCollectionService, NoteFinderComponent } from '../note/note-collection';
 import { ChangeViewModeAction, NoteEditorViewModes } from '../note/note-editor';
 import { MenuEvent, MenuService, ThemeService, WORKSPACE_DATABASE, WorkspaceDatabase } from '../shared';
 import { defaultTheme, Themes } from '../ui/style';
@@ -37,10 +36,6 @@ export class AppComponent implements OnInit {
         },
     ];
 
-    readonly noteContentLoaded: Observable<boolean> = this.store.pipe(
-        map(state => state.note.editor.loaded),
-    );
-
     readonly noteEditorViewModeAsClassName: Observable<string> = this.store.pipe(
         select(state => state.note.editor.viewMode),
         map((viewMode) => {
@@ -54,6 +49,10 @@ export class AppComponent implements OnInit {
             }
         }),
     );
+
+    readonly noSelectedNote: Observable<boolean> = this.collection
+        .getSelectedNote(false)
+        .pipe(map(selectedNote => selectedNote === null));
 
     constructor(
         private collection: NoteCollectionService,

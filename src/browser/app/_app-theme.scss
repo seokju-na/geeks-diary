@@ -1,6 +1,7 @@
 @import "../ui/style/theming";
 
 @mixin gd-app-theme($theme) {
+    $background: map-get($theme, background);
     $foreground: map-get($theme, foreground);
 
     .App {
@@ -10,6 +11,11 @@
                     border-right: 1px solid gd-color($foreground, divider);
                 }
             }
+        }
+
+        &__noSelectedNote {
+            color: gd-color($foreground, disabled-text);
+            background-color: gd-color($background, background);
         }
     }
 }
