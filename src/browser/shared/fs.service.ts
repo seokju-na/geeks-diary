@@ -1,5 +1,16 @@
 import { Injectable, NgZone } from '@angular/core';
-import { copy, CopyOptions, ensureDir, pathExists, readdir, readFile, readJson, writeFile, writeJson } from 'fs-extra';
+import {
+    copy,
+    CopyOptions,
+    ensureDir,
+    pathExists,
+    readdir,
+    readFile,
+    readJson,
+    rename,
+    writeFile,
+    writeJson,
+} from 'fs-extra';
 import { from, Observable } from 'rxjs';
 import { enterZone } from '../../libs/rx';
 
@@ -47,5 +58,9 @@ export class FsService {
 
     ensureDirectory(dirName: string): Observable<void> {
         return from(ensureDir(dirName)).pipe(enterZone(this.ngZone));
+    }
+
+    renameFile(oldFileName: string, newFileName: string): Observable<void> {
+        return from(rename(oldFileName, newFileName)).pipe(enterZone(this.ngZone));
     }
 }
