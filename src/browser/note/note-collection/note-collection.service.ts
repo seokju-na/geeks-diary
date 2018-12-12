@@ -9,11 +9,12 @@ import { isOutsidePath } from '../../../libs/path';
 import { toPromise } from '../../../libs/rx';
 import { uuid } from '../../../libs/uuid';
 import { FsService, WorkspaceService } from '../../shared';
-import { NoteError, NoteErrorCodes } from '../note-errors';
+import { NoteContentFileAlreadyExistsError, NoteOutsideWorkspaceError } from '../note-errors';
 import { convertToNoteSnippets, NoteParser } from '../note-shared';
 import { NoteStateWithRoot } from '../note.state';
 import {
     AddNoteAction,
+    ChangeNoteTitleAction,
     DeselectNoteAction,
     LoadNoteCollectionAction,
     LoadNoteCollectionCompleteAction,
@@ -122,18 +123,20 @@ export class NoteCollectionService implements OnDestroy {
         const contentFilePath = path.resolve(rootDirPath, directory, contentFileName);
 
         if (isOutsidePath(contentFilePath, rootDirPath)) {
-            throw new NoteError(NoteErrorCodes.OUTSIDE_WORKSPACE);
+            throw new NoteOutsideWorkspaceError();
         }
 
         if (await toPromise(this.fs.isPathExists(contentFilePath))) {
-            throw new NoteError(NoteErrorCodes.CONTENT_FILE_EXISTS);
+            throw new NoteContentFileAlreadyExistsError();
         }
 
         const content = {
-            snippets: [{
-                type: NoteSnippetTypes.TEXT,
-                value: 'Write some content...',
-            }],
+            snippets: [
+                {
+                    type: NoteSnippetTypes.TEXT,
+                    value: 'Write some content...',
+                },
+            ],
         };
 
         const result = this.parser.parseNoteContent(content, {
@@ -183,6 +186,39 @@ export class NoteCollectionService implements OnDestroy {
         }
 
         this.store.dispatch(new AddNoteAction({ note: noteItem }));
+    }
+
+    async changeNoteTitle(noteItem: NoteItem, newTitle: string): Promise<void> {
+        const dirName = path.dirname(noteItem.contentFilePath);
+        const newContentFileName = makeNoteContentFileName(noteItem.createdDatetime, newTitle);
+        const newContentFilePath = path.resolve(dirName, newContentFileName);
+
+        if (await toPromise(this.fs.isPathExists(newContentFilePath))) {
+            throw new NoteContentFileAlreadyExistsError();
+        }
+
+        const note: Note = {
+            id: noteItem.id,
+            title: newTitle,
+            snippets: noteItem.snippets,
+            stackIds: noteItem.stackIds,
+            contentFileName: newContentFileName,
+            contentFilePath: newContentFilePath,
+            createdDatetime: noteItem.createdDatetime,
+            updatedDatetime: noteItem.updatedDatetime, // TODO: Will be removed.
+        };
+
+        await toPromise(zip(
+            this.fs.writeJsonFile<Note>(noteItem.filePath, note),
+            this.fs.renameFile(noteItem.contentFilePath, newContentFilePath),
+        ));
+
+        this.store.dispatch(new ChangeNoteTitleAction({
+            note: noteItem,
+            title: newTitle,
+            contentFileName: newContentFileName,
+            contentFilePath: newContentFilePath,
+        }));
     }
 
     private subscribeToggles(): void {

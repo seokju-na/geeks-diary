@@ -7,13 +7,19 @@ import { createDummies, fastTestSetup } from '../../../../test/helpers';
 import { FsMatchLiterals, FsMatchObject, FsStub, MockFsService } from '../../../../test/mocks/browser';
 import { makeNoteContentFileName, Note } from '../../../core/note';
 import { FsService, WORKSPACE_DEFAULT_CONFIG, WorkspaceConfig, WorkspaceService } from '../../shared';
-import { NoteError, NoteErrorCodes } from '../note-errors';
+import {
+    NoteContentFileAlreadyExistsError,
+    NoteError,
+    NoteErrorCodes,
+    NoteOutsideWorkspaceError,
+} from '../note-errors';
 import { NoteParser } from '../note-shared';
 import { noteReducerMap } from '../note.reducer';
 import { NoteStateWithRoot } from '../note.state';
 import { NoteDummy, NoteItemDummy } from './dummies';
 import {
     AddNoteAction,
+    ChangeNoteTitleAction,
     DeselectNoteAction,
     LoadNoteCollectionAction,
     LoadNoteCollectionCompleteAction,
@@ -202,7 +208,7 @@ describe('browser.note.noteCollection.NoteCollectionService', () => {
             return path.resolve(workspaceConfig.rootDirPath, contentFileName);
         };
 
-        it('should throw \'CONTENT_FILE_EXISTS\' error if content file already exists.', fakeAsync(() => {
+        it('should throw \'CONTENT_FILE_ALREADY_EXISTS\' error if content file already exists.', fakeAsync(() => {
             const label = 'javascript/angular';
             const filePath = getContentFilePath(label);
 
@@ -210,7 +216,8 @@ describe('browser.note.noteCollection.NoteCollectionService', () => {
 
             collection
                 .createNewNote(title, label)
-                .then(() => {})
+                .then(() => {
+                })
                 .catch(callback);
 
             mockFs
@@ -220,8 +227,7 @@ describe('browser.note.noteCollection.NoteCollectionService', () => {
                 })
                 .flush(true);
 
-            const expected = new NoteError(NoteErrorCodes.CONTENT_FILE_EXISTS);
-
+            const expected = new NoteContentFileAlreadyExistsError();
             expect(callback).toHaveBeenCalledWith(expected);
         }));
 
@@ -233,8 +239,7 @@ describe('browser.note.noteCollection.NoteCollectionService', () => {
 
             flush();
 
-            const expected = new NoteError(NoteErrorCodes.OUTSIDE_WORKSPACE);
-
+            const expected = new NoteOutsideWorkspaceError();
             expect(callback).toHaveBeenCalledWith(expected);
         }));
 
@@ -292,6 +297,82 @@ describe('browser.note.noteCollection.NoteCollectionService', () => {
             const actual = (<jasmine.Spy>store.dispatch).calls.mostRecent().args[0];
 
             expect(actual instanceof AddNoteAction).toBe(true);
+        }));
+    });
+
+    describe('changeNoteTitle', () => {
+        it('should throw \'CONTENT_FILE_ALREADY_EXISTS\' error if content file already '
+            + 'exists with new title.', fakeAsync(() => {
+            const note = noteItemDummy.create();
+            const newTitle = 'already-exists';
+            const newContentFilePath = path.resolve(
+                path.dirname(note.contentFilePath),
+                makeNoteContentFileName(note.createdDatetime, newTitle),
+            );
+
+            let error = null;
+
+            const callback = jasmine.createSpy('change note title spy');
+            collection.changeNoteTitle(note, newTitle).then(callback).catch(err => error = err);
+
+            mockFs
+                .expect<boolean>({
+                    methodName: 'isPathExists',
+                    args: [newContentFilePath],
+                })
+                .flush(true);
+
+            expect(error instanceof NoteContentFileAlreadyExistsError).toBe(true);
+            expect((error as NoteError).code).toEqual(NoteErrorCodes.CONTENT_FILE_ALREADY_EXISTS);
+        }));
+
+        it('should save note file and rename content file. After fs jobs, dispatch '
+            + '\'CHANGE_NOTE_TITLE\' action.', fakeAsync(() => {
+            spyOn(store, 'dispatch');
+
+            const note = noteItemDummy.create();
+            const newTitle = '안녕하세요';
+
+            const newContentFileName = makeNoteContentFileName(note.createdDatetime, newTitle);
+            const newContentFilePath = path.resolve(
+                path.dirname(note.contentFilePath),
+                newContentFileName,
+            );
+
+            const callback = jasmine.createSpy('change note title spy');
+            collection.changeNoteTitle(note, newTitle).then(callback);
+
+            // Pass file duplication.
+            mockFs
+                .expect<boolean>({
+                    methodName: 'isPathExists',
+                    args: [newContentFilePath],
+                })
+                .flush(false);
+
+            // 2 stubs
+            const stubs = mockFs.expectMany([
+                {
+                    methodName: 'writeJsonFile',
+                    args: [note.filePath, FsMatchLiterals.ANY],
+                },
+                {
+                    methodName: 'renameFile',
+                    args: [
+                        note.contentFilePath, // Old Path
+                        newContentFilePath, // New Path
+                    ],
+                },
+            ]);
+
+            stubs.forEach(stub => stub.flush());
+
+            expect(store.dispatch).toHaveBeenCalledWith(new ChangeNoteTitleAction({
+                note,
+                title: newTitle,
+                contentFileName: newContentFileName,
+                contentFilePath: newContentFilePath,
+            }));
         }));
     });
 });

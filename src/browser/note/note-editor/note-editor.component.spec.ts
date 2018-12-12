@@ -1,16 +1,16 @@
 import { DOWN_ARROW, ENTER } from '@angular/cdk/keycodes';
-import { ComponentFixture, discardPeriodicTasks, fakeAsync, flush, TestBed } from '@angular/core/testing';
+import { ComponentFixture, discardPeriodicTasks, fakeAsync, flush, TestBed, tick } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
 import { combineReducers, Store, StoreModule } from '@ngrx/store';
 import { of, Subject } from 'rxjs';
-import { dispatchKeyboardEvent, fastTestSetup } from '../../../../test/helpers';
+import { dispatchKeyboardEvent, fastTestSetup, typeInElement } from '../../../../test/helpers';
 import { MockDialog } from '../../../../test/mocks/browser';
 import { Asset, AssetTypes } from '../../../core/asset';
 import { NoteSnippetTypes } from '../../../core/note';
 import { MenuEvent, MenuService, NativeDialog, NativeDialogOpenResult, SharedModule } from '../../shared';
 import { Dialog } from '../../ui/dialog';
 import { UiModule } from '../../ui/ui.module';
-import { SelectNoteAction } from '../note-collection';
+import { NoteCollectionService, SelectNoteAction } from '../note-collection';
 import { NoteItemDummy } from '../note-collection/dummies';
 import { NoteSharedModule } from '../note-shared';
 import { noteReducerMap } from '../note.reducer';
@@ -42,6 +42,7 @@ describe('browser.note.noteEditor.NoteEditorComponent', () => {
     let mockDialog: MockDialog;
     let nativeDialog: NativeDialog;
     let noteEditor: NoteEditorService;
+    let collection: NoteCollectionService;
 
     let menuMessages: Subject<MenuEvent>;
 
@@ -76,6 +77,10 @@ describe('browser.note.noteEditor.NoteEditorComponent', () => {
             'onMessage',
         ]);
 
+        collection = jasmine.createSpyObj('collection', [
+            'changeNoteTitle',
+        ]);
+
         await TestBed
             .configureTestingModule({
                 imports: [
@@ -90,6 +95,7 @@ describe('browser.note.noteEditor.NoteEditorComponent', () => {
                 ],
                 providers: [
                     { provide: MenuService, useValue: menu },
+                    { provide: NoteCollectionService, useValue: collection },
                     ...MockDialog.providers(),
                 ],
             })
@@ -303,6 +309,38 @@ describe('browser.note.noteEditor.NoteEditorComponent', () => {
             expect(event.payload.filePath).toEqual('./some-image.png');
 
             discardPeriodicTasks();
+        }));
+    });
+
+    describe('Note title', () => {
+        it('should update note title when selected note changes.', () => {
+            const prevSelectedNote = noteDummy.create();
+            store.dispatch(new SelectNoteAction({ note: prevSelectedNote }));
+            fixture.detectChanges();
+
+            expect(getTitleTextareaEl().value).toContain(prevSelectedNote.title);
+
+            const nextSelectedNote = noteDummy.create();
+            store.dispatch(new SelectNoteAction({ note: nextSelectedNote }));
+            fixture.detectChanges();
+
+            expect(getTitleTextareaEl().value).toContain(nextSelectedNote.title);
+        });
+
+        it('should change note title with collection service when title value changes '
+            + 'after 250ms.', fakeAsync(() => {
+            (collection.changeNoteTitle as Spy).and.callFake(() => Promise.resolve(null));
+
+            const selectedNote = noteDummy.create();
+            store.dispatch(new SelectNoteAction({ note: selectedNote }));
+            fixture.detectChanges();
+
+            typeInElement('New Title', getTitleTextareaEl());
+            fixture.detectChanges();
+            tick(250);
+            flush();
+
+            expect(collection.changeNoteTitle).toHaveBeenCalledWith(selectedNote, 'New Title');
         }));
     });
 });
