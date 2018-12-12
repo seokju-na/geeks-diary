@@ -8,7 +8,7 @@ import { makeNoteContentFileName } from '../../../../core/note';
 import { SharedModule, WORKSPACE_DEFAULT_CONFIG, WorkspaceConfig } from '../../../shared';
 import { DialogRef } from '../../../ui/dialog';
 import { UiModule } from '../../../ui/ui.module';
-import { NoteError, NoteErrorCodes } from '../../note-errors';
+import { NoteContentFileAlreadyExistsError, NoteOutsideWorkspaceError } from '../../note-errors';
 import { NoteCollectionService } from '../note-collection.service';
 import { CreateNewNoteDialogComponent } from './create-new-note-dialog.component';
 
@@ -145,8 +145,8 @@ describe('browser.note.noteCollection.CreateNewNoteDialogComponent', () => {
         typeInElement(label, getLabelInputEl());
         fixture.detectChanges();
 
-        (<jasmine.Spy>collection.createNewNote).and.returnValue(
-            Promise.reject(new NoteError(NoteErrorCodes.OUTSIDE_WORKSPACE)),
+        (<jasmine.Spy>collection.createNewNote).and.callFake(
+            () => Promise.reject(new NoteOutsideWorkspaceError()),
         );
 
         submitForm();
@@ -168,8 +168,8 @@ describe('browser.note.noteCollection.CreateNewNoteDialogComponent', () => {
         titleInputEl.blur();
         fixture.detectChanges();
 
-        (<jasmine.Spy>collection.createNewNote).and.returnValue(
-            Promise.reject(new NoteError(NoteErrorCodes.CONTENT_FILE_EXISTS)),
+        (<jasmine.Spy>collection.createNewNote).and.callFake(
+            () => Promise.reject(new NoteContentFileAlreadyExistsError()),
         );
 
         submitForm();
