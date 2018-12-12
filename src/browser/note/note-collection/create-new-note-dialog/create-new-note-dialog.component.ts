@@ -7,7 +7,7 @@ import { makeNoteContentFileName } from '../../../../core/note';
 import { datetime } from '../../../../libs/datetime';
 import { WorkspaceService } from '../../../shared';
 import { DialogRef } from '../../../ui/dialog';
-import { NoteError, NoteErrorCodes } from '../../note-errors';
+import { NoteContentFileAlreadyExistsError, NoteOutsideWorkspaceError } from '../../note-errors';
 import { NoteCollectionService } from '../note-collection.service';
 
 
@@ -17,13 +17,17 @@ import { NoteCollectionService } from '../note-collection.service';
     styleUrls: ['./create-new-note-dialog.component.scss'],
 })
 export class CreateNewNoteDialogComponent implements OnInit, OnDestroy {
+    private _createNewNoteProcessing = false;
+
+    get createNewNoteProcessing(): boolean {
+        return this._createNewNoteProcessing;
+    }
+
     readonly createNewNoteFormGroup = new FormGroup({
         title: new FormControl('', [Validators.required]),
         label: new FormControl(''),
     });
-
     readonly filePathControl = new FormControl('');
-
     private filePathSettingSubscription = Subscription.EMPTY;
 
     constructor(
@@ -31,12 +35,6 @@ export class CreateNewNoteDialogComponent implements OnInit, OnDestroy {
         private workspace: WorkspaceService,
         private collection: NoteCollectionService,
     ) {
-    }
-
-    private _createNewNoteProcessing = false;
-
-    get createNewNoteProcessing(): boolean {
-        return this._createNewNoteProcessing;
     }
 
     ngOnInit(): void {
@@ -84,16 +82,12 @@ export class CreateNewNoteDialogComponent implements OnInit, OnDestroy {
     }
 
     private handleCreateNewNoteFail(error: Error): void {
-        if (error.name === 'NoteError') {
-            const code = (error as NoteError).code;
-
-            if (code === NoteErrorCodes.CONTENT_FILE_EXISTS) {
-                this.createNewNoteFormGroup.get('title').setErrors({ contentFileExists: true });
-            } else if (code === NoteErrorCodes.OUTSIDE_WORKSPACE) {
-                this.createNewNoteFormGroup.get('label').setErrors({ outsideWorkspace: true });
-            }
+        if (error instanceof NoteContentFileAlreadyExistsError) {
+            this.createNewNoteFormGroup.get('title').setErrors({ contentFileExists: true });
+        } else if (error instanceof NoteOutsideWorkspaceError) {
+            this.createNewNoteFormGroup.get('label').setErrors({ outsideWorkspace: true });
+        } else {
+            // TODO : Handle unknown error. What should we do in here?
         }
-
-        // TODO : Handle unknown error. What should we do in here?
     }
 }

@@ -1,5 +1,5 @@
 import * as nodeGit from 'nodegit';
-import { CloneOptions, Commit, DiffFile, FetchOptions, Oid, Repository, Revwalk, StatusFile } from 'nodegit';
+import { CloneOptions, Commit, DiffDelta, DiffFile, FetchOptions, Oid, Repository, Revwalk, StatusFile } from 'nodegit';
 import * as path from 'path';
 import {
     GitAuthenticationFailError,
@@ -347,20 +347,32 @@ export class GitService extends Service {
         if (status.isNew()) {
             fileChange = { ...fileChange, status: VcsFileChangeStatusTypes.NEW };
         } else if (status.isRenamed()) {
-            const diff = status.headToIndex();
-
-            /** NOTE: '@types/nodegit' is incorrect. */
-            const oldFile = (diff as any).oldFile() as DiffFile;
-            const newFile = (diff as any).newFile() as DiffFile;
-
             fileChange = {
                 ...fileChange,
                 status: VcsFileChangeStatusTypes.RENAMED,
-                headToIndexDiff: {
-                    oldFilePath: oldFile.path(),
-                    newFilePath: newFile.path(),
-                },
             };
+
+            let diff: DiffDelta;
+
+            if (status.inIndex()) {
+                diff = status.headToIndex();
+            } else if (status.inWorkingTree()) {
+                diff = status.indexToWorkdir();
+            }
+
+            if (diff) {
+                /** NOTE: '@types/nodegit' is incorrect. */
+                const oldFile = (diff as any).oldFile() as DiffFile;
+                const newFile = (diff as any).newFile() as DiffFile;
+
+                fileChange = {
+                    ...fileChange,
+                    headToIndexDiff: {
+                        oldFilePath: oldFile.path(),
+                        newFilePath: newFile.path(),
+                    },
+                };
+            }
         } else if (status.isModified()) {
             fileChange = { ...fileChange, status: VcsFileChangeStatusTypes.MODIFIED };
         } else if (status.isDeleted()) {

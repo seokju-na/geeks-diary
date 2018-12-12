@@ -11,3 +11,4 @@ export * from './note-list-sorting-menu';
 export * from './create-new-note-dialog/create-new-note-dialog.component';
 export * from './note-contribution.effects';
 export * from './note-contribution.service';
+export * from './note-collection.service';

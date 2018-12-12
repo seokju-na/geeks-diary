@@ -2,12 +2,12 @@ import { FocusKeyManager } from '@angular/cdk/a11y';
 import { AfterViewInit, Component, HostListener, OnDestroy, OnInit, QueryList, ViewChildren } from '@angular/core';
 import { Store } from '@ngrx/store';
 import { Observable, Subscription } from 'rxjs';
-import { share, tap } from 'rxjs/operators';
+import { tap } from 'rxjs/operators';
+import { NoteStateWithRoot } from '../../note.state';
+import { NoteCollectionService } from '../note-collection.service';
 import { NoteItem } from '../note-item.model';
 // noinspection TypeScriptPreferShortImport
 import { NoteItemComponent, NoteItemSelectionChange } from '../note-item/note-item.component';
-import { NoteStateWithRoot } from '../../note.state';
-import { NoteCollectionService } from '../note-collection.service';
 
 
 @Component({
@@ -16,35 +16,6 @@ import { NoteCollectionService } from '../note-collection.service';
     styleUrls: ['./note-list.component.scss'],
 })
 export class NoteListComponent implements OnInit, OnDestroy, AfterViewInit {
-    /** Filtered and sorted notes stream from collection. */
-    readonly notes: Observable<NoteItem[]> = this.collection
-        .getFilteredAndSortedNoteList().pipe(
-            // Side effect for empty state and initial loaded.
-            tap((notes) => {
-                if (!this._initialLoaded) {
-                    this._initialLoaded = true;
-                }
-
-                this._isEmpty = notes.length === 0;
-            }),
-        );
-
-    /** Note selection stream from collection. */
-    readonly selectedNote: Observable<NoteItem | null> = this.collection.getSelectedNote().pipe(share());
-
-    /** Focus key manager for note items. */
-    _focusKeyManager: FocusKeyManager<NoteItemComponent>;
-
-    /** Query list for note items. */
-    @ViewChildren(NoteItemComponent) private noteItemChildren: QueryList<NoteItemComponent>;
-    private selectedNoteSubscription = Subscription.EMPTY;
-
-    constructor(
-        private store: Store<NoteStateWithRoot>,
-        private collection: NoteCollectionService,
-    ) {
-    }
-
     private _isEmpty = false;
 
     get isEmpty(): boolean {
@@ -57,16 +28,37 @@ export class NoteListComponent implements OnInit, OnDestroy, AfterViewInit {
         return this._initialLoaded;
     }
 
-    ngOnInit(): void {
-        this.selectedNoteSubscription = this.selectedNote.subscribe((selectedNote) => {
-            if (selectedNote && this._focusKeyManager) {
-                const index = this.getIndexOfNote(selectedNote);
-
-                if (index !== -1) {
-                    this._focusKeyManager.updateActiveItem(index);
+    /** Filtered and sorted notes stream from collection. */
+    readonly notes: Observable<NoteItem[]> = this.collection
+        .getFilteredAndSortedNoteList().pipe(
+            // Side effect for empty state and initial loaded.
+            tap((notes) => {
+                if (!this._initialLoaded) {
+                    this._initialLoaded = true;
                 }
-            }
-        });
+
+                this._isEmpty = notes.length === 0;
+            }),
+        );
+    /** Focus key manager for note items. */
+    _focusKeyManager: FocusKeyManager<NoteItemComponent>;
+
+    /** Query list for note items. */
+    @ViewChildren(NoteItemComponent) private noteItemChildren: QueryList<NoteItemComponent>;
+
+    private _selectedNote: NoteItem | null = null;
+    private selectedNoteSubscription = Subscription.EMPTY;
+
+    constructor(
+        private store: Store<NoteStateWithRoot>,
+        private collection: NoteCollectionService,
+    ) {
+    }
+
+    ngOnInit(): void {
+        this.selectedNoteSubscription = this.collection
+            .getSelectedNote(true)
+            .subscribe(selectedNote => this._selectedNote = selectedNote);
     }
 
     ngOnDestroy(): void {
@@ -89,6 +81,14 @@ export class NoteListComponent implements OnInit, OnDestroy, AfterViewInit {
         }
 
         this.collection.toggleNoteSelection(event.source.note);
+    }
+
+    isSelectedItem(note: NoteItem): boolean {
+        if (this._selectedNote) {
+            return this._selectedNote.id === note.id;
+        } else {
+            return false;
+        }
     }
 
     isActiveItem(note: NoteItem): boolean {
@@ -117,7 +117,7 @@ export class NoteListComponent implements OnInit, OnDestroy, AfterViewInit {
         }
 
         return this.noteItemChildren.toArray().findIndex(
-            noteElem => noteElem.note === note,
+            noteElem => noteElem.note.id === note.id,
         );
     }
 }

@@ -137,14 +137,14 @@ describe('browser.note.noteCollection.NoteListComponent', () => {
         });
     });
 
-    it('should active and select note but not focus when selected note changed by store.', () => {
+    it('should select note but not focus when selected note changed by store.', () => {
         validateNoteStatus(3, ['deactivated', 'deselected', 'notFocused']);
 
         // Set selected note.
         selectedNoteStream.next(notes[3]);
         fixture.detectChanges();
 
-        validateNoteStatus(3, ['activated', 'selected', 'notFocused']);
+        validateNoteStatus(3, ['selected', 'notFocused']);
     });
 
     it('should focus, active and toggle selection the note when user clicks target note.', () => {

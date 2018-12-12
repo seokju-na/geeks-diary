@@ -2,16 +2,7 @@ import { Injectable } from '@angular/core';
 import { Actions, Effect, ofType } from '@ngrx/effects';
 import { select, Store } from '@ngrx/store';
 import { Observable, of } from 'rxjs';
-import {
-    catchError,
-    debounceTime,
-    distinctUntilChanged,
-    map,
-    mergeMap,
-    switchMap,
-    take,
-    takeUntil,
-} from 'rxjs/operators';
+import { catchError, debounceTime, map, mergeMap, switchMap, take, takeUntil } from 'rxjs/operators';
 import { NoteState, NoteStateWithRoot } from '../note.state';
 import {
     LoadNoteContentAction,
@@ -38,9 +29,6 @@ export class NoteContentEffects {
 
         // Throttling action.
         debounceTime(NOTE_EDITOR_LOAD_NOTE_CONTENT_THROTTLE),
-
-        // Dismiss same action.
-        distinctUntilChanged<LoadNoteContentAction>((prev, next) => prev.payload.note.id === next.payload.note.id),
 
         // Cancel note content loading, if cancelling action received.
         takeUntil(this.actions.pipe(ofType(NoteEditorActionTypes.CANCEL_NOTE_CONTENT_LOADING))),

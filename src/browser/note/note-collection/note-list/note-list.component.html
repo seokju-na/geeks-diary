@@ -7,6 +7,6 @@
         *ngFor="let note of notes | async;"
         [note]="note"
         [active]="isActiveItem(note)"
-        [selected]="(selectedNote | async)?.id === note.id"
+        [selected]="isSelectedItem(note)"
         (selectionChange)="selectNote($event)"></gd-note-item>
 </div>

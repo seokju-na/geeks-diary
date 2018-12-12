@@ -1,4 +1,5 @@
 @import "../ui/title-bar/title-bar-sizes";
+@import "../ui/style/typography";
 
 .App {
     width: 100%;
@@ -15,13 +16,9 @@
     }
 
     &__content {
-        visibility: hidden;
+        position: relative;
         min-width: 1px;
         height: 100%;
-
-        &--show {
-            visibility: visible;
-        }
     }
 
     &__sections {
@@ -51,6 +48,22 @@
             > section:nth-child(2) {
                 display: none;
             }
+        }
+    }
+
+    &__noSelectedNote {
+        position: absolute;
+        left: 0;
+        top: 0;
+        bottom: 0;
+        right: 0;
+
+        > p {
+            margin: 0;
+            font: {
+                size: $font-size-lg;
+                weight: $font-weight-semiBold;
+            };
         }
     }
 }
