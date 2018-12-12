@@ -18,6 +18,7 @@ export enum NoteCollectionActionTypes {
     ADD_NOTE = '[NoteCollection] Add note',
     UPDATE_CONTRIBUTION = '[NoteCollection] Update contribution',
     UPDATE_CONTRIBUTION_FAIL = '[NoteCollection] Update contribution fail',
+    CHANGE_NOTE_TITLE = '[NoteCollection] Change note title',
 }
 
 
@@ -119,6 +120,19 @@ export class UpdateNoteContributionFailAction implements Action {
 }
 
 
+export class ChangeNoteTitleAction implements Action {
+    readonly type = NoteCollectionActionTypes.CHANGE_NOTE_TITLE;
+
+    constructor(public readonly payload: {
+        note: NoteItem,
+        title: string,
+        contentFileName: string,
+        contentFilePath: string,
+    }) {
+    }
+}
+
+
 export type NoteCollectionAction =
     LoadNoteCollectionAction
     | LoadNoteCollectionCompleteAction
@@ -132,4 +146,5 @@ export type NoteCollectionAction =
     | DeselectNoteAction
     | AddNoteAction
     | UpdateNoteContributionAction
-    | UpdateNoteContributionFailAction;
+    | UpdateNoteContributionFailAction
+    | ChangeNoteTitleAction;

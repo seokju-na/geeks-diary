@@ -67,13 +67,46 @@ function withFilteredAndSortedNotes(state: NoteCollectionState): NoteCollectionS
             break;
     }
 
-    sorting.setDirection(state.sortDirection);
-    sorting.sort(notes);
+    sorting
+        .setDirection(state.sortDirection)
+        .sort(notes);
 
     return {
         ...state,
         filteredAndSortedNotes: notes,
     };
+}
+
+
+function withNoteUpadation(
+    state: NoteCollectionState,
+    index: number,
+    patch: Partial<NoteItem>,
+): NoteCollectionState {
+    const target = state.notes[index];
+
+    console.log(index);
+
+    if (target === undefined) {
+        return state;
+    }
+
+    const notes = [...state.notes];
+    notes[index] = { ...notes[index], ...patch };
+
+    // If index of note is currently selected, update it.
+    if (notes[index].id === state.selectedNote.id) {
+        return {
+            ...state,
+            selectedNote: {
+                ...state.selectedNote,
+                ...patch,
+            },
+            notes,
+        };
+    } else {
+        return { ...state, notes };
+    }
 }
 
 
@@ -163,6 +196,19 @@ export function noteCollectionReducer(
                 ...state,
                 contribution: { ...action.payload.contribution },
             };
+
+        case NoteCollectionActionTypes.CHANGE_NOTE_TITLE:
+            return withFilteredAndSortedNotes(
+                withNoteUpadation(
+                    state,
+                    state.notes.findIndex(note => note.id === action.payload.note.id),
+                    {
+                        title: action.payload.title,
+                        contentFilePath: action.payload.contentFilePath,
+                        contentFileName: action.payload.contentFileName,
+                    },
+                ),
+            );
 
         default:
             return state;
