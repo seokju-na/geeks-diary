@@ -193,6 +193,11 @@ export class NoteCollectionService implements OnDestroy {
         const newContentFileName = makeNoteContentFileName(noteItem.createdDatetime, newTitle);
         const newContentFilePath = path.resolve(dirName, newContentFileName);
 
+        // If content file name is same, just ignore.
+        if (newContentFileName === noteItem.contentFileName) {
+            return;
+        }
+
         if (await toPromise(this.fs.isPathExists(newContentFilePath))) {
             throw new NoteContentFileAlreadyExistsError();
         }
