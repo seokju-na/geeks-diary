@@ -25,6 +25,12 @@
             > * {
                 user-select: text !important;
             }
+
+            img {
+                max-width: 100%;
+                display: block;
+                margin: 0 auto;
+            }
         }
 
         &__snippet--code {
