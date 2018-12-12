@@ -60,9 +60,14 @@ describe('browser.note.noteEditor.NoteEditorService', () => {
     describe('copyAssetFile', () => {
         it('should copy file and return asset model.', fakeAsync(() => {
             const filePath = '/foo/bar/some-image.png';
+            const noteContentFilePath = `${workspaceConfig.rootDirPath}/label/note.md`;
 
             const callback = jasmine.createSpy('copy asset file callback');
-            const subscription = noteEditor.copyAssetFile(AssetTypes.IMAGE, filePath).subscribe(callback);
+            const subscription = noteEditor.copyAssetFile(
+                AssetTypes.IMAGE,
+                noteContentFilePath,
+                filePath,
+            ).subscribe(callback);
 
             mockFs
                 .expect({
@@ -77,7 +82,7 @@ describe('browser.note.noteEditor.NoteEditorService', () => {
                 fileNameWithoutExtension: 'some-image',
                 filePath: `${workspaceConfig.assetsDirPath}/some-image.png`,
                 extension: '.png',
-                relativePathToWorkspaceDir: 'assets/some-image.png',
+                relativePathToWorkspaceDir: '../assets/some-image.png',
             } as Asset);
             subscription.unsubscribe();
         }));
@@ -86,9 +91,14 @@ describe('browser.note.noteEditor.NoteEditorService', () => {
             + '2) Open confirm dialog for asking user whether change file name. '
             + '3) If accepted, copy asset file again with changed file name.', fakeAsync(() => {
             const filePath = '/foo/bar/some-image.png';
+            const noteContentFilePath = `${workspaceConfig.rootDirPath}/label/note.md`;
 
             const callback = jasmine.createSpy('copy asset file callback');
-            const subscription = noteEditor.copyAssetFile(AssetTypes.IMAGE, filePath).subscribe(callback);
+            const subscription = noteEditor.copyAssetFile(
+                AssetTypes.IMAGE,
+                noteContentFilePath,
+                filePath,
+            ).subscribe(callback);
 
             mockFs
                 .expect({
@@ -141,7 +151,7 @@ describe('browser.note.noteEditor.NoteEditorService', () => {
                 fileNameWithoutExtension: 'other-image',
                 filePath: `${workspaceConfig.assetsDirPath}/other-image.png`,
                 extension: '.png',
-                relativePathToWorkspaceDir: 'assets/other-image.png',
+                relativePathToWorkspaceDir: '../assets/other-image.png',
             } as Asset);
             subscription.unsubscribe();
         }));

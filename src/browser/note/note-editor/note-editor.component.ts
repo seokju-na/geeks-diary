@@ -3,9 +3,10 @@ import { Component, ElementRef, OnDestroy, OnInit, ViewChild, ViewContainerRef }
 import { FormControl } from '@angular/forms';
 import { select, Store } from '@ngrx/store';
 import { Observable, Subscription } from 'rxjs';
-import { filter, withLatestFrom } from 'rxjs/operators';
+import { filter, take, withLatestFrom } from 'rxjs/operators';
 import { AssetTypes } from '../../../core/asset';
 import { NoteSnippetTypes } from '../../../core/note';
+import { toPromise } from '../../../libs/rx';
 import { MenuEvent, MenuService, NativeDialog, nativeDialogFileFilters, NativeDialogProperties } from '../../shared';
 import { NoteStateWithRoot } from '../note.state';
 import { NoteCodeSnippetActionDialog } from './note-code-snippet-action-dialog/note-code-snippet-action-dialog';
@@ -140,28 +141,44 @@ export class NoteEditorComponent implements OnInit, OnDestroy {
         });
     }
 
-    private insertImageAtSnippet(ref: NoteSnippetEditorRef<any>): Promise<void> {
+    private async insertImageAtSnippet(ref: NoteSnippetEditorRef<any>): Promise<void> {
         if (ref._config.type !== NoteSnippetTypes.TEXT) {
             return;
         }
 
-        this.nativeDialog.showOpenDialog({
+        const result = await toPromise(this.nativeDialog.showOpenDialog({
             message: 'Choose an image:',
             properties: NativeDialogProperties.OPEN_FILE,
             fileFilters: [nativeDialogFileFilters.IMAGES],
-        }).subscribe((result) => {
-            if (result.isSelected) {
-                this.editorService.copyAssetFile(AssetTypes.IMAGE, result.filePaths[0]).subscribe((asset) => {
-                    if (asset) {
-                        const event = new NoteSnippetEditorInsertImageEvent(ref, {
-                            fileName: asset.fileNameWithoutExtension,
-                            filePath: asset.relativePathToWorkspaceDir,
-                        });
+        }));
 
-                        this.snippetListManager.handleSnippetRefEvent(event);
-                    }
-                });
-            }
-        });
+        if (!result.isSelected) {
+            return;
+        }
+
+        const currentSelectedNote = await toPromise(this.store.pipe(
+            select(state => state.note.collection.selectedNote),
+            take(1),
+        ));
+
+        if (!currentSelectedNote) {
+            return;
+        }
+
+        const { contentFilePath } = currentSelectedNote;
+        const asset = await toPromise(this.editorService.copyAssetFile(
+            AssetTypes.IMAGE,
+            contentFilePath,
+            result.filePaths[0],
+        ));
+
+        if (asset) {
+            const event = new NoteSnippetEditorInsertImageEvent(ref, {
+                fileName: asset.fileNameWithoutExtension,
+                filePath: asset.relativePathToWorkspaceDir,
+            });
+
+            this.snippetListManager.handleSnippetRefEvent(event);
+        }
     }
 }

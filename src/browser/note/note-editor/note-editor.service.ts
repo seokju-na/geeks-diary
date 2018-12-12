@@ -27,7 +27,12 @@ export class NoteEditorService {
     ) {
     }
 
-    copyAssetFile(type: AssetTypes, filePath: string, destFileName?: string): Observable<Asset | null> {
+    copyAssetFile(
+        type: AssetTypes,
+        noteContentFilePath: string,
+        filePath: string,
+        destFileName?: string,
+    ): Observable<Asset | null> {
         const { assetsDirPath } = this.workspace.configs;
 
         const extension = destFileName ? path.extname(destFileName) : path.extname(filePath);
@@ -36,7 +41,7 @@ export class NoteEditorService {
 
         const destination = path.resolve(assetsDirPath, fileName);
         const relativePath = path
-            .relative(this.workspace.configs.rootDirPath, destination)
+            .relative(path.dirname(noteContentFilePath), destination)
             .replace(/ /g, '%20'); // This is for supporting web url.
 
         const asset: Asset = {
@@ -66,7 +71,7 @@ export class NoteEditorService {
             }).afterClosed());
 
             if (result && result.isChanged) {
-                return toPromise(this.copyAssetFile(type, filePath, result.changedFileName));
+                return toPromise(this.copyAssetFile(type, noteContentFilePath, filePath, result.changedFileName));
             } else {
                 return null;
             }
