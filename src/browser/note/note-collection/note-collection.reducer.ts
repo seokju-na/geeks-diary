@@ -85,8 +85,6 @@ function withNoteUpadation(
 ): NoteCollectionState {
     const target = state.notes[index];
 
-    console.log(index);
-
     if (target === undefined) {
         return state;
     }
