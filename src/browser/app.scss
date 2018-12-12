@@ -10,6 +10,7 @@
 @import "app/all-theme";
 @import "note/all-theme";
 @import "vcs/all-theme";
+@import "settings/all-theme";
 
 @include ui-core();
 
@@ -18,6 +19,7 @@
     @include gd-ui-all-theme($basic-light-theme);
     @include gd-note-all-theme($basic-light-theme);
     @include gd-vcs-all-theme($basic-light-theme);
+    @include gd-settings-all-theme($basic-light-theme);
 }
 
 .BasicDarkTheme {
@@ -25,4 +27,5 @@
     @include gd-ui-all-theme($basic-dark-theme);
     @include gd-note-all-theme($basic-dark-theme);
     @include gd-vcs-all-theme($basic-dark-theme);
+    @include gd-settings-all-theme($basic-dark-theme);
 }

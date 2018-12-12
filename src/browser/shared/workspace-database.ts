@@ -2,7 +2,7 @@ import { InjectionToken, Provider } from '@angular/core';
 import Dexie from 'dexie';
 import { Database } from '../../core/database';
 import { WorkspaceInfo } from '../../core/workspace';
-import { ThemeService } from '../ui/style';
+import { defaultTheme } from '../ui/style';
 
 
 export const WORKSPACE_INFO_ID = 1;
@@ -28,7 +28,7 @@ export class WorkspaceDatabase extends Database {
         if (!info) {
             info = {
                 id: WORKSPACE_INFO_ID,
-                theme: ThemeService.defaultTheme,
+                theme: defaultTheme,
             };
 
             await this.info.add(info);

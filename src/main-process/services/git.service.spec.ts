@@ -231,15 +231,69 @@ describe('mainProcess.services.GitService', () => {
         });
     });
 
-    // FIXME LATER : Travis CI fails in this test. Ignore for while.
-    xdescribe('isRemoteExists', () => {
+    describe('isRemoteExists', () => {
+        beforeEach(async () => {
+            await makeTmpPath(true);
+        });
+
         it('should return \'false\' if repository has not remote.', async () => {
             const result = await git.isRemoteExists({
-                workspaceDirPath: getFixturePath('origin-not-exists'),
+                workspaceDirPath: tmpPath,
                 remoteName: 'origin',
             });
 
             expect(result).to.equals(false);
+        });
+    });
+
+    describe('getRemoteUrl', () => {
+        beforeEach(async () => {
+            await makeTmpPath(true);
+        });
+
+        it('should return url of remote.', async () => {
+            // First set remote..
+            const remoteName = 'my_remote';
+            const remoteUrl = 'some_remote_url';
+
+            const repo = await _git.Repository.open(tmpPath);
+            await _git.Remote.create(repo, remoteName, remoteUrl);
+
+            const result = await git.getRemoteUrl({
+                workspaceDirPath: tmpPath,
+                remoteName,
+            });
+
+            expect(result).to.equals(remoteUrl);
+        });
+    });
+
+    describe('setRemote', () => {
+        beforeEach(async () => {
+            await makeTmpPath(true);
+        });
+
+        it('should remove exists remote and set new remote.', async () => {
+            const remoteName = 'origin';
+            const prevRemoteUrl = 'previous_remote_url';
+            const nextRemoteUrl = 'next_remote_url';
+
+            // Set previous remote...
+            const repo = await _git.Repository.open(tmpPath);
+            await _git.Remote.create(repo, remoteName, prevRemoteUrl);
+
+            await git.setRemote({
+                workspaceDirPath: tmpPath,
+                remoteName,
+                remoteUrl: nextRemoteUrl,
+            });
+
+            // Check changed remote
+            const remote = await repo.getRemote(remoteName);
+            expect(remote.url()).to.equals(nextRemoteUrl);
+
+            remote.free();
+            repo.free();
         });
     });
 

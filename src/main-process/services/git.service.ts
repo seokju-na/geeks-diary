@@ -11,8 +11,10 @@ import {
     GitFindRemoteOptions,
     GitGetHistoryOptions,
     GitGetHistoryResult,
-    GitMergeConflictedError, GitNetworkError,
+    GitMergeConflictedError,
+    GitNetworkError,
     GitRemoteNotFoundError,
+    GitSetRemoteOptions,
     GitSyncWithRemoteOptions,
     GitSyncWithRemoteResult,
 } from '../../core/git';
@@ -222,6 +224,46 @@ export class GitService extends Service {
             } else {
                 throw error;
             }
+        }
+    }
+
+    @IpcActionHandler('getRemoteUrl')
+    async getRemoteUrl(options: GitFindRemoteOptions): Promise<string> {
+        const repository = await this.openRepository(options.workspaceDirPath);
+        const remote = await repository.getRemote(options.remoteName);
+        const remoteUrl = remote.url();
+
+        remote.free();
+        repository.free();
+
+        return remoteUrl;
+    }
+
+    @IpcActionHandler('setRemote')
+    async setRemote(options: GitSetRemoteOptions): Promise<void> {
+        const { remoteName, remoteUrl } = options;
+        const repository = await this.openRepository(options.workspaceDirPath);
+
+        // If remote already exists, delete first.
+        try {
+            await this.git.Remote.lookup(repository, remoteName);
+            await this.git.Remote.delete(repository, remoteName);
+        } catch (error) {
+            const message = error.message ? error.message : '';
+
+            // Only remote not found error accepted. Other should be thrown.
+            if (!gitErrorRegexes[GitErrorCodes.REMOTE_NOT_FOUND].test(message)) {
+                repository.free();
+                throw error;
+            }
+        }
+
+        try {
+            await this.git.Remote.create(repository, remoteName, remoteUrl);
+        } catch (error) {
+            throw error;
+        } finally {
+            repository.free();
         }
     }
 

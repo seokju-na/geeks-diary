@@ -1,0 +1,44 @@
+<form gdArea gdColumns="2fr 5fr" gdGap="5px" (ngSubmit)="saveRemote()"
+      [formGroup]="remoteSettingForm" class="VcsSettings__remoteSettingsForm">
+    <!-- Github Account -->
+    <label gdColumn="1" gdRow="1" gdFormFieldLabel for="vcs-remote-setting-github-account-select">
+        Github Account:
+    </label>
+    <gd-form-field gdColumn="2" gdRow="1">
+        <gd-select-menu [gdMenuTrigger]="githubAccountMenu" formControlName="githubAccount"
+                        id="vcs-remote-setting-github-account-select"
+                        [convertFn]="accountMenuConvertFn" placeholder="Select github account...">
+        </gd-select-menu>
+        <gd-menu #githubAccountMenu="gdMenu">
+            <button *ngFor="let item of accountMenuItems" gd-menu-item (click)="selectAccount(item)" type="button">
+                {{ item.label }}
+            </button>
+            <gd-menu-separator></gd-menu-separator>
+            <button gd-menu-item id="add-github-account-button" iconName="plus" (click)="addAccount()" type="button">
+                Add Github Account
+            </button>
+        </gd-menu>
+    </gd-form-field>
+
+    <!-- Remote URL -->
+    <label gdColumn="1" gdRow="2" gdFormFieldLabel for="vcs-remote-setting-url-input">Remote URL:</label>
+    <gd-form-field gdColumn="2" gdRow="2" id="vcs-remote-setting-url-form-field">
+        <input gdInput formControlName="remoteUrl" id="vcs-remote-setting-url-input" type="url">
+        <gd-form-field-error errorName="required">Remote url required</gd-form-field-error>
+        <gd-form-field-error errorName="invalidFormat">Invalid remote url format</gd-form-field-error>
+        <gd-form-field-error errorName="repositoryNotExists">Repository not exists</gd-form-field-error>
+    </gd-form-field>
+
+    <button gdColumn="1" gdRow="3" gd-button [disabled]="remoteSettingForm.invalid" color="primary"
+            [showSpinner]="saveRemoteProcessing" class="VcsSettings__saveRemoteButton">
+        Save Remote
+    </button>
+    <div fxLayout gdColumn="2" gdRow="3">
+        <span *ngIf="saveRemoteResult"
+              [class.VcsSettings__saveRemoteResultMessage--success]="saveRemoteResult === 'success'"
+              [class.VcsSettings__saveRemoteResultMessage--fail]="saveRemoteResult === 'fail'"
+              class="VcsSettings__saveRemoteResultMessage">
+            {{ saveRemoteResultMessage }}
+        </span>
+    </div>
+</form>

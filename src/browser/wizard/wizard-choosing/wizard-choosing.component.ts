@@ -1,12 +1,11 @@
-import { Component, Inject, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormControl } from '@angular/forms';
-import { from } from 'rxjs';
-import { debounceTime, distinctUntilChanged, switchMap, tap } from 'rxjs/operators';
+import { Subscription } from 'rxjs';
 import { environment } from '../../../core/environment';
 import { WorkspaceError } from '../../../core/workspace';
-import { WORKSPACE_DATABASE, WorkspaceDatabase, WorkspaceService } from '../../shared';
+import { ThemeService, WorkspaceService } from '../../shared';
 import { ConfirmDialog } from '../../shared/confirm-dialog';
-import { Themes, ThemeService } from '../../ui/style';
+import { Themes } from '../../ui/style';
 
 
 @Component({
@@ -14,7 +13,7 @@ import { Themes, ThemeService } from '../../ui/style';
     templateUrl: './wizard-choosing.component.html',
     styleUrls: ['./wizard-choosing.component.scss'],
 })
-export class WizardChoosingComponent implements OnInit {
+export class WizardChoosingComponent implements OnInit, OnDestroy {
     readonly appVersion = environment.version;
 
     readonly themeFormControl = new FormControl();
@@ -23,25 +22,22 @@ export class WizardChoosingComponent implements OnInit {
         { name: 'Dark Theme', value: Themes.BASIC_DARK_THEME },
     ];
 
+    private themeSetSubscription = Subscription.EMPTY;
+
     constructor(
         private theme: ThemeService,
         private workspace: WorkspaceService,
-        @Inject(WORKSPACE_DATABASE) private workspaceDB: WorkspaceDatabase,
         private confirmDialog: ConfirmDialog,
     ) {
     }
 
     ngOnInit(): void {
         this.themeFormControl.patchValue(this.theme.currentTheme);
-        this.themeFormControl.valueChanges.pipe(
-            tap(theme => this.theme.setTheme(theme)),
-            distinctUntilChanged(),
-            // Saving value in database cost IO. We need to throttle events.
-            debounceTime(50),
-            switchMap(theme =>
-                from(this.workspaceDB.update({ theme })),
-            ),
-        ).subscribe();
+        this.themeSetSubscription = this.themeFormControl.valueChanges.subscribe(this.theme.setTheme);
+    }
+
+    ngOnDestroy(): void {
+        this.themeSetSubscription.unsubscribe();
     }
 
     createNewWorkspace(): void {

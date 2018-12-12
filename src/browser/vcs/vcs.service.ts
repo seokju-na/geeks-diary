@@ -1,8 +1,8 @@
 import { Inject, Injectable } from '@angular/core';
-import { from, Observable, of } from 'rxjs';
-import { filter, map, mapTo, switchMap, tap } from 'rxjs/operators';
-import { GitGetHistoryOptions, GitSyncWithRemoteResult } from '../../core/git';
-import { VcsAccount, VcsCommitItem, VcsFileChange } from '../../core/vcs';
+import { from, Observable, of, throwError, zip } from 'rxjs';
+import { catchError, filter, map, mapTo, switchMap, tap } from 'rxjs/operators';
+import { GitError, GitErrorCodes, GitGetHistoryOptions, GitSyncWithRemoteResult } from '../../core/git';
+import { VcsAccount, VcsAuthenticationInfo, VcsCommitItem, VcsFileChange, VcsRemoteRepository } from '../../core/vcs';
 import { toPromise } from '../../libs/rx';
 import { GitService, WorkspaceService } from '../shared';
 import { VCS_ACCOUNT_DATABASE, VcsAccountDatabase } from './vcs-account-database';
@@ -22,8 +22,14 @@ export class VcsCloneRepositoryOption {
 
 @Injectable()
 export class VcsService {
-    _removeProvider: VcsRemoteProvider | null = null;
+    // Git commit history.
+    private _commitHistoryFetchingSize: number = 50;
 
+    get commitHistoryFetchingSize(): number {
+        return this._commitHistoryFetchingSize;
+    }
+
+    _removeProvider: VcsRemoteProvider | null = null;
     private nextCommitHistoryFetchingOptions: GitGetHistoryOptions | null = null;
 
     constructor(
@@ -32,13 +38,6 @@ export class VcsService {
         @Inject(VCS_ACCOUNT_DATABASE) private accountDB: VcsAccountDatabase,
         private workspace: WorkspaceService,
     ) {
-    }
-
-    // Git commit history.
-    private _commitHistoryFetchingSize: number = 50;
-
-    get commitHistoryFetchingSize(): number {
-        return this._commitHistoryFetchingSize;
     }
 
     setRemoveProvider(type: VcsRemoteProviderType): this {
@@ -165,6 +164,49 @@ export class VcsService {
         }));
 
         return (fetchAccount !== undefined) && isRemoteExists;
+    }
+
+    getRepositoryFetchAccount(): Observable<VcsAccount | null> {
+        return from(this.accountDB.getRepositoryFetchAccount()).pipe(
+            map(fetchAccount => fetchAccount ? fetchAccount : null),
+        );
+    }
+
+    getRemoteRepositoryUrl(): Observable<string | null> {
+        return this.git.getRemoteUrl({
+            workspaceDirPath: this.workspace.configs.rootDirPath,
+            remoteName: 'origin',
+        }).pipe(
+            catchError((error) => {
+                // If remote not exists, return null.
+                // Otherwise throw error because its unexpected error.
+                if ((error as GitError).code === GitErrorCodes.REMOTE_NOT_FOUND) {
+                    return of(null);
+                } else {
+                    return throwError(error);
+                }
+            }),
+        );
+    }
+
+    findRemoteRepository(remoteUrl: string, authentication?: VcsAuthenticationInfo): Observable<VcsRemoteRepository> {
+        this.checkIfRemoteProviderIsProvided();
+
+        return this._removeProvider.findRepository(
+            remoteUrl,
+            authentication,
+        );
+    }
+
+    setRemoteRepository(fetchAccount: VcsAccount, remoteUrl: string): Observable<void> {
+        return zip(
+            from(this.accountDB.setRepositoryFetchAccountAs(fetchAccount)),
+            this.git.setRemote({
+                workspaceDirPath: this.workspace.configs.rootDirPath,
+                remoteName: 'origin',
+                remoteUrl,
+            }),
+        ).pipe(mapTo(null));
     }
 
     syncRepository(): Observable<GitSyncWithRemoteResult> {

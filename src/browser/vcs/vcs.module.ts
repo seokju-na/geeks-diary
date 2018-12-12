@@ -6,6 +6,7 @@ import { VcsAccountDatabaseProvider } from './vcs-account-database';
 import { VcsLocalModule } from './vcs-local';
 import { VcsManagerComponent } from './vcs-manager.component';
 import { VcsRemoteModule } from './vcs-remote';
+import { VcsSettingsModule } from './vcs-settings';
 import { VcsViewModule } from './vcs-view';
 import { VcsEffects } from './vcs.effects';
 import { vcsReducerMap } from './vcs.reducer';
@@ -18,6 +19,7 @@ import { VcsService } from './vcs.service';
         VcsRemoteModule,
         VcsViewModule,
         VcsLocalModule,
+        VcsSettingsModule,
         StoreModule.forFeature('vcs', vcsReducerMap),
         EffectsModule.forFeature([VcsEffects]),
     ],
@@ -34,6 +36,7 @@ import { VcsService } from './vcs.service';
     exports: [
         VcsRemoteModule,
         VcsViewModule,
+        VcsSettingsModule,
         VcsManagerComponent,
     ],
 })

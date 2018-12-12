@@ -74,6 +74,7 @@ export function parseGitRemoteUrl(url: string): GitRemoteUrl | null {
 export enum GitErrorCodes {
     AUTHENTICATION_FAIL = 'git.authenticationFail',
     REMOTE_NOT_FOUND = 'git.remoteNotFound',
+    REMOTE_ALREADY_EXISTS = 'git.remoteAlreadyExists',
     MERGE_CONFLICTED = 'git.mergeConflicted',
     NETWORK_ERROR = 'git.networkError',
 }
@@ -84,6 +85,7 @@ export enum GitErrorCodes {
 export const gitErrorRegexes: { [key: string]: RegExp } = {
     [GitErrorCodes.AUTHENTICATION_FAIL]: /authentication required/,
     [GitErrorCodes.REMOTE_NOT_FOUND]: /remote '.*' does not exist/,
+    [GitErrorCodes.REMOTE_ALREADY_EXISTS]: /remote '.*' already exists/,
     [GitErrorCodes.NETWORK_ERROR]: /curl error: Could not resolve host:/,
 };
 
@@ -195,6 +197,13 @@ export interface GitGetHistoryResult {
 export interface GitFindRemoteOptions {
     workspaceDirPath: string;
     remoteName: string;
+}
+
+
+export interface GitSetRemoteOptions {
+    workspaceDirPath: string;
+    remoteName: string;
+    remoteUrl: string;
 }
 
 

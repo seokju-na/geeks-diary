@@ -5,6 +5,7 @@ import { EffectsModule } from '@ngrx/effects';
 import { StoreModule } from '@ngrx/store';
 import { StoreDevtoolsModule } from '@ngrx/store-devtools';
 import { NoteModule } from '../note';
+import { SettingsModule } from '../settings';
 import { UiModule } from '../ui/ui.module';
 import { VcsModule } from '../vcs';
 import {
@@ -15,6 +16,7 @@ import {
     AppVcsItemFactoriesProvider,
 } from './app-configs';
 import { AppLayoutModule } from './app-layout';
+import { AppSettingsModule } from './app-settings';
 import { AppComponent } from './app.component';
 import { appReducer } from './app.reducer';
 
@@ -28,8 +30,10 @@ import { appReducer } from './app.reducer';
         StoreDevtoolsModule.instrument(),
         EffectsModule.forRoot([]),
         AppLayoutModule,
+        AppSettingsModule,
         NoteModule,
         VcsModule,
+        SettingsModule,
     ],
     providers: [
         AppVcsItemFactoriesProvider,

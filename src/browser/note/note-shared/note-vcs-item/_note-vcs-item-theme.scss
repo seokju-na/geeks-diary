@@ -3,9 +3,12 @@
 @import "./note-vcs-item-sizes";
 
 @mixin gd-note-vcs-item-theme($theme) {
+    $background: map-get($theme, background);
     $foreground: map-get($theme, foreground);
 
     .NoteVcsItem {
+        background: gd-color($background, background-highlight);
+
         &__panel {
             // border-top: 1px solid gd-color($foreground, divider);
         }

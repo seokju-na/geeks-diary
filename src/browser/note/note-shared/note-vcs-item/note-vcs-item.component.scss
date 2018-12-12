@@ -3,6 +3,8 @@
 @import "./note-vcs-item-sizes";
 
 .NoteVcsItem {
+    display: block;
+
     &__head {
         padding: 0 $spacing-half;
         width: 100%;

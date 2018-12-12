@@ -70,7 +70,7 @@ export class MenuService extends Service {
                         label: 'Preferences…',
                         id: 'preferences',
                         accelerator: 'CmdOrCtrl+,',
-                        click: sendMessageOnClick('showPreferences'),
+                        click: sendMessageOnClick('showSettings'),
                     },
                     separator,
                     {

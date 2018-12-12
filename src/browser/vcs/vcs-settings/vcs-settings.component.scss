@@ -1,0 +1,12 @@
+@import "../../ui/style/spacing";
+
+.VcsSettings {
+    &__saveRemoteButton {
+    }
+
+    &__saveRemoteResultMessage {
+        display: inline-flex;
+        align-items: center;
+        padding: 0 $spacing-half;
+    }
+}

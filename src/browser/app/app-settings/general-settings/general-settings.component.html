@@ -1,0 +1,11 @@
+<div gdArea gdColumns="2fr 5fr" gdRows="1fr" gdGap="5px" class="GeneralSettings">
+    <label gdColumn="1" gdRow="1" for="general-setting-theme" gdFormFieldLabel>Theme:</label>
+    <div gdColumn="2" gdRow="1" fxLayout fxLayoutAlign="start center"
+         class="GeneralSettings__formFieldSizedBox">
+        <gd-button-toggle-group gdColumn="2" gdRow="1" id="general-setting-theme" [formControl]="themeFormControl">
+            <gd-button-toggle *ngFor="let option of themeOptions" [value]="option.value">
+                {{ option.name }}
+            </gd-button-toggle>
+        </gd-button-toggle-group>
+    </div>
+</div>

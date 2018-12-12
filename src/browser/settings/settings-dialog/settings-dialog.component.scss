@@ -1,0 +1,14 @@
+@import "../../ui/style/spacing";
+
+.SettingsDialog {
+    &__content {
+        padding: 0 !important;
+    }
+
+    &__container {
+        padding: $spacing;
+    }
+
+    &__tabContent {
+    }
+}

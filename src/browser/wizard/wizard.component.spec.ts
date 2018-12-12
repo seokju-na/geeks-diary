@@ -1,8 +1,8 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { RouterTestingModule } from '@angular/router/testing';
 import { fastTestSetup, sample } from '../../../test/helpers';
-import { SharedModule, WORKSPACE_DATABASE, WorkspaceDatabase } from '../shared';
-import { Themes, ThemeService } from '../ui/style';
+import { SharedModule, ThemeService, WORKSPACE_DATABASE, WorkspaceDatabase } from '../shared';
+import { Themes } from '../ui/style';
 import { UiModule } from '../ui/ui.module';
 import { WizardComponent } from './wizard.component';
 
@@ -42,7 +42,7 @@ describe('browser.wizard.WizardComponent', () => {
     });
 
     it('should set and update theme form workspace database cache if it\'s exists.', () => {
-        spyOn(theme, 'setTheme');
+        spyOn(theme, 'applyThemeToHtml');
         spyOn(workspaceDB, 'update');
 
         const _theme = sample<Themes>(Themes);
@@ -50,7 +50,7 @@ describe('browser.wizard.WizardComponent', () => {
 
         createFixture();
 
-        expect(theme.setTheme).toHaveBeenCalledWith(_theme);
+        expect(theme.applyThemeToHtml).toHaveBeenCalledWith(_theme);
         expect(workspaceDB.update).toHaveBeenCalledWith({ theme: _theme });
     });
 });

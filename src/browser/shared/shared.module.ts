@@ -6,6 +6,7 @@ import { FsService } from './fs.service';
 import { GitService } from './git.service';
 import { MenuService } from './menu.service';
 import { NativeDialog } from './native-dialog';
+import { ThemeService } from './theme.service';
 import { WorkspaceDatabaseProvider } from './workspace-database';
 import { WorkspaceService } from './workspace.service';
 
@@ -23,6 +24,7 @@ import { WorkspaceService } from './workspace.service';
         GitService,
         MenuService,
         NativeDialog,
+        ThemeService,
     ],
     exports: [
         ConfirmDialogModule,
