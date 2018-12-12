@@ -1,5 +1,5 @@
 import { DOWN_ARROW, ENTER } from '@angular/cdk/keycodes';
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, discardPeriodicTasks, fakeAsync, flush, TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
 import { combineReducers, Store, StoreModule } from '@ngrx/store';
 import { of, Subject } from 'rxjs';
@@ -10,6 +10,7 @@ import { NoteSnippetTypes } from '../../../core/note';
 import { MenuEvent, MenuService, NativeDialog, NativeDialogOpenResult, SharedModule } from '../../shared';
 import { Dialog } from '../../ui/dialog';
 import { UiModule } from '../../ui/ui.module';
+import { SelectNoteAction } from '../note-collection';
 import { NoteItemDummy } from '../note-collection/dummies';
 import { NoteSharedModule } from '../note-shared';
 import { noteReducerMap } from '../note.reducer';
@@ -261,7 +262,10 @@ describe('browser.note.noteEditor.NoteEditorComponent', () => {
         });
 
         it('should show file open dialog when insert image event received while type of active snippet is '
-            + '\'TEXT\'. And dispatch NoteSnippetEditorInsertImageEvent when user select file.', () => {
+            + '\'TEXT\'. And dispatch NoteSnippetEditorInsertImageEvent when user select file.', fakeAsync(() => {
+            const selectedNote = noteDummy.create();
+            store.dispatch(new SelectNoteAction({ note: selectedNote }));
+
             activateSnippetAtIndex(0);
             fixture.detectChanges();
 
@@ -276,10 +280,14 @@ describe('browser.note.noteEditor.NoteEditorComponent', () => {
             } as Asset));
 
             menuMessages.next(MenuEvent.INSERT_IMAGE);
+            flush();
+            flush();
+            flush();
 
             expect(nativeDialog.showOpenDialog).toHaveBeenCalled();
             expect(noteEditor.copyAssetFile).toHaveBeenCalledWith(
                 AssetTypes.IMAGE,
+                selectedNote.contentFilePath,
                 '/foo/bar/assets/some-image.png',
             );
 
@@ -293,11 +301,8 @@ describe('browser.note.noteEditor.NoteEditorComponent', () => {
             expect(event instanceof NoteSnippetEditorInsertImageEvent).toBe(true);
             expect(event.payload.fileName).toEqual('some-image');
             expect(event.payload.filePath).toEqual('./some-image.png');
-        });
 
-        it('should show file open dialog when insert image event received wile type of active snippet is '
-            + '\'TEXT\'. When failed copy image file because file name is duplicated, then open file name change '
-            + 'dialog.', () => {
-        });
+            discardPeriodicTasks();
+        }));
     });
 });

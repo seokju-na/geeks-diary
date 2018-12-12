@@ -13,6 +13,7 @@ describe('browser.note.NoteParser', () => {
 
     const workspaceConfig: WorkspaceConfig = {
         rootDirPath: '/test/workspace/',
+        assetsDirPath: '/test/workspace/assets/',
     };
 
     fastTestSetup();
@@ -94,7 +95,7 @@ describe('browser.note.NoteParser', () => {
 
             // noinspection HtmlUnknownTarget
             expect(rendered).toContain(
-                '<p><img src="/test/workspace/images/my-awesome-image.png" alt="Image"></p>',
+                '<p><img src="/test/workspace/assets/my-awesome-image.png" alt="Image"></p>',
             );
         });
 

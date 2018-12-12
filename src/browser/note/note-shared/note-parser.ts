@@ -47,7 +47,7 @@ export class NoteParser {
 
         this.markdownParser.use(remarkableMetaPlugin);
 
-        overrideMarkdownParseToAdaptLink(this.markdownParser, this.workspace.configs.rootDirPath);
+        overrideMarkdownParseToAdaptLink(this.markdownParser, this.workspace.configs.assetsDirPath);
     }
 
     generateNoteContent(note: Note, contentRawValue: string): NoteContent {
@@ -296,9 +296,9 @@ function* parseTokens(lines: string[], _tokens: Remarkable.Token[]): IterableIte
 }
 
 
-function overrideMarkdownParseToAdaptLink(md: Remarkable, baseUrl: string): void {
+function overrideMarkdownParseToAdaptLink(md: Remarkable, assetDir: string): void {
     md.renderer.rules.image = (tokens, idx, options /*, env */) => {
-        const srcUrl = path.resolve(baseUrl, tokens[idx].src);
+        const srcUrl = path.resolve(assetDir, path.basename(tokens[idx].src));
 
         const src = ' src="' + escapeHtml(srcUrl) + '"';
         const title = tokens[idx].title ? (' title="' + escapeHtml(replaceEntities(tokens[idx].title)) + '"') : '';
