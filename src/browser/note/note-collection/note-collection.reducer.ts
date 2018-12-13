@@ -58,10 +58,6 @@ function withFilteredAndSortedNotes(state: NoteCollectionState): NoteCollectionS
             sorting.setIndexPropGetter(note => note.createdDatetime);
             break;
 
-        case NoteCollectionSortBy.UPDATED:
-            sorting.setIndexPropGetter(note => note.updatedDatetime);
-            break;
-
         case NoteCollectionSortBy.TITLE:
             sorting.setIndexPropGetter(note => note.title);
             break;

@@ -11,7 +11,6 @@ export enum NoteCollectionFilterBy {
 
 export enum NoteCollectionSortBy {
     CREATED = 'CREATED',
-    UPDATED = 'UPDATED',
     TITLE = 'TITLE',
 }
 

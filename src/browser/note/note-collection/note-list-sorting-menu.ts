@@ -40,11 +40,6 @@ export class NoteListSortingMenu {
                 label: 'Date Created',
             },
             {
-                id: NoteCollectionSortBy.UPDATED,
-                type: 'checkbox',
-                label: 'Date Updated',
-            },
-            {
                 id: NoteCollectionSortBy.TITLE,
                 type: 'checkbox',
                 label: 'Title',
@@ -72,10 +67,7 @@ export class NoteListSortingMenu {
     private handleMenuItemClick(id: string): void {
         let action: NoteCollectionAction;
 
-        if (id === NoteCollectionSortBy.CREATED
-            || id === NoteCollectionSortBy.UPDATED
-            || id === NoteCollectionSortBy.TITLE) {
-
+        if (id === NoteCollectionSortBy.CREATED || id === NoteCollectionSortBy.TITLE) {
             action = new ChangeSortOrderAction({ sortBy: id });
         }
 

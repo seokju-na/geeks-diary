@@ -156,7 +156,6 @@ export class NoteCollectionService implements OnDestroy {
             title,
             snippets: convertToNoteSnippets(result.parsedSnippets),
             createdDatetime: createdAt,
-            updatedDatetime: createdAt,
             stackIds: [],
             contentFileName,
             contentFilePath,
@@ -210,7 +209,6 @@ export class NoteCollectionService implements OnDestroy {
             contentFileName: newContentFileName,
             contentFilePath: newContentFilePath,
             createdDatetime: noteItem.createdDatetime,
-            updatedDatetime: noteItem.updatedDatetime, // TODO: Will be removed.
         };
 
         await toPromise(zip(

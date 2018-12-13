@@ -110,7 +110,6 @@ export class NoteEditorService {
             contentFileName: noteItem.contentFileName,
             contentFilePath: noteItem.contentFilePath,
             createdDatetime: noteItem.createdDatetime,
-            updatedDatetime: new Date().getTime(),
         };
 
         return zip(
