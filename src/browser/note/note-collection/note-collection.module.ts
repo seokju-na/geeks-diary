@@ -8,6 +8,7 @@ import { NoteCalendarComponent } from './note-calendar/note-calendar.component';
 import { NoteCollectionService } from './note-collection.service';
 import { NoteContributionService } from './note-contribution.service';
 import { NoteFinderComponent } from './note-finder/note-finder.component';
+import { NoteItemContextMenu } from './note-item/note-item-context-menu';
 import { NoteItemComponent } from './note-item/note-item.component';
 import { NoteListSortingMenu } from './note-list-sorting-menu';
 import { NoteListComponent } from './note-list/note-list.component';
@@ -37,6 +38,7 @@ import { NoteListToolsComponent } from './note-list-tools/note-list-tools.compon
         NoteCollectionService,
         NoteListSortingMenu,
         NoteContributionService,
+        NoteItemContextMenu,
     ],
     exports: [
         NoteFinderComponent,

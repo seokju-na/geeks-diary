@@ -5,8 +5,10 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
 import { dispatchFakeEvent, dispatchKeyboardEvent, expectDom, fastTestSetup } from '../../../../../test/helpers';
 import { VcsFileChangeStatusTypes } from '../../../../core/vcs';
+import { UiModule } from '../../../ui/ui.module';
 import { NoteItemDummy } from '../dummies';
 import { NoteItem } from '../note-item.model';
+import { NoteItemContextMenu } from './note-item-context-menu';
 import { NoteItemComponent, NoteItemSelectionChange } from './note-item.component';
 
 
@@ -24,8 +26,13 @@ describe('browser.note.noteCollection.NoteItemComponent', () => {
     beforeAll(async () => {
         await TestBed
             .configureTestingModule({
-                imports: [],
-                providers: [DatePipe],
+                imports: [
+                    UiModule,
+                ],
+                providers: [
+                    DatePipe,
+                    NoteItemContextMenu,
+                ],
                 declarations: [NoteItemComponent],
             })
             .compileComponents();

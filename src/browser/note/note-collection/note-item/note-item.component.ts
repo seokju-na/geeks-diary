@@ -13,8 +13,10 @@ import {
     ViewEncapsulation,
 } from '@angular/core';
 import { DomSanitizer, SafeHtml, SafeStyle } from '@angular/platform-browser';
+import { shell } from 'electron';
 import { getVcsFileChangeColor, getVcsFileChangeStatusIcon, VcsFileChangeStatusTypes } from '../../../../core/vcs';
 import { NoteItem } from '../note-item.model';
+import { NoteItemContextMenu } from './note-item-context-menu';
 
 
 export class NoteItemSelectionChange {
@@ -57,6 +59,7 @@ export class NoteItemComponent implements DoCheck, FocusableOption {
         public _elementRef: ElementRef<HTMLElement>,
         private changeDetector: ChangeDetectorRef,
         private sanitizer: DomSanitizer,
+        private contextMenu: NoteItemContextMenu,
     ) {
     }
 
@@ -103,6 +106,17 @@ export class NoteItemComponent implements DoCheck, FocusableOption {
     @HostListener('click')
     private handleClick(): void {
         this.emitSelectionChange(true);
+    }
+
+    @HostListener('contextmenu')
+    private handleContextMenu(): void {
+        this.contextMenu.open().subscribe((command) => {
+            switch (command) {
+                case 'revealInFinder':
+                    shell.showItemInFolder(this.note.contentFilePath);
+                    break;
+            }
+        });
     }
 
     private emitSelectionChange(isUserInput = false): void {

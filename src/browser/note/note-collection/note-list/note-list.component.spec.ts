@@ -9,6 +9,8 @@ import { UiModule } from '../../../ui/ui.module';
 import { noteReducerMap } from '../../note.reducer';
 import { NoteItemDummy } from '../dummies';
 import { NoteCollectionService } from '../note-collection.service';
+// noinspection TypeScriptPreferShortImport
+import { NoteItemContextMenu } from '../note-item/note-item-context-menu';
 import { NoteListComponent } from './note-list.component';
 
 
@@ -114,6 +116,7 @@ describe('browser.note.noteCollection.NoteListComponent', () => {
                 ],
                 providers: [
                     { provide: NoteCollectionService, useValue: collection },
+                    NoteItemContextMenu,
                 ],
                 declarations: [
                     NoteItemComponent,
