@@ -15,6 +15,7 @@ export enum MenuEvent {
     CHANGE_EDITOR_VIEW_MODE_TO_PREVIEW_ONLY = '[MenuEvent] Change editor view mode to preview only',
     CHANGE_EDITOR_VIEW_MODE_TO_SHOW_BOTH = '[MenuEvent] Change editor view mode to show both',
     OPEN_SETTINGS = '[MenuEvent] Open settings',
+    COMMIT_NOTE = '[MenuEvent] Commit note',
 }
 
 
@@ -56,6 +57,8 @@ export class MenuService implements OnDestroy {
                     return MenuEvent.CHANGE_EDITOR_VIEW_MODE_TO_SHOW_BOTH;
                 case 'showSettings':
                     return MenuEvent.OPEN_SETTINGS;
+                case 'commitNote':
+                    return MenuEvent.COMMIT_NOTE;
                 default:
                     return null;
             }

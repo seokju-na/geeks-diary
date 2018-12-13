@@ -3,7 +3,9 @@ import { select, Store } from '@ngrx/store';
 import { Subscription } from 'rxjs';
 import { filter } from 'rxjs/operators';
 import { MenuEvent, MenuService } from '../../../shared';
-import { NoteCollectionState, NoteItem } from '../../note-collection';
+import { Dialog } from '../../../ui/dialog';
+import { VcsCommitDialogComponent, VcsCommitDialogData, VcsCommitDialogResult } from '../../../vcs/vcs-local';
+import { NoteCollectionService, NoteCollectionState, NoteItem } from '../../note-collection';
 import { NoteStateWithRoot } from '../../note.state';
 import { NoteEditorViewModeMenu } from '../note-editor-view-mode-menu';
 import { ChangeViewModeAction } from '../note-editor.actions';
@@ -24,12 +26,22 @@ export class NoteHeaderComponent implements OnInit, OnDestroy {
     constructor(
         private store: Store<NoteStateWithRoot>,
         private editorViewModeMenu: NoteEditorViewModeMenu,
+        private collection: NoteCollectionService,
         private menu: MenuService,
+        private dialog: Dialog,
     ) {
     }
 
     get noteSelectionExists(): boolean {
         return !!this.selectedNote;
+    }
+
+    get canCommit(): boolean {
+        if (this.selectedNote) {
+            return this.collection.getNoteVcsFileChangeStatus(this.selectedNote) !== null;
+        } else {
+            return false;
+        }
     }
 
     ngOnInit(): void {
@@ -44,6 +56,7 @@ export class NoteHeaderComponent implements OnInit, OnDestroy {
                 MenuEvent.CHANGE_EDITOR_VIEW_MODE_TO_PREVIEW_ONLY,
                 MenuEvent.CHANGE_EDITOR_VIEW_MODE_TO_EDITOR_ONLY,
                 MenuEvent.CHANGE_EDITOR_VIEW_MODE_TO_SHOW_BOTH,
+                MenuEvent.COMMIT_NOTE,
             ].includes(event)),
         ).subscribe((menuEvent) => {
             let viewMode: NoteEditorViewModes;
@@ -58,6 +71,9 @@ export class NoteHeaderComponent implements OnInit, OnDestroy {
                 case MenuEvent.CHANGE_EDITOR_VIEW_MODE_TO_PREVIEW_ONLY:
                     viewMode = NoteEditorViewModes.PREVIEW_ONLY;
                     break;
+                case MenuEvent.COMMIT_NOTE:
+                    this.openCommitDialog();
+                    return;
                 default:
                     return;
             }
@@ -69,6 +85,26 @@ export class NoteHeaderComponent implements OnInit, OnDestroy {
     ngOnDestroy(): void {
         this.selectedNoteSubscription.unsubscribe();
         this.menuEventSubscription.unsubscribe();
+    }
+
+    openCommitDialog(): void {
+        if (!this.canCommit) {
+            return;
+        }
+
+        const fileChanges = this.collection.getNoteVcsFileChanges(this.selectedNote);
+
+        this.dialog.open<VcsCommitDialogComponent,
+            VcsCommitDialogData,
+            VcsCommitDialogResult>(
+                VcsCommitDialogComponent,
+            {
+                width: '700px',
+                maxHeight: '75vh',
+                disableBackdropClickClose: true,
+                data: { fileChanges },
+            },
+        );
     }
 
     openEditorViewModeMenu(): void {

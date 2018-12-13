@@ -112,14 +112,19 @@ export class NoteCollectionService implements OnDestroy {
         );
     }
 
-    getNoteVcsFileChangeStatus(note: NoteItem): VcsFileChangeStatusTypes | null {
+    getNoteVcsFileChanges(note: NoteItem): VcsFileChange[] {
         const { contentFilePath, filePath } = note;
         const matchedFilePaths = [contentFilePath, filePath];
-        const fileChange = this.vcsFileChanges.find(
-            change => matchedFilePaths.includes(change.absoluteFilePath),
-        );
 
-        return fileChange ? fileChange.status : null;
+        return this.vcsFileChanges.filter(change => matchedFilePaths.includes(change.absoluteFilePath));
+    }
+
+    getNoteVcsFileChangeStatus(note: NoteItem): VcsFileChangeStatusTypes | null {
+        const fileChanges = this.getNoteVcsFileChanges(note);
+
+        // TODO(@seokju-na): Currently, because note has 2 files, we cannot
+        //  determine one status for one note.
+        return fileChanges.length ? fileChanges[0].status : null;
     }
 
     toggleNoteSelection(note: NoteItem): void {

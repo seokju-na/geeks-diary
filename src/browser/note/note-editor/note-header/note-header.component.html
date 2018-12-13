@@ -15,6 +15,9 @@
             <gd-icon name="ellipsis-v"></gd-icon>
         </button>
 
-        <button gd-button color="primary">Publish</button>
+        <button gd-button [disabled]="!canCommit" (click)="openCommitDialog()"
+                gdTooltip="Commit Note (⌘+K)" color="primary" class="NoteHeader__commitButton">
+            Commit
+        </button>
     </div>
 </header>
