@@ -72,6 +72,9 @@ export class AppComponent implements OnInit {
 
     ngOnInit(): void {
         this.collection.loadOnce();
+        this.collection.provideVcsFileChanges(this.store.pipe(
+            select(state => state.vcs.vcs.fileChanges),
+        ));
 
         this.menu.onMessage().pipe(
             filter(event =>
