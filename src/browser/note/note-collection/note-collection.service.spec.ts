@@ -2,11 +2,13 @@ import { DatePipe } from '@angular/common';
 import { fakeAsync, flush, TestBed } from '@angular/core/testing';
 import { combineReducers, Store, StoreModule } from '@ngrx/store';
 import * as path from 'path';
-import { of } from 'rxjs';
+import { of, Subject } from 'rxjs';
 import { createDummies, fastTestSetup } from '../../../../test/helpers';
 import { FsMatchLiterals, FsMatchObject, FsStub, MockFsService } from '../../../../test/mocks/browser';
 import { makeNoteContentFileName, Note } from '../../../core/note';
+import { VcsFileChange } from '../../../core/vcs';
 import { FsService, WORKSPACE_DEFAULT_CONFIG, WorkspaceConfig, WorkspaceService } from '../../shared';
+import { VcsFileChangeDummy } from '../../vcs/dummies';
 import {
     NoteContentFileAlreadyExistsError,
     NoteError,
@@ -46,6 +48,7 @@ describe('browser.note.noteCollection.NoteCollectionService', () => {
         workspaceConfig.rootDirPath,
         workspaceConfig.notesDirPath,
     );
+    const vcsFileChangeDummy = new VcsFileChangeDummy();
 
     fastTestSetup();
 
@@ -373,5 +376,23 @@ describe('browser.note.noteCollection.NoteCollectionService', () => {
                 contentFilePath: newContentFilePath,
             }));
         }));
+    });
+
+    describe('getNoteVcsFileChangeStatus', () => {
+        it('should return status of note.', () => {
+            const vcsFileChanges = new Subject<VcsFileChange[]>();
+            collection.provideVcsFileChanges(vcsFileChanges.asObservable());
+
+            const note = noteItemDummy.create();
+            const fileChange = {
+                ...vcsFileChangeDummy.create(),
+                filePath: note.contentFileName,
+                absoluteFilePath: note.contentFilePath,
+            } as VcsFileChange;
+
+            vcsFileChanges.next([fileChange]);
+
+            expect(collection.getNoteVcsFileChangeStatus(note)).toEqual(fileChange.status);
+        });
     });
 });

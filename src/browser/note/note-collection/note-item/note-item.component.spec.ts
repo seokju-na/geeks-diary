@@ -4,6 +4,7 @@ import { DatePipe } from '@angular/common';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
 import { dispatchFakeEvent, dispatchKeyboardEvent, expectDom, fastTestSetup } from '../../../../../test/helpers';
+import { VcsFileChangeStatusTypes } from '../../../../core/vcs';
 import { NoteItemDummy } from '../dummies';
 import { NoteItem } from '../note-item.model';
 import { NoteItemComponent, NoteItemSelectionChange } from './note-item.component';
@@ -41,10 +42,11 @@ describe('browser.note.noteCollection.NoteItemComponent', () => {
         fixture = TestBed.createComponent(NoteItemComponent);
         component = fixture.componentInstance;
         component.note = note;
-        fixture.detectChanges();
     });
 
     it('should render title well.', () => {
+        fixture.detectChanges();
+
         const titleEl = fixture.debugElement.query(By.css('.NoteItem__title')).nativeElement as HTMLElement;
         expectDom(titleEl).toContainText(note.title);
     });
@@ -61,6 +63,8 @@ describe('browser.note.noteCollection.NoteItemComponent', () => {
     });
 
     it('should render created datetime well.', () => {
+        fixture.detectChanges();
+
         const createdAt = datePipe.transform(new Date(note.createdDatetime), 'MMM d, y h:mm a');
         const createdDatetimeEl = fixture.debugElement.query(
             By.css('time.NoteItem__createdAt'),
@@ -85,10 +89,13 @@ describe('browser.note.noteCollection.NoteItemComponent', () => {
     });
 
     it('should component implements \'FocusableOption\'.', () => {
+        fixture.detectChanges();
         expect((<FocusableOption>component).focus).toBeDefined();
     });
 
     it('should focus host element if focus method executed.', () => {
+        fixture.detectChanges();
+
         component.focus();
         expect(document.activeElement).toEqual(component._elementRef.nativeElement);
     });
@@ -101,6 +108,8 @@ describe('browser.note.noteCollection.NoteItemComponent', () => {
     });
 
     it('should emit to \'selectionChange\' when type \'ENTER\' keyboard event.', () => {
+        fixture.detectChanges();
+
         const callback = jasmine.createSpy('selection change');
         const subscription = component.selectionChange.subscribe(callback);
 
@@ -116,6 +125,8 @@ describe('browser.note.noteCollection.NoteItemComponent', () => {
     });
 
     it('should emit to \'selectionChange\' when type \'SPACE\' keyboard event.', () => {
+        fixture.detectChanges();
+
         const callback = jasmine.createSpy('selection change');
         const subscription = component.selectionChange.subscribe(callback);
 
@@ -131,6 +142,8 @@ describe('browser.note.noteCollection.NoteItemComponent', () => {
     });
 
     it('should emit to \'selectionChange\' when click.', () => {
+        fixture.detectChanges();
+
         const callback = jasmine.createSpy('selection change');
         const subscription = component.selectionChange.subscribe(callback);
 
@@ -156,5 +169,32 @@ describe('browser.note.noteCollection.NoteItemComponent', () => {
         fixture.detectChanges();
 
         expectDom(component._elementRef.nativeElement).toHaveAttribute('tabindex', '-1');
+    });
+
+    it('should contain \'NoteItem--hasLabel\' class if note has label.', () => {
+        component.note = {
+            ...component.note,
+            label: 'this_is_label',
+        };
+        fixture.detectChanges();
+
+        expectDom(component._elementRef.nativeElement).toContainClasses('NoteItem--hasLabel');
+    });
+
+    it('should contain \'NoteItem--hasVcsStatus\' class if status provided.', () => {
+        component.status = VcsFileChangeStatusTypes.NEW;
+        fixture.detectChanges();
+
+        expectDom(component._elementRef.nativeElement).toContainClasses('NoteItem--hasVcsStatus');
+    });
+
+    it('should status bar and icon exists if status provided.', () => {
+        component.status = VcsFileChangeStatusTypes.MODIFIED;
+        fixture.detectChanges();
+
+        const elem = component._elementRef.nativeElement;
+
+        expect(elem.querySelector('.NoteItem__statusBar')).not.toBeNull();
+        expect(elem.querySelector('.NoteItem__statusIcon')).not.toBeNull();
     });
 });

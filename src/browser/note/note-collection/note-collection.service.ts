@@ -5,6 +5,7 @@ import * as path from 'path';
 import { Observable, Subject, Subscription, zip } from 'rxjs';
 import { filter, map, switchMap, take } from 'rxjs/operators';
 import { makeNoteContentFileName, Note, NoteSnippetTypes } from '../../../core/note';
+import { VcsFileChange, VcsFileChangeStatusTypes } from '../../../core/vcs';
 import { isOutsidePath } from '../../../libs/path';
 import { toPromise } from '../../../libs/rx';
 import { uuid } from '../../../libs/uuid';
@@ -28,6 +29,10 @@ export class NoteCollectionService implements OnDestroy {
     private toggleNoteSelectionSubscription = Subscription.EMPTY;
     private readonly _toggleNoteSelection = new Subject<NoteItem>();
 
+    // noinspection JSMismatchedCollectionQueryUpdate
+    private vcsFileChanges: VcsFileChange[] = [];
+    private vcsFileChangesSubscription = Subscription.EMPTY;
+
     constructor(
         private store: Store<NoteStateWithRoot>,
         private parser: NoteParser,
@@ -40,6 +45,11 @@ export class NoteCollectionService implements OnDestroy {
 
     ngOnDestroy(): void {
         this.toggleNoteSelectionSubscription.unsubscribe();
+        this.vcsFileChangesSubscription.unsubscribe();
+    }
+
+    provideVcsFileChanges(fileChanges: Observable<VcsFileChange[]>): void {
+        this.vcsFileChangesSubscription = fileChanges.subscribe(changes => this.vcsFileChanges = changes);
     }
 
     /**
@@ -100,6 +110,16 @@ export class NoteCollectionService implements OnDestroy {
             filter(state => waitForInitial ? state.loaded : true),
             select(state => state.selectedNote),
         );
+    }
+
+    getNoteVcsFileChangeStatus(note: NoteItem): VcsFileChangeStatusTypes | null {
+        const { contentFilePath, filePath } = note;
+        const matchedFilePaths = [contentFilePath, filePath];
+        const fileChange = this.vcsFileChanges.find(
+            change => matchedFilePaths.includes(change.absoluteFilePath),
+        );
+
+        return fileChange ? fileChange.status : null;
     }
 
     toggleNoteSelection(note: NoteItem): void {

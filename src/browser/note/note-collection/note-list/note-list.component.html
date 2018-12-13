@@ -8,5 +8,6 @@
         [note]="note"
         [active]="isActiveItem(note)"
         [selected]="isSelectedItem(note)"
+        [status]="getVcsFileStatus(note)"
         (selectionChange)="selectNote($event)"></gd-note-item>
 </div>

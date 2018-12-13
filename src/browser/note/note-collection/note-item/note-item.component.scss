@@ -6,6 +6,28 @@
     display: block;
     cursor: pointer;
 
+    &__statusBar {
+        position: absolute;
+        left: 0;
+        top: 0;
+        bottom: 0;
+        width: 3px;
+        content: " ";
+    }
+
+    &__statusIcon {
+        position: absolute;
+        display: inline-block;
+        right: $spacing;
+        top: 12px;
+
+        > svg {
+            display: block;
+            width: 16px;
+            height: 16px;
+        }
+    }
+
     &__wrapper {
         padding: $spacing;
     }
@@ -47,5 +69,13 @@
         font: {
             size: $font-size-sm;
         };
+    }
+
+    &--hasVcsStatus {
+        &:not(.NoteItem--hasVcsLabel) {
+            .NoteItem__title {
+                padding-right: 20px;
+            }
+        }
     }
 }

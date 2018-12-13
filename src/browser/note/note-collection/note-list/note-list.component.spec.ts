@@ -92,6 +92,7 @@ describe('browser.note.noteCollection.NoteListComponent', () => {
             'getFilteredAndSortedNoteList',
             'getSelectedNote',
             'toggleNoteSelection',
+            'getNoteVcsFileChangeStatus',
         ]);
 
         (<jasmine.Spy>collection.getFilteredAndSortedNoteList)
@@ -99,6 +100,9 @@ describe('browser.note.noteCollection.NoteListComponent', () => {
 
         (<jasmine.Spy>collection.getSelectedNote)
             .and.callFake(() => selectedNoteStream.asObservable());
+
+        (<jasmine.Spy>collection.getNoteVcsFileChangeStatus)
+            .and.returnValue(false);
 
         await TestBed
             .configureTestingModule({

@@ -12,6 +12,8 @@ import {
     Output,
     ViewEncapsulation,
 } from '@angular/core';
+import { DomSanitizer, SafeHtml, SafeStyle } from '@angular/platform-browser';
+import { getVcsFileChangeColor, getVcsFileChangeStatusIcon, VcsFileChangeStatusTypes } from '../../../../core/vcs';
 import { NoteItem } from '../note-item.model';
 
 
@@ -34,6 +36,8 @@ export class NoteItemSelectionChange {
         'class': 'NoteItem',
         '[class.NoteItem--activated]': 'active',
         '[class.NoteItem--selected]': 'selected',
+        '[class.NoteItem--hasLabel]': 'note.label',
+        '[class.NoteItem--hasVcsStatus]': 'status',
         '[attr.aria-selected]': 'selected',
         '[attr.tabindex]': 'tabIndex',
     },
@@ -43,6 +47,7 @@ export class NoteItemComponent implements DoCheck, FocusableOption {
     @Input() note: NoteItem;
     @Input() active: boolean;
     @Input() selected: boolean;
+    @Input() status: VcsFileChangeStatusTypes;
 
     @Output() readonly selectionChange = new EventEmitter<NoteItemSelectionChange>();
 
@@ -51,7 +56,24 @@ export class NoteItemComponent implements DoCheck, FocusableOption {
     constructor(
         public _elementRef: ElementRef<HTMLElement>,
         private changeDetector: ChangeDetectorRef,
+        private sanitizer: DomSanitizer,
     ) {
+    }
+
+    get statusBarColor(): SafeStyle {
+        if (this.status) {
+            return this.sanitizer.bypassSecurityTrustStyle(`${getVcsFileChangeColor(this.status)}`);
+        } else {
+            return '';
+        }
+    }
+
+    get statusIcon(): SafeHtml {
+        if (this.status) {
+            return this.sanitizer.bypassSecurityTrustHtml(getVcsFileChangeStatusIcon(this.status));
+        } else {
+            return '';
+        }
     }
 
     get tabIndex(): string {

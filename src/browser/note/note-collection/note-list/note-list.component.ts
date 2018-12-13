@@ -3,6 +3,7 @@ import { AfterViewInit, Component, HostListener, OnDestroy, OnInit, QueryList, V
 import { Store } from '@ngrx/store';
 import { Observable, Subscription } from 'rxjs';
 import { tap } from 'rxjs/operators';
+import { VcsFileChangeStatusTypes } from '../../../../core/vcs';
 import { NoteStateWithRoot } from '../../note.state';
 import { NoteCollectionService } from '../note-collection.service';
 import { NoteItem } from '../note-item.model';
@@ -102,6 +103,10 @@ export class NoteListComponent implements OnInit, OnDestroy, AfterViewInit {
         // The QueryList change is applied and the note value of the input
         // is compared to prevent the problem from occurring.
         return this._focusKeyManager.activeItem.note === note;
+    }
+
+    getVcsFileStatus(note: NoteItem): VcsFileChangeStatusTypes | null {
+        return this.collection.getNoteVcsFileChangeStatus(note);
     }
 
     @HostListener('keydown', ['$event'])
