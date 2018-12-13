@@ -10,3 +10,4 @@ export * from './menu-animations';
 export * from './select-menu.component';
 export * from './menu-item';
 export * from './menu-separator.component';
+export * from './common-menu-labels';
