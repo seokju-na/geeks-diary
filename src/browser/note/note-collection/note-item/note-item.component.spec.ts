@@ -4,6 +4,7 @@ import { DatePipe } from '@angular/common';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
 import { dispatchFakeEvent, dispatchKeyboardEvent, expectDom, fastTestSetup } from '../../../../../test/helpers';
+import { VcsFileChangeStatusTypes } from '../../../../core/vcs';
 import { NoteItemDummy } from '../dummies';
 import { NoteItem } from '../note-item.model';
 import { NoteItemComponent, NoteItemSelectionChange } from './note-item.component';
@@ -156,5 +157,30 @@ describe('browser.note.noteCollection.NoteItemComponent', () => {
         fixture.detectChanges();
 
         expectDom(component._elementRef.nativeElement).toHaveAttribute('tabindex', '-1');
+    });
+
+    it('should contain \'NoteItem--hasLabel\' class if note has label.', () => {
+        component.note = {
+            ...component.note,
+            label: 'this_is_label',
+        };
+        fixture.detectChanges();
+
+        expectDom(component._elementRef.nativeElement).toContainClasses('NoteItem--hasLabel');
+    });
+
+    it('should contain \'NoteItem--hasVcsStatus\' class if status provided.', () => {
+        component.status = VcsFileChangeStatusTypes.NEW;
+        fixture.detectChanges();
+
+        expectDom(component._elementRef.nativeElement).toContainClasses('NoteItem--hasVcsStatus');
+    });
+
+    it('should status bar and icon exists if status provided.', () => {
+        component.status = VcsFileChangeStatusTypes.MODIFIED;
+        fixture.detectChanges();
+
+        expect(fixture.debugElement.query(By.css('.NoteItem__statusBar'))).not.toBeNull();
+        expect(fixture.debugElement.query(By.css('.NoteItem__statusIcon'))).not.toBeNull();
     });
 });

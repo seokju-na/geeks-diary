@@ -62,6 +62,20 @@ export function getVcsFileChangeStatusName(status: VcsFileChangeStatusTypes): st
 }
 
 
+export function getVcsFileChangeColor(status: VcsFileChangeStatusTypes): string {
+    switch (status) {
+        case VcsFileChangeStatusTypes.NEW:
+            return '#4caf50';
+        case VcsFileChangeStatusTypes.MODIFIED:
+            return '#ffc107';
+        case VcsFileChangeStatusTypes.RENAMED:
+            return '#2196f3';
+        case VcsFileChangeStatusTypes.REMOVED:
+            return '#e53935';
+    }
+}
+
+
 export function getVcsFileChangeStatusIcon(status: VcsFileChangeStatusTypes): string {
     /* tslint:disable */
     switch (status) {

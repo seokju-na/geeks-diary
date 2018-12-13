@@ -1,4 +1,8 @@
 <div class="NoteItem__wrapper">
+    <div *ngIf="status"
+         [style.backgroundColor]="statusBarColor"
+         class="NoteItem__statusBar"></div>
+    <div *ngIf="status" [innerHTML]="statusIcon" class="NoteItem__statusIcon"></div>
     <div *ngIf="note.label" class="NoteItem__labelWrapper">
         <label class="NoteItem__label">{{ note.label }}</label>
     </div>
