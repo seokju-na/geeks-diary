@@ -10,7 +10,6 @@ import { getNoteLabel, NoteItem } from './note-item.model';
 const _id = new StringIdDummy('NoteId');
 const _title = new TextDummy('NoteTitle');
 const _createdDatetime = new DatetimeDummy();
-const _updatedDatetime = new DatetimeDummy();
 const _fileName = new TextDummy('note-file');
 
 
@@ -18,7 +17,6 @@ export class NoteDummy extends Dummy<Note> {
     private id = new StringIdDummy('NoteId');
     private title = new TextDummy('NoteTitle');
     private createdDatetime = new DatetimeDummy();
-    private updatedDatetime = new DatetimeDummy();
 
     constructor(
         private readonly workspacePath = '/test-workspace/',
@@ -39,7 +37,6 @@ export class NoteDummy extends Dummy<Note> {
             contentFileName,
             contentFilePath: path.resolve(this.workspacePath, contentFileName),
             createdDatetime,
-            updatedDatetime: this.updatedDatetime.create(),
         };
     }
 }
@@ -67,7 +64,6 @@ export class NoteItemDummy extends Dummy<NoteItem> {
             contentFileName,
             contentFilePath: path.resolve(this.workspacePath, contentFileName),
             createdDatetime,
-            updatedDatetime: _updatedDatetime.create(),
             fileName: `${fileName}.json`,
             filePath: path.resolve(this.notesPath, `${fileName}.json`),
         };
@@ -182,13 +178,9 @@ export function prepareForSortingNotes(
     // Reset created datetime and updated datetime.
     notes.forEach((note) => {
         const createdDatetime = new Date(note.createdDatetime);
-        const updatedDatetime = new Date(note.updatedDatetime);
-
         datetime.resetDate(createdDatetime, DateUnits.DAY);
-        datetime.resetDate(updatedDatetime, DateUnits.DAY);
 
         (<any>note).createdDatetime = createdDatetime.getTime();
-        (<any>note).updatedDatetime = createdDatetime.getTime();
     });
 
     do {
@@ -203,13 +195,6 @@ export function prepareForSortingNotes(
                 datetime.add(createdDatetime, DateUnits.HOUR, increasing);
 
                 (<any>note).createdDatetime = createdDatetime.getTime();
-                break;
-
-            case NoteCollectionSortBy.UPDATED:
-                const updatedDatetime = new Date(note.updatedDatetime);
-                datetime.add(updatedDatetime, DateUnits.HOUR, increasing);
-
-                (<any>note).updatedDatetime = updatedDatetime.getTime();
                 break;
 
             case NoteCollectionSortBy.TITLE:

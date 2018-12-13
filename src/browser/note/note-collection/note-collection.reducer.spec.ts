@@ -250,29 +250,6 @@ describe('browser.note.noteCollection.noteCollectionReducer', () => {
             ]);
         });
 
-        it('should sort notes well by \'UPDATED\'.', () => {
-            const sortBy = NoteCollectionSortBy.UPDATED;
-
-            prepareForSortingNotes(
-                notes,
-                [3, 2, 1, 5, 4],
-                { by: sortBy, direction: defaultDirection },
-            );
-
-            const state = noteCollectionReducer(
-                loadNotes(),
-                new ChangeSortOrderAction({ sortBy }),
-            );
-
-            expect(state.filteredAndSortedNotes).toEqual([
-                notes[2],
-                notes[1],
-                notes[0],
-                notes[4],
-                notes[3],
-            ]);
-        });
-
         it('should sort notes well by \'TITLE\'.', () => {
             const sortBy = NoteCollectionSortBy.TITLE;
 

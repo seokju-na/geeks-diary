@@ -281,7 +281,6 @@ describe('browser.note.noteCollection.NoteCollectionService', () => {
             expect(noteSaveData.title).toEqual(title);
             expect(noteSaveData.stackIds).toEqual([]);
             expect(noteSaveData.createdDatetime).toBeDefined();
-            expect(noteSaveData.updatedDatetime).toBeDefined();
 
             stub.flush();
 

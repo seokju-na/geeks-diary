@@ -44,7 +44,6 @@ export const basicFixture = {
         contentFileName: '18-10-02-Title.md',
         contentFilePath: '/foo/bar/workspace/label/18-10-02-Title.md',
         createdDatetime: 1538493619943,
-        updatedDatetime: 1538493619943,
     } as Note,
     afterNote: {
         id: 'basic-note',
@@ -72,7 +71,6 @@ export const basicFixture = {
         contentFileName: '18-10-02-Title.md',
         contentFilePath: '/foo/bar/workspace/label/18-10-02-Title.md',
         createdDatetime: 1538493619943,
-        updatedDatetime: 1538493619943,
     } as Note,
     noteItem: {
         id: 'basic-note',
@@ -100,7 +98,6 @@ export const basicFixture = {
         contentFileName: '18-10-02-Title.md',
         contentFilePath: '/foo/bar/workspace/label/18-10-02-Title.md',
         createdDatetime: 1538493619943,
-        updatedDatetime: 1538493619943,
         fileName: 'basic-note.json',
         filePath: '/foo/bar/workspace/.geeks-diary/notes/basic-note.json',
         label: 'label',
@@ -200,7 +197,6 @@ export const frontMatterFixture = {
         contentFileName: '18-10-06-hello-kotlin.md',
         contentFilePath: '/foo/bar/workspace/18-10-06-hello-kotlin.md',
         createdDatetime: 1538802021000,
-        updatedDatetime: 1538802021000,
     } as Note,
     noteItem: {
         id: 'front-matter-note',
@@ -228,7 +224,6 @@ export const frontMatterFixture = {
         contentFileName: '18-10-06-hello-kotlin.md',
         contentFilePath: '/foo/bar/workspace/18-10-06-hello-kotlin.md',
         createdDatetime: 1538802021000,
-        updatedDatetime: 1538802021000,
         fileName: 'basic-note.json',
         filePath: '/foo/bar/workspace/.geeks-diary/notes/front-matter-note.json',
         label: null,

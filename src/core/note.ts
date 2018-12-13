@@ -16,7 +16,6 @@ export interface Note {
     readonly contentFilePath: string;
 
     readonly createdDatetime: number;
-    readonly updatedDatetime: number;
 }
 
 
