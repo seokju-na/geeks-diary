@@ -94,6 +94,7 @@ describe('browser.note.noteCollection.NoteListComponent', () => {
             'getFilteredAndSortedNoteList',
             'getSelectedNote',
             'toggleNoteSelection',
+            'getNoteVcsFileChanges',
             'getNoteVcsFileChangeStatus',
         ]);
 
