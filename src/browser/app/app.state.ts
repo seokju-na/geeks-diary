@@ -10,5 +10,5 @@ export interface AppState {
 
 export interface AppStateWithFeatures extends AppState {
     note: NoteState;
-    vcs: VcsState;
+    vcs: { vcs: VcsState };
 }
