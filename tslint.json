@@ -135,7 +135,7 @@
         "no-output-on-prefix": true,
         "use-input-property-decorator": true,
         "use-output-property-decorator": true,
-        "no-output-rename": true,
+        "no-output-rename": false,
         "use-life-cycle-interface": true,
         "use-pipe-transform-interface": true,
         "component-class-suffix": true,
