@@ -5,7 +5,7 @@ import { map } from 'rxjs/operators';
 import { commonMenuLabels, NativeMenu } from '../../../ui/menu';
 
 
-export type NoteItemContextMenuCommand = 'revealInFinder';
+export type NoteItemContextMenuCommand = 'revealInFinder' | 'deleteNote';
 
 
 @Injectable()
@@ -24,6 +24,10 @@ export class NoteItemContextMenu {
             {
                 id: 'revealInFinder',
                 label: commonMenuLabels.revealInFileManager,
+            },
+            {
+                id: 'deleteNote',
+                label: `Move Note to ${commonMenuLabels.trashName}`,
             },
         ];
     }
