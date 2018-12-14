@@ -7,6 +7,7 @@ import { AutocompleteModule } from './autocomplete';
 import { ButtonModule } from './button';
 import { ButtonToggleModule } from './button-toggle';
 import { CheckboxModule } from './checkbox';
+import { ChipsModule } from './chips';
 import { DialogModule } from './dialog';
 import { ExpansionModule } from './expansion';
 import { FormFieldModule } from './form-field';
@@ -55,6 +56,7 @@ const UI_MODULES = [
     CheckboxModule,
     ExpansionModule,
     ScrollingModule,
+    ChipsModule,
 ];
 
 
