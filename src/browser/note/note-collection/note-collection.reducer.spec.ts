@@ -4,9 +4,11 @@ import { datetime, DateUnits } from '../../../libs/datetime';
 import { NoteItemDummy, prepareForFilteringNotes, prepareForSortingNotes } from './dummies';
 import {
     AddNoteAction,
+    ChangeNoteTitleAction,
     ChangeSortDirectionAction,
     ChangeSortOrderAction,
     ChangeViewModeAction,
+    DeleteNoteAction,
     DeselectNoteAction,
     LoadNoteCollectionAction,
     LoadNoteCollectionCompleteAction,
@@ -426,6 +428,100 @@ describe('browser.note.noteCollection.noteCollectionReducer', () => {
             );
 
             expect(state.contribution).toEqual(contribution);
+        });
+    });
+
+    describe('CHANGE_NOTE_TITLE', () => {
+        const dummy = new NoteItemDummy();
+        let notes: NoteItem[];
+        let beforeState: NoteCollectionState;
+
+        beforeEach(() => {
+            notes = createDummies(dummy, 10);
+            beforeState = noteCollectionReducer(
+                undefined,
+                new LoadNoteCollectionCompleteAction({ notes }),
+            );
+        });
+
+        it('should change note title at index.', () => {
+            const targetNote = notes[3];
+            const result = noteCollectionReducer(
+                beforeState,
+                new ChangeNoteTitleAction({
+                    note: targetNote,
+                    title: 'NEW_TITLE',
+                    contentFileName: 'new-content-file-name',
+                    contentFilePath: 'new-content-file-path',
+                }),
+            );
+
+            expect(result.notes[3].title).toEqual('NEW_TITLE');
+            expect(result.notes[3].contentFileName).toEqual('new-content-file-name');
+            expect(result.notes[3].contentFilePath).toEqual('new-content-file-path');
+        });
+
+        it('should change note title at index and selected note if index of note '
+            + 'is currently selected.', () => {
+            const targetNote = notes[7];
+            beforeState = noteCollectionReducer(
+                beforeState,
+                new SelectNoteAction({ note: targetNote }),
+            );
+
+            const result = noteCollectionReducer(
+                beforeState,
+                new ChangeNoteTitleAction({
+                    note: targetNote,
+                    title: 'MY_AWESOME_TITLE',
+                    contentFileName: 'new-content-file-name',
+                    contentFilePath: 'new-content-file-path',
+                }),
+            );
+
+            expect(result.selectedNote.title).toEqual('MY_AWESOME_TITLE');
+            expect(result.notes[7].title).toEqual('MY_AWESOME_TITLE');
+        });
+    });
+
+    describe('DELETE_NOTE', () => {
+        const dummy = new NoteItemDummy();
+        let notes: NoteItem[];
+        let beforeState: NoteCollectionState;
+
+        beforeEach(() => {
+            notes = createDummies(dummy, 10);
+            beforeState = noteCollectionReducer(
+                undefined,
+                new LoadNoteCollectionCompleteAction({ notes }),
+            );
+        });
+
+        it('should remove note at index.', () => {
+            const targetNote = notes[6];
+            const result = noteCollectionReducer(
+                beforeState,
+                new DeleteNoteAction({ note: targetNote }),
+            );
+
+            expect(result.notes.length).toEqual(10 - 1);
+            expect(result.notes[6].id).not.toEqual(targetNote.id);
+        });
+
+        it('should selected note to be null if delete target note is currently '
+            + 'selected.', () => {
+            const targetNote = notes[7];
+            beforeState = noteCollectionReducer(
+                beforeState,
+                new SelectNoteAction({ note: targetNote }),
+            );
+
+            const result = noteCollectionReducer(
+                beforeState,
+                new DeleteNoteAction({ note: targetNote }),
+            );
+
+            expect(result.selectedNote).toBeNull();
         });
     });
 });

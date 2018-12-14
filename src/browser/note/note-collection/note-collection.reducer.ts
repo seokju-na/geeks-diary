@@ -13,10 +13,20 @@ import { NoteItem } from './note-item.model';
 const sorting = new Sorting<NoteItem>();
 
 
-/**
- * Note state adapter.
- * @param state
- */
+function isIndexOfNoteIsSelectedNote(state: NoteCollectionState, index: number): boolean {
+    if (state.notes[index] === undefined || state.selectedNote === null) {
+        return false;
+    }
+
+    return state.notes[index].id === state.selectedNote.id;
+}
+
+
+function getIndexOfNote(state: NoteCollectionState, targetNote: NoteItem): number {
+    return state.notes.findIndex(note => note.id === targetNote.id);
+}
+
+
 function withFilteredAndSortedNotes(state: NoteCollectionState): NoteCollectionState {
     let notes: NoteItem[];
 
@@ -74,7 +84,7 @@ function withFilteredAndSortedNotes(state: NoteCollectionState): NoteCollectionS
 }
 
 
-function withNoteUpadation(
+function withNoteUpdate(
     state: NoteCollectionState,
     index: number,
     patch: Partial<NoteItem>,
@@ -89,13 +99,37 @@ function withNoteUpadation(
     notes[index] = { ...notes[index], ...patch };
 
     // If index of note is currently selected, update it.
-    if (notes[index].id === state.selectedNote.id) {
+    if (isIndexOfNoteIsSelectedNote(state, index)) {
         return {
             ...state,
             selectedNote: {
                 ...state.selectedNote,
                 ...patch,
             },
+            notes,
+        };
+    } else {
+        return { ...state, notes };
+    }
+}
+
+
+function withNoteDelete(
+    state: NoteCollectionState,
+    deleteIndex: number,
+): NoteCollectionState {
+    if (state.notes[deleteIndex] === undefined) {
+        return state;
+    }
+
+    const notes = [...state.notes];
+    notes.splice(deleteIndex, 1);
+
+    // If selected note is deleted, we also need to remove selected note.
+    if (isIndexOfNoteIsSelectedNote(state, deleteIndex)) {
+        return {
+            ...state,
+            selectedNote: null,
             notes,
         };
     } else {
@@ -193,15 +227,20 @@ export function noteCollectionReducer(
 
         case NoteCollectionActionTypes.CHANGE_NOTE_TITLE:
             return withFilteredAndSortedNotes(
-                withNoteUpadation(
+                withNoteUpdate(
                     state,
-                    state.notes.findIndex(note => note.id === action.payload.note.id),
+                    getIndexOfNote(state, action.payload.note),
                     {
                         title: action.payload.title,
                         contentFilePath: action.payload.contentFilePath,
                         contentFileName: action.payload.contentFileName,
                     },
                 ),
+            );
+
+        case NoteCollectionActionTypes.DELETE_NOTE:
+            return withFilteredAndSortedNotes(
+                withNoteDelete(state, getIndexOfNote(state, action.payload.note)),
             );
 
         default:

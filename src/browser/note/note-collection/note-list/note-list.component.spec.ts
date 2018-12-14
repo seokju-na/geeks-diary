@@ -3,14 +3,17 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
 import { combineReducers, StoreModule } from '@ngrx/store';
 import { Subject } from 'rxjs';
-import { NoteItem, NoteItemComponent } from '..';
 import { createDummies, dispatchKeyboardEvent, expectDom, fastTestSetup } from '../../../../../test/helpers';
 import { UiModule } from '../../../ui/ui.module';
 import { noteReducerMap } from '../../note.reducer';
 import { NoteItemDummy } from '../dummies';
 import { NoteCollectionService } from '../note-collection.service';
 // noinspection TypeScriptPreferShortImport
+import { NoteItem } from '../note-item.model';
+// noinspection TypeScriptPreferShortImport
 import { NoteItemContextMenu } from '../note-item/note-item-context-menu';
+// noinspection TypeScriptPreferShortImport
+import { NoteItemComponent, NoteItemContextMenuEvent } from '../note-item/note-item.component';
 import { NoteListComponent } from './note-list.component';
 
 
@@ -96,6 +99,7 @@ describe('browser.note.noteCollection.NoteListComponent', () => {
             'toggleNoteSelection',
             'getNoteVcsFileChanges',
             'getNoteVcsFileChangeStatus',
+            'deleteNote',
         ]);
 
         (<jasmine.Spy>collection.getFilteredAndSortedNoteList)
@@ -245,5 +249,14 @@ describe('browser.note.noteCollection.NoteListComponent', () => {
 
         const emptyState = fixture.debugElement.query(By.css('.NoteList__emptyState'));
         expect(emptyState).not.toBeNull();
+    });
+
+    it('should call deleteNote from collection service when context menu command '
+        + 'dispatched from note item.', () => {
+        const note = getNote(3);
+        note.contextMenuCommand.emit(new NoteItemContextMenuEvent(note, 'deleteNote'));
+        fixture.detectChanges();
+
+        expect(collection.deleteNote).toHaveBeenCalledWith(notes[3]);
     });
 });
