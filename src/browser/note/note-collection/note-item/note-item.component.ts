@@ -13,16 +13,24 @@ import {
     ViewEncapsulation,
 } from '@angular/core';
 import { DomSanitizer, SafeHtml, SafeStyle } from '@angular/platform-browser';
-import { shell } from 'electron';
 import { getVcsFileChangeColor, getVcsFileChangeStatusIcon, VcsFileChangeStatusTypes } from '../../../../core/vcs';
 import { NoteItem } from '../note-item.model';
-import { NoteItemContextMenu } from './note-item-context-menu';
+import { NoteItemContextMenu, NoteItemContextMenuCommand } from './note-item-context-menu';
 
 
 export class NoteItemSelectionChange {
     constructor(
         public readonly source: NoteItemComponent,
         public readonly isUserInput = false,
+    ) {
+    }
+}
+
+
+export class NoteItemContextMenuEvent {
+    constructor(
+        public readonly source: NoteItemComponent,
+        public readonly command: NoteItemContextMenuCommand,
     ) {
     }
 }
@@ -46,23 +54,6 @@ export class NoteItemSelectionChange {
 
 })
 export class NoteItemComponent implements DoCheck, FocusableOption {
-    @Input() note: NoteItem;
-    @Input() active: boolean;
-    @Input() selected: boolean;
-    @Input() status: VcsFileChangeStatusTypes;
-
-    @Output() readonly selectionChange = new EventEmitter<NoteItemSelectionChange>();
-
-    noteTitle: string;
-
-    constructor(
-        public _elementRef: ElementRef<HTMLElement>,
-        private changeDetector: ChangeDetectorRef,
-        private sanitizer: DomSanitizer,
-        private contextMenu: NoteItemContextMenu,
-    ) {
-    }
-
     get statusBarColor(): SafeStyle {
         if (this.status) {
             return this.sanitizer.bypassSecurityTrustStyle(`${getVcsFileChangeColor(this.status)}`);
@@ -81,6 +72,22 @@ export class NoteItemComponent implements DoCheck, FocusableOption {
 
     get tabIndex(): string {
         return this.active ? '0' : '-1';
+    }
+
+    @Input() note: NoteItem;
+    @Input() active: boolean;
+    @Input() selected: boolean;
+    @Input() status: VcsFileChangeStatusTypes;
+    @Output() readonly selectionChange = new EventEmitter<NoteItemSelectionChange>();
+    @Output() readonly contextMenuCommand = new EventEmitter<NoteItemContextMenuEvent>();
+    noteTitle: string;
+
+    constructor(
+        public _elementRef: ElementRef<HTMLElement>,
+        private changeDetector: ChangeDetectorRef,
+        private sanitizer: DomSanitizer,
+        private contextMenu: NoteItemContextMenu,
+    ) {
     }
 
     ngDoCheck(): void {
@@ -111,10 +118,8 @@ export class NoteItemComponent implements DoCheck, FocusableOption {
     @HostListener('contextmenu')
     private handleContextMenu(): void {
         this.contextMenu.open().subscribe((command) => {
-            switch (command) {
-                case 'revealInFinder':
-                    shell.showItemInFolder(this.note.contentFilePath);
-                    break;
+            if (command) {
+                this.contextMenuCommand.emit(new NoteItemContextMenuEvent(this, command));
             }
         });
     }

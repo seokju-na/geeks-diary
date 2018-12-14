@@ -3,13 +3,14 @@ import { ENTER, SPACE } from '@angular/cdk/keycodes';
 import { DatePipe } from '@angular/common';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
+import { of } from 'rxjs';
 import { dispatchFakeEvent, dispatchKeyboardEvent, expectDom, fastTestSetup } from '../../../../../test/helpers';
 import { VcsFileChangeStatusTypes } from '../../../../core/vcs';
 import { UiModule } from '../../../ui/ui.module';
 import { NoteItemDummy } from '../dummies';
 import { NoteItem } from '../note-item.model';
 import { NoteItemContextMenu } from './note-item-context-menu';
-import { NoteItemComponent, NoteItemSelectionChange } from './note-item.component';
+import { NoteItemComponent, NoteItemContextMenuEvent, NoteItemSelectionChange } from './note-item.component';
 
 
 describe('browser.note.noteCollection.NoteItemComponent', () => {
@@ -21,9 +22,15 @@ describe('browser.note.noteCollection.NoteItemComponent', () => {
 
     const noteDummy = new NoteItemDummy();
 
+    let contextMenu: NoteItemContextMenu;
+
     fastTestSetup();
 
     beforeAll(async () => {
+        contextMenu = jasmine.createSpyObj('noteItemContextMenu', [
+            'open',
+        ]);
+
         await TestBed
             .configureTestingModule({
                 imports: [
@@ -31,7 +38,7 @@ describe('browser.note.noteCollection.NoteItemComponent', () => {
                 ],
                 providers: [
                     DatePipe,
-                    NoteItemContextMenu,
+                    { provide: NoteItemContextMenu, useValue: contextMenu },
                 ],
                 declarations: [NoteItemComponent],
             })
@@ -203,5 +210,24 @@ describe('browser.note.noteCollection.NoteItemComponent', () => {
 
         expect(elem.querySelector('.NoteItem__statusBar')).not.toBeNull();
         expect(elem.querySelector('.NoteItem__statusIcon')).not.toBeNull();
+    });
+
+    it('should open context menu on \'contextmenu\' event in host element. '
+        + 'After context menu closed, if command is exists emit contextMenuCommand output.', () => {
+        const callback = jasmine.createSpy('callback');
+        const subscription = component.contextMenuCommand.subscribe(callback);
+
+        fixture.detectChanges();
+
+        (contextMenu.open as jasmine.Spy).and.returnValue(of('some_command'));
+
+        dispatchFakeEvent(component._elementRef.nativeElement, 'contextmenu');
+        fixture.detectChanges();
+
+        expect(callback).toHaveBeenCalledWith(new NoteItemContextMenuEvent(
+            component,
+            'some_command' as any,
+        ));
+        subscription.unsubscribe();
     });
 });

@@ -1,6 +1,7 @@
 import { FocusKeyManager } from '@angular/cdk/a11y';
 import { AfterViewInit, Component, HostListener, OnDestroy, OnInit, QueryList, ViewChildren } from '@angular/core';
 import { Store } from '@ngrx/store';
+import { shell } from 'electron';
 import { Observable, Subscription } from 'rxjs';
 import { tap } from 'rxjs/operators';
 import { VcsFileChangeStatusTypes } from '../../../../core/vcs';
@@ -8,7 +9,7 @@ import { NoteStateWithRoot } from '../../note.state';
 import { NoteCollectionService } from '../note-collection.service';
 import { NoteItem } from '../note-item.model';
 // noinspection TypeScriptPreferShortImport
-import { NoteItemComponent, NoteItemSelectionChange } from '../note-item/note-item.component';
+import { NoteItemComponent, NoteItemContextMenuEvent, NoteItemSelectionChange } from '../note-item/note-item.component';
 
 
 @Component({
@@ -107,6 +108,17 @@ export class NoteListComponent implements OnInit, OnDestroy, AfterViewInit {
 
     getVcsFileStatus(note: NoteItem): VcsFileChangeStatusTypes | null {
         return this.collection.getNoteVcsFileChangeStatus(note);
+    }
+
+    handleContextMenuCommand(event: NoteItemContextMenuEvent): void {
+        switch (event.command) {
+            case 'revealInFinder':
+                shell.showItemInFolder(event.source.note.contentFilePath);
+                break;
+            case 'deleteNote':
+                this.collection.deleteNote(event.source.note);
+                break;
+        }
     }
 
     @HostListener('keydown', ['$event'])

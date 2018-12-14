@@ -9,5 +9,6 @@
         [active]="isActiveItem(note)"
         [selected]="isSelectedItem(note)"
         [status]="getVcsFileStatus(note)"
+        (contextMenuCommand)="handleContextMenuCommand($event)"
         (selectionChange)="selectNote($event)"></gd-note-item>
 </div>
