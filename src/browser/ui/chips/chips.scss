@@ -1,0 +1,49 @@
+@import "../style/typography";
+@import "../style/spacing";
+@import "./chip-sizes";
+
+.Chip {
+    display: inline-flex;
+    align-items: center;
+
+    position: relative;
+    overflow: hidden;
+
+    padding: 0 $spacing-half;
+
+    height: $chip-size;
+    min-height: 1px;
+    border-radius: 2.5px;
+    line-height: $chip-size - 2px;
+
+    font: {
+        size: $font-size;
+        weight: $font-weight-normal;
+    };
+
+    &:after {
+        position: absolute;
+        left: 0;
+        right: 0;
+        top: 0;
+        bottom: 0;
+        opacity: 0;
+        content: "";
+        pointer-events: none;
+        background-color: #000;
+    }
+
+    &:focus {
+        outline: none;
+
+        &:after {
+            opacity: 0.16;
+        }
+    }
+}
+
+.ChipRemove {
+    margin-left: $spacing-half;
+    font-size: 85% !important;
+    border-radius: 50%;
+}

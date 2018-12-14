@@ -1,0 +1,21 @@
+@import "../style/theming";
+
+@mixin gd-ui-chips-theme($theme) {
+    $is-dark-theme: map-get($theme, is-dark);
+    $primary: map-get($theme, primary);
+    $background: map-get($theme, background);
+    $foreground: map-get($theme, foreground);
+
+    .Chip {
+        background-color: gd-color($background, background-highlight);
+        border: 1px solid gd-color($foreground, divider);
+
+        &:not(.Chip--disabled) {
+
+        }
+    }
+
+    .ChipRemove {
+        background-color: gd-color($background, disabled-button);
+    }
+}

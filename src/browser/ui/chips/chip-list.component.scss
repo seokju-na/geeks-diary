@@ -1,0 +1,23 @@
+@import "./chip-sizes";
+
+.ChipList {
+    display: block;
+    overflow: hidden;
+
+    &__wrapper {
+        display: flex;
+        flex-direction: row;
+        flex-wrap: wrap;
+        align-items: center;
+        margin: -$chip-chips-margin;
+
+        .Chip {
+            margin: $chip-chips-margin;
+        }
+    }
+}
+
+input.ChipInput {
+    margin: $chip-chips-margin;
+    flex: 1 0 auto;
+}

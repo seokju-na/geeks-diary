@@ -12,6 +12,7 @@
 @import "./tabs/tab-group-theme";
 @import "./checkbox/checkbox-theme";
 @import "./menu/menu-theme";
+@import "./chips/chips-theme";
 
 @mixin gd-ui-all-theme($theme) {
     @include gd-ui-autocomplete-theme($theme);
@@ -28,4 +29,5 @@
     @include gd-ui-tab-group-theme($theme);
     @include gd-ui-checkbox-theme($theme);
     @include gd-ui-menu-theme($theme);
+    @include gd-ui-chips-theme($theme);
 }
