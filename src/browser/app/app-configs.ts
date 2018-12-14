@@ -31,6 +31,8 @@ export const AppVcsDetectChangesEffectActionsProvider: Provider = {
         NoteCollectionActionTypes.LOAD_COLLECTION_COMPLETE,
         NoteCollectionActionTypes.ADD_NOTE,
         NoteEditorActionTypes.SAVE_NOTE_CONTENT_COMPLETE,
+        NoteCollectionActionTypes.DELETE_NOTE,
+        NoteCollectionActionTypes.CHANGE_NOTE_TITLE,
     ],
 };
 
@@ -49,6 +51,7 @@ export const AppNoteContributionUpdatedEffectActionsRegistration: Provider = {
         NoteCollectionActionTypes.LOAD_COLLECTION_COMPLETE,
         VcsActionTypes.COMMITTED,
         VcsActionTypes.SYNCHRONIZED,
+        NoteCollectionActionTypes.DELETE_NOTE,
     ],
 };
 
