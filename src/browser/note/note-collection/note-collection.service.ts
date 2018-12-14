@@ -1,6 +1,7 @@
 import { DatePipe } from '@angular/common';
 import { Injectable, OnDestroy } from '@angular/core';
 import { select, Store } from '@ngrx/store';
+import { shell } from 'electron';
 import * as path from 'path';
 import { Observable, Subject, Subscription, zip } from 'rxjs';
 import { filter, map, switchMap, take } from 'rxjs/operators';
@@ -15,7 +16,7 @@ import { convertToNoteSnippets, NoteParser } from '../note-shared';
 import { NoteStateWithRoot } from '../note.state';
 import {
     AddNoteAction,
-    ChangeNoteTitleAction,
+    ChangeNoteTitleAction, DeleteNoteAction,
     DeselectNoteAction,
     LoadNoteCollectionAction,
     LoadNoteCollectionCompleteAction,
@@ -247,6 +248,24 @@ export class NoteCollectionService implements OnDestroy {
             contentFileName: newContentFileName,
             contentFilePath: newContentFilePath,
         }));
+    }
+
+    deleteNote(noteItem: NoteItem): void {
+        const allRemoved = shell.moveItemToTrash(noteItem.filePath)
+            && shell.moveItemToTrash(noteItem.contentFilePath);
+
+        if (!allRemoved) {
+            // TODO(@seokju-na): Might need rollback...?
+            return;
+        }
+
+        this.getSelectedNote(false).pipe(take(1)).subscribe((selectedNote: NoteItem) => {
+            if (selectedNote && selectedNote.id === noteItem.id) {
+                this.store.dispatch(new DeselectNoteAction());
+            }
+
+            this.store.dispatch(new DeleteNoteAction({ note: noteItem }));
+        });
     }
 
     private subscribeToggles(): void {

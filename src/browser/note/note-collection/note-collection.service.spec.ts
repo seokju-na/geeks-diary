@@ -1,6 +1,7 @@
 import { DatePipe } from '@angular/common';
 import { fakeAsync, flush, TestBed } from '@angular/core/testing';
 import { combineReducers, Store, StoreModule } from '@ngrx/store';
+import { shell } from 'electron';
 import * as path from 'path';
 import { of, Subject } from 'rxjs';
 import { createDummies, fastTestSetup } from '../../../../test/helpers';
@@ -22,6 +23,7 @@ import { NoteDummy, NoteItemDummy } from './dummies';
 import {
     AddNoteAction,
     ChangeNoteTitleAction,
+    DeleteNoteAction,
     DeselectNoteAction,
     LoadNoteCollectionAction,
     LoadNoteCollectionCompleteAction,
@@ -393,6 +395,35 @@ describe('browser.note.noteCollection.NoteCollectionService', () => {
             vcsFileChanges.next([fileChange]);
 
             expect(collection.getNoteVcsFileChangeStatus(note)).toEqual(fileChange.status);
+        });
+    });
+
+    describe('deleteNote', () => {
+        it('should dispatch \'DELETE_NOTE\' action if all note files removed.', () => {
+            spyOn(store, 'dispatch');
+            spyOn(shell, 'moveItemToTrash').and.returnValue(true);
+
+            const note = noteItemDummy.create();
+            collection.deleteNote(note);
+
+            expect(shell.moveItemToTrash).toHaveBeenCalledWith(note.filePath);
+            expect(shell.moveItemToTrash).toHaveBeenCalledWith(note.contentFilePath);
+
+            expect(store.dispatch).toHaveBeenCalledWith(new DeleteNoteAction({ note }));
+        });
+
+        it('should also dispatch \'DESELECT_NOTE\' action if delete target note is currently '
+            + 'selected.', () => {
+            const note = noteItemDummy.create();
+            store.dispatch(new SelectNoteAction({ note }));
+
+            spyOn(store, 'dispatch');
+            spyOn(shell, 'moveItemToTrash').and.returnValue(true);
+
+            collection.deleteNote(note);
+
+            expect(store.dispatch).toHaveBeenCalledWith(new DeselectNoteAction());
+            expect(store.dispatch).toHaveBeenCalledWith(new DeleteNoteAction({ note }));
         });
     });
 });
