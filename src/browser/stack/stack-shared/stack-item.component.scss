@@ -1,4 +1,4 @@
-.StackChip {
+.StackItem {
     display: inline-flex;
     cursor: inherit;
 
@@ -8,7 +8,9 @@
         height: 16px;
 
         > img {
+            margin: 0 auto;
             display: block;
+            height: 100%;
         }
     }
 }

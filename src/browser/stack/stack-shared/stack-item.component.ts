@@ -13,16 +13,17 @@ import { Stack } from '../stack.model';
 
 
 @Component({
-    selector: 'gd-stack-chip',
-    templateUrl: './stack-chip.component.html',
-    styleUrls: ['./stack-chip.component.scss'],
+    selector: 'gd-stack-item',
+    templateUrl: './stack-item.component.html',
+    styleUrls: ['./stack-item.component.scss'],
     encapsulation: ViewEncapsulation.None,
     changeDetection: ChangeDetectionStrategy.OnPush,
     host: {
+        'class': 'StackItem',
         '[attr.aria-label]': 'stack?.name',
     },
 })
-export class StackChipComponent implements DoCheck {
+export class StackItemComponent implements DoCheck {
     @Input() stack: Stack;
     @Input() disableTooltip = true;
 
