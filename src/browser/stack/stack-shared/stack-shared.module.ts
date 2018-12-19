@@ -1,6 +1,6 @@
 import { NgModule } from '@angular/core';
 import { UiModule } from '../../ui/ui.module';
-import { StackChipComponent } from './stack-chip.component';
+import { StackItemComponent } from './stack-item.component';
 
 
 @NgModule({
@@ -8,12 +8,12 @@ import { StackChipComponent } from './stack-chip.component';
         UiModule,
     ],
     declarations: [
-        StackChipComponent,
+        StackItemComponent,
     ],
     exports: [
-        StackChipComponent,
+        StackItemComponent,
     ],
 })
-export class StackChipModule {
+export class StackSharedModule {
 }
 

@@ -3,6 +3,7 @@ import { Actions, Effect, ofType } from '@ngrx/effects';
 import { select, Store } from '@ngrx/store';
 import { Observable, of } from 'rxjs';
 import { catchError, debounceTime, map, mergeMap, switchMap, take, takeUntil } from 'rxjs/operators';
+import { NoteCollectionAction, NoteCollectionActionTypes } from '../note-collection';
 import { NoteState, NoteStateWithRoot } from '../note.state';
 import {
     LoadNoteContentAction,
@@ -49,12 +50,14 @@ export class NoteContentEffects {
     );
 
     @Effect()
-    saveCurrentNote: Observable<NoteEditorAction> = this.actions.pipe(
+    saveCurrentNote: Observable<NoteEditorAction | NoteCollectionAction> = this.actions.pipe(
         ofType(
             NoteEditorActionTypes.APPEND_SNIPPET,
             NoteEditorActionTypes.UPDATE_SNIPPET,
             NoteEditorActionTypes.INSERT_SNIPPET,
             NoteEditorActionTypes.REMOVE_SNIPPET,
+            NoteCollectionActionTypes.CHANGE_NOTE_TITLE,
+            NoteCollectionActionTypes.CHANGE_NOTE_STACKS,
         ),
         debounceTime(NOTE_EDITOR_SAVE_NOTE_CONTENT_THROTTLE_TIME),
         switchMap(() =>

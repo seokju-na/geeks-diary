@@ -22,6 +22,7 @@ import { NoteStateWithRoot } from '../note.state';
 import { NoteDummy, NoteItemDummy } from './dummies';
 import {
     AddNoteAction,
+    ChangeNoteStacksAction,
     ChangeNoteTitleAction,
     DeleteNoteAction,
     DeselectNoteAction,
@@ -318,13 +319,17 @@ describe('browser.note.noteCollection.NoteCollectionService', () => {
 
             const callback = jasmine.createSpy('change note title spy');
             collection.changeNoteTitle(note, newTitle).then(callback).catch(err => error = err);
+            flush();
 
             mockFs
                 .expect<boolean>({
-                    methodName: 'isPathExists',
-                    args: [newContentFilePath],
+                    methodName: 'renameFile',
+                    args: [
+                        note.contentFilePath, // Old Path
+                        newContentFilePath, // New Path
+                    ],
                 })
-                .flush(true);
+                .error(new Error());
 
             expect(error instanceof NoteContentFileAlreadyExistsError).toBe(true);
             expect((error as NoteError).code).toEqual(NoteErrorCodes.CONTENT_FILE_ALREADY_EXISTS);
@@ -345,31 +350,17 @@ describe('browser.note.noteCollection.NoteCollectionService', () => {
 
             const callback = jasmine.createSpy('change note title spy');
             collection.changeNoteTitle(note, newTitle).then(callback);
+            flush();
 
-            // Pass file duplication.
             mockFs
-                .expect<boolean>({
-                    methodName: 'isPathExists',
-                    args: [newContentFilePath],
-                })
-                .flush(false);
-
-            // 2 stubs
-            const stubs = mockFs.expectMany([
-                {
-                    methodName: 'writeJsonFile',
-                    args: [note.filePath, FsMatchLiterals.ANY],
-                },
-                {
+                .expect<void>({
                     methodName: 'renameFile',
                     args: [
                         note.contentFilePath, // Old Path
                         newContentFilePath, // New Path
                     ],
-                },
-            ]);
-
-            stubs.forEach(stub => stub.flush());
+                })
+                .flush();
 
             expect(store.dispatch).toHaveBeenCalledWith(new ChangeNoteTitleAction({
                 note,
@@ -378,6 +369,22 @@ describe('browser.note.noteCollection.NoteCollectionService', () => {
                 contentFilePath: newContentFilePath,
             }));
         }));
+    });
+
+    describe('changeNoteStacks', () => {
+        it('should dispatch \"CHANGE_NOTE_STACKS\' action.', () => {
+            spyOn(store, 'dispatch');
+
+            const note = noteItemDummy.create();
+            const stacks = ['a', 'b', 'c'];
+
+            collection.changeNoteStacks(note, stacks);
+
+            expect(store.dispatch).toHaveBeenCalledWith(new ChangeNoteStacksAction({
+                note,
+                stacks,
+            }));
+        });
     });
 
     describe('getNoteVcsFileChangeStatus', () => {

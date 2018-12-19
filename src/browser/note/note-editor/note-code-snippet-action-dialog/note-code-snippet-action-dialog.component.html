@@ -32,7 +32,7 @@
 
 <gd-autocomplete #languagePanel="gdAutocomplete">
     <gd-autocomplete-item *ngFor="let stack of languageStacks" [value]="stack.name">
-        <gd-stack-chip [stack]="stack"></gd-stack-chip>
+        <gd-stack-item [stack]="stack"></gd-stack-item>
         <span style="padding: 0 5px;">{{ stack.name }}</span>
     </gd-autocomplete-item>
 </gd-autocomplete>

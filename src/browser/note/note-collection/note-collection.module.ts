@@ -1,6 +1,7 @@
 import { DatePipe } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { SharedModule } from '../../shared';
+import { StackSharedModule } from '../../stack/stack-shared';
 import { UiModule } from '../../ui/ui.module';
 import { NoteSharedModule } from '../note-shared';
 import { CreateNewNoteDialogComponent } from './create-new-note-dialog/create-new-note-dialog.component';
@@ -20,6 +21,7 @@ import { NoteListToolsComponent } from './note-list-tools/note-list-tools.compon
         UiModule,
         SharedModule,
         NoteSharedModule,
+        StackSharedModule,
     ],
     declarations: [
         NoteCalendarComponent,

@@ -4,7 +4,7 @@ import { select, Store } from '@ngrx/store';
 import { shell } from 'electron';
 import * as path from 'path';
 import { Observable, Subject, Subscription, zip } from 'rxjs';
-import { filter, map, switchMap, take } from 'rxjs/operators';
+import { map, switchMap, take } from 'rxjs/operators';
 import { makeNoteContentFileName, Note, NoteSnippetTypes } from '../../../core/note';
 import { VcsFileChange, VcsFileChangeStatusTypes } from '../../../core/vcs';
 import { isOutsidePath } from '../../../libs/path';
@@ -16,7 +16,9 @@ import { convertToNoteSnippets, NoteParser } from '../note-shared';
 import { NoteStateWithRoot } from '../note.state';
 import {
     AddNoteAction,
-    ChangeNoteTitleAction, DeleteNoteAction,
+    ChangeNoteStacksAction,
+    ChangeNoteTitleAction,
+    DeleteNoteAction,
     DeselectNoteAction,
     LoadNoteCollectionAction,
     LoadNoteCollectionCompleteAction,
@@ -97,19 +99,15 @@ export class NoteCollectionService implements OnDestroy {
         }));
     }
 
-    getFilteredAndSortedNoteList(waitForInitial: boolean = true): Observable<NoteItem[]> {
+    getFilteredAndSortedNoteList(): Observable<NoteItem[]> {
         return this.store.pipe(
-            select(state => state.note.collection),
-            filter(state => waitForInitial ? state.loaded : true),
-            select(state => state.filteredAndSortedNotes),
+            select(state => state.note.collection.filteredAndSortedNotes),
         );
     }
 
-    getSelectedNote(waitForInitial: boolean = true): Observable<NoteItem | null> {
+    getSelectedNote(): Observable<NoteItem | null> {
         return this.store.pipe(
-            select(state => state.note.collection),
-            filter(state => waitForInitial ? state.loaded : true),
-            select(state => state.selectedNote),
+            select(state => state.note.collection.selectedNote),
         );
     }
 
@@ -215,32 +213,38 @@ export class NoteCollectionService implements OnDestroy {
 
     async changeNoteTitle(noteItem: NoteItem, newTitle: string): Promise<void> {
         const dirName = path.dirname(noteItem.contentFilePath);
-        const newContentFileName = makeNoteContentFileName(noteItem.createdDatetime, newTitle);
-        const newContentFilePath = path.resolve(dirName, newContentFileName);
+        let newContentFileName: string;
+        let newContentFilePath: string;
+
+        const allNotes = await toPromise(this.store.pipe(
+            select(state => state.note.collection.notes),
+            take(1),
+        ));
+        const allNoteContentFilePaths = allNotes.map(item => item.contentFilePath);
+
+        let index = 0;
+        const isNoteTitleDuplicated = title => allNoteContentFilePaths.includes(title);
+
+        // Check title duplication.
+        do {
+            const title = index === 0 ? newTitle : `${newTitle}(${index})`;
+
+            newContentFileName = makeNoteContentFileName(noteItem.createdDatetime, title);
+            newContentFilePath = path.resolve(dirName, newContentFileName);
+            index++;
+        } while (isNoteTitleDuplicated(newContentFilePath));
 
         // If content file name is same, just ignore.
         if (newContentFileName === noteItem.contentFileName) {
             return;
         }
 
-        if (await toPromise(this.fs.isPathExists(newContentFilePath))) {
+        // Rename file.
+        try {
+            await toPromise(this.fs.renameFile(noteItem.contentFilePath, newContentFilePath));
+        } catch (error) {
             throw new NoteContentFileAlreadyExistsError();
         }
-
-        const note: Note = {
-            id: noteItem.id,
-            title: newTitle,
-            snippets: noteItem.snippets,
-            stackIds: noteItem.stackIds,
-            contentFileName: newContentFileName,
-            contentFilePath: newContentFilePath,
-            createdDatetime: noteItem.createdDatetime,
-        };
-
-        await toPromise(zip(
-            this.fs.writeJsonFile<Note>(noteItem.filePath, note),
-            this.fs.renameFile(noteItem.contentFilePath, newContentFilePath),
-        ));
 
         this.store.dispatch(new ChangeNoteTitleAction({
             note: noteItem,
@@ -248,6 +252,10 @@ export class NoteCollectionService implements OnDestroy {
             contentFileName: newContentFileName,
             contentFilePath: newContentFilePath,
         }));
+    }
+
+    changeNoteStacks(noteItem: NoteItem, stacks: string[]): void {
+        this.store.dispatch(new ChangeNoteStacksAction({ note: noteItem, stacks }));
     }
 
     deleteNote(noteItem: NoteItem): void {
@@ -259,7 +267,7 @@ export class NoteCollectionService implements OnDestroy {
             return;
         }
 
-        this.getSelectedNote(false).pipe(take(1)).subscribe((selectedNote: NoteItem) => {
+        this.getSelectedNote().pipe(take(1)).subscribe((selectedNote: NoteItem) => {
             if (selectedNote && selectedNote.id === noteItem.id) {
                 this.store.dispatch(new DeselectNoteAction());
             }
@@ -272,7 +280,7 @@ export class NoteCollectionService implements OnDestroy {
         this.toggleNoteSelectionSubscription =
             this._toggleNoteSelection.asObservable().pipe(
                 switchMap(note =>
-                    this.getSelectedNote(false).pipe(
+                    this.getSelectedNote().pipe(
                         take(1),
                         map(selectedNote => ([selectedNote, note])),
                     ),

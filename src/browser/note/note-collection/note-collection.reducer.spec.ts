@@ -4,6 +4,7 @@ import { datetime, DateUnits } from '../../../libs/datetime';
 import { NoteItemDummy, prepareForFilteringNotes, prepareForSortingNotes } from './dummies';
 import {
     AddNoteAction,
+    ChangeNoteStacksAction,
     ChangeNoteTitleAction,
     ChangeSortDirectionAction,
     ChangeSortOrderAction,
@@ -522,6 +523,53 @@ describe('browser.note.noteCollection.noteCollectionReducer', () => {
             );
 
             expect(result.selectedNote).toBeNull();
+        });
+    });
+
+    describe('CHANGE_NOTE_STACKS', () => {
+        const dummy = new NoteItemDummy();
+        let notes: NoteItem[];
+        let beforeState: NoteCollectionState;
+
+        beforeEach(() => {
+            notes = createDummies(dummy, 10);
+            beforeState = noteCollectionReducer(
+                undefined,
+                new LoadNoteCollectionCompleteAction({ notes }),
+            );
+        });
+
+        it('should change note stack ids at index.', () => {
+            const targetNote = notes[3];
+            const result = noteCollectionReducer(
+                beforeState,
+                new ChangeNoteStacksAction({
+                    note: targetNote,
+                    stacks: ['a', 'b', 'c'],
+                }),
+            );
+
+            expect(result.notes[3].stackIds).toEqual(['a', 'b', 'c']);
+        });
+
+        it('should change note stack ids at index and selected note if index of note '
+            + 'is currently selected.', () => {
+            const targetNote = notes[7];
+            beforeState = noteCollectionReducer(
+                beforeState,
+                new SelectNoteAction({ note: targetNote }),
+            );
+
+            const result = noteCollectionReducer(
+                beforeState,
+                new ChangeNoteStacksAction({
+                    note: targetNote,
+                    stacks: ['a', 'b', 'c'],
+                }),
+            );
+
+            expect(result.selectedNote.stackIds).toEqual(['a', 'b', 'c']);
+            expect(result.notes[7].stackIds).toEqual(['a', 'b', 'c']);
         });
     });
 });

@@ -243,6 +243,13 @@ export function noteCollectionReducer(
                 withNoteDelete(state, getIndexOfNote(state, action.payload.note)),
             );
 
+        case NoteCollectionActionTypes.CHANGE_NOTE_STACKS:
+            return withFilteredAndSortedNotes(withNoteUpdate(
+                state,
+                getIndexOfNote(state, action.payload.note),
+                { stackIds: action.payload.stacks },
+            ));
+
         default:
             return state;
     }

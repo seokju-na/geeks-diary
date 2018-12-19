@@ -1,16 +1,37 @@
-import { DOWN_ARROW, ENTER } from '@angular/cdk/keycodes';
+import { COMMA, DOWN_ARROW, ENTER } from '@angular/cdk/keycodes';
+import { DebugElement } from '@angular/core';
 import { ComponentFixture, discardPeriodicTasks, fakeAsync, flush, TestBed, tick } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
+import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { combineReducers, Store, StoreModule } from '@ngrx/store';
-import { of, Subject } from 'rxjs';
-import { dispatchKeyboardEvent, fastTestSetup, typeInElement } from '../../../../test/helpers';
+import { of, ReplaySubject, Subject } from 'rxjs';
+import {
+    createDummies,
+    dispatchKeyboardEvent,
+    expectDom,
+    fastTestSetup,
+    sample,
+    typeInElement,
+} from '../../../../test/helpers';
 import { MockDialog } from '../../../../test/mocks/browser';
 import { Asset, AssetTypes } from '../../../core/asset';
 import { NoteSnippetTypes } from '../../../core/note';
-import { MenuEvent, MenuService, NativeDialog, NativeDialogOpenResult, SharedModule } from '../../shared';
+import {
+    MenuEvent,
+    MenuService,
+    NativeDialog,
+    NativeDialogConfig,
+    nativeDialogFileFilters,
+    NativeDialogOpenResult,
+    NativeDialogProperties,
+    SharedModule,
+} from '../../shared';
+import { Stack, StackModule, StackViewer } from '../../stack';
+import { StackDummy } from '../../stack/dummies';
+import { ChipDirective } from '../../ui/chips';
 import { Dialog } from '../../ui/dialog';
 import { UiModule } from '../../ui/ui.module';
-import { NoteCollectionService, SelectNoteAction } from '../note-collection';
+import { NoteCollectionService, NoteItem, SelectNoteAction } from '../note-collection';
 import { NoteItemDummy } from '../note-collection/dummies';
 import { NoteSharedModule } from '../note-shared';
 import { noteReducerMap } from '../note.reducer';
@@ -43,23 +64,52 @@ describe('browser.note.noteEditor.NoteEditorComponent', () => {
     let nativeDialog: NativeDialog;
     let noteEditor: NoteEditorService;
     let collection: NoteCollectionService;
+    let stackViewer: StackViewer;
 
     let menuMessages: Subject<MenuEvent>;
+    let selectedNoteStream: ReplaySubject<NoteItem>;
 
     const noteDummy = new NoteItemDummy();
     const contentDummy = new NoteContentDummy();
+    const stackDummy = new StackDummy();
 
     const getTitleTextareaEl = (): HTMLTextAreaElement =>
         fixture.debugElement.query(
             By.css('.NoteEditor__titleTextarea > textarea'),
         ).nativeElement as HTMLTextAreaElement;
 
-    function ensureSnippets(snippetCount = 5): void {
-        const note = noteDummy.create();
-        const content = contentDummy.create(snippetCount);
+    const getStackChipDeList = (): DebugElement[] =>
+        fixture.debugElement.queryAll(By.css('.NoteEditor__stackChip'));
 
+    const getNoteStacksInputEl = (): HTMLInputElement =>
+        fixture.debugElement.query(By.css('#note-stacks-input')).nativeElement as HTMLInputElement;
+
+    function ensureSelectNoteAndLoadNoteContent(
+        note: NoteItem = noteDummy.create(),
+        content: NoteContent = contentDummy.create(),
+    ): [NoteItem, NoteContent] {
+        store.dispatch(new SelectNoteAction({ note }));
         store.dispatch(new LoadNoteContentCompleteAction({ note, content }));
+        fixture.detectChanges();
+
         listManager.addAllSnippetsFromContent(content);
+        selectedNoteStream.next(note);
+        fixture.detectChanges();
+
+        return [note, content];
+    }
+
+    function provideStackDummies(
+        stacks: Stack[] = createDummies(stackDummy, 5),
+    ): Stack[] {
+        // Remove all stacks.
+        while (stackViewer.stacks.length > 0) {
+            stackViewer.stacks.pop();
+        }
+
+        stackViewer.stacks.push(...stacks);
+
+        return stacks;
     }
 
     function activateSnippetAtIndex(index: number): void {
@@ -68,6 +118,10 @@ describe('browser.note.noteEditor.NoteEditorComponent', () => {
 
     function deactivateSnippet(): void {
         store.dispatch(new BlurSnippetAction());
+    }
+
+    function ignoreStackSearchAutocomplete(): void {
+        component['subscribeStackAutocompleteSearch'] = jasmine.createSpy('subscribeStackAutocompleteSearch spy');
     }
 
     fastTestSetup();
@@ -79,16 +133,20 @@ describe('browser.note.noteEditor.NoteEditorComponent', () => {
 
         collection = jasmine.createSpyObj('collection', [
             'changeNoteTitle',
+            'getSelectedNote',
+            'changeNoteStacks',
         ]);
 
         await TestBed
             .configureTestingModule({
                 imports: [
+                    NoopAnimationsModule,
                     UiModule,
                     SharedModule,
                     StoreModule.forRoot({
                         note: combineReducers(noteReducerMap),
                     }),
+                    StackModule,
                     NoteSharedModule,
                     NoteEditorModule,
                     ...MockDialog.imports(),
@@ -108,11 +166,14 @@ describe('browser.note.noteEditor.NoteEditorComponent', () => {
         mockDialog = TestBed.get(Dialog);
         nativeDialog = TestBed.get(NativeDialog);
         noteEditor = TestBed.get(NoteEditorService);
+        stackViewer = TestBed.get(StackViewer);
 
         menuMessages = new Subject<MenuEvent>();
+        selectedNoteStream = new ReplaySubject<NoteItem>(1);
 
         (menu.onMessage as Spy).and.returnValue(menuMessages.asObservable());
         spyOn(listManager, 'handleSnippetRefEvent').and.callThrough();
+        (collection.getSelectedNote as Spy).and.callFake(() => selectedNoteStream.asObservable());
 
         fixture = TestBed.createComponent(NoteEditorComponent);
         component = fixture.componentInstance;
@@ -121,6 +182,94 @@ describe('browser.note.noteEditor.NoteEditorComponent', () => {
     afterEach(() => {
         menuMessages.complete();
         mockDialog.closeAll();
+    });
+
+    describe('stack input', () => {
+        beforeEach(() => {
+            ignoreStackSearchAutocomplete();
+        });
+
+        it('should show chips which from note stacks when ngOnInit.', () => {
+            const selectedNote = noteDummy.create();
+            const stacks = provideStackDummies();
+            const noteStack = sample(stacks);
+
+            selectedNote.stackIds.push(noteStack.name);
+
+            ensureSelectNoteAndLoadNoteContent(selectedNote);
+
+            const chipDeList = getStackChipDeList();
+            expect(chipDeList.length).toEqual(1);
+
+            // Chip value must be stack name.
+            const chipInstance = chipDeList[0].injector.get<ChipDirective>(ChipDirective);
+            expect(chipInstance.value).toEqual(noteStack.name);
+
+            // Chip name must be shown.
+            expectDom(chipDeList[0].nativeElement as HTMLElement).toContainText(noteStack.name);
+        });
+
+        it('should call \'changeNoteStacks\' from collection service when stack has been '
+            + 'added with ENTER keydown. (debounceTime=250ms)', fakeAsync(() => {
+            const stacks = provideStackDummies();
+            const [selectedNote] = ensureSelectNoteAndLoadNoteContent();
+
+            const stack = sample(stacks);
+            const stacksInputEl = getNoteStacksInputEl();
+
+            typeInElement(stack.name, getNoteStacksInputEl());
+            dispatchKeyboardEvent(stacksInputEl, 'keydown', ENTER);
+            fixture.detectChanges();
+            tick(250);
+
+            expect(collection.changeNoteStacks).toHaveBeenCalledWith(selectedNote, [stack.name]);
+        }));
+
+        it('should call \'changeNoteStacks\' from collection service when stack has been '
+            + 'added with COMMA keydown. (debounceTime=250ms)', fakeAsync(() => {
+            ignoreStackSearchAutocomplete();
+
+            const stacks = provideStackDummies();
+            const [selectedNote] = ensureSelectNoteAndLoadNoteContent();
+
+            const stack = sample(stacks);
+            const stacksInputEl = getNoteStacksInputEl();
+
+            typeInElement(stack.name, getNoteStacksInputEl());
+            dispatchKeyboardEvent(stacksInputEl, 'keydown', COMMA);
+            fixture.detectChanges();
+            tick(250);
+
+            expect(collection.changeNoteStacks).toHaveBeenCalledWith(selectedNote, [stack.name]);
+        }));
+
+        it('should call \'changeNoteStacks\' from collection service when stack has been '
+            + 'removed. (debounceTime=250ms)', fakeAsync(() => {
+            ignoreStackSearchAutocomplete();
+
+            const stacks = provideStackDummies();
+            const [selectedNote] = ensureSelectNoteAndLoadNoteContent();
+
+            const prevStack = sample(stacks);
+            const stacksInputEl = getNoteStacksInputEl();
+
+            // Add stack
+            typeInElement(prevStack.name, getNoteStacksInputEl());
+            dispatchKeyboardEvent(stacksInputEl, 'keydown', COMMA);
+            fixture.detectChanges();
+            tick(250);
+
+            expect(collection.changeNoteStacks).toHaveBeenCalledWith(selectedNote, [prevStack.name]);
+
+            // Remove stack
+            getStackChipDeList()[0].injector
+                .get<ChipDirective>(ChipDirective)
+                .remove();
+            fixture.detectChanges();
+            tick(250);
+
+            expect(collection.changeNoteStacks).toHaveBeenCalledWith(selectedNote, []);
+        }));
     });
 
     describe('title textarea', () => {
@@ -169,7 +318,7 @@ describe('browser.note.noteEditor.NoteEditorComponent', () => {
         it('should not handle create new snippet event if active snippet index is \'null\'.', () => {
             fixture.detectChanges();
 
-            ensureSnippets();
+            ensureSelectNoteAndLoadNoteContent();
             deactivateSnippet();
             fixture.detectChanges();
 
@@ -181,7 +330,7 @@ describe('browser.note.noteEditor.NoteEditorComponent', () => {
         it('should handle create new snippet event when active snippet index is exists.', () => {
             fixture.detectChanges();
 
-            ensureSnippets();
+            ensureSelectNoteAndLoadNoteContent();
             activateSnippetAtIndex(2);
             fixture.detectChanges();
 
@@ -206,7 +355,7 @@ describe('browser.note.noteEditor.NoteEditorComponent', () => {
             + 'And handle create new snippet when user close dialog with result.', () => {
             fixture.detectChanges();
 
-            ensureSnippets();
+            ensureSelectNoteAndLoadNoteContent();
             activateSnippetAtIndex(0);
             fixture.detectChanges();
 
@@ -270,7 +419,10 @@ describe('browser.note.noteEditor.NoteEditorComponent', () => {
         it('should show file open dialog when insert image event received while type of active snippet is '
             + '\'TEXT\'. And dispatch NoteSnippetEditorInsertImageEvent when user select file.', fakeAsync(() => {
             const selectedNote = noteDummy.create();
-            store.dispatch(new SelectNoteAction({ note: selectedNote }));
+            const content = contentDummy.create();
+            content.snippets[0] = new NoteSnippetContentDummy().create(NoteSnippetTypes.TEXT);
+
+            ensureSelectNoteAndLoadNoteContent(selectedNote, content);
 
             activateSnippetAtIndex(0);
             fixture.detectChanges();
@@ -290,7 +442,12 @@ describe('browser.note.noteEditor.NoteEditorComponent', () => {
             flush();
             flush();
 
-            expect(nativeDialog.showOpenDialog).toHaveBeenCalled();
+            expect(nativeDialog.showOpenDialog).toHaveBeenCalledWith({
+                message: 'Choose an image:',
+                properties: NativeDialogProperties.OPEN_FILE,
+                fileFilters: [nativeDialogFileFilters.IMAGES],
+            } as NativeDialogConfig);
+
             expect(noteEditor.copyAssetFile).toHaveBeenCalledWith(
                 AssetTypes.IMAGE,
                 selectedNote.contentFilePath,
@@ -315,13 +472,13 @@ describe('browser.note.noteEditor.NoteEditorComponent', () => {
     describe('Note title', () => {
         it('should update note title when selected note changes.', () => {
             const prevSelectedNote = noteDummy.create();
-            store.dispatch(new SelectNoteAction({ note: prevSelectedNote }));
+            ensureSelectNoteAndLoadNoteContent(prevSelectedNote);
             fixture.detectChanges();
 
             expect(getTitleTextareaEl().value).toContain(prevSelectedNote.title);
 
             const nextSelectedNote = noteDummy.create();
-            store.dispatch(new SelectNoteAction({ note: nextSelectedNote }));
+            selectedNoteStream.next(nextSelectedNote);
             fixture.detectChanges();
 
             expect(getTitleTextareaEl().value).toContain(nextSelectedNote.title);
@@ -331,8 +488,7 @@ describe('browser.note.noteEditor.NoteEditorComponent', () => {
             + 'after 250ms.', fakeAsync(() => {
             (collection.changeNoteTitle as Spy).and.callFake(() => Promise.resolve(null));
 
-            const selectedNote = noteDummy.create();
-            store.dispatch(new SelectNoteAction({ note: selectedNote }));
+            const [selectedNote] = ensureSelectNoteAndLoadNoteContent();
             fixture.detectChanges();
 
             typeInElement('New Title', getTitleTextareaEl());

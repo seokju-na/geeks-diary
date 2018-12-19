@@ -1,17 +1,17 @@
 import { NgModule } from '@angular/core';
-import { StackChipModule } from './stack-ship';
+import { StackSharedModule } from './stack-shared';
 import { StackViewer } from './stack-viewer';
 
 
 @NgModule({
     imports: [
-        StackChipModule,
+        StackSharedModule,
     ],
     providers: [
         StackViewer,
     ],
     exports: [
-        StackChipModule,
+        StackSharedModule,
     ],
 })
 export class StackModule {

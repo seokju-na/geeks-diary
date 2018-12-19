@@ -4,17 +4,17 @@ import { expectDom, fastTestSetup } from '../../../../test/helpers';
 import { UiModule } from '../../ui/ui.module';
 import { StackDummy } from '../dummies';
 import { Stack } from '../stack.model';
-import { StackChipComponent } from './stack-chip.component';
+import { StackItemComponent } from './stack-item.component';
 
 
-describe('browser.stack.stackChip.StackChipComponent', () => {
-    let fixture: ComponentFixture<StackChipComponent>;
-    let component: StackChipComponent;
+describe('browser.stack.stackShared.StackItemComponent', () => {
+    let fixture: ComponentFixture<StackItemComponent>;
+    let component: StackItemComponent;
 
     const stackDummy = new StackDummy();
 
     const getIconEl = (): HTMLImageElement =>
-        fixture.debugElement.query(By.css('.StackChip__wrapper > img')).nativeElement as HTMLImageElement;
+        (fixture.debugElement.nativeElement as HTMLElement).querySelector('.StackItem__wrapper > img');
 
     fastTestSetup();
 
@@ -25,14 +25,14 @@ describe('browser.stack.stackChip.StackChipComponent', () => {
                     UiModule,
                 ],
                 declarations: [
-                    StackChipComponent,
+                    StackItemComponent,
                 ],
             })
             .compileComponents();
     });
 
     beforeEach(() => {
-        fixture = TestBed.createComponent(StackChipComponent);
+        fixture = TestBed.createComponent(StackItemComponent);
         component = fixture.componentInstance;
     });
 
@@ -43,7 +43,7 @@ describe('browser.stack.stackChip.StackChipComponent', () => {
         });
 
         it('should icon not exists.', () => {
-            expect(fixture.debugElement.query(By.css('.StackChip__wrapper > img'))).toBeNull();
+            expect(fixture.debugElement.query(By.css('.StackItem__wrapper > img'))).toBeNull();
         });
 
         it('should tooltip are not enabled because tooltip message is empty.', fakeAsync(() => {
@@ -76,7 +76,7 @@ describe('browser.stack.stackChip.StackChipComponent', () => {
         });
 
         it('should icon not exists.', () => {
-            expect(fixture.debugElement.query(By.css('.StackChip__wrapper > img'))).toBeNull();
+            expect(fixture.debugElement.query(By.css('.StackItem__wrapper > img'))).toBeNull();
         });
 
         it('should now show tooltip when input \'disableTooltip\' to true.', fakeAsync(() => {

@@ -1,4 +1,37 @@
-<div class="NoteEditor__toolbar"></div>
+<div fxFlex="none" class="NoteEditor__toolbar">
+    <div fxLayout fxLayoutAlign="start start" class="NoteEditor__stacks">
+        <label gdFormFieldLabel for="note-stacks-input" fxFlex="none">Stacks:</label>
+        <gd-form-field fxFlex="1 1 auto">
+            <gd-chip-list [formControl]="stackInputControl" #stackChips>
+                <gd-chip *ngFor="let stack of stacks"
+                         [value]="stack.name"
+                         (removed)="removeStack(stack)"
+                         class="NoteEditor__stackChip">
+                    <gd-stack-item *ngIf="stack.iconFilePath" [stack]="stack"></gd-stack-item>
+                    <span>{{ stack.name }}</span>
+                    <gd-icon gdChipRemove name="close"></gd-icon>
+                </gd-chip>
+            </gd-chip-list>
+
+            <input #stackAutoTrigger="gdAutocompleteTrigger"
+                   [gdChipInputFor]="stackChips"
+                   [gdChipInputSeparatorKeyCodes]="stackInputSeparatorKeyCodes"
+                   (gdChipInputTokenEnd)="addStack($event)"
+                   [gdAutocompleteTrigger]="stackAuto"
+                   [formControl]="stackSearchControl"
+                   placeholder="Click to add stacks"
+                   id="note-stacks-input">
+
+            <gd-autocomplete #stackAuto="gdAutocomplete">
+                <gd-autocomplete-item *ngFor="let item of searchedStacks"
+                                      [value]="item.name">
+                    <gd-stack-item [stack]="item"></gd-stack-item>
+                    <span style="padding: 0 5px;">{{ item.name }}</span>
+                </gd-autocomplete-item>
+            </gd-autocomplete>
+        </gd-form-field>
+    </div>
+</div>
 
 <div fxFlex="1 1 auto" #scrollable class="NoteEditor__scrollable">
     <div class="NoteEditor__titleEdit">
