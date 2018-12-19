@@ -3,11 +3,11 @@ import {
     copy,
     CopyOptions,
     ensureDir,
+    move,
     pathExists,
     readdir,
     readFile,
     readJson,
-    rename,
     writeFile,
     writeJson,
 } from 'fs-extra';
@@ -61,6 +61,7 @@ export class FsService {
     }
 
     renameFile(oldFileName: string, newFileName: string): Observable<void> {
-        return from(rename(oldFileName, newFileName)).pipe(enterZone(this.ngZone));
+        return from(move(oldFileName, newFileName, { overwrite: false }))
+            .pipe(enterZone(this.ngZone));
     }
 }
