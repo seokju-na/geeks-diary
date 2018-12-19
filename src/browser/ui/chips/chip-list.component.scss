@@ -1,7 +1,7 @@
 @import "./chip-sizes";
 
 .ChipList {
-    display: block;
+    display: inline-flex;
     overflow: hidden;
 
     &__wrapper {
