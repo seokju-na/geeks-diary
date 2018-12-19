@@ -107,8 +107,8 @@ export class NoteEditorService {
             title: noteItem.title,
             snippets: convertToNoteSnippets(parseResult.parsedSnippets),
             stackIds: noteItem.stackIds,
+            label: noteItem.label,
             contentFileName: noteItem.contentFileName,
-            contentFilePath: noteItem.contentFilePath,
             createdDatetime: noteItem.createdDatetime,
         };
 
