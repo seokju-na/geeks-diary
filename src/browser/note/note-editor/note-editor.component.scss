@@ -1,5 +1,7 @@
+@import "./note-header/note-header-sizes";
 @import "../../ui/style/spacing";
 @import "../../ui/style/typography";
+@import "../../ui/form-field/form-field-sizes";
 
 :host {
     display: flex;
@@ -18,6 +20,35 @@
     &__titleEdit {
         min-height: min-content;
         padding: $spacing;
+    }
+
+    &__stacks {
+        min-height: $note-header-size;
+        padding: 2.5px $spacing;
+
+        label {
+            margin-right: $spacing-half;
+        }
+
+        .ChipList {
+            margin: 2px 0;
+        }
+
+        input.ChipInput {
+            min-width: 100px;
+            background: transparent;
+            border: none;
+            outline: 0;
+            margin: 0;
+            padding: 0 $spacing-half;
+            height: $form-control-size;
+        }
+    }
+
+    &__stackChip {
+        gd-stack-item {
+            margin-right: $spacing-half;
+        }
     }
 
     &__titleTextarea {

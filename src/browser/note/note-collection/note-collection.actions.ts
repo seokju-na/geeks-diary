@@ -20,6 +20,7 @@ export enum NoteCollectionActionTypes {
     UPDATE_CONTRIBUTION_FAIL = '[NoteCollection] Update contribution fail',
     CHANGE_NOTE_TITLE = '[NoteCollection] Change note title',
     DELETE_NOTE = '[NoteCollection] Delete note',
+    CHANGE_NOTE_STACKS = '[NoteCollection] Change note stacks',
 }
 
 
@@ -142,6 +143,17 @@ export class DeleteNoteAction implements Action {
 }
 
 
+export class ChangeNoteStacksAction implements Action {
+    readonly type = NoteCollectionActionTypes.CHANGE_NOTE_STACKS;
+
+    constructor(public readonly payload: {
+        note: NoteItem,
+        stacks: string[],
+    }) {
+    }
+}
+
+
 export type NoteCollectionAction =
     LoadNoteCollectionAction
     | LoadNoteCollectionCompleteAction
@@ -157,4 +169,5 @@ export type NoteCollectionAction =
     | UpdateNoteContributionAction
     | UpdateNoteContributionFailAction
     | ChangeNoteTitleAction
-    | DeleteNoteAction;
+    | DeleteNoteAction
+    | ChangeNoteStacksAction;

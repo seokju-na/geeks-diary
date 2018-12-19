@@ -2,10 +2,32 @@
 @import "../../ui/style/theming";
 
 @mixin gd-note-editor-theme($theme) {
+    $is-dark: map-get($theme, is-dark);
     $background: map-get($theme, background);
     $foreground: map-get($theme, foreground);
 
     .NoteEditor {
+        $bg-color: if($is-dark, gd-color($background, background), gd-color($background, background-highlight));
+        background-color: $bg-color;
+
+        &__stacks {
+            background-color: gd-color($background, background-highlight);
+            border-bottom: 1px solid gd-color($foreground, divider);
+
+            gd-form-field .FormField__content {
+                display: flex;
+                flex-wrap: wrap;
+            }
+
+            input.ChipInput {
+                color: gd-color($foreground, text);
+
+                &::placeholder {
+                    color: gd-color($foreground, disabled-text);
+                }
+            }
+        }
+
         &__titleTextarea {
             border-bottom: 1px solid gd-color($foreground, divider);
 
