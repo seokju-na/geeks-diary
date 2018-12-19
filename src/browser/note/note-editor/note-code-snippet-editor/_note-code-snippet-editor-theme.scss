@@ -2,6 +2,7 @@
 @import "../../../ui/style/spacing";
 
 @mixin gd-note-code-snippet-editor-theme($theme) {
+    $is-dark-theme: map-get($theme, is-dark);
     $primary: map-get($theme, primary);
     $background: map-get($theme, background);
     $foreground: map-get($theme, foreground);
@@ -13,6 +14,8 @@
         }
 
         &__wrapper {
+            background-color: gd-color($background, background);
+
             border-left: 1px solid gd-color($foreground, divider);
             border-right: 1px solid gd-color($foreground, divider);
             border-bottom: 1px solid gd-color($foreground, divider);
@@ -55,7 +58,11 @@
         }
 
         .CodeMirror-activeline-background {
-            background: gd-color($background, background-highlight, .65);
+            background: if(
+                    $is-dark-theme,
+                    gd-color($background, background-highlight, .65),
+                    gd-color($background, hover)
+            );
         }
     }
 }
