@@ -28,6 +28,16 @@ export class StackViewer {
         return this.stacks.find(stack => stack.name === name) || null;
     }
 
+    getStackWithSafe(name: string): Stack {
+        let stack = this.getStack(name);
+
+        if (stack === null) {
+            stack = { name } as Stack;
+        }
+
+        return stack;
+    }
+
     search(query: string): Stack[] {
         return new SearchModel<Stack>()
             .registerScoringStrategy(3, (stack, _query) =>
