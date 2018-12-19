@@ -51,7 +51,7 @@ export class AppComponent implements OnInit {
     );
 
     readonly noSelectedNote: Observable<boolean> = this.collection
-        .getSelectedNote(false)
+        .getSelectedNote()
         .pipe(map(selectedNote => selectedNote === null));
 
     constructor(

@@ -59,7 +59,7 @@ export class NoteListComponent implements OnInit, OnDestroy, AfterViewInit {
 
     ngOnInit(): void {
         this.selectedNoteSubscription = this.collection
-            .getSelectedNote(true)
+            .getSelectedNote()
             .subscribe(selectedNote => this._selectedNote = selectedNote);
     }
 
