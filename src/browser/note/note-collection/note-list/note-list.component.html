@@ -1,5 +1,7 @@
 <div class="NoteList">
-    <div fxLayout fxLayoutAlign="center center" *ngIf="isEmpty" class="NoteList__emptyState">
+    <div fxLayout fxLayoutAlign="center center"
+         [class.NoteList__emptyState--hide]="!isEmpty"
+         class="NoteList__emptyState">
         No Notes
     </div>
 

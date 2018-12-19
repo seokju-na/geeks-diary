@@ -7,10 +7,16 @@
     min-height: 1px;
 
     &__emptyState {
+        visibility: visible;
         padding: $spacing-triple $spacing;
         font: {
             size: $font-size-md;
             weight: $font-weight-semiBold;
         };
+
+        &--hide {
+            display: none !important;
+            visibility: hidden;
+        }
     }
 }
