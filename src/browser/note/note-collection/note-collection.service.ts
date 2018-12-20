@@ -24,7 +24,7 @@ import {
     LoadNoteCollectionCompleteAction,
     SelectNoteAction,
 } from './note-collection.actions';
-import { getNoteLabel, NoteItem } from './note-item.model';
+import { NoteItem } from './note-item.model';
 
 
 @Injectable()
@@ -76,27 +76,26 @@ export class NoteCollectionService implements OnDestroy {
 
         // 3) Change notes to note items.
         const results = await Promise.all(readingNotes);
-        const noteItems: NoteItem[] = results
+        const notes: NoteItem[] = results
             .filter(note => note !== null)
-            .map((note: Note, index) => {
-                const noteItem: NoteItem = {
-                    ...note,
-                    fileName: noteFileNames[index],
-                    filePath: path.resolve(notesDirPath, noteFileNames[index]),
-                };
-                const label = getNoteLabel(note, this.workspace.configs.rootDirPath);
-
-                if (label) {
-                    return { ...noteItem, label };
-                } else {
-                    return noteItem;
-                }
-            });
+            .map((note: Note, index) => ({
+                ...note,
+                fileName: noteFileNames[index],
+                filePath: path.resolve(notesDirPath, noteFileNames[index]),
+                contentFilePath: note.label
+                    ? path.resolve(
+                        this.workspace.configs.rootDirPath,
+                        note.label,
+                        note.contentFileName,
+                    )
+                    : path.resolve(
+                        this.workspace.configs.rootDirPath,
+                        note.contentFileName,
+                    ),
+            }));
 
         // 4) Dispatch 'LOAD_COLLECTION_COMPLETE' action.
-        this.store.dispatch(new LoadNoteCollectionCompleteAction({
-            notes: noteItems,
-        }));
+        this.store.dispatch(new LoadNoteCollectionCompleteAction({ notes }));
     }
 
     getFilteredAndSortedNoteList(): Observable<NoteItem[]> {
@@ -175,38 +174,33 @@ export class NoteCollectionService implements OnDestroy {
         const noteFileName = `${id}.json`;
         const noteFilePath = path.resolve(this.workspace.configs.notesDirPath, noteFileName);
 
+        const contentRawValue = result.contentRawValue;
         const note: Note = {
             id,
             title,
             snippets: convertToNoteSnippets(result.parsedSnippets),
             createdDatetime: createdAt,
             stackIds: [],
+            label: directory,
             contentFileName,
-            contentFilePath,
         };
-        const contentRawValue = result.contentRawValue;
 
         /**
          * Make sure to ensure the directory where content file will saved.
          */
         await toPromise(this.fs.ensureDirectory(path.dirname(contentFilePath)));
-
         await toPromise(zip(
             this.fs.writeJsonFile<Note>(noteFilePath, note),
             this.fs.writeFile(contentFilePath, contentRawValue),
         ));
 
         // Dispatch 'ADD_NOTE' action.
-        let noteItem: NoteItem = {
+        const noteItem: NoteItem = {
             ...note,
             fileName: noteFileName,
             filePath: noteFilePath,
+            contentFilePath,
         };
-        const label = getNoteLabel(note, rootDirPath);
-
-        if (label) {
-            noteItem = { ...noteItem, label };
-        }
 
         this.store.dispatch(new AddNoteAction({ note: noteItem }));
     }
@@ -290,11 +284,7 @@ export class NoteCollectionService implements OnDestroy {
             );
     }
 
-    private handleNoteSelectionToggling(
-        selectedNote: NoteItem,
-        note: NoteItem,
-    ): void {
-
+    private handleNoteSelectionToggling(selectedNote: NoteItem, note: NoteItem): void {
         if (selectedNote && selectedNote.id === note.id) {
             this.deselectNote();
         } else {

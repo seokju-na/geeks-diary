@@ -46,7 +46,7 @@ describe('browser.note.noteCollection.NoteCollectionService', () => {
         notesDirPath: '/test/workspace/.geeks-diary/notes/',
     };
 
-    const noteDummy = new NoteDummy(workspaceConfig.rootDirPath);
+    const noteDummy = new NoteDummy();
     const noteItemDummy = new NoteItemDummy(
         workspaceConfig.rootDirPath,
         workspaceConfig.notesDirPath,

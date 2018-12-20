@@ -42,7 +42,6 @@ export const basicFixture = {
         ],
         stackIds: [],
         contentFileName: '18-10-02-Title.md',
-        contentFilePath: '/foo/bar/workspace/label/18-10-02-Title.md',
         createdDatetime: 1538493619943,
     } as Note,
     afterNote: {
@@ -69,7 +68,6 @@ export const basicFixture = {
         ],
         stackIds: [],
         contentFileName: '18-10-02-Title.md',
-        contentFilePath: '/foo/bar/workspace/label/18-10-02-Title.md',
         createdDatetime: 1538493619943,
     } as Note,
     noteItem: {
@@ -195,7 +193,6 @@ export const frontMatterFixture = {
         ],
         stackIds: ['javascript'],
         contentFileName: '18-10-06-hello-kotlin.md',
-        contentFilePath: '/foo/bar/workspace/18-10-06-hello-kotlin.md',
         createdDatetime: 1538802021000,
     } as Note,
     noteItem: {

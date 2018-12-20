@@ -9,13 +9,12 @@ export interface Note {
     readonly snippets: NoteSnippet[];
     readonly stackIds: string[];
 
-    /** Content file name. e.g. 18-07-21-Note-Title-1.md */
+    /** Content file name. e.g. ./label/18-07-21-Note-Title-1.md */
     readonly contentFileName: string;
 
-    /** Content file path. e.g. /foo/bar/workspace/CATEGORY/18-07-21-Note-Title-1.md */
-    readonly contentFilePath: string;
-
     readonly createdDatetime: number;
+
+    readonly label?: string;
 }
 
 

@@ -198,7 +198,7 @@ describe('browser.note.noteEditor.NoteEditorService', () => {
                     {
                         methodName: 'writeFile',
                         args: [
-                            basicFixture.note.contentFilePath,
+                            basicFixture.noteItem.contentFilePath,
                             FsMatchLiterals.ANY,
                         ],
                     },
