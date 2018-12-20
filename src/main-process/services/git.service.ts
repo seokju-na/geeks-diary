@@ -145,8 +145,13 @@ export class GitService extends Service {
             : this.git.Signature.now(option.author.name, option.author.email);
 
         const treeOId = await index.writeTree();
-        const head = await this.git.Reference.nameToId(repository, 'HEAD');
-        const parentCommit = await repository.getCommit(head);
+        let parentCommit: Commit;
+
+        try {
+            const head = await this.git.Reference.nameToId(repository, 'HEAD');
+            parentCommit = await repository.getCommit(head);
+        } catch (err) {
+        }
 
         const commitId = await repository.createCommit(
             'HEAD',
@@ -154,7 +159,7 @@ export class GitService extends Service {
             signature,
             option.message,
             treeOId,
-            [parentCommit],
+            parentCommit ? [parentCommit] : [],
         );
 
         signature.free();
@@ -349,7 +354,6 @@ export class GitService extends Service {
 
     handleError(error: any): GitError | any {
         const out = error.message;
-        console.log(error, out);
 
         if (out) {
             for (const code of Object.keys(gitErrorRegexes)) {
