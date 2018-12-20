@@ -100,7 +100,11 @@ export class GitService extends Service {
     @IpcActionHandler('getFileChanges')
     async getFileChanges(dirPath: string): Promise<VcsFileChange[]> {
         const repository = await this.openRepository(dirPath);
-        const statues = await repository.getStatusExt();
+        const statues = await repository.getStatusExt({
+            // This give us to track re-named files.
+            //  See: https://github.com/libgit2/libgit2/issues/429
+            flags: this.git.Status.OPT.INCLUDE_UNTRACKED,
+        });
         const fileChanges = statues.map(status => this.parseFileChange(dirPath, status));
 
         repository.free();
@@ -111,6 +115,26 @@ export class GitService extends Service {
     @IpcActionHandler('commit')
     async commit(option: GitCommitOptions): Promise<string> {
         const repository = await this.openRepository(option.workspaceDirPath);
+
+        // First add all files to index. Un-tracked file.
+        const index = await repository.refreshIndex();
+        const allTasks: Promise<any>[] = [];
+
+        option.fileChanges.forEach(({ status, filePath }) => {
+            if (status === VcsFileChangeStatusTypes.REMOVED) {
+                allTasks.push(index.removeByPath(filePath));
+            } else if (status === VcsFileChangeStatusTypes.NEW
+                || status === VcsFileChangeStatusTypes.MODIFIED
+                || status === VcsFileChangeStatusTypes.RENAMED) {
+                allTasks.push(index.addByPath(filePath));
+            }
+
+            // TODO(@seokju-na): Handle conflicted, ignored files.
+        });
+
+        await Promise.all(allTasks);
+        await index.write();
+
         const signature = option.createdAt
             ? this.git.Signature.create(
                 option.author.name,
@@ -120,7 +144,18 @@ export class GitService extends Service {
             )
             : this.git.Signature.now(option.author.name, option.author.email);
 
-        const commitId = await repository.createCommitOnHead(option.filesToAdd, signature, signature, option.message);
+        const treeOId = await index.writeTree();
+        const head = await this.git.Reference.nameToId(repository, 'HEAD');
+        const parentCommit = await repository.getCommit(head);
+
+        const commitId = await repository.createCommit(
+            'HEAD',
+            signature,
+            signature,
+            option.message,
+            treeOId,
+            [parentCommit],
+        );
 
         signature.free();
         repository.free();
@@ -314,6 +349,7 @@ export class GitService extends Service {
 
     handleError(error: any): GitError | any {
         const out = error.message;
+        console.log(error, out);
 
         if (out) {
             for (const code of Object.keys(gitErrorRegexes)) {

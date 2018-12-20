@@ -11,7 +11,7 @@ import {
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { Store } from '@ngrx/store';
 import { finalize } from 'rxjs/operators';
-import { VcsAccount, VcsError } from '../../../../core/vcs';
+import { VcsAccount, VcsError, VcsFileChange } from '../../../../core/vcs';
 import { GitService, WorkspaceService } from '../../../shared';
 import { Dialog, DIALOG_DATA, DialogRef } from '../../../ui/dialog';
 import { MenuItem } from '../../../ui/menu';
@@ -148,12 +148,12 @@ export class VcsCommitDialogComponent implements OnInit, AfterViewInit {
         } as MenuItem));
     }
 
-    private getFilesToAdd(): string[] {
-        const filesToAdd: string[] = [];
+    private getFilesToAdd(): VcsFileChange[] {
+        const filesToAdd: VcsFileChange[] = [];
         const selectedItems = this.itemListManager.getSelectedItems();
 
         selectedItems.forEach((itemRef) => {
-            filesToAdd.push(...itemRef._config.fileChanges.map(change => change.filePath));
+            filesToAdd.push(...itemRef._config.fileChanges);
         });
 
         return filesToAdd;

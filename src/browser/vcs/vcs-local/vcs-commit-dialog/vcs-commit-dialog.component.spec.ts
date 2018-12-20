@@ -317,7 +317,7 @@ describe('browser.vcs.vcsCommit.VcsCommitDialogComponent', () => {
                 workspaceConfig.rootDirPath,
                 author,
                 { summary: 'Summary', description: 'Description' },
-                fileChanges.map(change => change.filePath),
+                fileChanges,
             );
             expect(store.dispatch).toHaveBeenCalledWith(new CommittedAction({ commitId: 'commitId' }));
 
