@@ -8,13 +8,6 @@
                 (click)="openEditorViewModeMenu()" id="note-change-editor-view-mode-button">
             <gd-icon name="eye"></gd-icon>
         </button>
-        <button gd-icon-button aria-label="View history of note">
-            <gd-icon name="history"></gd-icon>
-        </button>
-        <button gd-icon-button aria-label="More works for note">
-            <gd-icon name="ellipsis-v"></gd-icon>
-        </button>
-
         <button gd-button [disabled]="!canCommit" (click)="openCommitDialog()"
                 gdTooltip="Commit Note (⌘+K)" color="primary" class="NoteHeader__commitButton">
             Commit

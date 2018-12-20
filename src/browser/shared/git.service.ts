@@ -55,13 +55,13 @@ export class GitService implements OnDestroy {
             summary: string;
             description: string;
         },
-        filesToAdd: string[],
+        fileChanges: VcsFileChange[],
     ): Observable<string> {
         const options: GitCommitOptions = {
             workspaceDirPath,
             author,
             message: `${message.summary}${EOL}${EOL}${message.description}`,
-            filesToAdd,
+            fileChanges,
         };
 
         const commitTask = this.ipcClient.performAction<GitCommitOptions, string>(

@@ -1,4 +1,4 @@
-import { VcsAccount, VcsAuthenticationInfo, VcsCommitItem } from './vcs';
+import { VcsAccount, VcsAuthenticationInfo, VcsCommitItem, VcsFileChange } from './vcs';
 
 
 type Protocol = 'ssh' | 'https';
@@ -151,7 +151,7 @@ export interface GitCommitOptions {
     message: string;
 
     /** List of files to add. Path must be relative to workspace directory path. */
-    filesToAdd: string[];
+    fileChanges: VcsFileChange[];
 
     /** Author of commit. Same account will be sign to committer. */
     author: VcsAccount;

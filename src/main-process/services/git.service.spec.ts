@@ -84,27 +84,42 @@ describe('mainProcess.services.GitService', () => {
     });
 
     describe('commit', () => {
-        const testFiles: string[] = [];
+        const testFiles: VcsFileChange[] = [];
 
         beforeEach(async () => {
             await makeTmpPath(true);
 
-            const fileA = path.resolve(tmpPath, 'a');
-            const fileB = path.resolve(tmpPath, 'b');
+            const fileAPath = path.resolve(tmpPath, 'a');
+            const fileBPath = path.resolve(tmpPath, 'b');
+            const fileCPath = path.resolve(tmpPath, 'c');
 
             await Promise.all([
-                fse.writeFile(fileA, 'a data'),
-                fse.writeFile(fileB, 'b data'),
+                fse.writeFile(fileAPath, 'a data'),
+                fse.writeFile(fileBPath, 'b data'),
+                fse.writeFile(fileCPath, 'c data'),
             ]);
 
-            testFiles.push('a', 'b');
+            testFiles.push(
+                {
+                    filePath: 'a',
+                    workingDirectoryPath: tmpPath,
+                    absoluteFilePath: fileBPath,
+                    status: VcsFileChangeStatusTypes.NEW,
+                },
+                {
+                    filePath: 'b',
+                    workingDirectoryPath: tmpPath,
+                    absoluteFilePath: fileBPath,
+                    status: VcsFileChangeStatusTypes.NEW,
+                },
+            );
         });
 
         it('should commit on head.', async () => {
             const author = new VcsAccountDummy().create();
             const commitId = await git.commit({
                 workspaceDirPath: tmpPath,
-                filesToAdd: testFiles,
+                fileChanges: testFiles,
                 author,
                 message: 'Summary\n\nDescription',
             });
@@ -123,6 +138,9 @@ describe('mainProcess.services.GitService', () => {
             headCommit.free();
             repo.free();
         });
+
+        it('should commit removed file.', async () => {
+        });
     });
 
     describe('getCommitHistory', () => {
@@ -134,7 +152,14 @@ describe('mainProcess.services.GitService', () => {
 
             await git.commit({
                 workspaceDirPath: tmpPath,
-                filesToAdd: [fileName],
+                fileChanges: [
+                    {
+                        filePath: fileName,
+                        absoluteFilePath: filePath,
+                        status: VcsFileChangeStatusTypes.NEW,
+                        workingDirectoryPath: tmpPath,
+                    },
+                ],
                 author,
                 message,
                 createdAt: {
