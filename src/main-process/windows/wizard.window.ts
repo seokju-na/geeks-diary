@@ -11,9 +11,6 @@ export class WizardWindow extends Window {
             maximizable: false,
             show: false,
             fullscreenable: false,
-            webPreferences: {
-                devTools: !environment.production,
-            },
             titleBarStyle: 'hidden',
             title: 'Geeks Diary',
         });
