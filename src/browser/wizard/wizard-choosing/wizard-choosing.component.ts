@@ -2,6 +2,7 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { Subscription } from 'rxjs';
 import { environment } from '../../../core/environment';
+import { logMonitor } from '../../../core/log-monitor';
 import { WorkspaceError } from '../../../core/workspace';
 import { ThemeService, WorkspaceService } from '../../shared';
 import { ConfirmDialog } from '../../shared/confirm-dialog';
@@ -22,7 +23,10 @@ export class WizardChoosingComponent implements OnInit, OnDestroy {
         { name: 'Dark Theme', value: Themes.BASIC_DARK_THEME },
     ];
 
+    readonly logMonitorStateControl = new FormControl();
+
     private themeSetSubscription = Subscription.EMPTY;
+    private logMonitorStateUpdateSubscription = Subscription.EMPTY;
 
     constructor(
         private theme: ThemeService,
@@ -34,10 +38,21 @@ export class WizardChoosingComponent implements OnInit, OnDestroy {
     ngOnInit(): void {
         this.themeFormControl.patchValue(this.theme.currentTheme);
         this.themeSetSubscription = this.themeFormControl.valueChanges.subscribe(this.theme.setTheme);
+
+        this.logMonitorStateControl.patchValue(logMonitor.enabled);
+        this.logMonitorStateUpdateSubscription = this.logMonitorStateControl
+            .valueChanges.subscribe((enabled) => {
+                if (enabled) {
+                    logMonitor.enable();
+                } else {
+                    logMonitor.disable();
+                }
+            });
     }
 
     ngOnDestroy(): void {
         this.themeSetSubscription.unsubscribe();
+        this.logMonitorStateUpdateSubscription.unsubscribe();
     }
 
     createNewWorkspace(): void {

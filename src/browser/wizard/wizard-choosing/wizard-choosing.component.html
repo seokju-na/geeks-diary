@@ -1,3 +1,4 @@
+<!--suppress CheckEmptyScriptTag -->
 <div fxLayout="column" fxLayoutAlign="center center" class="WizardChoosing__title">
     <svg xmlns="http://www.w3.org/2000/svg" width="280" height="50" viewBox="0 0 280 50">
         <g>
@@ -34,10 +35,15 @@
     </section>
 </div>
 
-<div fxLayout fxLayoutAlign="center center" class="WizardChoosing__footer">
+<div fxLayout="column" fxLayoutAlign="center center" fxLayoutGap="10px"
+     class="WizardChoosing__footer">
     <gd-button-toggle-group [formControl]="themeFormControl">
         <gd-button-toggle *ngFor="let option of themeOptions" [value]="option.value">
             {{ option.name }}
         </gd-button-toggle>
     </gd-button-toggle-group>
+
+    <gd-checkbox [formControl]="logMonitorStateControl">
+        Allow anonymous logging only for development purpose.
+    </gd-checkbox>
 </div>
