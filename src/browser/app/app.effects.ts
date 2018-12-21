@@ -8,7 +8,7 @@ import { VcsActionTypes } from '../vcs';
 
 
 @Injectable()
-export class ErrorCollectEffects {
+export class AppEffects {
     @Effect({ dispatch: false })
     collectErrors = this.actions.pipe(
         ofType(

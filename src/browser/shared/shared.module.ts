@@ -1,9 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { ErrorHandler, NgModule } from '@angular/core';
-import { EffectsModule } from '@ngrx/effects';
 import { ChangeFileNameDialogModule } from './change-file-name-dialog';
 import { ConfirmDialogModule } from './confirm-dialog';
-import { ErrorCollectEffects } from './error-collect.effects';
 import { FsService } from './fs.service';
 import { GitService } from './git.service';
 import { GlobalErrorHandler } from './global-error-handler';
@@ -19,7 +17,6 @@ import { WorkspaceService } from './workspace.service';
         CommonModule,
         ConfirmDialogModule,
         ChangeFileNameDialogModule,
-        EffectsModule.forFeature([ErrorCollectEffects]),
     ],
     providers: [
         FsService,

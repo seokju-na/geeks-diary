@@ -7,4 +7,3 @@ export * from './menu.service';
 export * from './native-dialog';
 export * from './theme.service';
 export * from './global-error-handler';
-export * from './error-collect.effects';
