@@ -67,9 +67,12 @@ export class NoteCollectionService implements OnDestroy {
 
         // 2) Get all notes.
         const noteFileNames = await toPromise(this.fs.readDirectory(notesDirPath));
+        const filteredNoteFileNames = noteFileNames.filter(
+            fileName => path.extname(fileName) === '.json',
+        );
         const readingNotes: Promise<Note | null>[] = [];
 
-        noteFileNames.forEach((fileName) => {
+        filteredNoteFileNames.forEach((fileName) => {
             const filePath = path.resolve(notesDirPath, fileName);
             readingNotes.push(toPromise(this.fs.readJsonFile<Note>(filePath)));
         });
@@ -80,8 +83,8 @@ export class NoteCollectionService implements OnDestroy {
             .filter(note => note !== null)
             .map((note: Note, index) => ({
                 ...note,
-                fileName: noteFileNames[index],
-                filePath: path.resolve(notesDirPath, noteFileNames[index]),
+                fileName: filteredNoteFileNames[index],
+                filePath: path.resolve(notesDirPath, filteredNoteFileNames[index]),
                 contentFilePath: note.label
                     ? path.resolve(
                         this.workspace.configs.rootDirPath,

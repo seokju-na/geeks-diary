@@ -1,4 +1,6 @@
-import { ensureDir } from 'fs-extra';
+import { ensureDir, ensureFile } from 'fs-extra';
+import * as path from 'path';
+import { VcsFileChangeStatusTypes } from '../../core/vcs';
 import { GEEKS_DIARY_DIR_PATH, NOTES_DIR_PATH, WORKSPACE_DIR_PATH } from '../../core/workspace';
 import { IpcActionHandler } from '../../libs/ipc';
 import { GitService } from './git.service';
@@ -14,9 +16,7 @@ export enum WorkspaceEvents {
  * Workspace service.
  */
 export class WorkspaceService extends Service {
-    private git: GitService;
-
-    constructor() {
+    constructor(private git: GitService) {
         super('workspace');
     }
 
@@ -26,9 +26,7 @@ export class WorkspaceService extends Service {
         return this._initialized;
     }
 
-    async init(git: GitService): Promise<void> {
-        this.git = git;
-
+    async init(): Promise<void> {
         if (await this.isWorkspaceExists()) {
             this._initialized = true;
         }
@@ -46,6 +44,25 @@ export class WorkspaceService extends Service {
 
         if (!await this.git.isRepositoryExists(WORKSPACE_DIR_PATH)) {
             await this.git.createRepository(WORKSPACE_DIR_PATH);
+
+            // Keep notes directory with '.gitkeep'.
+            // You cannot track the first Note File without this.
+            await ensureFile(path.resolve(NOTES_DIR_PATH, '.gitkeep'));
+            await this.git.commit({
+                workspaceDirPath: WORKSPACE_DIR_PATH,
+                message: 'Initial commit',
+                fileChanges: [{
+                    workingDirectoryPath: WORKSPACE_DIR_PATH,
+                    filePath: '.geeks-diary/notes/.gitkeep',
+                    absoluteFilePath: path.resolve(NOTES_DIR_PATH, '.gitkeep'),
+                    status: VcsFileChangeStatusTypes.NEW,
+                }],
+                author: {
+                    name: 'Geeks Diary',
+                    email: '(BLANK)',
+                    authentication: null,
+                },
+            });
         }
 
         this._initialized = true;
