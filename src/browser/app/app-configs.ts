@@ -11,17 +11,20 @@ import { VcsCommitContributionMeasurement } from '../vcs/vcs-local';
 import { BaseVcsItemFactory, VCS_ITEM_MAKING_FACTORIES, VcsItemFactory } from '../vcs/vcs-view';
 
 
+export function APP_VCS_ITEM_FACTORIES_PROVIDE_FUNC(
+    noteVcsItemFactory: NoteVcsItemFactory,
+    baseVcsItemFactory: BaseVcsItemFactory,
+): VcsItemFactory<any>[] {
+    return [noteVcsItemFactory, baseVcsItemFactory];
+}
+
+
+// NOTE: member order should be 'provide'-'deps'-'useFactory',
+//  and DO NOT USE SHORTHAND FUNCTION for useFactory member.
 export const AppVcsItemFactoriesProvider: Provider = {
     provide: VCS_ITEM_MAKING_FACTORIES,
-    useFactory(
-        noteVcsItemFactory: NoteVcsItemFactory,
-        baseVcsItemFactory: BaseVcsItemFactory,
-    ): VcsItemFactory<any>[] {
-        // 1. Note related files
-        // 2. Others... (asset etc.)
-        return [noteVcsItemFactory, baseVcsItemFactory];
-    },
     deps: [NoteVcsItemFactory, BaseVcsItemFactory],
+    useFactory: APP_VCS_ITEM_FACTORIES_PROVIDE_FUNC,
 };
 
 
