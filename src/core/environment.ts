@@ -1,8 +1,9 @@
-import * as packageInfo from '../../package.json';
+import { App } from 'electron';
 import { isRendererProcess } from '../libs/process';
 
 
-let app: Electron.App;
+let app: App;
+const packageInfo = require('../../package.json');
 
 
 class Environment {
