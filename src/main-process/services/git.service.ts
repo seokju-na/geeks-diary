@@ -310,29 +310,35 @@ export class GitService extends Service {
     @IpcActionHandler('syncWithRemote')
     async syncWithRemote(options: GitSyncWithRemoteOptions): Promise<GitSyncWithRemoteResult> {
         const repository = await this.openRepository(options.workspaceDirPath);
+        const remote = await repository.getRemote(options.remoteName);
 
-        // Pull
+        // Fetch remote
         const pullFetchOptions = this.getFetchOptions(options.authentication);
         const signature = this.git.Signature.now(options.author.name, options.author.email);
 
-        await repository.fetchAll(pullFetchOptions.fetchOptions);
+        await repository.fetch(remote, pullFetchOptions.fetchOptions);
 
-        try {
-            await repository.mergeBranches(
-                'master',
-                `${options.remoteName}/master`,
-                signature,
-                this.git.Merge.PREFERENCE.NONE,
-            );
-        } catch (index) { // Repository#mergeBranchs throws index as error.
-            throw new GitMergeConflictedError();
+        // Pull if master head exists.
+        const refList = await remote.referenceList();
+        const refHeadNames = refList.map(head => head.name());
+
+        if (refHeadNames.includes('refs/heads/master')) {
+            try {
+                await repository.mergeBranches(
+                    'master',
+                    `${options.remoteName}/master`,
+                    signature,
+                    this.git.Merge.PREFERENCE.NONE,
+                );
+            } catch (index) { // Repository#mergeBranchs throws index as error.
+                throw new GitMergeConflictedError();
+            }
+
+            this.fetchTriesMap.delete(pullFetchOptions.triesKey);
         }
-
-        this.fetchTriesMap.delete(pullFetchOptions.triesKey);
 
         // Push
         const pushFetchOptions = this.getFetchOptions(options.authentication);
-        const remote = await repository.getRemote(options.remoteName);
 
         await remote.push(
             ['refs/heads/master:refs/heads/master'],
