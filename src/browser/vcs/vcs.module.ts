@@ -36,6 +36,7 @@ import { VcsService } from './vcs.service';
     exports: [
         VcsRemoteModule,
         VcsViewModule,
+        VcsLocalModule,
         VcsSettingsModule,
         VcsManagerComponent,
     ],
