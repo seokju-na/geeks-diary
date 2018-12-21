@@ -174,6 +174,21 @@ export class MenuService extends Service {
                         },
                     ],
                 },
+                separator,
+                {
+                    id: 'show-devtools',
+                    label: __DARWIN__
+                        ? 'Toggle Developer Tools'
+                        : '&Toggle developer tools',
+                    accelerator: (() => {
+                        return __DARWIN__ ? 'Alt+Command+I' : 'Ctrl+Shift+I';
+                    })(),
+                    click(item: any, focusedWindow: BrowserWindow) {
+                        if (focusedWindow) {
+                            focusedWindow.webContents.toggleDevTools();
+                        }
+                    },
+                },
             ],
         };
 
