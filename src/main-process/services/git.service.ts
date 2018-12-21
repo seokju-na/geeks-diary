@@ -18,6 +18,7 @@ import {
     GitSyncWithRemoteOptions,
     GitSyncWithRemoteResult,
 } from '../../core/git';
+import { logMonitor } from '../../core/log-monitor';
 import {
     VcsAuthenticationInfo,
     VcsAuthenticationTypes,
@@ -368,6 +369,8 @@ export class GitService extends Service {
                 }
             }
         }
+
+        logMonitor.logException(error);
 
         return error;
     }

@@ -6,6 +6,7 @@ import { StoreModule } from '@ngrx/store';
 import { StoreDevtoolsModule } from '@ngrx/store-devtools';
 import { NoteModule } from '../note';
 import { SettingsModule } from '../settings';
+import { SharedModule } from '../shared';
 import { UiModule } from '../ui/ui.module';
 import { VcsModule } from '../vcs';
 import {
@@ -29,6 +30,7 @@ import { appReducer } from './app.reducer';
         StoreModule.forRoot(appReducer),
         StoreDevtoolsModule.instrument(),
         EffectsModule.forRoot([]),
+        SharedModule,
         AppLayoutModule,
         AppSettingsModule,
         NoteModule,

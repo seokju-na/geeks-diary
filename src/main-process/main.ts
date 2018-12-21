@@ -1,4 +1,6 @@
 import { app } from 'electron';
+import { environment } from '../core/environment';
+import { logMonitor } from '../core/log-monitor';
 import { appDelegate } from './app-delegate';
 import './dev-extensions';
 
@@ -6,6 +8,7 @@ import './dev-extensions';
 process.on('uncaughtException', (error) => {
     appDelegate.preventQuit = true;
 
+    logMonitor.logException(error);
     console.error('Uncaught Exception: ', error.toString());
 
     if (error.stack) {
@@ -14,7 +17,12 @@ process.on('uncaughtException', (error) => {
 });
 
 
-app.commandLine.appendSwitch('remote-debugging-port', '9229');
+if (!environment.production) {
+    app.commandLine.appendSwitch('remote-debugging-port', '9229');
+}
+
+
+logMonitor.install('main-process');
 
 
 app.once('ready', async () => {
