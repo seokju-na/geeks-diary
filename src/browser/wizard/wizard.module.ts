@@ -2,7 +2,7 @@ import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { EffectsModule } from '@ngrx/effects';
-import { combineReducers, StoreModule } from '@ngrx/store';
+import { StoreModule } from '@ngrx/store';
 import { SharedModule } from '../shared';
 import { UiModule } from '../ui/ui.module';
 import { VcsModule } from '../vcs';
@@ -18,7 +18,7 @@ import { WizardComponent } from './wizard.component';
         BrowserModule,
         BrowserAnimationsModule,
         UiModule,
-        StoreModule.forRoot(combineReducers({})),
+        StoreModule.forRoot({}),
         EffectsModule.forRoot([]),
         SharedModule,
         VcsModule,
