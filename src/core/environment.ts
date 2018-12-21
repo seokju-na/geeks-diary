@@ -17,6 +17,14 @@ class Environment {
         }
     }
 
+    getSentryDsn(): string {
+        if (this.production) {
+            return 'https://c00ff5f1eec343c3ad298dc3b6e47366@sentry.io/1353720';
+        } else {
+            return 'https://e18cb98edaa7446da779d10568c4d1bb@sentry.io/1353723';
+        }
+    }
+
     getAppPath(): string {
         return app.getAppPath();
     }
