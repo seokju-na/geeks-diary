@@ -10,9 +10,6 @@ export class AppWindow extends Window {
             width: 1280,
             height: 768,
             show: false,
-            webPreferences: {
-                devTools: !environment.production,
-            },
             titleBarStyle: 'hidden',
             title: 'Geeks Diary',
         });

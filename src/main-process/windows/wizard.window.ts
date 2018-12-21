@@ -5,15 +5,12 @@ import { Window } from './window';
 export class WizardWindow extends Window {
     constructor() {
         super('browser/wizard/wizard.html', {
-            width: environment.production ? 600 : 1000,
+            width: 600,
             height: 415,
             resizable: false,
             maximizable: false,
             show: false,
             fullscreenable: false,
-            webPreferences: {
-                devTools: !environment.production,
-            },
             titleBarStyle: 'hidden',
             title: 'Geeks Diary',
         });

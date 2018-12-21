@@ -16,7 +16,7 @@ class AppDelegate extends EventEmitter {
 
     // Services
     readonly git = new GitService();
-    readonly workspace = new WorkspaceService();
+    readonly workspace = new WorkspaceService(this.git);
     readonly menu = new MenuService();
 
     currentOpenWindow: Window | null = null;
@@ -81,7 +81,7 @@ class AppDelegate extends EventEmitter {
         this.menu.init();
 
         await Promise.all([
-            this.workspace.init(this.git),
+            this.workspace.init(),
         ]);
     }
 

@@ -47,7 +47,8 @@ const config = {
     },
     target: 'electron-main',
     externals: {
-        nodegit: 'require("nodegit")'
+        nodegit: 'require("nodegit")',
+        '@sentry/electron': 'require("@sentry/electron")',
     }
 };
 

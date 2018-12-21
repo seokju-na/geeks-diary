@@ -1,13 +1,6 @@
 import { FocusKeyManager } from '@angular/cdk/a11y';
 import { ComponentPortal, DomPortalOutlet, PortalInjector } from '@angular/cdk/portal';
-import {
-    ApplicationRef,
-    ComponentFactoryResolver,
-    InjectionToken,
-    Injector,
-    Provider,
-    ViewContainerRef,
-} from '@angular/core';
+import { ApplicationRef, ComponentFactoryResolver, InjectionToken, Injector, ViewContainerRef } from '@angular/core';
 import { merge, Observable, Subject, Subscription } from 'rxjs';
 import { VcsFileChange } from '../../../core/vcs';
 import { VcsItem, VcsItemConfig, VcsItemEvent, VcsItemEventNames, VcsItemRef } from './vcs-item';
@@ -17,32 +10,51 @@ import { VcsItemMaker } from './vcs-item-maker';
 let uniqueId = 0;
 
 
-export const VCS_ITEM_LIST_MANAGER = new InjectionToken<VcsItemListManagerFactory>('VcsItemListManager');
+export const VCS_ITEM_LIST_MANAGER = new InjectionToken<VcsItemListManagerFactory>('VcsItemListManagerFactory');
 
 export type VcsItemListManagerFactory =
-    (containerEl: HTMLElement, viewContainerRef?: ViewContainerRef) => VcsItemListManager;
+    (containerEl: HTMLElement, viewContainerRef: ViewContainerRef) => VcsItemListManager;
 
-export const VcsItemListManagerFactoryProvider: Provider = {
+export function VCS_ITEM_LIST_MANAGER_FACTORY(
+    itemMaker: VcsItemMaker,
+    injector: Injector,
+    componentFactoryResolver: ComponentFactoryResolver,
+    applicationRef: ApplicationRef,
+): VcsItemListManagerFactory {
+    return (containerEl: HTMLElement, viewContainerRef: ViewContainerRef) =>
+        new VcsItemListManager(
+            containerEl,
+            viewContainerRef,
+            itemMaker,
+            injector,
+            componentFactoryResolver,
+            applicationRef,
+        );
+}
+
+// NOTE: member order should be 'provide'-'deps'-'useFactory',
+//  and DO NOT USE SHORTHAND FUNCTION for useFactory member.
+export const VcsItemListManagerFactoryProvider = {
     provide: VCS_ITEM_LIST_MANAGER,
-    useFactory(
-        v: VcsItemMaker,
-        i: Injector,
-        c: ComponentFactoryResolver,
-        a: ApplicationRef,
-    ): VcsItemListManagerFactory {
-        return (ce: HTMLElement, vc?: ViewContainerRef) => new VcsItemListManager(ce, vc, v, i, c, a);
-    },
     deps: [VcsItemMaker, Injector, ComponentFactoryResolver, ApplicationRef],
+    useFactory: VCS_ITEM_LIST_MANAGER_FACTORY,
 };
 
 
 export class VcsItemListManager {
+    get ready(): boolean {
+        return !!this._containerEl && !!this._viewContainerRef;
+    }
+
+    get selectionChanges(): Observable<void> {
+        return this.selectionChangeStream.asObservable();
+    }
+
     _itemRefs: VcsItemRef<any>[] = [];
     _keyManager: FocusKeyManager<VcsItem> | null = null;
     _selectedItems = new Set<string>();
 
     private itemRefEventsSubscription = Subscription.EMPTY;
-
     private selectionChangeStream = new Subject<void>();
 
     constructor(
@@ -53,14 +65,6 @@ export class VcsItemListManager {
         private componentFactoryResolver: ComponentFactoryResolver,
         private appRef: ApplicationRef,
     ) {
-    }
-
-    get ready(): boolean {
-        return !!this._containerEl && !!this._viewContainerRef;
-    }
-
-    get selectionChanges(): Observable<void> {
-        return this.selectionChangeStream.asObservable();
     }
 
     /** Return all selected item references. */

@@ -1,6 +1,7 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { Subscription } from 'rxjs';
+import { logMonitor } from '../../../../core/log-monitor';
 import { ThemeService } from '../../../shared';
 import { Themes } from '../../../ui/style';
 
@@ -16,8 +17,10 @@ export class GeneralSettingsComponent implements OnInit, OnDestroy {
         { name: 'Light Theme', value: Themes.BASIC_LIGHT_THEME },
         { name: 'Dark Theme', value: Themes.BASIC_DARK_THEME },
     ];
+    readonly logMonitorStateControl = new FormControl();
 
     private themeUpdateSubscription = Subscription.EMPTY;
+    private logMonitorStateUpdateSubscription = Subscription.EMPTY;
 
     constructor(private theme: ThemeService) {
     }
@@ -25,6 +28,16 @@ export class GeneralSettingsComponent implements OnInit, OnDestroy {
     ngOnInit(): void {
         this.themeFormControl.setValue(this.theme.currentTheme);
         this.themeUpdateSubscription = this.themeFormControl.valueChanges.subscribe(this.theme.setTheme);
+
+        this.logMonitorStateControl.setValue(logMonitor.enabled);
+        this.logMonitorStateUpdateSubscription = this.logMonitorStateControl
+            .valueChanges.subscribe((enabled) => {
+                if (enabled) {
+                    logMonitor.enable();
+                } else {
+                    logMonitor.disable();
+                }
+            });
     }
 
     ngOnDestroy(): void {
