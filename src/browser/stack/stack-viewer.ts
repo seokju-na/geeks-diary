@@ -13,7 +13,7 @@ interface DevIcon {
 }
 
 
-const devIcons = require('../../assets/vendors/devicon/devicon.json') as DevIcon[];
+const devIcons = require('./devicon.json') as DevIcon[];
 
 
 @Injectable()

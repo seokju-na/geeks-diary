@@ -21,9 +21,7 @@
                         "main": "src/browser/wizard.ts",
                         "tsConfig": "tsconfig.browser.json",
                         "polyfills": "src/browser/polyfills.ts",
-                        "assets": [
-                            "src/assets"
-                        ],
+                        "assets": [],
                         "styles": [
                             "src/browser/wizard.scss"
                         ]

@@ -4,6 +4,8 @@ node_modules/
 coverage*
 **/*.http
 **/*.log
+build/
+tmp/
 dist/
 src/assets/vendors/
 .DS_Store*

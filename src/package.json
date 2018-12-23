@@ -1,0 +1,22 @@
+{
+    "name": "geeks-diary",
+    "productName": "Geeks Diary",
+    "appId": "me.seokju.GeeksDiary",
+    "version": "1.0.0-beta0",
+    "description": "TIL writing tool for geeks",
+    "main": "./main.js",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/seokju-na/geeks-diary.git"
+    },
+    "author": {
+        "name": "Seokju Na",
+        "email": "seokju.me@gmail.com",
+        "url": "https://seokju.me"
+    },
+    "license": "MIT",
+    "dependencies": {
+        "@sentry/electron": "0.14.0",
+        "nodegit": "0.22.2"
+    }
+}

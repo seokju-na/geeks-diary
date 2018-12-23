@@ -32,5 +32,5 @@ export function getStackIconFilePath(name: string, svgFiles: string[]): string {
         }
     }
 
-    return `assets/vendors/devicon/${name}/${iconName}.svg`;
+    return `assets/stack-icons/${name}/${iconName}.svg`;
 }
