@@ -77,10 +77,15 @@ async function distribute(): Promise<void> {
 
     await moveSourceMaps('browser/app');
     await moveSourceMaps('browser/wizard');
+    await copy(
+        path.resolve(DIST_PATH, 'main.js.map'),
+        path.resolve(TMP_PATH, 'main.js.map'),
+    );
 
     console.log('Remove all source maps');
     await rimrafAsync('dist/browser/app/*.map');
     await rimrafAsync('dist/browser/wizard/*.map');
+    await rimrafAsync('dist/main.js.map');
 
     console.log('End distribute.');
 }
@@ -163,7 +168,7 @@ async function build(): Promise<void> {
     console.log('3. Build');
     await build();
 })()
-    .then(() => process.exit(1))
+    .then(() => process.exit(0))
     .catch((error) => {
         console.error(error);
         process.exit(1);
