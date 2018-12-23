@@ -8,14 +8,9 @@ export function spawnAsync(command: string, args?: string[], options?: SpawnOpti
         task.stdout.setEncoding('utf8');
         task.stderr.setEncoding('utf8');
 
-        let result = '';
-
-        task.stdout.on('data', data => result += data);
-        task.stderr.on('data', data => console.error(data.toString()));
-
         task.on('close', (code) => {
             if (code === 0) {
-                resolve(result);
+                resolve();
             } else {
                 reject();
             }
