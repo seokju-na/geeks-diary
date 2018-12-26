@@ -1,4 +1,5 @@
 import { A11yModule } from '@angular/cdk/a11y';
+import { ObserversModule } from '@angular/cdk/observers';
 import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { FlexLayoutModule, GridModule } from '@angular/flex-layout';
@@ -34,6 +35,7 @@ const CDK_MODULES = [
     A11yModule,
     FlexLayoutModule,
     GridModule,
+    ObserversModule,
 ];
 
 const UI_MODULES = [
