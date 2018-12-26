@@ -32,7 +32,7 @@
             color: gd-color($foreground, secondary-text);
         }
 
-        span.cm-number {
+        span.cm-number, span.cm-attribute {
             color: gd-color($primary, darker);
         }
 

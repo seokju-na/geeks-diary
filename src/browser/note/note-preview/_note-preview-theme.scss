@@ -1,4 +1,5 @@
 @import "../../ui/style/theming";
+@import "../../ui/style/spacing";
 @import "../../ui/style/typography";
 
 @mixin gd-note-preview-theme($theme) {
@@ -18,12 +19,102 @@
         }
 
         &__snippetHtml {
-            > pre {
-                margin: 0;
+            $baseline: 12px * 1.5;
+
+            pre {
+                margin: $baseline 0;
+                padding: $spacing;
+                overflow-x: auto;
+                font-weight: $font-weight-semiBold;
+                background-color: gd-color($background, background);
             }
 
             > * {
                 user-select: text !important;
+            }
+
+            p {
+                margin: 0 0 $baseline 0;
+                font-weight: $font-weight-normal;
+
+                > code {
+                    display: inline-block;
+                    padding: 0 $spacing-half;
+                    border-radius: 2.5px;
+                    font-weight: $font-weight-semiBold;
+                    background-color: gd-color($background, background);
+                }
+            }
+
+            a {
+                color: gd-color($primary);
+                font-weight: $font-weight-semiBold;
+                text-decoration: none;
+
+                &:hover {
+                    text-decoration: underline;
+                }
+            }
+
+            h1 {
+                font-size: 2em;
+                font-weight: $font-weight-bold;
+                line-height: 1;
+                margin-top: 36px - 24px; // 2 * $baseline - line-height
+                margin-bottom: $baseline;
+            }
+
+            h2 {
+                font-size: 1.5em;
+                font-weight: $font-weight-bold;
+                line-height: 1;
+                margin-top: 18px;
+                margin-bottom: $baseline;
+            }
+
+            h3 {
+                font-size: 1.25em;
+                font-weight: $font-weight-bold;
+                line-height: 1;
+                margin-top: 21px;
+                margin-bottom: $baseline;
+            }
+
+            h4 {
+                font-size: 1em;
+                font-weight: $font-weight-bold;
+                line-height: 1;
+                margin-top: 18px;
+                margin-bottom: $baseline;
+            }
+
+            h5, h6 {
+                font-size: .875em;
+                font-weight: $font-weight-bold;
+                line-height: 18px;
+                margin: 0 0 $baseline 0;
+            }
+
+            blockquote {
+                margin: $baseline 0;
+                padding: 0 0 0 $spacing-double;
+                border-left: 5px solid gd-color($foreground, secondary-text);
+
+                font-weight: $font-weight-normal;
+                color: gd-color($foreground, secondary-text);
+            }
+
+            ul, ol {
+                margin: $baseline 0;
+                padding: 0 0 0 $spacing-double;
+            }
+
+            ul {
+                list-style: disc;
+            }
+
+            li > ul, li > ol {
+                margin: 0;
             }
 
             img {
@@ -34,8 +125,6 @@
         }
 
         &__snippet--code {
-            background-color: gd-color($background, background);
-
             .hljs-comment,
             .hljs-quote {
                 color: gd-color($color-green, 800);
@@ -54,7 +143,7 @@
             .hljs-variable,
             .hljs-template-variable,
             .hljs-tag .hljs-attr {
-                color: gd-color($primary, darker);
+                color: gd-color($primary);
             }
 
             .hljs-string,
@@ -75,29 +164,24 @@
 
             .hljs-type,
             .hljs-class .hljs-title {
-                // TODO
-                color: #458;
-                font-weight: bold;
+                color: gd-color($primary);
+                font-weight: $font-weight-bold;
             }
 
             .hljs-tag,
             .hljs-name,
             .hljs-attribute {
-                // TODO
-                color: #000080;
-                font-weight: normal;
+                color: gd-color($primary, darker);
             }
 
             .hljs-regexp,
             .hljs-link {
-                // TODO
-                color: #009926;
+                color: map-get($color-green, 400);
             }
 
             .hljs-symbol,
             .hljs-bullet {
-                // TODO
-                color: #990073;
+                color: map-get($color-purple, 400);
             }
 
             .hljs-built_in,
@@ -106,9 +190,8 @@
             }
 
             .hljs-meta {
-                // TODO
-                color: #999;
-                font-weight: bold;
+                color: gd-color($foreground, secondary-text);
+                font-weight: $font-weight-bold;
             }
 
             .hljs-deletion {
@@ -122,7 +205,6 @@
             }
 
             .hljs-emphasis {
-                // TODO
                 font-style: italic;
             }
 

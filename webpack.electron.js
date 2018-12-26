@@ -8,6 +8,7 @@ const PROD = process.env.NODE_ENV === 'production';
 
 const config = {
     name: 'main-process',
+    mode: PROD ? 'production' : 'development',
     devtool: 'source-map',
     entry: {
         main: path.resolve(__dirname, 'src/main-process/main.ts'),
