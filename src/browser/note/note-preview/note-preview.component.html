@@ -3,7 +3,8 @@
         <h1>{{ noteTitle | async }}</h1>
     </div>
 
-    <div class="NotePreview__content">
+    <div (cdkObserveContent)="patchAnchors()" [debounce]="200" #content
+         class="NotePreview__content">
         <div *ngFor="let snippet of noteSnippets | async"
              [class.NotePreview__snippet--text]="snippet.type === noteSnippetTypes.TEXT"
              [class.NotePreview__snippet--code]="snippet.type === noteSnippetTypes.CODE"
