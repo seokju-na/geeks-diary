@@ -249,7 +249,8 @@ describe('browser.note.noteCollection.NoteCollectionService', () => {
             expect(callback).toHaveBeenCalledWith(expected);
         }));
 
-        it('should dispatch \'ADD_NOTE\' action after create new note.', fakeAsync(() => {
+        it('should dispatch \'ADD_NOTE\' and \'SELECT_NOTE\' actions after '
+            + 'create new note.', fakeAsync(() => {
             spyOn(store, 'dispatch');
 
             const filePath = getContentFilePath();
@@ -299,9 +300,10 @@ describe('browser.note.noteCollection.NoteCollectionService', () => {
                 .flush();
 
             // Last, dispatch 'ADD_NOTE' action.
-            const actual = (<jasmine.Spy>store.dispatch).calls.mostRecent().args[0];
+            const calls = (<jasmine.Spy>store.dispatch).calls.all();
 
-            expect(actual instanceof AddNoteAction).toBe(true);
+            expect(calls[calls.length - 2].args[0] instanceof AddNoteAction).toBe(true);
+            expect(calls[calls.length - 1].args[0] instanceof SelectNoteAction).toBe(true);
         }));
     });
 

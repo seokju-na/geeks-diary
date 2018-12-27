@@ -206,6 +206,7 @@ export class NoteCollectionService implements OnDestroy {
         };
 
         this.store.dispatch(new AddNoteAction({ note: noteItem }));
+        this.store.dispatch(new SelectNoteAction({ note: noteItem }));
     }
 
     async changeNoteTitle(noteItem: NoteItem, newTitle: string): Promise<void> {
