@@ -1,13 +1,10 @@
 # Geek's Diary
 
-[![Build Status](https://img.shields.io/travis/seokju-na/geeks-diary.svg?style=flat-square
-)](https://travis-ci.org/seokju-na/geeks-diary)
+[![Build Status](https://img.shields.io/travis/seokju-na/geeks-diary.svg?style=flat-square)](https://travis-ci.org/seokju-na/geeks-diary)
 
-TIL writing tool for geek.
+Geek's Diary is markdown editor with version control system integrated. It helps programmers to write TIL(Today I Learned). 
 
-Geek's Diary is [Electron](https://electronjs.org)-based app. It is written [Typescript](http://www.typescriptlang.org/) and uses [Angular](https://angular.io).
-
-![Main Screenshot](https://user-images.githubusercontent.com/13250888/50434040-1f94ea80-091f-11e9-86f8-298bce529b40.png)
+![Main Screenshot](https://user-images.githubusercontent.com/13250888/50504751-1f2d5880-0ab3-11e9-8cdb-99e654e67d4d.png)
 
 
 ## 🚀 Beta releases
@@ -21,11 +18,46 @@ AutoUpdater is omitted from beta release. When a new version is released, you wi
 
 ## Features
 
-- Developer-friendly markdown editor
-- Version control system integrated
-- Contribute measurement (with Commit) appears on the calendar
-- Mark development stack icons in notes
+### Mix markdown with code
+
+![gd1](https://user-images.githubusercontent.com/13250888/50505408-bea01a80-0ab6-11e9-9b03-0d8783a9544a.gif)
+
+A note in Geek's Diary is comprised of snippets (markdown, code). You can freely mix different snippet types within one note.
+
+### Categorize your note with development stack
+
+![gd2](https://user-images.githubusercontent.com/13250888/50505409-bea01a80-0ab6-11e9-80cf-80fd1710a5c1.gif)
+
+Geek's Diary is for programmers. You can categorize your note with numerous development stacks (from [konpa/devicon](https://github.com/konpa/devicon)).
+
+### Contribute measurement
+
+![gd3](https://user-images.githubusercontent.com/13250888/50505410-bea01a80-0ab6-11e9-9794-33d6cadb64b8.gif)
+
+Geek's Diary measures contribution with commit counts in a day. You can look your contribution level with grass UI in calendar. Similar with github!
+
+### Version Control System integrated
+
+![gd4](https://user-images.githubusercontent.com/13250888/50505412-bea01a80-0ab6-11e9-8956-aece539158bd.gif)
+
+Control your version with powerful VCS -- We currently supports git. Geek's Diary tracks your file changes from workspace, and you can committed it.
+
+### Sync with remote repository
+
+![gd5](https://user-images.githubusercontent.com/13250888/50505413-bf38b100-0ab6-11e9-8d2f-6a1c8725c6cd.gif)
  
+Thanks to the integration of the version control system, you can sync your workspace with remote repository. Log in to github and sync your TILs.
+ 
+
+ 
+## Plan
+
+These are v1.0.0 features.
+
+- [ ] Auto Updater #124
+- [ ] Release win32 platform
+- [ ] Performance issue for note editor #113
+
 
 ## Development
 
@@ -67,6 +99,15 @@ yarn start
 ```bash
 yarn test
 ```
+
+
+## Contributing
+
+❤️ Thanks for your interest!
+
+If you have suggestions for how this project could be improved, or want to report a bug, open an issue! We'd love all and any contributions. If you have questions, too, we'd love to hear them.
+
+Please note that this project is released with a [Contributor Code of Conduct][code-of-conduct]. By participating in this project you agree to abide by its terms.
 
 
 ## License
