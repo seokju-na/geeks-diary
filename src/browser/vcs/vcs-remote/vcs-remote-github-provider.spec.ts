@@ -2,14 +2,17 @@ import { HttpClient } from '@angular/common/http';
 import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
 import { fakeAsync, TestBed } from '@angular/core/testing';
 import { fastTestSetup, httpRequestMatch } from '../../../../test/helpers';
+import { VcsAuthenticationInfoDummy } from '../../../core/dummies';
 import {
     VcsAccount,
     VcsAuthenticateError,
+    VcsAuthenticationInfo,
     VcsAuthenticationTypes,
+    VcsPrimaryEmailNotExistsError,
     VcsRemoteRepository,
     VcsRepositoryNotExistsError,
 } from '../../../core/vcs';
-import { AUTH_API_URL, REPO_API_URL, VcsRemoteGithubProvider } from './vcs-remote-github-provider';
+import { AUTH_API_URL, EMAILS_API_URL, REPO_API_URL, VcsRemoteGithubProvider } from './vcs-remote-github-provider';
 
 
 describe('browser.vcs.vcsRemote.VcsRemoteGithubProvider', () => {
@@ -150,6 +153,81 @@ describe('browser.vcs.vcsRemote.VcsRemoteGithubProvider', () => {
                 .flush(null, { status: 401, statusText: 'Unauthorized' });
 
             expect(callback).toHaveBeenCalledWith(new VcsAuthenticateError());
+        }));
+    });
+
+    describe('getPrimaryEmail', () => {
+        let authInfo: VcsAuthenticationInfo;
+
+        beforeEach(() => {
+            authInfo = new VcsAuthenticationInfoDummy().create();
+        });
+
+        it('should throw \'VcsPrimaryEmailNotExistsError\' error when user has no primary '
+            + 'email.', fakeAsync(() => {
+            const subscription = provider.getPrimaryEmail(authInfo).subscribe(
+                () => {
+                },
+                callback,
+            );
+
+            mockHttp
+                .expectOne(httpRequestMatch({
+                    url: EMAILS_API_URL,
+                    method: 'GET',
+                    headers: {
+                        Authorization: authInfo.authorizationHeader,
+                    },
+                }))
+                .flush([]);
+
+            expect(callback).toHaveBeenCalledWith(new VcsPrimaryEmailNotExistsError());
+            subscription.unsubscribe();
+        }));
+
+        it('should return primary email.', fakeAsync(() => {
+            const subscription = provider.getPrimaryEmail(authInfo).subscribe(callback);
+
+            mockHttp
+                .expectOne(httpRequestMatch({
+                    url: EMAILS_API_URL,
+                    method: 'GET',
+                    headers: {
+                        Authorization: authInfo.authorizationHeader,
+                    },
+                }))
+                .flush([
+                    { primary: false, email: 'abc@test.com' },
+                    { primary: true, email: 'def@test.com' },
+                ]);
+
+            expect(callback).toHaveBeenCalledWith('def@test.com');
+            subscription.unsubscribe();
+        }));
+
+        it('should throw \'VcsPrimaryEmailNotExistsError\' error when http response status code '
+            + 'is 404.', fakeAsync(() => {
+            const subscription = provider.getPrimaryEmail(authInfo).subscribe(
+                () => {
+                },
+                callback,
+            );
+
+            mockHttp
+                .expectOne(httpRequestMatch({
+                    url: EMAILS_API_URL,
+                    method: 'GET',
+                    headers: {
+                        Authorization: authInfo.authorizationHeader,
+                    },
+                }))
+                .error(null, {
+                    status: 404,
+                    statusText: 'Not Found',
+                });
+
+            expect(callback).toHaveBeenCalledWith(new VcsPrimaryEmailNotExistsError());
+            subscription.unsubscribe();
         }));
     });
 

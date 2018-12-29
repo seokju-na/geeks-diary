@@ -10,7 +10,7 @@ export enum VcsAuthenticationTypes {
  */
 export interface VcsAccount {
     readonly name: string;
-    readonly email: string;
+    readonly email?: string;
     readonly authentication: VcsAuthenticationInfo;
 }
 
@@ -162,6 +162,7 @@ export interface VcsFileChange {
 export enum VcsErrorCodes {
     AUTHENTICATE_ERROR = 'vcs.authenticateError',
     REPOSITORY_NOT_EXISTS = 'vcs.repositoryNotExists',
+    PRIMARY_EMAIL_NOT_EXISTS = 'vcs.primaryEmailNotExists',
 }
 
 
@@ -183,6 +184,16 @@ export class VcsRepositoryNotExistsError extends Error {
 }
 
 
+export class VcsPrimaryEmailNotExistsError extends Error {
+    public readonly code = VcsErrorCodes.PRIMARY_EMAIL_NOT_EXISTS;
+
+    constructor() {
+        super('Primary email not exists.');
+    }
+}
+
+
 export type VcsError =
     VcsAuthenticateError
-    | VcsRepositoryNotExistsError;
+    | VcsRepositoryNotExistsError
+    | VcsPrimaryEmailNotExistsError;

@@ -18,6 +18,9 @@ export abstract class VcsRemoteProvider {
     /** Authorize vcs remote service with oauth2 token. */
     abstract authorizeByOauth2Token(token: string): Observable<VcsAccount>;
 
+    /** Get email list address for a user. */
+    abstract getPrimaryEmail(authInfo: VcsAuthenticationInfo): Observable<string>;
+
     /** Check is url of repository is valid. */
     abstract isRepositoryUrlValid(url: string): boolean;
 

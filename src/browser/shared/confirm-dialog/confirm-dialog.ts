@@ -15,6 +15,7 @@ export class ConfirmDialog {
             boolean>(
             ConfirmDialogComponent,
             {
+                maxWidth: '320px',
                 data: { ...new ConfirmDialogData(), ...data },
             },
         );

@@ -105,6 +105,12 @@ export class VcsService {
         }
     }
 
+    getPrimaryEmailFromRemote(account: VcsAccount): Observable<string> {
+        this.checkIfRemoteProviderIsProvided();
+
+        return this._removeProvider.getPrimaryEmail(account.authentication);
+    }
+
     fetchFileChanges(): Observable<VcsFileChange[]> {
         return this.git.getFileChanges(this.workspace.configs.rootDirPath);
     }

@@ -3,17 +3,17 @@ import { DebugElement } from '@angular/core';
 import { ComponentFixture, fakeAsync, flush, flushMicrotasks, TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
-import { of } from 'rxjs';
+import { of, throwError } from 'rxjs';
 import { createDummies, dispatchFakeEvent, fastTestSetup, typeInElement } from '../../../../../test/helpers';
 import { MockDialog, MockDialogRef } from '../../../../../test/mocks/browser';
 import { VcsAccountDummy } from '../../../../core/dummies';
-import { VcsAccount, VcsAuthenticationTypes } from '../../../../core/vcs';
-import { DialogRef } from '../../../ui/dialog';
+import { VcsAccount, VcsAuthenticationTypes, VcsPrimaryEmailNotExistsError } from '../../../../core/vcs';
+import { ConfirmDialogComponent, ConfirmDialogData } from '../../../shared/confirm-dialog';
+import { Dialog, DialogRef } from '../../../ui/dialog';
 import { RadioButtonComponent } from '../../../ui/radio';
 import { UiModule } from '../../../ui/ui.module';
 import { VCS_ACCOUNT_DATABASE, VcsAccountDatabase, VcsAccountDatabaseProvider } from '../../vcs-account-database';
 import { VcsAccountItemComponent } from '../../vcs-view';
-import { VcsService } from '../../vcs.service';
 import { VcsRemoteGithubProvider } from '../vcs-remote-github-provider';
 import { VcsRemoteProviderFactory } from '../vcs-remote-provider-factory';
 import { GithubAccountsDialogComponent } from './github-accounts-dialog.component';
@@ -26,8 +26,9 @@ describe('browser.vcs.vcsAuthentication.GithubAccountsDialogComponent', () => {
 
     let mockDialog: MockDialog;
     let mockDialogRef: MockDialogRef<GithubAccountsDialogComponent>;
-    let vcs: VcsService;
+    let thisMockDialog: MockDialog;
     let accountDB: VcsAccountDatabase;
+    let github: VcsRemoteGithubProvider;
 
     const vcsAccountDummy = new VcsAccountDummy();
 
@@ -79,14 +80,7 @@ describe('browser.vcs.vcsAuthentication.GithubAccountsDialogComponent', () => {
     beforeAll(async () => {
         mockDialog = new MockDialog();
         mockDialogRef = new MockDialogRef(mockDialog, GithubAccountsDialogComponent);
-
-        vcs = jasmine.createSpyObj('vcs', [
-            'setRemoveProvider',
-            'loginRemoteWithBasicAuthorization',
-            'loginRemoteWithOauth2TokenAuthorization',
-        ]);
-
-        (vcs.setRemoveProvider as Spy).and.returnValue(vcs);
+        thisMockDialog = new MockDialog();
 
         await TestBed
             .configureTestingModule({
@@ -94,11 +88,8 @@ describe('browser.vcs.vcsAuthentication.GithubAccountsDialogComponent', () => {
                     UiModule,
                     HttpClientTestingModule,
                     NoopAnimationsModule,
-                    ...MockDialog.imports(),
                 ],
                 providers: [
-                    ...MockDialog.providers(),
-                    { provide: VcsService, useValue: vcs },
                     { provide: DialogRef, useValue: mockDialogRef },
                     VcsRemoteProviderFactory,
                     VcsAccountDatabaseProvider,
@@ -108,6 +99,11 @@ describe('browser.vcs.vcsAuthentication.GithubAccountsDialogComponent', () => {
                     GithubAccountsDialogComponent,
                 ],
             })
+            .overrideComponent(GithubAccountsDialogComponent, {
+                set: {
+                    providers: [{ provide: Dialog, useValue: thisMockDialog }],
+                },
+            })
             .compileComponents();
     });
 
@@ -116,9 +112,12 @@ describe('browser.vcs.vcsAuthentication.GithubAccountsDialogComponent', () => {
 
         fixture = TestBed.createComponent(GithubAccountsDialogComponent);
         component = fixture.componentInstance;
+
+        github = component['github'];
     });
 
     afterEach(async () => {
+        thisMockDialog.closeAll();
         await accountDB.accounts.clear();
     });
 
@@ -196,15 +195,13 @@ describe('browser.vcs.vcsAuthentication.GithubAccountsDialogComponent', () => {
 
             const newAccount = vcsAccountDummy.create(VcsAuthenticationTypes.BASIC);
 
-            spyOn(component['github'] as VcsRemoteGithubProvider, 'authorizeByBasic')
-                .and.returnValue(of(newAccount));
+            spyOn(github, 'authorizeByBasic').and.returnValue(of(newAccount));
             spyOn(accountDB, 'addNewAccount').and.callThrough();
 
             getLoginAndAddAccountButtonEl().click();
-            flush();
+            fixture.detectChanges();
 
-            expect((component['github'] as VcsRemoteGithubProvider).authorizeByBasic)
-                .toHaveBeenCalledWith('username', 'password');
+            expect(github.authorizeByBasic).toHaveBeenCalledWith('username', 'password');
             expect(accountDB.addNewAccount).toHaveBeenCalledWith(newAccount);
 
             // Should form reset
@@ -231,15 +228,13 @@ describe('browser.vcs.vcsAuthentication.GithubAccountsDialogComponent', () => {
 
             const newAccount = vcsAccountDummy.create(VcsAuthenticationTypes.OAUTH2_TOKEN);
 
-            spyOn(component['github'] as VcsRemoteGithubProvider, 'authorizeByOauth2Token')
-                .and.returnValue(of(newAccount));
+            spyOn(github, 'authorizeByOauth2Token').and.returnValue(of(newAccount));
             spyOn(accountDB, 'addNewAccount').and.callThrough();
 
             getLoginAndAddAccountButtonEl().click();
-            flush();
+            fixture.detectChanges();
 
-            expect((component['github'] as VcsRemoteGithubProvider).authorizeByOauth2Token)
-                .toHaveBeenCalledWith('token');
+            expect(github.authorizeByOauth2Token).toHaveBeenCalledWith('token');
             expect(accountDB.addNewAccount).toHaveBeenCalledWith(newAccount);
 
             // Should form reset
@@ -249,6 +244,72 @@ describe('browser.vcs.vcsAuthentication.GithubAccountsDialogComponent', () => {
                 password: '',
                 token: '',
             });
+        }));
+
+        it('should get primary email when user does not has email.', fakeAsync(() => {
+            makeAccountsToBeLoadedWith();
+
+            fixture.detectChanges();
+            flush();
+            fixture.detectChanges();
+
+            switchAuthMethodOption(VcsAuthenticationTypes.OAUTH2_TOKEN);
+
+            typeInElement('token', getTokenInputEl());
+            fixture.detectChanges();
+
+            const newAccount: VcsAccount = {
+                ...vcsAccountDummy.create(VcsAuthenticationTypes.OAUTH2_TOKEN),
+                email: null,
+            };
+
+            spyOn(github, 'authorizeByOauth2Token').and.returnValue(of(newAccount));
+            spyOn(github, 'getPrimaryEmail').and.returnValue(of('test@test.com'));
+            spyOn(accountDB, 'addNewAccount').and.callThrough();
+
+            getLoginAndAddAccountButtonEl().click();
+            fixture.detectChanges();
+
+            expect(github.authorizeByOauth2Token).toHaveBeenCalledWith('token');
+            expect(github.getPrimaryEmail).toHaveBeenCalledWith(newAccount.authentication);
+            expect(accountDB.addNewAccount).toHaveBeenCalledWith({
+                ...newAccount,
+                email: 'test@test.com',
+            } as VcsAccount);
+        }));
+
+        it('should open alert when \'VcsPrimaryEmailNotExists\' exception thrown.', fakeAsync(() => {
+            makeAccountsToBeLoadedWith();
+
+            fixture.detectChanges();
+            flush();
+            fixture.detectChanges();
+
+            switchAuthMethodOption(VcsAuthenticationTypes.OAUTH2_TOKEN);
+
+            typeInElement('token', getTokenInputEl());
+            fixture.detectChanges();
+
+            const newAccount: VcsAccount = {
+                ...vcsAccountDummy.create(VcsAuthenticationTypes.OAUTH2_TOKEN),
+                email: null,
+            };
+
+            spyOn(github, 'authorizeByOauth2Token').and.returnValue(of(newAccount));
+            spyOn(github, 'getPrimaryEmail').and.returnValue(throwError(new VcsPrimaryEmailNotExistsError()));
+
+            getLoginAndAddAccountButtonEl().click();
+            fixture.detectChanges();
+
+            const alert = thisMockDialog.getByComponent<ConfirmDialogComponent,
+                ConfirmDialogData,
+                boolean>(
+                ConfirmDialogComponent,
+            );
+
+            expect(alert).toBeDefined();
+            expect(alert.config.data.title).toEqual('Cannot read email from github.com');
+            expect(alert.config.data.isAlert).toEqual(true);
         }));
     });
 });

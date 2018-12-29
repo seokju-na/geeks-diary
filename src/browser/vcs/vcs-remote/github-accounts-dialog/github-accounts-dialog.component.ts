@@ -1,12 +1,14 @@
 import { FocusKeyManager } from '@angular/cdk/a11y';
 import { AfterContentInit, Component, HostListener, Inject, OnInit, QueryList, ViewChildren } from '@angular/core';
 import { FormControl, FormGroup } from '@angular/forms';
-import { finalize } from 'rxjs/operators';
-import { VcsAccount, VcsAuthenticationTypes } from '../../../../core/vcs';
-import { DialogRef } from '../../../ui/dialog';
+import { of } from 'rxjs';
+import { finalize, map, switchMap } from 'rxjs/operators';
+import { VcsAccount, VcsAuthenticationTypes, VcsPrimaryEmailNotExistsError } from '../../../../core/vcs';
+import { ConfirmDialogComponent, ConfirmDialogData } from '../../../shared/confirm-dialog';
+import { Dialog, DialogRef } from '../../../ui/dialog';
 import { VCS_ACCOUNT_DATABASE, VcsAccountDatabase } from '../../vcs-account-database';
 import { VcsAccountItemComponent } from '../../vcs-view';
-import { VcsRemoteProvider } from '../vcs-remote-provider';
+import { VcsRemoteGithubProvider } from '../vcs-remote-github-provider';
 import { VcsRemoteProviderFactory } from '../vcs-remote-provider-factory';
 
 
@@ -14,29 +16,9 @@ import { VcsRemoteProviderFactory } from '../vcs-remote-provider-factory';
     selector: 'gd-github-accounts-dialog',
     templateUrl: './github-accounts-dialog.component.html',
     styleUrls: ['./github-accounts-dialog.component.scss'],
+    providers: [Dialog],
 })
 export class GithubAccountsDialogComponent implements OnInit, AfterContentInit {
-    readonly authenticationTypes = VcsAuthenticationTypes;
-    readonly addAccountFormGroup = new FormGroup({
-        type: new FormControl(this.authenticationTypes.BASIC),
-        userName: new FormControl(''),
-        password: new FormControl(''),
-        token: new FormControl(''),
-    });
-
-    @ViewChildren(VcsAccountItemComponent) _items: QueryList<VcsAccountItemComponent>;
-    accounts: VcsAccount[] = [];
-    _keyManager: FocusKeyManager<VcsAccountItemComponent>;
-    private github: VcsRemoteProvider;
-
-    constructor(
-        private dialogRef: DialogRef<GithubAccountsDialogComponent, void>,
-        @Inject(VCS_ACCOUNT_DATABASE) private accountDB: VcsAccountDatabase,
-        private remoteProviderFactory: VcsRemoteProviderFactory,
-    ) {
-        this.github = remoteProviderFactory.create('github');
-    }
-
     private _loginProcessing = false;
 
     get loginProcessing(): boolean {
@@ -59,6 +41,29 @@ export class GithubAccountsDialogComponent implements OnInit, AfterContentInit {
 
     get accountsCount(): number {
         return this._accountsCount;
+    }
+
+    readonly authenticationTypes = VcsAuthenticationTypes;
+    readonly addAccountFormGroup = new FormGroup({
+        type: new FormControl(this.authenticationTypes.BASIC),
+        userName: new FormControl(''),
+        password: new FormControl(''),
+        token: new FormControl(''),
+    });
+
+    @ViewChildren(VcsAccountItemComponent) _items: QueryList<VcsAccountItemComponent>;
+    accounts: VcsAccount[] = [];
+    _keyManager: FocusKeyManager<VcsAccountItemComponent>;
+
+    private github: VcsRemoteGithubProvider;
+
+    constructor(
+        private dialogRef: DialogRef<GithubAccountsDialogComponent, void>,
+        @Inject(VCS_ACCOUNT_DATABASE) private accountDB: VcsAccountDatabase,
+        private dialog: Dialog,
+        private vcsRemoteProviderFactory: VcsRemoteProviderFactory,
+    ) {
+        this.github = this.vcsRemoteProviderFactory.create('github') as VcsRemoteGithubProvider;
     }
 
     ngOnInit(): void {
@@ -108,25 +113,37 @@ export class GithubAccountsDialogComponent implements OnInit, AfterContentInit {
         this._loginErrorCaught = false;
 
         const { type, userName, password, token } = this.addAccountFormGroup.value as any;
+        const ensureAccountEmail = switchMap((account: VcsAccount) => account.email
+            ? of(account)
+            : this.github
+                .getPrimaryEmail(account.authentication)
+                .pipe(map(email => ({ ...account, email }))),
+        );
 
         switch (type as VcsAuthenticationTypes) {
             case VcsAuthenticationTypes.BASIC:
                 this.github
                     .authorizeByBasic(userName as string, password as string)
-                    .pipe(finalize(() => this._loginProcessing = false))
+                    .pipe(
+                        ensureAccountEmail,
+                        finalize(() => this._loginProcessing = false),
+                    )
                     .subscribe(
                         account => this.handleLoginSuccess(account),
-                        () => this.handleLoginFail(),
+                        error => this.handleLoginFail(error),
                     );
                 break;
 
             case VcsAuthenticationTypes.OAUTH2_TOKEN:
                 this.github
                     .authorizeByOauth2Token(token as string)
-                    .pipe(finalize(() => this._loginProcessing = false))
+                    .pipe(
+                        ensureAccountEmail,
+                        finalize(() => this._loginProcessing = false),
+                    )
                     .subscribe(
                         account => this.handleLoginSuccess(account),
-                        () => this.handleLoginFail(),
+                        error => this.handleLoginFail(error),
                     );
                 break;
         }
@@ -159,7 +176,25 @@ export class GithubAccountsDialogComponent implements OnInit, AfterContentInit {
         });
     }
 
-    private handleLoginFail(): void {
-        this._loginErrorCaught = true;
+    private handleLoginFail(error: Error): void {
+        if (error instanceof VcsPrimaryEmailNotExistsError) {
+            // Show confirm dialog.
+            this.dialog.open<ConfirmDialogComponent,
+                ConfirmDialogData,
+                boolean>(
+                ConfirmDialogComponent,
+                {
+                    maxWidth: '320px',
+                    data: {
+                        ...new ConfirmDialogData(),
+                        title: 'Cannot read email from github.com',
+                        body: 'Check if your primary email is exists or ensure \'user:email\' scope is provided.',
+                        isAlert: true,
+                    },
+                },
+            );
+        } else {
+            this._loginErrorCaught = true;
+        }
     }
 }
