@@ -30,6 +30,10 @@ class TestVcsRemoteProvider extends VcsRemoteProvider {
         throw new Error('Please create spy.');
     }
 
+    getPrimaryEmail(authInfo: VcsAuthenticationInfo): Observable<string> {
+        throw new Error('Please create spy.');
+    }
+
     isRepositoryUrlValid(url: string): boolean {
         throw new Error('Please create spy.');
     }
@@ -168,6 +172,25 @@ describe('browser.vcs.VcsService', () => {
             expect(vcs._removeProvider.authorizeByOauth2Token).toHaveBeenCalledWith(token);
             expect(accountDB.accounts.add).not.toHaveBeenCalledWith(account);
 
+            subscription.unsubscribe();
+        }));
+    });
+
+    describe('getPrimaryEmailFromRemote', () => {
+        let callback: jasmine.Spy;
+        let account: VcsAccount;
+
+        beforeEach(() => {
+            callback = jasmine.createSpy('callback');
+            account = accountDummy.create();
+        });
+
+        it('should get primary email from remote.', fakeAsync(() => {
+            spyOn(vcs, 'getPrimaryEmailFromRemote').and.returnValue(of('abc@test.com'));
+
+            const subscription = vcs.getPrimaryEmailFromRemote(account).subscribe(callback);
+
+            expect(callback).toHaveBeenCalledWith('abc@test.com');
             subscription.unsubscribe();
         }));
     });
