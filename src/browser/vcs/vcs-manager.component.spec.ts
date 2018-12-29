@@ -3,9 +3,14 @@ import { By } from '@angular/platform-browser';
 import { combineReducers, Store, StoreModule } from '@ngrx/store';
 import { of } from 'rxjs';
 import { MockDialog } from '../../../test/mocks/browser';
+import { SettingsDialogComponent, SettingsModule } from '../settings';
+import { SettingsDialogData } from '../settings/settings-dialog/settings-dialog-data';
+import { SharedModule } from '../shared';
+import { ConfirmDialogComponent, ConfirmDialogData } from '../shared/confirm-dialog';
 import { Dialog } from '../ui/dialog';
 import { UiModule } from '../ui/ui.module';
 import { VcsCommitDialogComponent, VcsCommitDialogData, VcsCommitDialogResult, VcsLocalModule } from './vcs-local';
+import { VCS_SETTINGS_ID } from './vcs-settings';
 import { BaseVcsItemFactory, VCS_ITEM_MAKING_FACTORIES, VcsItem, VcsItemListManager, VcsViewModule } from './vcs-view';
 import { createDummies, createFakeEvent, fastTestSetup } from '../../../test/helpers';
 import { VcsFileChange } from '../../core/vcs';
@@ -71,12 +76,14 @@ describe('browser.vcs.VcsManagerComponent', () => {
             .configureTestingModule({
                 imports: [
                     UiModule,
+                    SharedModule,
                     VcsViewModule,
                     VcsLocalModule,
                     StoreModule.forRoot({
                         vcs: combineReducers(vcsReducerMap),
                     }),
                     ...MockDialog.imports(),
+                    SettingsModule,
                 ],
                 providers: [
                     {
@@ -232,6 +239,35 @@ describe('browser.vcs.VcsManagerComponent', () => {
             flush();
 
             expect(store.dispatch).toHaveBeenCalledWith(new SynchronizedAction());
+        }));
+
+        it('should open confirm dialog for asking open settings dialog if user cannot '
+            + 'sync repository. When confirmed, open settings dialog.', fakeAsync(() => {
+            (vcs.canSyncRepository as Spy).and.returnValue(Promise.resolve(false));
+
+            getSyncWorkspaceButtonEl().click();
+            flush();
+
+            const confirmDialog = mockDialog.getByComponent<ConfirmDialogComponent,
+                ConfirmDialogData,
+                boolean>(
+                ConfirmDialogComponent,
+            );
+
+            expect(confirmDialog).toBeDefined();
+            expect(confirmDialog.config.data.isAlert).toBe(false);
+
+            confirmDialog.close(true);
+            flush();
+
+            const settingsDialog = mockDialog.getByComponent<SettingsDialogComponent,
+                SettingsDialogData,
+                void>(
+                SettingsDialogComponent,
+            );
+
+            expect(settingsDialog).toBeDefined();
+            expect(settingsDialog.config.data.initialSettingId).toEqual(VCS_SETTINGS_ID);
         }));
     });
 });

@@ -14,9 +14,14 @@ import { Observable, Subject, Subscription } from 'rxjs';
 import { filter, finalize, switchMap, take, tap } from 'rxjs/operators';
 import { GitSyncWithRemoteResult } from '../../core/git';
 import { VcsCommitItem } from '../../core/vcs';
+import { __DARWIN__ } from '../../libs/platform';
+import { toPromise } from '../../libs/rx';
+import { SettingsDialog } from '../settings';
+import { ConfirmDialog } from '../shared/confirm-dialog';
 import { Dialog } from '../ui/dialog';
 import { TabControl } from '../ui/tabs/tab-control';
 import { VcsCommitDialogComponent, VcsCommitDialogData, VcsCommitDialogResult } from './vcs-local';
+import { VCS_SETTINGS_ID } from './vcs-settings';
 import {
     VCS_ITEM_LIST_MANAGER,
     VcsItemListManager,
@@ -73,6 +78,8 @@ export class VcsManagerComponent implements OnInit, OnDestroy, AfterViewInit {
         private store: Store<VcsStateWithRoot>,
         private dialog: Dialog,
         private vcs: VcsService,
+        private confirmDialog: ConfirmDialog,
+        private settingsDialog: SettingsDialog,
     ) {
     }
 
@@ -203,7 +210,17 @@ export class VcsManagerComponent implements OnInit, OnDestroy, AfterViewInit {
         }
 
         if (!(await this.vcs.canSyncRepository())) {
-            // TODO : Show dialog or something...
+            const openSettings = await toPromise(this.confirmDialog.open({
+                title: 'Repository settings required',
+                body: 'To synchronize with remote repository, you must set up remote repository. '
+                    + `Do you want to open the ${__DARWIN__ ? 'preferences' : 'settings'}?`,
+                isAlert: false,
+            }).afterClosed());
+
+            if (openSettings) {
+                this.settingsDialog.open({ initialSettingId: VCS_SETTINGS_ID });
+            }
+
             return;
         }
 
