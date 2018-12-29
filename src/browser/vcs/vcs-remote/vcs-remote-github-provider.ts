@@ -8,6 +8,7 @@ import {
     VcsAuthenticationInfo,
     VcsAuthenticationTypes,
     VcsError,
+    VcsPrimaryEmailNotExistsError,
     VcsRemoteRepository,
     VcsRepositoryNotExistsError,
 } from '../../../core/vcs';
@@ -19,7 +20,7 @@ interface GithubUserResponse {
     avatar_url?: string;
     html_url: string;
     name: string;
-    email: string;
+    email: string | null;
 }
 
 
@@ -32,8 +33,15 @@ interface GithubRepositoryResponse {
 }
 
 
+interface GithubUserEmailResponse {
+    email: string;
+    primary: boolean;
+}
+
+
 export const API_URL = 'https://api.github.com';
 export const AUTH_API_URL = `${API_URL}/user`;
+export const EMAILS_API_URL = `${API_URL}/user/emails`;
 export const REPO_API_URL = (owner, repo) => `${API_URL}/repos/${owner}/${repo}`;
 
 
@@ -97,6 +105,27 @@ export class VcsRemoteGithubProvider extends VcsRemoteProvider {
             );
     }
 
+    getPrimaryEmail(authInfo: VcsAuthenticationInfo): Observable<string> {
+        const headers = { Authorization: authInfo.authorizationHeader };
+
+        return this.http
+            .get<GithubUserEmailResponse[]>(EMAILS_API_URL, {
+                headers: this.getHeadersWithDefaults(headers),
+            })
+            .pipe(
+                map((response) => {
+                    const primaryEmail = response.find(result => result.primary);
+
+                    if (!primaryEmail) {
+                        throw new VcsPrimaryEmailNotExistsError();
+                    }
+
+                    return primaryEmail.email;
+                }),
+                catchError(error => throwError(this.parseGetPrimaryEmailError(error))),
+            );
+    }
+
     isRepositoryUrlValid(url: string): boolean {
         const result = parseGitRemoteUrl(url);
 
@@ -142,6 +171,15 @@ export class VcsRemoteGithubProvider extends VcsRemoteProvider {
     private parseAuthorizeError(error: HttpErrorResponse): VcsError | Error {
         if (error.status === 401) {
             return new VcsAuthenticateError();
+        }
+
+        return error;
+    }
+
+    private parseGetPrimaryEmailError(error: HttpErrorResponse): VcsError | Error {
+        // In this case 'user:email' scope is not provided.
+        if (error.status === 404) {
+            return new VcsPrimaryEmailNotExistsError();
         }
 
         return error;
