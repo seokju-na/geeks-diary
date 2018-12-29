@@ -16,7 +16,7 @@
         </div>
     </div>
 
-    <form gdArea gdRows="repeat(4, 1fr)" gdColumns="1fr 3fr 2fr" gdGap="5px" (submit)="login()"
+    <form gdArea gdRows="repeat(4, 1fr)" gdColumns="1fr 3fr 2fr" gdGap="5px" (ngSubmit)="login()"
           [formGroup]="addAccountFormGroup" class="GithubAccountsDialog__form">
 
         <label gdRow="1" gdColumn="1" gdFormFieldLabel>Auth Type:</label>
@@ -60,5 +60,5 @@
 </gd-dialog-content>
 
 <gd-dialog-actions align="end">
-    <button gd-button (click)="closeThis()">Close</button>
+    <button gd-button (click)="closeThis()" type="button">Close</button>
 </gd-dialog-actions>
