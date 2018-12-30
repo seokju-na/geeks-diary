@@ -1,5 +1,16 @@
-import { Component, ContentChild, ElementRef, Input, OnDestroy, OnInit, ViewEncapsulation } from '@angular/core';
-import { Subscription } from 'rxjs';
+import {
+    Component,
+    ContentChild,
+    ElementRef,
+    EventEmitter,
+    Input,
+    OnDestroy,
+    OnInit,
+    Output,
+    ViewEncapsulation,
+} from '@angular/core';
+import { Subject, Subscription } from 'rxjs';
+import { debounceTime } from 'rxjs/operators';
 import { updateDomStyles } from '../../utils/dom-style';
 import { ResizableHandlerDirective } from './resizable-handler.directive';
 
@@ -16,12 +27,18 @@ import { ResizableHandlerDirective } from './resizable-handler.directive';
 export class ResizableContentComponent implements OnInit, OnDestroy {
     @Input() minWidth = -1;
     @Input() maxWidth = Number.MAX_SAFE_INTEGER;
+    @Input() debounce: number = 150;
+
+    @Output() readonly resize = new EventEmitter<number>();
 
     @ContentChild(ResizableHandlerDirective) handler: ResizableHandlerDirective;
 
     private initialWidth: number | null = null;
     private resizeSubscription = Subscription.EMPTY;
     private resetSubscription = Subscription.EMPTY;
+
+    private readonly resizeEvents = new Subject<number>();
+    private resizeEmitSubscription = Subscription.EMPTY;
 
     constructor(public _elementRef: ElementRef<HTMLElement>) {
     }
@@ -47,17 +64,24 @@ export class ResizableContentComponent implements OnInit, OnDestroy {
             }
 
             if (width) {
+                this.resizeEvents.next(width);
                 updateDomStyles(this._elementRef.nativeElement, { width: `${width}px` });
             }
         });
 
         this.resetSubscription = this.handler.reset.subscribe(() => {
+            this.resizeEvents.next(this.initialWidth);
             updateDomStyles(this._elementRef.nativeElement, { width: `${this.initialWidth}px` });
         });
+
+        this.resizeEmitSubscription = this.resizeEvents
+            .pipe(debounceTime(this.debounce))
+            .subscribe(width => this.resize.emit(width));
     }
 
     ngOnDestroy(): void {
         this.resizeSubscription.unsubscribe();
         this.resetSubscription.unsubscribe();
+        this.resizeEmitSubscription.unsubscribe();
     }
 }
