@@ -24,7 +24,12 @@
         </button>
     </nav>
 
-    <gd-resizable-content role="tabpanel" [minWidth]="200" [maxWidth]="375" class="AppLayoutSidenav__panel">
+    <gd-resizable-content role="tabpanel"
+                          (resize)="onSidenavPanelResize($event)"
+                          [debounce]="150"
+                          [minWidth]="200"
+                          [maxWidth]="375"
+                          class="AppLayoutSidenav__panel">
         <div *ngFor="let outlet of outlets"
              [class.AppLayoutSidenav__panelWrapper--show]="(activeTabId | async) === outlet.id"
              [attr.aria-hidden]="(activeTabId | async) !== outlet.id"
