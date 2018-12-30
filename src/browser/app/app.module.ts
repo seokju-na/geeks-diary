@@ -12,6 +12,7 @@ import { VcsModule } from '../vcs';
 import {
     AppNoteContributionMeasurementProvider,
     AppNoteContributionUpdatedEffectActionsRegistration,
+    AppNoteEditorResizeEffectsProvider,
     AppVcsDetectChangesEffectActionsProvider,
     AppVcsHistoryChangedEffectActionsProvider,
     AppVcsItemFactoriesProvider,
@@ -44,6 +45,7 @@ import { appReducer } from './app.reducer';
         AppVcsHistoryChangedEffectActionsProvider,
         AppNoteContributionUpdatedEffectActionsRegistration,
         AppNoteContributionMeasurementProvider,
+        AppNoteEditorResizeEffectsProvider,
     ],
     declarations: [AppComponent],
     bootstrap: [AppComponent],
