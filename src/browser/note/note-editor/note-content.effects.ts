@@ -1,8 +1,19 @@
-import { Injectable } from '@angular/core';
+import { Inject, Injectable, InjectionToken, Optional } from '@angular/core';
 import { Actions, Effect, ofType } from '@ngrx/effects';
 import { select, Store } from '@ngrx/store';
 import { Observable, of } from 'rxjs';
-import { catchError, debounceTime, map, mergeMap, switchMap, take, takeUntil } from 'rxjs/operators';
+import {
+    catchError,
+    debounceTime,
+    delay,
+    filter,
+    map,
+    mergeMap,
+    switchMap,
+    take,
+    takeUntil,
+    tap,
+} from 'rxjs/operators';
 import { NoteCollectionAction, NoteCollectionActionTypes } from '../note-collection';
 import { NoteState, NoteStateWithRoot } from '../note.state';
 import {
@@ -15,10 +26,15 @@ import {
     SaveNoteContentErrorAction,
 } from './note-editor.actions';
 import { NoteEditorService } from './note-editor.service';
+import { NoteSnippetListManager } from './note-snippet-list-manager';
 
 
 export const NOTE_EDITOR_LOAD_NOTE_CONTENT_THROTTLE = 50;
 export const NOTE_EDITOR_SAVE_NOTE_CONTENT_THROTTLE_TIME = 200;
+export const NOTE_EDITOR_RESIZE_THROTTLE_TIME = 50;
+
+
+export const NOTE_EDITOR_RESIZE_EFFECTS = new InjectionToken<string[]>('NoteEditorResizeEffects');
 
 
 @Injectable()
@@ -76,11 +92,26 @@ export class NoteContentEffects {
             ),
         ),
     );
+    private readonly resizeEffects: string[];
+    @Effect({ dispatch: false })
+    resizeEditor = this.actions.pipe(
+        filter(action => this.resizeEffects.some(type => action.type === type)),
+        debounceTime(NOTE_EDITOR_RESIZE_THROTTLE_TIME),
+        delay(0),
+        tap(() => {
+            this.listManager.resizeSnippets();
+        }),
+    );
 
     constructor(
         private actions: Actions,
         private store: Store<NoteStateWithRoot>,
         private editorService: NoteEditorService,
+        @Optional() @Inject(NOTE_EDITOR_RESIZE_EFFECTS) resizeEffects: string[],
+        private listManager: NoteSnippetListManager,
     ) {
+        this.resizeEffects = (resizeEffects || []).concat([
+            NoteEditorActionTypes.CHANGE_VIEW_MODE,
+        ]);
     }
 }

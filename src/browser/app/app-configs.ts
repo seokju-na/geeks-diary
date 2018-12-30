@@ -4,11 +4,12 @@ import {
     NOTE_CONTRIBUTION_UPDATED_EFFECT_ACTIONS,
     NoteCollectionActionTypes,
 } from '../note/note-collection';
-import { NoteEditorActionTypes } from '../note/note-editor';
+import { NOTE_EDITOR_RESIZE_EFFECTS, NoteEditorActionTypes } from '../note/note-editor';
 import { NoteVcsItemFactory } from '../note/note-shared';
 import { VCS_DETECT_CHANGES_EFFECT_ACTIONS, VCS_HISTORY_CHANGED_EFFECT_ACTIONS, VcsActionTypes } from '../vcs';
 import { VcsCommitContributionMeasurement } from '../vcs/vcs-local';
 import { BaseVcsItemFactory, VCS_ITEM_MAKING_FACTORIES, VcsItemFactory } from '../vcs/vcs-view';
+import { AppLayoutActionTypes } from './app-layout';
 
 
 export function APP_VCS_ITEM_FACTORIES_PROVIDE_FUNC(
@@ -62,4 +63,13 @@ export const AppNoteContributionUpdatedEffectActionsRegistration: Provider = {
 export const AppNoteContributionMeasurementProvider: Provider = {
     provide: NOTE_CONTRIBUTION_MEASUREMENT,
     useClass: VcsCommitContributionMeasurement,
+};
+
+
+export const AppNoteEditorResizeEffectsProvider: Provider = {
+    provide: NOTE_EDITOR_RESIZE_EFFECTS,
+    useValue: [
+        AppLayoutActionTypes.TOGGLE_SIDENAV_PANEL,
+        AppLayoutActionTypes.RESIZE_SIDENAV_PANEL,
+    ],
 };

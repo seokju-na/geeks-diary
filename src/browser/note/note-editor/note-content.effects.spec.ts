@@ -16,6 +16,7 @@ import { NoteState, NoteStateWithRoot } from '../note.state';
 import { NoteContentDummy, NoteSnippetContentDummy } from './dummies';
 import {
     NOTE_EDITOR_LOAD_NOTE_CONTENT_THROTTLE,
+    NOTE_EDITOR_RESIZE_THROTTLE_TIME,
     NOTE_EDITOR_SAVE_NOTE_CONTENT_THROTTLE_TIME,
     NoteContentEffects,
 } from './note-content.effects';
@@ -23,13 +24,15 @@ import { NoteContent } from './note-content.model';
 import {
     AppendSnippetAction,
     CancelLoadNoteContentAction,
+    ChangeViewModeAction,
     LoadNoteContentAction,
     LoadNoteContentCompleteAction,
     SaveNoteContentCompleteAction,
 } from './note-editor.actions';
 import { noteEditorReducer } from './note-editor.reducer';
 import { NoteEditorService } from './note-editor.service';
-import { createNoteEditorInitialState } from './note-editor.state';
+import { createNoteEditorInitialState, NoteEditorViewModes } from './note-editor.state';
+import { NoteSnippetListManager } from './note-snippet-list-manager';
 
 
 describe('browser.note.noteEditor.NoteContentEffects', () => {
@@ -38,6 +41,7 @@ describe('browser.note.noteEditor.NoteContentEffects', () => {
     let actions: ReplaySubject<Action>;
     let noteEditor: NoteEditorService;
     let store: Store<NoteStateWithRoot>;
+    let listManager: NoteSnippetListManager;
 
     const noteDummy = new NoteDummy();
     const noteItemDummy = new NoteItemDummy();
@@ -51,6 +55,9 @@ describe('browser.note.noteEditor.NoteContentEffects', () => {
             'loadNoteContent',
             'saveNote',
         ]);
+        listManager = jasmine.createSpyObj('listManager', [
+            'resizeSnippets',
+        ]);
 
         TestBed
             .configureTestingModule({
@@ -61,6 +68,7 @@ describe('browser.note.noteEditor.NoteContentEffects', () => {
                 ],
                 providers: [
                     { provide: NoteEditorService, useValue: noteEditor },
+                    { provide: NoteSnippetListManager, useValue: listManager },
                     NoteContentEffects,
                     provideMockActions(() => actions),
                 ],
@@ -182,6 +190,21 @@ describe('browser.note.noteEditor.NoteContentEffects', () => {
                 state.editor.selectedNoteContent,
             );
             expect(callback).toHaveBeenCalledWith(new SaveNoteContentCompleteAction());
+            subscription.unsubscribe();
+        }));
+    });
+
+    describe('resizeEditor', () => {
+        it('should resize snippets after debounce time when \'CHANGE_VIEW_MODE\' '
+            + 'action called.', fakeAsync(() => {
+            const callback = jasmine.createSpy('resize editor callback');
+            const subscription = contentEffects.resizeEditor.subscribe(callback);
+
+            actions.next(new ChangeViewModeAction({ viewMode: NoteEditorViewModes.PREVIEW_ONLY }));
+            tick(NOTE_EDITOR_RESIZE_THROTTLE_TIME);
+            tick(0);
+
+            expect(listManager.resizeSnippets).toHaveBeenCalled();
             subscription.unsubscribe();
         }));
     });

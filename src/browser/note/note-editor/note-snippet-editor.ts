@@ -1,7 +1,8 @@
 import { BACKSPACE, DOWN_ARROW, UP_ARROW } from '@angular/cdk/keycodes';
 import { DomPortalOutlet } from '@angular/cdk/portal';
 import { HostBinding, OnInit } from '@angular/core';
-import { Observable, Subject } from 'rxjs';
+import { Observable, Subject, Subscription } from 'rxjs';
+import { debounceTime } from 'rxjs/operators';
 import { NoteSnippetTypes } from '../../../core/note';
 import { NoteSnippetContent } from './note-content.model';
 
@@ -181,10 +182,19 @@ export abstract class NoteSnippetEditor<T = any> implements OnInit {
     /** Subject for notifying that the editor has been destroyed. */
     readonly _afterDisposed = new Subject<void>();
 
+    readonly valueChanges = new Subject<string>();
+
+    private valueChangesSubscription = Subscription.EMPTY;
+
     protected constructor(
         public _ref: NoteSnippetEditorRef<any>,
         public _config: NoteSnippetEditorConfig,
     ) {
+        this.valueChangesSubscription = this.valueChanges.asObservable()
+            .pipe(debounceTime(200))
+            .subscribe((value) => {
+                this.emitEvent(new NoteSnippetEditorValueChangedEvent(this._ref, { value }));
+            });
     }
 
     @HostBinding('id')
@@ -203,7 +213,9 @@ export abstract class NoteSnippetEditor<T = any> implements OnInit {
     abstract initialize(): void;
 
     /** Call when component destroyed */
-    abstract dispose?(): void;
+    dispose(): void {
+        this.valueChangesSubscription.unsubscribe();
+    }
 
     /** Focus editor manually */
     abstract focus(): void;
@@ -238,6 +250,8 @@ export abstract class NoteSnippetEditor<T = any> implements OnInit {
     /** Set position to bottom */
     abstract setPositionToBottom(): void;
 
+    resize?(): void;
+
     /** Handle key down */
     protected onKeyDown(event: KeyboardEvent): void {
         switch (event.keyCode) {
@@ -262,10 +276,7 @@ export abstract class NoteSnippetEditor<T = any> implements OnInit {
     }
 
     protected onValueChanged(): void {
-        this.emitEvent(new NoteSnippetEditorValueChangedEvent(
-            this._ref,
-            { value: this.getRawValue() },
-        ));
+        this.valueChanges.next(this.getRawValue());
     }
 
     protected emitEvent(event: NoteSnippetEditorEvent): void {

@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
+import { ComponentFixture, discardPeriodicTasks, fakeAsync, TestBed, tick } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
 import { dispatchFakeEvent, fastTestSetup } from '../../../../test/helpers';
 import { dragIt } from '../../../../test/helpers/drag-it';
@@ -46,6 +46,8 @@ describe('browser.ui.resizable', () => {
     it('should change resizable content when user drags handler.', fakeAsync(() => {
         moveHandlerTo(200);
         expect(contentEl.getBoundingClientRect().width).toEqual(200);
+
+        discardPeriodicTasks();
     }));
 
     it('should change content width to minimum width when user drags handler less than '
@@ -56,6 +58,8 @@ describe('browser.ui.resizable', () => {
         moveHandlerTo(50);
 
         expect(contentEl.getBoundingClientRect().width).toEqual(80);
+
+        discardPeriodicTasks();
     }));
 
     it('should change content width to maximum width when user drags handler more than '
@@ -66,6 +70,8 @@ describe('browser.ui.resizable', () => {
         moveHandlerTo(400);
 
         expect(contentEl.getBoundingClientRect().width).toEqual(300);
+
+        discardPeriodicTasks();
     }));
 
     it('should change content width to initial width when user double-clicks handler.', fakeAsync(() => {
@@ -76,6 +82,8 @@ describe('browser.ui.resizable', () => {
         fixture.detectChanges();
 
         expect(contentEl.getBoundingClientRect().width).toEqual(100);
+
+        discardPeriodicTasks();
     }));
 });
 

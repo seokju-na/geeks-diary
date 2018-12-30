@@ -16,6 +16,7 @@ export interface AppLayoutSidenavOutlet {
 export interface AppLayoutState {
     activeOutletId: string | null;
     showSidenavPanel: boolean;
+    sidenavPanelWidth: number;
 }
 
 
@@ -23,5 +24,6 @@ export function createAppLayoutInitialState(): AppLayoutState {
     return {
         activeOutletId: null,
         showSidenavPanel: false,
+        sidenavPanelWidth: 250,
     };
 }

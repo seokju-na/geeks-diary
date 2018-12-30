@@ -5,7 +5,7 @@ import { filter, share } from 'rxjs/operators';
 import { SettingsDialog } from '../../../settings';
 import { MenuEvent, MenuService } from '../../../shared';
 import { AppState } from '../../app.state';
-import { ToggleSidenavPanelAction } from '../app-layout.actions';
+import { ResizeSidenavPanelAction, ToggleSidenavPanelAction } from '../app-layout.actions';
 import { AppLayoutSidenavOutlet } from '../app-layout.state';
 
 
@@ -47,5 +47,9 @@ export class AppLayoutSidenavComponent implements OnInit {
 
     openSettingsDialog(): void {
         this.settingsDialog.open();
+    }
+
+    onSidenavPanelResize(width: number): void {
+        this.store.dispatch(new ResizeSidenavPanelAction({ width }));
     }
 }
