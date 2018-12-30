@@ -77,6 +77,7 @@ export class NoteSnippetListManager {
         });
 
         this.updateSnippetRefEventsSubscription();
+        setTimeout(() => this.resizeSnippets());
 
         return this.snippetRefs;
     }
@@ -156,6 +157,16 @@ export class NoteSnippetListManager {
                 nextSnippet.componentInstance.setPositionToBottom();
             }
         }
+    }
+
+    resizeSnippets(): void {
+        this.snippetRefs.forEach((snippetRef) => {
+            const instance = snippetRef.componentInstance as NoteSnippetEditor<any>;
+
+            if (instance && instance.resize) {
+                instance.resize();
+            }
+        });
     }
 
     handleSnippetRefEvent(event: NoteSnippetEditorEvent): void {

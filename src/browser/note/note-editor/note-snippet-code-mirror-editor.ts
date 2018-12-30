@@ -178,6 +178,8 @@ export abstract class NoteSnippetCodeMirrorEditor extends NoteSnippetEditor<Code
     }
 
     dispose(): void {
+        super.dispose();
+
         if (this._editor) {
             this._editor.off('change', this.changeEventListener);
             this._editor.off('keydown', this.keyDownEventListener);
@@ -223,6 +225,12 @@ export abstract class NoteSnippetCodeMirrorEditor extends NoteSnippetEditor<Code
     setPositionToBottom(): void {
         const doc = this._editor.getDoc();
         doc.setCursor({ line: doc.lastLine(), ch: 0 });
+    }
+
+    resize(): void {
+        if (this._editor) {
+            this._editor.refresh();
+        }
     }
 
     abstract handleFocus(focused: boolean): void;
