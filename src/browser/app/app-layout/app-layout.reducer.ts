@@ -18,6 +18,12 @@ export function appLayoutReducer(
                 showSidenavPanel: showSidebar,
             };
 
+        case AppLayoutActionTypes.RESIZE_SIDENAV_PANEL:
+            return {
+                ...state,
+                sidenavPanelWidth: action.payload.width,
+            };
+
         default:
             return state;
     }
