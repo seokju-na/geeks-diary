@@ -1,7 +1,9 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
+import { DomSanitizer, SafeHtml, SafeStyle } from '@angular/platform-browser';
 import { select, Store } from '@ngrx/store';
 import { Subscription } from 'rxjs';
 import { filter } from 'rxjs/operators';
+import { getVcsFileChangeColor, getVcsFileChangeStatusIcon, VcsFileChangeStatusTypes } from '../../../../core/vcs';
 import { MenuEvent, MenuService } from '../../../shared';
 import { Dialog } from '../../../ui/dialog';
 import { VcsCommitDialogComponent, VcsCommitDialogData, VcsCommitDialogResult } from '../../../vcs/vcs-local';
@@ -18,6 +20,38 @@ import { NoteEditorViewModes } from '../note-editor.state';
     styleUrls: ['./note-header.component.scss'],
 })
 export class NoteHeaderComponent implements OnInit, OnDestroy {
+    get noteSelectionExists(): boolean {
+        return !!this.selectedNote;
+    }
+
+    get canCommit(): boolean {
+        return this.status !== null;
+    }
+
+    get status(): VcsFileChangeStatusTypes | null {
+        if (this.selectedNote) {
+            return this.collection.getNoteVcsFileChangeStatus(this.selectedNote);
+        } else {
+            return null;
+        }
+    }
+
+    get statusBarColor(): SafeStyle {
+        if (this.status) {
+            return this.sanitizer.bypassSecurityTrustStyle(`${getVcsFileChangeColor(this.status)}`);
+        } else {
+            return '';
+        }
+    }
+
+    get statusIcon(): SafeHtml {
+        if (this.status) {
+            return this.sanitizer.bypassSecurityTrustHtml(getVcsFileChangeStatusIcon(this.status));
+        } else {
+            return '';
+        }
+    }
+
     selectedNote: NoteItem | null = null;
 
     private selectedNoteSubscription = Subscription.EMPTY;
@@ -29,19 +63,8 @@ export class NoteHeaderComponent implements OnInit, OnDestroy {
         private collection: NoteCollectionService,
         private menu: MenuService,
         private dialog: Dialog,
+        private sanitizer: DomSanitizer,
     ) {
-    }
-
-    get noteSelectionExists(): boolean {
-        return !!this.selectedNote;
-    }
-
-    get canCommit(): boolean {
-        if (this.selectedNote) {
-            return this.collection.getNoteVcsFileChangeStatus(this.selectedNote) !== null;
-        } else {
-            return false;
-        }
     }
 
     ngOnInit(): void {
@@ -97,7 +120,7 @@ export class NoteHeaderComponent implements OnInit, OnDestroy {
         this.dialog.open<VcsCommitDialogComponent,
             VcsCommitDialogData,
             VcsCommitDialogResult>(
-                VcsCommitDialogComponent,
+            VcsCommitDialogComponent,
             {
                 width: '700px',
                 maxHeight: '75vh',

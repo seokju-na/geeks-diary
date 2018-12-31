@@ -4,6 +4,7 @@ import { By } from '@angular/platform-browser';
 import { combineReducers, StoreModule } from '@ngrx/store';
 import { Subject } from 'rxjs';
 import { createDummies, dispatchKeyboardEvent, expectDom, fastTestSetup } from '../../../../../test/helpers';
+import { StackModule } from '../../../stack';
 import { UiModule } from '../../../ui/ui.module';
 import { noteReducerMap } from '../../note.reducer';
 import { NoteItemDummy } from '../dummies';
@@ -118,6 +119,7 @@ describe('browser.note.noteCollection.NoteListComponent', () => {
                     StoreModule.forRoot({
                         note: combineReducers(noteReducerMap),
                     }),
+                    StackModule,
                 ],
                 providers: [
                     { provide: NoteCollectionService, useValue: collection },

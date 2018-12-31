@@ -1,6 +1,10 @@
 <header fxLayout fxLayoutAlign="start center" class="NoteHeader">
-    <div *ngIf="noteSelectionExists" fxLayout fxLayoutAlign="start center" fxFlex="1 1 auto" class="NoteHeader__title">
+    <div *ngIf="noteSelectionExists" fxLayout fxLayoutAlign="start center" fxFlex="1 1 auto"
+         class="NoteHeader__title">
+        <div *ngIf="status" [style.backgroundColor]="statusBarColor"
+             class="NoteHeader__statusBar"></div>
         <h1 id="selected-note-title">{{ selectedNote.title }}</h1>
+        <div *ngIf="status" [innerHTML]="statusIcon" class="NoteHeader__statusIcon"></div>
     </div>
 
     <div *ngIf="noteSelectionExists" fxLayout fxLayoutAlign="start center" class="NoteHeader__toolbar">
