@@ -3,10 +3,13 @@ import { FormControl, FormGroup, Validators } from '@angular/forms';
 import * as path from 'path';
 import { Subscription } from 'rxjs';
 import { startWith } from 'rxjs/operators';
+import { ErrorWithMetadata } from '../../../../core/error-with-metadata';
 import { makeNoteContentFileName } from '../../../../core/note';
 import { datetime } from '../../../../libs/datetime';
 import { WorkspaceService } from '../../../shared';
-import { DialogRef } from '../../../ui/dialog';
+import { ConfirmDialogComponent, ConfirmDialogData } from '../../../shared/confirm-dialog';
+import { Dialog, DialogRef } from '../../../ui/dialog';
+import { VcsService } from '../../../vcs';
 import { NoteContentFileAlreadyExistsError, NoteOutsideWorkspaceError } from '../../note-errors';
 import { NoteCollectionService } from '../note-collection.service';
 
@@ -15,6 +18,7 @@ import { NoteCollectionService } from '../note-collection.service';
     selector: 'gd-create-new-note-dialog',
     templateUrl: './create-new-note-dialog.component.html',
     styleUrls: ['./create-new-note-dialog.component.scss'],
+    providers: [Dialog],
 })
 export class CreateNewNoteDialogComponent implements OnInit, OnDestroy {
     private _createNewNoteProcessing = false;
@@ -34,6 +38,8 @@ export class CreateNewNoteDialogComponent implements OnInit, OnDestroy {
         private dialogRef: DialogRef<CreateNewNoteDialogComponent, void>,
         private workspace: WorkspaceService,
         private collection: NoteCollectionService,
+        private vcs: VcsService,
+        private dialog: Dialog,
     ) {
     }
 
@@ -54,6 +60,13 @@ export class CreateNewNoteDialogComponent implements OnInit, OnDestroy {
 
         try {
             await this.collection.createNewNote(title, label);
+
+            if (label) {
+                await this.vcs.keepDirectory(
+                    path.resolve(this.workspace.configs.rootDirPath, label),
+                );
+            }
+
             this.handleCreateNewNoteSuccess();
         } catch (error) {
             this.handleCreateNewNoteFail(error);
@@ -87,7 +100,18 @@ export class CreateNewNoteDialogComponent implements OnInit, OnDestroy {
         } else if (error instanceof NoteOutsideWorkspaceError) {
             this.createNewNoteFormGroup.get('label').setErrors({ outsideWorkspace: true });
         } else {
-            // TODO : Handle unknown error. What should we do in here?
+            this.dialog.open<ConfirmDialogComponent, ConfirmDialogData>(
+                ConfirmDialogComponent,
+                {
+                    maxWidth: '320px',
+                    data: {
+                        body: error && (error as any).errorDescription
+                            ? (error as ErrorWithMetadata).errorDescription
+                            : error.message,
+                        isAlert: true,
+                    },
+                },
+            );
         }
     }
 }
