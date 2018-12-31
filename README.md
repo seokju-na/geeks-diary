@@ -57,6 +57,7 @@ These are v1.0.0 features.
 - [ ] Auto Updater #124
 - [ ] Release win32 platform
 - [ ] Performance issue for note editor #113
+- [ ] Migrate from existing TIL repository #120
 
 
 ## Development
