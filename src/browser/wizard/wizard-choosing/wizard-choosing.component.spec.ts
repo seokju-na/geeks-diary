@@ -6,7 +6,7 @@ import { RouterTestingModule } from '@angular/router/testing';
 import { of, throwError } from 'rxjs';
 import { fastTestSetup, NoopComponent, NoopModule, sample, sampleWithout } from '../../../../test/helpers';
 import { MockDialog } from '../../../../test/mocks/browser';
-import { WorkspaceError, WorkspaceErrorCodes, WorkspaceInfo } from '../../../core/workspace';
+import { WorkspaceAlreadyExistsError, WorkspaceInfo } from '../../../core/workspace';
 import { SharedModule, ThemeService, WORKSPACE_DATABASE, WorkspaceDatabase, WorkspaceService } from '../../shared';
 import { ConfirmDialogComponent, ConfirmDialogData } from '../../shared/confirm-dialog';
 import { ButtonToggleComponent } from '../../ui/button-toggle';
@@ -99,7 +99,7 @@ describe('browser.wizard.wizardChoosing.WizardChoosingComponent', () => {
             + 'workspace button.', fakeAsync(() => {
             fixture.detectChanges();
 
-            const error = new WorkspaceError(WorkspaceErrorCodes.WORKSPACE_ALREADY_EXISTS);
+            const error = new WorkspaceAlreadyExistsError();
 
             spyOn(workspace, 'initWorkspace').and.returnValue(throwError(error));
 
@@ -114,7 +114,7 @@ describe('browser.wizard.wizardChoosing.WizardChoosingComponent', () => {
 
             expect(alertDialogRef).toBeDefined();
             expect(alertDialogRef.config.data.isAlert).toBe(true);
-            expect(alertDialogRef.config.data.body).toEqual(error.message);
+            expect(alertDialogRef.config.data.body).toEqual(error.errorDescription);
         }));
     });
 

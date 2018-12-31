@@ -357,7 +357,7 @@ describe('browser.wizard.wizardCloning.WizardCloningComponent', () => {
 
             expect(alertDialogRef).toBeDefined();
             expect(alertDialogRef.config.data.isAlert).toBe(true);
-            expect(alertDialogRef.config.data.body).toEqual(error.message);
+            expect(alertDialogRef.config.data.body).toEqual(error.errorDescription);
         }));
 
         it('should call init workspace after clone complete.', fakeAsync(() => {

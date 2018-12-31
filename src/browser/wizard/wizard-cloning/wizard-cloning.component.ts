@@ -2,9 +2,8 @@ import { Component, OnInit } from '@angular/core';
 import { FormControl, FormGroup, ValidatorFn, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { finalize } from 'rxjs/operators';
-import { GitError } from '../../../core/git';
+import { ErrorWithMetadata } from '../../../core/error-with-metadata';
 import { VcsAuthenticationTypes } from '../../../core/vcs';
-import { WorkspaceError } from '../../../core/workspace';
 import { WorkspaceService } from '../../shared';
 import { ConfirmDialog } from '../../shared/confirm-dialog';
 import { VcsService } from '../../vcs';
@@ -16,29 +15,6 @@ import { VcsService } from '../../vcs';
     styleUrls: ['./wizard-cloning.component.scss'],
 })
 export class WizardCloningComponent implements OnInit {
-    readonly remoteUrlFormControl = new FormControl('', { updateOn: 'blur' });
-    readonly workspaceDirectoryFormControl = new FormControl('');
-
-    readonly authenticationTypes = VcsAuthenticationTypes;
-    readonly authenticationFormGroup = new FormGroup({
-        type: new FormControl(this.authenticationTypes.BASIC),
-        userName: new FormControl(''),
-        password: new FormControl(''),
-        token: new FormControl(''),
-    });
-
-    private alreadyLogin: boolean = false;
-    private _loginSuccess: boolean = false;
-
-    constructor(
-        private vcs: VcsService,
-        private activatedRoute: ActivatedRoute,
-        private confirmDialog: ConfirmDialog,
-        private workspace: WorkspaceService,
-        private router: Router,
-    ) {
-    }
-
     get loginCompleted(): boolean {
         return this.alreadyLogin || this._loginSuccess;
     }
@@ -69,6 +45,27 @@ export class WizardCloningComponent implements OnInit {
 
     get cloneProcessing(): boolean {
         return this._cloneProcessing;
+    }
+
+    readonly remoteUrlFormControl = new FormControl('', { updateOn: 'blur' });
+    readonly workspaceDirectoryFormControl = new FormControl('');
+    readonly authenticationTypes = VcsAuthenticationTypes;
+    readonly authenticationFormGroup = new FormGroup({
+        type: new FormControl(this.authenticationTypes.BASIC),
+        userName: new FormControl(''),
+        password: new FormControl(''),
+        token: new FormControl(''),
+    });
+    private alreadyLogin: boolean = false;
+    private _loginSuccess: boolean = false;
+
+    constructor(
+        private vcs: VcsService,
+        private activatedRoute: ActivatedRoute,
+        private confirmDialog: ConfirmDialog,
+        private workspace: WorkspaceService,
+        private router: Router,
+    ) {
     }
 
     ngOnInit(): void {
@@ -175,7 +172,9 @@ export class WizardCloningComponent implements OnInit {
         this.confirmDialog.open({
             isAlert: true,
             title: 'Git Error',
-            body: (error as GitError).message,
+            body: (error as ErrorWithMetadata).errorDescription
+                ? (error as ErrorWithMetadata).errorDescription
+                : 'Unknown Error',
         });
     }
 
@@ -183,7 +182,9 @@ export class WizardCloningComponent implements OnInit {
         this.confirmDialog.open({
             isAlert: true,
             title: 'Workspace Error',
-            body: (error as WorkspaceError).message,
+            body: (error as ErrorWithMetadata).errorDescription
+                ? (error as ErrorWithMetadata).errorDescription
+                : 'Unknown Error',
         });
     }
 }

@@ -1,6 +1,6 @@
-import { shell } from 'electron';
 import { Component, EventEmitter, Input, OnInit, Output, ViewEncapsulation } from '@angular/core';
-import { GitError, GitSyncWithRemoteResult } from '../../../../core/git';
+import { shell } from 'electron';
+import { GitSyncWithRemoteResult } from '../../../../core/git';
 
 
 export type VcsSyncMessageBoxType = 'success' | 'error';
@@ -18,12 +18,6 @@ export type VcsSyncMessageBoxType = 'success' | 'error';
     },
 })
 export class VcsSyncMessageBoxComponent implements OnInit {
-    @Input() processing: boolean;
-    @Input() type: VcsSyncMessageBoxType;
-    @Input() successResult: GitSyncWithRemoteResult | null = null;
-    @Input() error: GitError | null = null;
-    @Output() readonly dismiss = new EventEmitter<void>();
-
     get headIconName(): string {
         switch (this.type) {
             case 'success':
@@ -44,8 +38,15 @@ export class VcsSyncMessageBoxComponent implements OnInit {
 
     get contentExists(): boolean {
         return (this.type === 'success' && !!this.successResult)
-            || (this.type === 'error' && !!this.error);
+            || (this.type === 'error' && !!this.errorMessage);
     }
+
+    @Input() processing: boolean;
+    @Input() type: VcsSyncMessageBoxType;
+    @Input() successResult: GitSyncWithRemoteResult | null = null;
+    @Input() errorMessage: string;
+
+    @Output() readonly dismiss = new EventEmitter<void>();
 
     ngOnInit(): void {
     }
