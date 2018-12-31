@@ -42,7 +42,7 @@ export class WorkspaceService extends Service {
         await ensureDir(GEEKS_DIARY_DIR_PATH);
         await ensureDir(NOTES_DIR_PATH);
 
-        if (!await this.git.isRepositoryExists(WORKSPACE_DIR_PATH)) {
+        if (!await this.isWorkspaceExists()) {
             await this.git.createRepository(WORKSPACE_DIR_PATH);
 
             // Keep notes directory with '.gitkeep'.
