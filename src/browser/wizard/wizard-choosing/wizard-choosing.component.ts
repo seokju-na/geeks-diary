@@ -2,8 +2,8 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { Subscription } from 'rxjs';
 import { environment } from '../../../core/environment';
+import { ErrorWithMetadata } from '../../../core/error-with-metadata';
 import { logMonitor } from '../../../core/log-monitor';
-import { WorkspaceError } from '../../../core/workspace';
 import { ThemeService, WorkspaceService } from '../../shared';
 import { ConfirmDialog } from '../../shared/confirm-dialog';
 import { Themes } from '../../ui/style';
@@ -67,7 +67,9 @@ export class WizardChoosingComponent implements OnInit, OnDestroy {
         this.confirmDialog.open({
             title: 'Workspace Error',
             isAlert: true,
-            body: (error as WorkspaceError).message,
+            body: (error as ErrorWithMetadata).errorDescription
+                ? (error as ErrorWithMetadata).errorDescription
+                : 'Unknown Error',
         });
     }
 }

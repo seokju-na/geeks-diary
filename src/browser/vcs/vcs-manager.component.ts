@@ -12,6 +12,7 @@ import { FormControl } from '@angular/forms';
 import { select, Store } from '@ngrx/store';
 import { Observable, Subject, Subscription } from 'rxjs';
 import { filter, finalize, switchMap, take, tap } from 'rxjs/operators';
+import { ErrorWithMetadata } from '../../core/error-with-metadata';
 import { GitSyncWithRemoteResult } from '../../core/git';
 import { VcsCommitItem } from '../../core/vcs';
 import { __DARWIN__ } from '../../libs/platform';
@@ -58,7 +59,7 @@ export class VcsManagerComponent implements OnInit, OnDestroy, AfterViewInit {
     syncResultMessageType: VcsSyncMessageBoxType;
     syncResultMessageDismissed = true;
     syncWorkspaceResult: GitSyncWithRemoteResult | null = null;
-    syncWorkspaceErrorCaught: { message: string } | null = null;
+    syncWorkspaceErrorMessage: string;
 
     private allCommitsItemAreLoaded = false;
     private commitItemsAreLoading = false;
@@ -228,7 +229,7 @@ export class VcsManagerComponent implements OnInit, OnDestroy, AfterViewInit {
         this.syncResultMessageType = null;
         this._workspaceSynchronizing = true;
         this.syncWorkspaceResult = null;
-        this.syncWorkspaceErrorCaught = null;
+        this.syncWorkspaceErrorMessage = null;
 
         this.vcs
             .syncRepository()
@@ -241,7 +242,9 @@ export class VcsManagerComponent implements OnInit, OnDestroy, AfterViewInit {
                 },
                 (error) => {
                     this.syncResultMessageType = 'error';
-                    this.syncWorkspaceErrorCaught = { message: error.message ? error.message : 'Unknown Error' };
+                    this.syncWorkspaceErrorMessage = (error as ErrorWithMetadata).errorDescription
+                        ? (error as ErrorWithMetadata).errorDescription
+                        : 'Unknown Error';
                     this.store.dispatch(new SynchronizedFailAction(error));
                 },
             );

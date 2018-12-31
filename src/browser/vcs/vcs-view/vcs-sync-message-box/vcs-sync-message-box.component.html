@@ -20,7 +20,7 @@
                [attr.title]="successResult?.remoteUrl">See Remote</a>
         </ng-container>
         <ng-container *ngSwitchCase="'error'">
-            {{ error?.message }}
+            {{ errorMessage }}
             <!-- TODO : External editor -->
         </ng-container>
     </p>

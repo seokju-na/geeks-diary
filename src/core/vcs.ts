@@ -1,3 +1,6 @@
+import { ErrorWithMetadata } from './error-with-metadata';
+
+
 export enum VcsAuthenticationTypes {
     BASIC = 'BASIC',
     OAUTH2_TOKEN = 'OAUTH2_TOKEN',
@@ -166,8 +169,9 @@ export enum VcsErrorCodes {
 }
 
 
-export class VcsAuthenticateError extends Error {
+export class VcsAuthenticateError extends ErrorWithMetadata {
     public readonly code = VcsErrorCodes.AUTHENTICATE_ERROR;
+    public readonly errorDescription = 'Authentication failed.';
 
     constructor() {
         super('Authenticate failed.');
@@ -175,8 +179,9 @@ export class VcsAuthenticateError extends Error {
 }
 
 
-export class VcsRepositoryNotExistsError extends Error {
+export class VcsRepositoryNotExistsError extends ErrorWithMetadata {
     public readonly code = VcsErrorCodes.REPOSITORY_NOT_EXISTS;
+    public readonly errorDescription = 'Cannot find repository.';
 
     constructor() {
         super('Cannot find repository.');
@@ -184,8 +189,9 @@ export class VcsRepositoryNotExistsError extends Error {
 }
 
 
-export class VcsPrimaryEmailNotExistsError extends Error {
+export class VcsPrimaryEmailNotExistsError extends ErrorWithMetadata {
     public readonly code = VcsErrorCodes.PRIMARY_EMAIL_NOT_EXISTS;
+    public readonly errorDescription = 'Primary email not exists';
 
     constructor() {
         super('Primary email not exists.');
