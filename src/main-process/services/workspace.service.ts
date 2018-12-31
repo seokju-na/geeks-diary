@@ -1,7 +1,7 @@
 import { ensureDir, ensureFile } from 'fs-extra';
 import * as path from 'path';
 import { VcsFileChangeStatusTypes } from '../../core/vcs';
-import { GEEKS_DIARY_DIR_PATH, NOTES_DIR_PATH, WORKSPACE_DIR_PATH } from '../../core/workspace';
+import { ASSETS_DIR_PATH, GEEKS_DIARY_DIR_PATH, NOTES_DIR_PATH, WORKSPACE_DIR_PATH } from '../../core/workspace';
 import { IpcActionHandler } from '../../libs/ipc';
 import { GitService } from './git.service';
 import { Service } from './service';
@@ -16,14 +16,14 @@ export enum WorkspaceEvents {
  * Workspace service.
  */
 export class WorkspaceService extends Service {
-    constructor(private git: GitService) {
-        super('workspace');
-    }
-
     private _initialized = false;
 
     get initialized(): boolean {
         return this._initialized;
+    }
+
+    constructor(private git: GitService) {
+        super('workspace');
     }
 
     async init(): Promise<void> {
@@ -48,15 +48,25 @@ export class WorkspaceService extends Service {
             // Keep notes directory with '.gitkeep'.
             // You cannot track the first Note File without this.
             await ensureFile(path.resolve(NOTES_DIR_PATH, '.gitkeep'));
+            await ensureFile(path.resolve(ASSETS_DIR_PATH, '.gitkeep'));
+
             await this.git.commit({
                 workspaceDirPath: WORKSPACE_DIR_PATH,
                 message: 'Initial commit',
-                fileChanges: [{
-                    workingDirectoryPath: WORKSPACE_DIR_PATH,
-                    filePath: '.geeks-diary/notes/.gitkeep',
-                    absoluteFilePath: path.resolve(NOTES_DIR_PATH, '.gitkeep'),
-                    status: VcsFileChangeStatusTypes.NEW,
-                }],
+                fileChanges: [
+                    {
+                        workingDirectoryPath: WORKSPACE_DIR_PATH,
+                        filePath: '.geeks-diary/notes/.gitkeep',
+                        absoluteFilePath: path.resolve(NOTES_DIR_PATH, '.gitkeep'),
+                        status: VcsFileChangeStatusTypes.NEW,
+                    },
+                    {
+                        workingDirectoryPath: WORKSPACE_DIR_PATH,
+                        filePath: '.geeks-diary/assets/.gitkeep',
+                        absoluteFilePath: path.resolve(ASSETS_DIR_PATH, '.gitkeep'),
+                        status: VcsFileChangeStatusTypes.NEW,
+                    },
+                ],
                 author: {
                     name: 'Geeks Diary',
                     email: '(BLANK)',
