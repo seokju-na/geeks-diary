@@ -8,6 +8,7 @@ import {
     readdir,
     readFile,
     readJson,
+    remove,
     writeFile,
     writeJson,
 } from 'fs-extra';
@@ -63,5 +64,9 @@ export class FsService {
     renameFile(oldFileName: string, newFileName: string): Observable<void> {
         return from(move(oldFileName, newFileName, { overwrite: false }))
             .pipe(enterZone(this.ngZone));
+    }
+
+    removeFile(fileName: string): Observable<void> {
+        return from(remove(fileName)).pipe(enterZone(this.ngZone));
     }
 }
