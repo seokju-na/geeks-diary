@@ -1,5 +1,6 @@
 import * as path from 'path';
 import { environment } from './environment';
+import { ErrorWithMetadata } from './error-with-metadata';
 
 
 /**
@@ -31,22 +32,18 @@ export interface WorkspaceInfo {
 
 
 export enum WorkspaceErrorCodes {
-    WORKSPACE_ALREADY_EXISTS,
+    WORKSPACE_ALREADY_EXISTS = 'workspace.workspaceAlreadyExists',
 }
 
 
-export class WorkspaceError extends Error {
-    constructor(public code: WorkspaceErrorCodes) {
-        super(getDescriptionForError(code));
+export class WorkspaceAlreadyExistsError extends ErrorWithMetadata {
+    public readonly code = WorkspaceErrorCodes.WORKSPACE_ALREADY_EXISTS;
+    public readonly errorDescription = 'Workspace already exists and is not an empty directory.';
+
+    constructor() {
+        super('Workspace already exists and is not an empty directory.');
     }
 }
 
 
-function getDescriptionForError(code: WorkspaceErrorCodes): string {
-    switch (code) {
-        case WorkspaceErrorCodes.WORKSPACE_ALREADY_EXISTS:
-            return 'Workspace already exists and is not an empty directory.';
-        default:
-            return 'Unknown Error';
-    }
-}
+export type WorkspaceError = WorkspaceAlreadyExistsError;

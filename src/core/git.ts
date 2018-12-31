@@ -1,3 +1,4 @@
+import { ErrorWithMetadata } from './error-with-metadata';
 import { VcsAccount, VcsAuthenticationInfo, VcsCommitItem, VcsFileChange } from './vcs';
 
 
@@ -92,38 +93,42 @@ export const gitErrorRegexes: { [key: string]: RegExp } = {
 /* tslint:enable */
 
 
-interface GitErrorImpl {
-    readonly code: GitErrorCodes;
-}
+export class GitAuthenticationFailError extends ErrorWithMetadata {
+    public readonly code = GitErrorCodes.AUTHENTICATION_FAIL;
+    public readonly errorDescription = 'Authentication failed. Please check your credential.';
 
-
-export class GitAuthenticationFailError extends Error implements GitErrorImpl {
-    constructor(public readonly code = GitErrorCodes.AUTHENTICATION_FAIL) {
+    constructor() {
         super('Authentication failed. Please check your credential.');
-        this.name = 'GitError';
     }
 }
 
 
-export class GitRemoteNotFoundError extends Error implements GitErrorImpl {
-    constructor(
-        public readonly code = GitErrorCodes.REMOTE_NOT_FOUND,
-        remoteName?: string,
-    ) {
+export class GitRemoteNotFoundError extends ErrorWithMetadata {
+    public readonly code = GitErrorCodes.REMOTE_NOT_FOUND;
+    public readonly errorDescription: string;
+
+    constructor(remoteName?: string) {
         super(remoteName ? `Remote \'${remoteName}\' does not exist.` : 'Remote does not exist.');
+        this.errorDescription = this.message;
     }
 }
 
 
-export class GitMergeConflictedError extends Error implements GitErrorImpl {
-    constructor(public readonly code = GitErrorCodes.MERGE_CONFLICTED) {
+export class GitMergeConflictedError extends ErrorWithMetadata {
+    public readonly code = GitErrorCodes.MERGE_CONFLICTED;
+    public readonly errorDescription = 'Conflicts happens during merge branches.';
+
+    constructor() {
         super('Conflicts happens during merge branches.');
     }
 }
 
 
-export class GitNetworkError extends Error implements GitErrorImpl {
-    constructor(public readonly code = GitErrorCodes.NETWORK_ERROR) {
+export class GitNetworkError extends ErrorWithMetadata {
+    public readonly code = GitErrorCodes.NETWORK_ERROR;
+    public readonly errorDescription = 'Network error.';
+
+    constructor() {
         super('Network error.');
     }
 }
