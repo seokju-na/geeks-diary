@@ -4,7 +4,7 @@
 
 Geek's Diary is markdown editor with version control system integrated. It helps programmers to write TIL(Today I Learned). 
 
-![Main Screenshot](https://user-images.githubusercontent.com/13250888/50504751-1f2d5880-0ab3-11e9-8cdb-99e654e67d4d.png)
+![Main Screenshot](https://user-images.githubusercontent.com/13250888/50562835-00e98600-0d5b-11e9-8d23-76b267a0fbf0.png)
 
 
 ## 🚀 Beta releases
