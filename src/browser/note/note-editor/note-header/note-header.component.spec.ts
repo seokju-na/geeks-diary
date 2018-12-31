@@ -47,7 +47,7 @@ describe('browser.note.noteEditor.NoteHeaderComponent', () => {
     const getCommitButtonEl = (): HTMLButtonElement =>
         fixture.debugElement.query(By.css('.NoteHeader__commitButton')).nativeElement as HTMLButtonElement;
 
-    function ensureNoteCanBeCommitted(
+    function ensureNoteHasStatus(
         note: NoteItem = new NoteItemDummy().create(),
         vcsFileChanges?: VcsFileChange[],
     ): { note: NoteItem, vcsFileChanges: VcsFileChange[] } {
@@ -214,7 +214,7 @@ describe('browser.note.noteEditor.NoteHeaderComponent', () => {
         });
 
         it('should open commit dialog when click commit dialog if note has vcs changes.', () => {
-            const { vcsFileChanges } = ensureNoteCanBeCommitted();
+            const { vcsFileChanges } = ensureNoteHasStatus();
             fixture.detectChanges();
 
             getCommitButtonEl().click();
@@ -232,11 +232,24 @@ describe('browser.note.noteEditor.NoteHeaderComponent', () => {
         it('should call \'openCommitDialog\' when \'COMMIT_NOTE\' event dispatched.', () => {
             spyOn(component, 'openCommitDialog');
 
-            ensureNoteCanBeCommitted();
+            ensureNoteHasStatus();
             fixture.detectChanges();
 
             menuStream.next(MenuEvent.COMMIT_NOTE);
             expect(component.openCommitDialog).toHaveBeenCalled();
+        });
+    });
+
+    describe('note status', () => {
+        it('should show status bar and icon if note status exists.', () => {
+            const note = new NoteItemDummy().create();
+            store.dispatch(new SelectNoteAction({ note }));
+
+            ensureNoteHasStatus();
+            fixture.detectChanges();
+
+            expect(fixture.debugElement.query(By.css('.NoteHeader__statusBar'))).not.toBeNull();
+            expect(fixture.debugElement.query(By.css('.NoteHeader__statusIcon'))).not.toBeNull();
         });
     });
 });
