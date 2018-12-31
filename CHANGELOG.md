@@ -2,7 +2,7 @@
 
 (💡=Feature, 🛠=Enhancement, 🔥=Bug, 📖=Document, 🎨=Art)
 
-## v1.0.0-beta0
+## v1.0.0-beta1
 - [#134](https://github.com/seokju-na/geeks-diary/pull/134) 💡 Note collection view mode
 - [#131](https://github.com/seokju-na/geeks-diary/pull/131) 🔥 Fix un-matched height of text snippet
 - [#130](https://github.com/seokju-na/geeks-diary/pull/130) 🔥 Handle exception when github not provide 'user:email' scope
