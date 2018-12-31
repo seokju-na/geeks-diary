@@ -3,7 +3,7 @@ import { readJson, writeFile, writeJson } from 'fs-extra';
 import { EOL } from 'os';
 import * as path from 'path';
 import * as semver from 'semver';
-import { EachApiCallNextApiUrlParser, eachApiCalls } from './utils';
+import { EachApiCallNextApiUrlParser, EachApiCallOptions, eachApiCalls } from './utils';
 
 
 // Interfaces
@@ -100,21 +100,30 @@ const githubNextApiUrlParser: EachApiCallNextApiUrlParser =
 // Application functions
 async function getAllPullRequestsForMilestone(milestone: string): Promise<GithubIssue[]> {
     const issues: GithubIssue[] = [];
+    const options: EachApiCallOptions = {
+        requestConfig: {
+            params: {
+                state: 'closed',
+                milestone,
+            },
+            headers: {
+                Accept: 'application/vnd.github.v3+json',
+                'User-Agent': 'geeks-diary',
+            },
+        },
+        nextApiUrlParser: githubNextApiUrlParser,
+    };
+
+    if (process.env.GITHUB_USER && process.env.GITHUB_PASSWORD) {
+        options.requestConfig.auth = {
+            username: process.env.GITHUB_USER,
+            password: process.env.GITHUB_PASSWORD,
+        };
+    }
+
     const eachGithubIssueApiCalls = eachApiCalls<GithubIssue[]>(
         'https://api.github.com/repos/seokju-na/geeks-diary/issues',
-        {
-            requestConfig: {
-                params: {
-                    state: 'closed',
-                    milestone,
-                },
-                headers: {
-                    Accept: 'application/vnd.github.v3+json',
-                    'User-Agent': 'geeks-diary',
-                },
-            },
-            nextApiUrlParser: githubNextApiUrlParser,
-        },
+        options,
     );
 
     for await (const data of eachGithubIssueApiCalls) {
