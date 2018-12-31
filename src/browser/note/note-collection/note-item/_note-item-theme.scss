@@ -13,6 +13,14 @@
             }
         }
 
+        &__stackItem {
+            > span {
+                border: 1px solid gd-color($foreground, divider);
+                border-radius: 7.5px;
+                color: gd-color($foreground, secondary-text);
+            }
+        }
+
         &:focus {
             background-color: gd-color($primary);
             color: gd-color($primary, default-contrast);

@@ -10,4 +10,14 @@
     <time [attr.datetime]="note.createdDatetime | date:'short'" class="NoteItem__createdAt">
         {{ note.createdDatetime | date:'MMM d, y h:mm a' }}
     </time>
+    <ul *ngIf="areStacksExists" fxLayout fxLayoutAlign="start center"
+        class="NoteItem__stackItemList" role="list">
+        <li *ngFor="let stack of stacks" role="listitem"
+            [gdTooltip]="stack.name"
+            [gdTooltipDisabled]="stack.iconFilePath"
+            class="NoteItem__stackItem">
+            <gd-stack-item *ngIf="stack.iconFilePath" [stack]="stack"></gd-stack-item>
+            <span *ngIf="!stack.iconFilePath">{{ stack.name }}</span>
+        </li>
+    </ul>
 </div>

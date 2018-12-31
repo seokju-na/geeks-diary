@@ -71,10 +71,55 @@
         };
     }
 
+    &__stackItemList {
+        margin: $spacing-half 0 -2px 0;
+        padding: 0;
+        flex-wrap: wrap;
+    }
+
+    &__stackItem {
+        list-style: none;
+        display: inline-flex;
+        align-items: center;
+        margin: $spacing-third;
+        height: 18px;
+
+        > span {
+            display: inline-block;
+            padding: 0 $spacing-half;
+            height: 18px;
+            line-height: 18px;
+
+            font: {
+                size: $font-size-sm;
+                weight: $font-weight-semiBold;
+            };
+        }
+    }
+
     &--hasVcsStatus {
         &:not(.NoteItem--hasVcsLabel) {
             .NoteItem__title {
                 padding-right: 20px;
+            }
+        }
+    }
+
+    &--viewMode {
+        &-detail {
+        }
+
+        &-simple {
+            .NoteItem__title {
+                margin: 0;
+            }
+
+            .NoteItem__createdAt {
+                display: none;
+            }
+
+            .NoteItem__stackItemList {
+                display: none !important;
             }
         }
     }
