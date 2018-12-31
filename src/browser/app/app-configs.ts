@@ -45,6 +45,7 @@ export const AppVcsHistoryChangedEffectActionsProvider: Provider = {
     provide: VCS_HISTORY_CHANGED_EFFECT_ACTIONS,
     useValue: [
         NoteCollectionActionTypes.LOAD_COLLECTION_COMPLETE, // Initial load
+        NoteCollectionActionTypes.ADD_NOTE,
     ],
 };
 
