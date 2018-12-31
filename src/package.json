@@ -2,7 +2,7 @@
     "name": "geeks-diary",
     "productName": "Geeks Diary",
     "appId": "me.seokju.GeeksDiary",
-    "version": "1.0.0-beta1",
+    "version": "1.0.0-beta2",
     "description": "TIL writing tool for geeks",
     "main": "./main.js",
     "repository": {

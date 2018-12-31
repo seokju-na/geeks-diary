@@ -2,7 +2,9 @@
 
 (💡=Feature, 🛠=Enhancement, 🔥=Bug, 📖=Document, 🎨=Art)
 
-## v1.0.0-beta1
+## v1.0.0-beta2
+- [#139](https://github.com/seokju-na/geeks-diary/pull/139) 🔥 Keep directory when note label included
+- [#138](https://github.com/seokju-na/geeks-diary/pull/138) 🔥 Handle error message friendly
 - [#134](https://github.com/seokju-na/geeks-diary/pull/134) 💡 Note collection view mode
 - [#131](https://github.com/seokju-na/geeks-diary/pull/131) 🔥 Fix un-matched height of text snippet
 - [#130](https://github.com/seokju-na/geeks-diary/pull/130) 🔥 Handle exception when github not provide 'user:email' scope
