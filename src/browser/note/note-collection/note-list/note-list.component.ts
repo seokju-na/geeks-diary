@@ -1,12 +1,13 @@
 import { FocusKeyManager } from '@angular/cdk/a11y';
 import { AfterViewInit, Component, HostListener, OnDestroy, OnInit, QueryList, ViewChildren } from '@angular/core';
-import { Store } from '@ngrx/store';
+import { select, Store } from '@ngrx/store';
 import { shell } from 'electron';
 import { Observable, Subscription } from 'rxjs';
 import { tap } from 'rxjs/operators';
 import { VcsFileChangeStatusTypes } from '../../../../core/vcs';
 import { NoteStateWithRoot } from '../../note.state';
 import { NoteCollectionService } from '../note-collection.service';
+import { NoteCollectionViewModes } from '../note-collection.state';
 import { NoteItem } from '../note-item.model';
 // noinspection TypeScriptPreferShortImport
 import { NoteItemComponent, NoteItemContextMenuEvent, NoteItemSelectionChange } from '../note-item/note-item.component';
@@ -30,6 +31,12 @@ export class NoteListComponent implements OnInit, OnDestroy, AfterViewInit {
         return this._initialLoaded;
     }
 
+    private _viewMode: NoteCollectionViewModes;
+
+    get viewMode(): NoteCollectionViewModes {
+        return this._viewMode;
+    }
+
     /** Filtered and sorted notes stream from collection. */
     readonly notes: Observable<NoteItem[]> = this.collection
         .getFilteredAndSortedNoteList().pipe(
@@ -42,6 +49,7 @@ export class NoteListComponent implements OnInit, OnDestroy, AfterViewInit {
                 this._isEmpty = notes.length === 0;
             }),
         );
+
     /** Focus key manager for note items. */
     _focusKeyManager: FocusKeyManager<NoteItemComponent>;
 
@@ -50,6 +58,7 @@ export class NoteListComponent implements OnInit, OnDestroy, AfterViewInit {
 
     private _selectedNote: NoteItem | null = null;
     private selectedNoteSubscription = Subscription.EMPTY;
+    private viewModeSubscription = Subscription.EMPTY;
 
     constructor(
         private store: Store<NoteStateWithRoot>,
@@ -61,10 +70,15 @@ export class NoteListComponent implements OnInit, OnDestroy, AfterViewInit {
         this.selectedNoteSubscription = this.collection
             .getSelectedNote()
             .subscribe(selectedNote => this._selectedNote = selectedNote);
+
+        this.viewModeSubscription = this.store.pipe(
+            select(state => state.note.collection.viewMode),
+        ).subscribe(viewMode => this._viewMode = viewMode);
     }
 
     ngOnDestroy(): void {
         this.selectedNoteSubscription.unsubscribe();
+        this.viewModeSubscription.unsubscribe();
     }
 
     ngAfterViewInit(): void {

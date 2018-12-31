@@ -7,6 +7,7 @@ import {
     DoCheck,
     ElementRef,
     EventEmitter,
+    HostBinding,
     HostListener,
     Input,
     Output,
@@ -14,6 +15,8 @@ import {
 } from '@angular/core';
 import { DomSanitizer, SafeHtml, SafeStyle } from '@angular/platform-browser';
 import { getVcsFileChangeColor, getVcsFileChangeStatusIcon, VcsFileChangeStatusTypes } from '../../../../core/vcs';
+import { Stack, StackViewer } from '../../../stack';
+import { NoteCollectionViewModes } from '../note-collection.state';
 import { NoteItem } from '../note-item.model';
 import { NoteItemContextMenu, NoteItemContextMenuCommand } from './note-item-context-menu';
 
@@ -74,12 +77,37 @@ export class NoteItemComponent implements DoCheck, FocusableOption {
         return this.active ? '0' : '-1';
     }
 
+    get areStacksExists(): boolean {
+        return this.note && this.note.stackIds.length > 0;
+    }
+
+    get stacks(): Stack[] {
+        if (this.note) {
+            return this.note.stackIds.map(name => this.stackViewer.getStackWithSafe(name));
+        } else {
+            return [];
+        }
+    }
+
+    @HostBinding('class.NoteItem--viewMode-detail')
+    private get viewModeDetail(): boolean {
+        return this.viewMode === NoteCollectionViewModes.VIEW_DETAIL;
+    }
+
+    @HostBinding('class.NoteItem--viewMode-simple')
+    private get viewModeSimple(): boolean {
+        return this.viewMode === NoteCollectionViewModes.VIEW_SIMPLE;
+    }
+
     @Input() note: NoteItem;
     @Input() active: boolean;
     @Input() selected: boolean;
     @Input() status: VcsFileChangeStatusTypes;
+    @Input() viewMode: NoteCollectionViewModes = NoteCollectionViewModes.VIEW_DETAIL;
+
     @Output() readonly selectionChange = new EventEmitter<NoteItemSelectionChange>();
     @Output() readonly contextMenuCommand = new EventEmitter<NoteItemContextMenuEvent>();
+
     noteTitle: string;
 
     constructor(
@@ -87,6 +115,7 @@ export class NoteItemComponent implements DoCheck, FocusableOption {
         private changeDetector: ChangeDetectorRef,
         private sanitizer: DomSanitizer,
         private contextMenu: NoteItemContextMenu,
+        private stackViewer: StackViewer,
     ) {
     }
 

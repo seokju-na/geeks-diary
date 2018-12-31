@@ -6,8 +6,10 @@ import { By } from '@angular/platform-browser';
 import { of } from 'rxjs';
 import { dispatchFakeEvent, dispatchKeyboardEvent, expectDom, fastTestSetup } from '../../../../../test/helpers';
 import { VcsFileChangeStatusTypes } from '../../../../core/vcs';
+import { StackModule } from '../../../stack';
 import { UiModule } from '../../../ui/ui.module';
 import { NoteItemDummy } from '../dummies';
+import { NoteCollectionViewModes } from '../note-collection.state';
 import { NoteItem } from '../note-item.model';
 import { NoteItemContextMenu } from './note-item-context-menu';
 import { NoteItemComponent, NoteItemContextMenuEvent, NoteItemSelectionChange } from './note-item.component';
@@ -35,6 +37,7 @@ describe('browser.note.noteCollection.NoteItemComponent', () => {
             .configureTestingModule({
                 imports: [
                     UiModule,
+                    StackModule,
                 ],
                 providers: [
                     DatePipe,
@@ -229,5 +232,21 @@ describe('browser.note.noteCollection.NoteItemComponent', () => {
             'some_command' as any,
         ));
         subscription.unsubscribe();
+    });
+
+    it('should contains \'NoteItem--viewMode-detail\' if viewMode is '
+        + '\'NoteCollectionViewModes.VIEW_DETAIL\'.', () => {
+        component.viewMode = NoteCollectionViewModes.VIEW_DETAIL;
+        fixture.detectChanges();
+
+        expectDom(component._elementRef.nativeElement).toContainClasses('NoteItem--viewMode-detail');
+    });
+
+    it('should contains \'NoteItem--viewMode--simple\' if viewMode is '
+        + '\'NoteCollectionViewModes.VIEW_SIMPLE\'.', () => {
+        component.viewMode = NoteCollectionViewModes.VIEW_SIMPLE;
+        fixture.detectChanges();
+
+        expectDom(component._elementRef.nativeElement).toContainClasses('NoteItem--viewMode-simple');
     });
 });
