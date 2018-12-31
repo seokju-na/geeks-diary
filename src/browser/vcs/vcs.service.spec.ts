@@ -2,6 +2,7 @@ import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { fakeAsync, flush, TestBed } from '@angular/core/testing';
 import { Observable, of, throwError } from 'rxjs';
 import { fastTestSetup } from '../../../test/helpers';
+import { MockFsService } from '../../../test/mocks/browser';
 import { VcsAccountDummy } from '../../core/dummies';
 import {
     GitFindRemoteOptions,
@@ -9,9 +10,16 @@ import {
     GitSetRemoteOptions,
     GitSyncWithRemoteOptions,
 } from '../../core/git';
-import { VcsAccount, VcsAuthenticationInfo, VcsAuthenticationTypes, VcsRemoteRepository } from '../../core/vcs';
+import {
+    VcsAccount,
+    VcsAuthenticationInfo,
+    VcsAuthenticationTypes,
+    VcsFileChange,
+    VcsFileChangeStatusTypes,
+    VcsRemoteRepository,
+} from '../../core/vcs';
 import { toPromise } from '../../libs/rx';
-import { GitService, SharedModule, WORKSPACE_DEFAULT_CONFIG, WorkspaceConfig } from '../shared';
+import { FsService, GitService, SharedModule, WORKSPACE_DEFAULT_CONFIG, WorkspaceConfig } from '../shared';
 import { VCS_ACCOUNT_DATABASE, VcsAccountDatabase, VcsAccountDatabaseProvider } from './vcs-account-database';
 import { VcsRemoteModule, VcsRemoteProvider, VcsRemoteProviderFactory } from './vcs-remote';
 import { VcsService } from './vcs.service';
@@ -49,6 +57,7 @@ describe('browser.vcs.VcsService', () => {
     let removeProviderFactory: VcsRemoteProviderFactory;
     let accountDB: VcsAccountDatabase;
     let git: GitService;
+    let mockFs: MockFsService;
 
     const accountDummy = new VcsAccountDummy();
     const workspaceConfig: WorkspaceConfig = {
@@ -68,6 +77,7 @@ describe('browser.vcs.VcsService', () => {
                 VcsAccountDatabaseProvider,
                 VcsService,
                 { provide: WORKSPACE_DEFAULT_CONFIG, useValue: workspaceConfig },
+                ...MockFsService.providers(),
             ],
         });
     });
@@ -77,6 +87,7 @@ describe('browser.vcs.VcsService', () => {
         removeProviderFactory = TestBed.get(VcsRemoteProviderFactory);
         accountDB = TestBed.get(VCS_ACCOUNT_DATABASE);
         git = TestBed.get(GitService);
+        mockFs = TestBed.get(FsService);
 
         spyOn(removeProviderFactory, 'create').and.returnValue(new TestVcsRemoteProvider());
         vcs.setRemoveProvider('test' as any);
@@ -85,6 +96,8 @@ describe('browser.vcs.VcsService', () => {
     afterEach(async () => {
         await accountDB.accounts.clear();
         await accountDB.metadata.clear();
+
+        mockFs.verify();
     });
 
     describe('loginRemoteWithBasicAuthorization', () => {
@@ -234,6 +247,63 @@ describe('browser.vcs.VcsService', () => {
     });
 
     describe('fetchMoreCommitHistory', () => {
+    });
+
+    describe('keepDirectory', () => {
+        it('should do nothing if keep file already exists.', fakeAsync(() => {
+            spyOn(git, 'commit');
+
+            vcs.keepDirectory('/test/workspace/label').then();
+
+            mockFs
+                .expect({
+                    methodName: 'isPathExists',
+                    args: ['/test/workspace/label/.gitkeep'],
+                })
+                .flush(true);
+
+            expect(git.commit).not.toHaveBeenCalled();
+        }));
+
+        it('should create keep file and commit if keep file is not exists.', fakeAsync(() => {
+            const keepFilePath = '/test/workspace/label/.gitkeep';
+
+            spyOn(git, 'commit').and.returnValue(of(null));
+
+            vcs.keepDirectory('/test/workspace/label').then();
+
+            mockFs
+                .expect({
+                    methodName: 'isPathExists',
+                    args: [keepFilePath],
+                })
+                .flush(false);
+
+            mockFs
+                .expect({
+                    methodName: 'writeFile',
+                    args: [keepFilePath, ''],
+                })
+                .flush(null);
+
+            expect(git.commit).toHaveBeenCalledWith(
+                '/test/workspace',
+                {
+                    name: 'Geeks Diary',
+                    email: '(BLANK)',
+                    authentication: null,
+                } as VcsAccount,
+                { summary: 'Keep Directory', description: '' },
+                [
+                    {
+                        status: VcsFileChangeStatusTypes.NEW,
+                        filePath: 'label/.gitkeep',
+                        absoluteFilePath: keepFilePath,
+                        workingDirectoryPath: '/test/workspace',
+                    },
+                ] as VcsFileChange[],
+            );
+        }));
     });
 
     describe('canSyncRepository', () => {
