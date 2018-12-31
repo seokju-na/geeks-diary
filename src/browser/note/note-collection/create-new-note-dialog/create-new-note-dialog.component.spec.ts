@@ -8,6 +8,7 @@ import { makeNoteContentFileName } from '../../../../core/note';
 import { SharedModule, WORKSPACE_DEFAULT_CONFIG, WorkspaceConfig } from '../../../shared';
 import { DialogRef } from '../../../ui/dialog';
 import { UiModule } from '../../../ui/ui.module';
+import { VcsService } from '../../../vcs';
 import { NoteContentFileAlreadyExistsError, NoteOutsideWorkspaceError } from '../../note-errors';
 import { NoteCollectionService } from '../note-collection.service';
 import { CreateNewNoteDialogComponent } from './create-new-note-dialog.component';
@@ -20,6 +21,7 @@ describe('browser.note.noteCollection.CreateNewNoteDialogComponent', () => {
     let collection: NoteCollectionService;
     let mockDialog: MockDialog;
     let mockDialogRef: MockDialogRef<CreateNewNoteDialogComponent>;
+    let vcs: VcsService;
 
     const workspaceConfigs: WorkspaceConfig = {
         rootDirPath: '/test/workspace/',
@@ -67,6 +69,10 @@ describe('browser.note.noteCollection.CreateNewNoteDialogComponent', () => {
             CreateNewNoteDialogComponent,
         );
 
+        vcs = jasmine.createSpyObj('vcs', [
+            'keepDirectory',
+        ]);
+
         await TestBed
             .configureTestingModule({
                 imports: [
@@ -77,6 +83,7 @@ describe('browser.note.noteCollection.CreateNewNoteDialogComponent', () => {
                     { provide: NoteCollectionService, useValue: collection },
                     { provide: WORKSPACE_DEFAULT_CONFIG, useValue: workspaceConfigs },
                     { provide: DialogRef, useValue: mockDialogRef },
+                    { provide: VcsService, useValue: vcs },
                 ],
                 declarations: [
                     CreateNewNoteDialogComponent,
@@ -213,4 +220,23 @@ describe('browser.note.noteCollection.CreateNewNoteDialogComponent', () => {
         expect(callback).toHaveBeenCalled();
         subscription.unsubscribe();
     });
+
+    it('should call \'keepDirectory\' if label exists.', fakeAsync(() => {
+        typeInElement('some title', getTitleInputEl());
+        typeInElement('label', getLabelInputEl());
+        getTitleInputEl().blur();
+        getLabelInputEl().blur();
+
+        fixture.detectChanges();
+
+        (collection.createNewNote as jasmine.Spy).and.returnValue(Promise.resolve(null));
+        (vcs.keepDirectory as jasmine.Spy).and.returnValue(Promise.resolve(null));
+
+        submitForm();
+        flush();
+
+        expect(vcs.keepDirectory).toHaveBeenCalledWith(
+            path.resolve(workspaceConfigs.rootDirPath, 'label'),
+        );
+    }));
 });

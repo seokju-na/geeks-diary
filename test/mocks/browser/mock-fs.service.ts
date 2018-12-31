@@ -174,6 +174,13 @@ export class MockFsService extends FsService {
         );
     }
 
+    removeFile(fileName: string): Observable<void> {
+        return this.createAttachment<void>(
+            'removeFile',
+            [fileName],
+        );
+    }
+
     _deleteStub<R>(stub: FsStub<R>): void {
         const attach = this.findAttachment(stub.matchObj);
 

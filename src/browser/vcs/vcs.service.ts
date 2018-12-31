@@ -1,10 +1,18 @@
 import { Inject, Injectable } from '@angular/core';
+import * as path from 'path';
 import { from, Observable, of, throwError, zip } from 'rxjs';
 import { catchError, filter, map, mapTo, switchMap, tap } from 'rxjs/operators';
 import { GitError, GitErrorCodes, GitGetHistoryOptions, GitSyncWithRemoteResult } from '../../core/git';
-import { VcsAccount, VcsAuthenticationInfo, VcsCommitItem, VcsFileChange, VcsRemoteRepository } from '../../core/vcs';
+import {
+    VcsAccount,
+    VcsAuthenticationInfo,
+    VcsCommitItem,
+    VcsFileChange,
+    VcsFileChangeStatusTypes,
+    VcsRemoteRepository,
+} from '../../core/vcs';
 import { toPromise } from '../../libs/rx';
-import { GitService, WorkspaceService } from '../shared';
+import { FsService, GitService, WorkspaceService } from '../shared';
 import { VCS_ACCOUNT_DATABASE, VcsAccountDatabase } from './vcs-account-database';
 import { VcsRemoteProvider, VcsRemoteProviderFactory, VcsRemoteProviderType } from './vcs-remote';
 
@@ -37,6 +45,7 @@ export class VcsService {
         private git: GitService,
         @Inject(VCS_ACCOUNT_DATABASE) private accountDB: VcsAccountDatabase,
         private workspace: WorkspaceService,
+        private fs: FsService,
     ) {
     }
 
@@ -137,6 +146,37 @@ export class VcsService {
             tap(result => this.nextCommitHistoryFetchingOptions = result.next),
             map(result => result.history),
         );
+    }
+
+    async keepDirectory(directoryPath: string): Promise<void> {
+        const workspaceDirPath = this.workspace.configs.rootDirPath;
+        const keepFilePath = path.resolve(directoryPath, '.gitkeep');
+
+        if (await toPromise(this.fs.isPathExists(keepFilePath))) {
+            return;
+        }
+
+        try {
+            await toPromise(this.fs.writeFile(keepFilePath, ''));
+            await toPromise(this.git.commit(
+                workspaceDirPath,
+                {
+                    name: 'Geeks Diary',
+                    email: '(BLANK)',
+                    authentication: null,
+                },
+                { summary: 'Keep Directory', description: '' },
+                [{
+                    status: VcsFileChangeStatusTypes.NEW,
+                    filePath: path.relative(workspaceDirPath, keepFilePath),
+                    absoluteFilePath: keepFilePath,
+                    workingDirectoryPath: workspaceDirPath,
+                }],
+            ));
+        } catch (error) {
+            await toPromise(this.fs.removeFile(keepFilePath));
+            throw error;
+        }
     }
 
     cloneRepository(
