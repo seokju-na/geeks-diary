@@ -1,5 +1,6 @@
 import * as Builder from 'electron-builder';
 import { copy, ensureDir, readdir, readJson, remove } from 'fs-extra';
+import * as os from 'os';
 import * as path from 'path';
 import * as rimraf from 'rimraf';
 import { promisify } from 'util';
@@ -130,6 +131,11 @@ async function build(): Promise<void> {
     );
 
     console.log('Build started...');
+    const buildTargets = {
+        mac: os.platform() === 'darwin' ? ['dmg'] : undefined,
+        linux: ['snap', 'AppImage'],
+        win: ['nsis'],
+    };
     await Builder.build({
         config: {
             appId: packageInfo.appId,
@@ -146,6 +152,12 @@ async function build(): Promise<void> {
                 darkModeSupport: true,
                 icon: path.resolve(SRC_PATH, 'assets/logos/icon-logo.icns'),
             },
+            appImage: {
+                artifactName: '${name}_${version}.${ext}',
+            },
+            win: {
+                artifactName: '${name}_${version}_${arch}.${ext}',
+            },
             extraMetadata: {
                 name: packageInfo.name,
                 description: packageInfo.description,
@@ -154,6 +166,7 @@ async function build(): Promise<void> {
                 repository: packageInfo.repository,
             },
         },
+        ...buildTargets,
     });
 }
 
