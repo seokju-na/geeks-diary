@@ -73,7 +73,7 @@ These are v1.0.0 features.
 Fork the project [on GitHub](https://github.com/seokju-na/geeks-diary) and clone your fork locally.
 
 ```bash
-git clone git@gitnub.com:username/geeks-diary.git
+git clone git@github.com:username/geeks-diary.git
 cd geeks-diary
 
 git remote add upstream https://github.com/seokju-na/geeks-diary.git
