@@ -27,7 +27,7 @@
         "ci": "yarn lint && yarn test && yarn build",
         "package": "npx ts-node scripts/package.ts",
         "upload-sourcemaps": "npx ts-node scripts/upload-sourcemaps.ts",
-        "override-angular-dev-kit": "./scripts/override-angular-dev-kit",
+        "override-angular-dev-kit": "node \"scripts/override-angular-dev-kit\"",
         "postinstall": "yarn override-angular-dev-kit"
     },
     "author": {
@@ -37,7 +37,7 @@
     },
     "license": "MIT",
     "engines": {
-        "node": "~8.12.0",
+        "node": "~8.16.0",
         "yarn": ">= 1.9.0"
     },
     "dependencies": {
