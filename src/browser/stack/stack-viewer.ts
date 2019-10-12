@@ -88,6 +88,7 @@ export class StackViewer {
                     tags: [...devIcon.tags],
                     versions: [...devIcon.versions.svg],
                 },
+                iconFilePath: devIcon ? getStackIconFilePath(devIcon.name, devIcon.versions.svg) : null,
             });
         });
 

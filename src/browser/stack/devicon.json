@@ -309,6 +309,33 @@
         }
     },
     {
+        "name": "clojure",
+        "tags": [
+            "language"
+        ],
+        "versions": {
+            "svg": [
+                "original",
+                "line",
+                "plain"
+            ],
+            "font": []
+        }
+    },
+    {
+        "name": "clojurescript",
+        "tags": [
+            "language"
+        ],
+        "versions": {
+            "svg": [
+                "original",
+                "plain"
+            ],
+            "font": []
+        }
+    },
+    {
         "name": "codeigniter",
         "tags": [
             "php",
@@ -1038,15 +1065,12 @@
         }
     },
     {
-        "name": "java",
+        "name": "jasmine",
         "tags": [
-            "programming",
-            "language"
+            "testing"
         ],
         "versions": {
             "svg": [
-                "original",
-                "original-wordmark",
                 "plain",
                 "plain-wordmark"
             ],
@@ -1057,12 +1081,15 @@
         }
     },
     {
-        "name": "jasmine",
+        "name": "java",
         "tags": [
-            "testing"
+            "programming",
+            "language"
         ],
         "versions": {
             "svg": [
+                "original",
+                "original-wordmark",
                 "plain",
                 "plain-wordmark"
             ],
@@ -1451,6 +1478,24 @@
         }
     },
     {
+        "name": "postgresql",
+        "tags": [
+            "database"
+        ],
+        "versions": {
+            "svg": [
+                "original",
+                "original-wordmark",
+                "plain",
+                "plain-wordmark"
+            ],
+            "font": [
+                "plain",
+                "plain-wordmark"
+            ]
+        }
+    },
+    {
         "name": "protractor",
         "tags": [
             "framework",
@@ -1468,9 +1513,9 @@
         }
     },
     {
-        "name": "postgresql",
+        "name": "pycharm",
         "tags": [
-            "database"
+            "editor"
         ],
         "versions": {
             "svg": [
@@ -1490,24 +1535,6 @@
         "tags": [
             "programming",
             "language"
-        ],
-        "versions": {
-            "svg": [
-                "original",
-                "original-wordmark",
-                "plain",
-                "plain-wordmark"
-            ],
-            "font": [
-                "plain",
-                "plain-wordmark"
-            ]
-        }
-    },
-    {
-        "name": "pycharm",
-        "tags": [
-            "editor"
         ],
         "versions": {
             "svg": [
@@ -2075,6 +2102,18 @@
                 "plain",
                 "plain-wordmark"
             ]
+        }
+    },
+    {
+        "name": "yunohost",
+        "tags": [
+            "os"
+        ],
+        "versions": {
+            "svg": [
+                "original"
+            ],
+            "font": []
         }
     },
     {

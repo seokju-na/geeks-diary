@@ -92,7 +92,7 @@ export const languageAndIconAndColorMap: {
     { id: _.FSHARP, color: '#b845fc' },
     { id: _.OCTAVE },
     { id: _.PASCAL, color: '#E3F171' },
-    { id: _.CLOJURE, color: '#db5855' },
+    { id: _.CLOJURE,icon: 'clojure', color: '#db5855' },
     { id: _.PHP, icon: 'php', color: '#4F5D95' },
     { id: _.CMAKE },
     { id: _.APL, color: '#5A8164' },
