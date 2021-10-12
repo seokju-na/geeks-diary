@@ -98,7 +98,7 @@
         "chai": "^4.1.2",
         "codelyzer": "^4.4.2",
         "cross-env": "^5.2.0",
-        "electron": "~2.x.x",
+        "electron": "~11.x.x",
         "electron-builder": "^20.38.4",
         "electron-devtools-installer": "^2.2.4",
         "electron-mocha": "^6.0.4",
